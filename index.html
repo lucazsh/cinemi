@@ -56,10 +56,24 @@
             width: 24px;
             height: 24px;
         }
+        .view {
+            position: fixed;
+            inset: 0;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.1s ease;
+        }
+
+        .view.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
     </style>
 </head>
 <body>
-    <div class="main">
+    <div id="home" class="view active">
         <h1>
             Cinemi
             test 1
@@ -67,12 +81,17 @@
             Once upon of time....
         </h1>
     </div>
+    <div id="search" class="view">
+        <h2>
+            TEST
+        </h2>
+    </div>
     <div class="navh">
-        <button class="active">
+        <button class="active" onclick="showView('home')">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
             <span>Home</span>
         </button>
-        <button>
+        <button onclick="showView('search')">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
             <span>Search</span>
         </button>
@@ -92,6 +111,12 @@
                 btn.classList.add('active')
             })
         })
+        function showView(id) {
+        document.querySelectorAll('.view').forEach(v => {
+            v.classList.remove('active')
+        })
+        document.getElementById(id).classList.add('active')
+        }
     </script>
 </body>
 </html>
