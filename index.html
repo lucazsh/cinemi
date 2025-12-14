@@ -58,48 +58,118 @@
         }
         .view {
             position: fixed;
-            inset: 0;
-            padding: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(100% - 9.5%); 
+            margin-bottom: 9.5%;     
+            padding: 0 20px;
             opacity: 0;
             pointer-events: none;
-            transition: 0.1s ease;
+            transition: 0.19s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
         }
+
 
         .view.active {
             opacity: 1;
             pointer-events: auto;
             transform: translateX(0);
         }
+        .nt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 3.4%;
+            background-color: #f9faff;
+            position: sticky;
+            overflow: visible;
+            top: 0;
+        }
+        .sc {
+            background-color: #f9faff;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div id="home" class="view active">
-        <h1>
-            Cinemi
-            test 1
-            test 2
-            Once upon of time....
-        </h1>
+        <div class="nt">
+            <span class="logo">
+                cinemi
+            </span>
+            <span class="search">
+                <button class="sc"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></button>
+            </span>
+        </div>
+        <h3>Silent echoes drift across the empty street</h3>
+        <h3>Midnight rain taps softly on old windows</h3>
+        <h3>A forgotten map hides unseen destinations</h3>
+        <h3>Neon lights flicker under cloudy skies</h3>
+        <h3>Time bends when memories feel heavy</h3>
+        <h3>Shadows dance along the quiet hallway</h3>
+        <h3>A distant train hums through the night</h3>
+        <h3>Cold coffee sits beside unfinished notes</h3>
+        <h3>Worn pages whisper stories never told</h3>
+        <h3>Footsteps fade into the crowded silence</h3>
+        <h3>The screen glows in a darkened room</h3>
+        <h3>Wind carries secrets between tall buildings</h3>
+        <h3>Loose cables snake behind dusty desks</h3>
+        <h3>A blinking cursor waits without patience</h3>
+        <h3>Streetlights paint gold on wet asphalt</h3>
+        <h3>Old headphones crackle with familiar songs</h3>
+        <h3>The city breathes between traffic lights</h3>
+        <h3>Static fills the space between thoughts</h3>
+        <h3>Paper planes rest on cluttered shelves</h3>
+        <h3>Soft hums rise from distant servers</h3>
+        <h3>Morning fog erases sharp outlines</h3>
+        <h3>A locked door remembers every knock</h3>
+        <h3>Clock hands argue about passing time</h3>
+        <h3>Pixelated dreams load far too slowly</h3>
+        <h3>Empty tabs linger in the browser</h3>
+        <h3>Low batteries blink their final warning</h3>
+        <h3>Cracked sidewalks trace forgotten routes</h3>
+        <h3>Loose change rattles in deep pockets</h3>
+        <h3>The elevator pauses between floors</h3>
+        <h3>Unread messages sleep in notifications</h3>
+        <h3>Dust floats in afternoon sunlight</h3>
+        <h3>A quiet hum follows old machines</h3>
     </div>
-    <div id="search" class="view">
+    <div id="finder" class="view">
         <h2>
-            TEST
+            This is where you will search movies
+        </h2>
+    </div>
+    <div id="add" class="view">
+        <h2>
+            This is where you will post!
+        </h2>
+    </div>
+    <div id="profile" class="view">
+        <h2>
+            This is the settings tab...
         </h2>
     </div>
     <div class="navh">
         <button class="active" onclick="showView('home')">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="M160-186.67v-380q0-15.83 7.08-30 7.09-14.16 19.59-23.33L440-810q17.45-13.33 39.89-13.33T520-810l253.33 190q12.5 9.17 19.59 23.33 7.08 14.17 7.08 30v380q0 27.5-19.58 47.09Q760.83-120 733.33-120h-140q-14.16 0-23.75-9.58-9.58-9.59-9.58-23.75v-213.34q0-14.16-9.58-23.75-9.59-9.58-23.75-9.58h-93.34q-14.16 0-23.75 9.58-9.58 9.59-9.58 23.75v213.34q0 14.16-9.58 23.75-9.59 9.58-23.75 9.58h-140q-27.5 0-47.09-19.58Q160-159.17 160-186.67Z"/></svg>
             <span>Home</span>
         </button>
-        <button onclick="showView('search')">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
-            <span>Search</span>
+        <button onclick="showView('finder')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M360-480q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480Zm240 0q33 0 56.5-23.5T680-560q0-33-23.5-56.5T600-640q-33 0-56.5 23.5T520-560q0 33 23.5 56.5T600-480ZM360-120v-160h80v160h-80Zm160 0v-160h80v160h-80Zm-320 0q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120h-80v-160q0-33-23.5-56.5T600-360H360q-33 0-56.5 23.5T280-280v160h-80Z"/></svg>
+            <span>Finder</span>
         </button>
         <button>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
             <span>Add</span>
         </button>
-        <button><svg xmlns="http://www.w3.org/2000/svg" fill="#000000" viewBox="0 0 24 24"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>
+        <button>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
             <span>Profile</span>
         </button>
     </div>
