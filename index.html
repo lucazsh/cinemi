@@ -114,10 +114,83 @@
             padding-top: 2px;
             margin-left: -6.5px;
         }
+        #setup {
+            height: 100vh;
+            display: flex;
+            z-index: 1200;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            background: #f9faff;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: rgba(207, 205, 205, 0.582);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: black;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+            transition: width 0.4s ease;
+        }
+
+        .questions {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question {
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .next {
+            align-self: flex-end;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
-    <div id="home" class="view active">
+    <div id="setup" class="view active">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="questions">
+            <div class="question active"><h1>What motivates you the most?</h1></div>
+            <div class="question"><h1>Do you prefer working alone or in a team?</h1></div>
+            <div class="question"><h1>Are you more logical or creative?</h1></div>
+            <div class="question"><h1>Do you like taking risks?</h1></div>
+            <div class="question"><h1>Do you plan ahead or improvise?</h1></div>
+            <div class="question"><h1>What defines success for you?</h1></div>
+        </div>
+
+        <button class="next" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <div id="home" class="view">
         <div class="nt">
             <span class="logo">
                 cinemi
@@ -134,9 +207,9 @@
                     I like this movie: [SAMPLE], because... and...
                 </div>
                 <div class="re">
-                    <button><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
-                    <button><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
-                    <button><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                    <button class="reply"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                    <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
                 </div>
             </div>
         </div>
@@ -175,7 +248,31 @@
         </button>
     </div>
     <script>
+        let current = 0;
+        const questions = document.querySelectorAll('.question');
+        const progress = document.getElementById('progressFill');
         const buttons = document.querySelectorAll('.navh button')
+        const total = questions.length;
+
+        function nextQuestion() {
+            questions[current].classList.remove('active');
+            current++;
+
+            if (current < total) {
+                questions[current].classList.add('active');
+                updateProgress();
+            } else {
+                progress.style.width = '100%';
+                progress.textContent = '100%';
+                showView('home');
+            }
+        }
+
+        function updateProgress() {
+            const percent = Math.round((current / total) * 100);
+            progress.style.width = percent + '%';
+        }
+
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 buttons.forEach(b => b.classList.remove('active'))
@@ -188,6 +285,7 @@
         })
         document.getElementById(id).classList.add('active')
         }
+
     </script>
 </body>
 </html>
