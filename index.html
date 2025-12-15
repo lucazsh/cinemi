@@ -159,13 +159,52 @@
         }
 
         .next {
-            
+            align-self: flex-end;
             padding: 10px 20px;
             border-radius: 10px;
             border: none;
             background: black;
             color: white;
             cursor: pointer;
+        }
+
+        .q-input {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 420px;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 14px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .q-input:focus {
+            border-color: black;
+        }
+
+        .q-yn {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .q-yn input {
+            display: none;
+        }
+
+        .q-yn label {
+            padding: 12px 32px;
+            border-radius: 14px;
+            border: 1px solid black;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .q-yn input:checked + label {
+            background: black;
+            color: white;
         }
 
     </style>
@@ -179,12 +218,53 @@
         </div>
 
         <div class="questions">
-            <div class="question active"><h1>What motivates you the most?</h1></div>
-            <div class="question"><h1>Do you prefer working alone or in a team?</h1></div>
-            <div class="question"><h1>Are you more logical or creative?</h1></div>
-            <div class="question"><h1>Do you like taking risks?</h1></div>
-            <div class="question"><h1>Do you plan ahead or improvise?</h1></div>
-            <div class="question"><h1>What defines success for you?</h1></div>
+            <div class="question active">
+                <h1>What motivates you the most?</h1>
+                <input class="q-input" type="text" placeholder="Type your answer..." />
+            </div>
+
+            <div class="question">
+                <h1>Do you prefer working alone or in a team?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q2a" name="q2">
+                    <label for="q2a">Yes</label>
+
+                    <input type="radio" id="q2b" name="q2">
+                    <label for="q2b">No</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h1>Are you more logical or creative?</h1>
+                <input class="q-input" type="text" placeholder="Logical / Creative / Both..." />
+            </div>
+
+            <div class="question">
+                <h1>Do you like taking risks?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q4a" name="q4">
+                    <label for="q4a">Yes</label>
+
+                    <input type="radio" id="q4b" name="q4">
+                    <label for="q4b">No</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h1>Do you plan ahead or improvise?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q5a" name="q5">
+                    <label for="q5a">Yes</label>
+
+                    <input type="radio" id="q5b" name="q5">
+                    <label for="q5b">No</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h1>What defines success for you?</h1>
+                <input class="q-input" type="text" placeholder="Your definition..." />
+            </div>
         </div>
 
         <button class="next" onclick="nextQuestion()">Next</button>
