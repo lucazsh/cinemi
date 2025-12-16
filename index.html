@@ -20,7 +20,7 @@
         }
         .navh {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(20px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             border-radius: 20px;
@@ -31,6 +31,7 @@
             z-index: 1000;
             transition: transform 0.25s ease, opacity 0.25s ease;
         }
+
         button,
         a {
             outline: none;
@@ -220,19 +221,18 @@
         #add {
             position: fixed;
             inset: 0;
-            right: 0;
             top: 1.4vh;
-            height: 100vh; 
-            margin-top: 1.4vh; 
-            transform: translateY(100vh);
+            bottom: 0;
+            transform: translateY(100%);
             background-color: #f9faff;
             z-index: 2000;      
-            border: 1px solid #18191e52;
+            border-top: 1px solid #18191e52;
             border-radius: 10px;   
             opacity: 0;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
         }
+
 
         #add.active ~ .navh {
             transform: translateY(120%);
