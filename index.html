@@ -224,22 +224,22 @@
         }
 
         #add {
-        position: fixed;
-        left: 0;
-        right: 0;
-        top: 1.4vh;
-        bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
-        transform: translateY(100%);
-        background-color: #f9faff;
-        z-index: 1200;
-        height: 100%;
-        border-top: 1px solid #18191e52;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        pointer-events: none;
-        box-sizing: border-box;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 1.4vh;
+            bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+            transform: translateY(100%);
+            background-color: #f9faff;
+            z-index: 1200;
+            height: 100%;
+            border-top: 1px solid #18191e52;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            box-sizing: border-box;
         }
 
         #add.active {
@@ -264,7 +264,63 @@
             transform: translateX(-50%);
             font-weight: bold;
         }
-        
+
+        .ti-add {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .ti-add .username {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            display: inline-block;
+        }
+
+        .ti-add textarea {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            resize: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ti-add .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ti-add .left-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-ghost {
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            background: #f9faff;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -336,17 +392,19 @@
                 <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></button>
             </span>
         </div>
-        <div class="post">
-            <div class="pt">
-                <span class="usr">user_tag</span>
-                <span class="time">2h</span>
-                <div class="cnt">
-                    I like this movie: [SAMPLE], because... and...
-                </div>
-                <div class="re">
-                    <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
-                    <button class="reply"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
-                    <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+        <div id="posts">
+            <div class="post">
+                <div class="pt">
+                    <span class="usr">user_tag</span>
+                    <span class="time">2h</span>
+                    <div class="cnt">
+                        I like this movie: [SAMPLE], because... and...
+                    </div>
+                    <div class="re">
+                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                        <button class="reply"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -371,16 +429,30 @@
         </div>
         <div class="input"></div>
     </div>
+
     <div id="add" class="view">
         <div class="tp-add">
             <button onclick="closeAdd()" style="color: #18191ec2; font-size: 16px; align-items: center;  ">Cancel</button>
             <span class="add-t" style="color:black;font-weight: bold;">New post</span>
-            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Zm120 480h200q17 0 28.5-11.5T560-320q0-17-11.5-28.5T520-360H320q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160h320q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160h320q17 0 28.5-11.5T680-640q0-17-11.5-28.5T640-680H320q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Z"/></svg></button>
+            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560Zm120 480h200q17 0 28.5-11.5T560-320q0-17-11.5-28.5T520-360H320q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160h320q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160h320q17 0 28.5-11.5T680-640q0-17-11.5-28.5T640-680H320q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Z"/></svg></button>
         </div>
+
         <div class="ti-add">
-            
+            <span id="addUsername" class="username">user_tag</span>
+            <textarea id="postTextarea" placeholder="What's on your mind?" rows="4"></textarea>
+
+            <div class="controls">
+                <div class="left-controls">
+                    <button class="btn-ghost" title="Add photo"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0 0v-560 560Zm80-80h400q12 0 18-11t-2-21L586-459q-6-8-16-8t-16 8L450-320l-74-99q-6-8-16-8t-16 8l-80 107q-8 10-2 21t18 11Z"/></svg></button>
+                    <button class="btn-ghost" title="Add audio"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg></button>
+                </div>
+                <div>
+                    <button id="postSubmit" class="btn-primary">Post</button>
+                </div>
+            </div>
         </div>
     </div>
+
     <div id="profile" class="view">
         <h2>
             This is the settings tab...
@@ -408,7 +480,6 @@
         let current = 0;
         const questions = document.querySelectorAll('.question');
         const progress = document.getElementById('progressFill');
-        const buttons = document.querySelectorAll('.navh button')
         const total = questions.length;
 
         function nextQuestion() {
@@ -435,6 +506,11 @@
 
             if (id === 'add') {
                 add.classList.add('active');
+                setTimeout(() => {
+                    const ta = document.getElementById('postTextarea');
+                    if (ta) ta.focus();
+                }, 120);
+                updateNavActive(id);
                 return;
             }
 
@@ -445,6 +521,10 @@
             });
             document.getElementById(id).classList.add('active');
 
+            updateNavActive(id);
+        }
+
+        function updateNavActive(id) {
             const buttons = document.querySelectorAll('.navh button');
             buttons.forEach(btn => btn.classList.remove('active'));
             const btn = Array.from(buttons).find(b => b.getAttribute('onclick')?.includes(id));
@@ -455,6 +535,71 @@
             const add = document.getElementById('add');
             add.classList.remove('active');
         }
+
+        const postBtn = document.getElementById('postSubmit');
+        const postsContainer = document.getElementById('posts');
+        const textarea = document.getElementById('postTextarea');
+        const addUsername = document.getElementById('addUsername');
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        function timeLabelForNow() {
+            return 'just now';
+        }
+
+        function buildPostElement(username, content) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'post';
+            const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
+            wrapper.innerHTML = `
+                <div class="pt">
+                    <span class="usr">${escapeHtml(username)}</span>
+                    <span class="time">${timeLabelForNow()}</span>
+                    <div class="cnt">${safeContent}</div>
+                    <div class="re">
+                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                        <button class="reply"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    </div>
+                </div>
+            `;
+            return wrapper;
+        }
+
+        function submitPost() {
+            const content = textarea.value || '';
+            const username = addUsername.textContent || 'user_tag';
+
+            if (content.trim() === '') {
+                textarea.focus();
+                textarea.style.borderColor = 'red';
+                setTimeout(() => textarea.style.borderColor = '#ccc', 900);
+                return;
+            }
+
+            const postEl = buildPostElement(username, content);
+            postsContainer.prepend(postEl);
+
+            textarea.value = '';
+            closeAdd();
+            showView('home');
+        }
+
+        if (postBtn) {
+            postBtn.addEventListener('click', submitPost);
+        }
+
+        textarea && textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                submitPost();
+            }
+        });
 
     </script>
 </body>
