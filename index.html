@@ -3,7 +3,6 @@
 <head>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         html {
             touch-action: manipulation;
@@ -225,20 +224,23 @@
         }
 
         #add {
-            position: fixed;
-            inset: 0;
-            top: 1.4vh;
-            bottom: 0;
-            transform: translateY(100%);
-            background-color: #f9faff;
-            z-index: 2000;      
-            border-top: 1px solid #18191e52;
-            border-radius: 10px;   
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            pointer-events: none;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 1.4vh;
+        bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+        transform: translateY(100%);
+        background-color: #f9faff;
+        z-index: 1200;
+        height: 100%;
+        border-top: 1px solid #18191e52;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        pointer-events: none;
+        box-sizing: border-box;
         }
-
 
         #add.active {
             transform: translateY(0);
@@ -430,16 +432,13 @@
 
         function showView(id) {
             const add = document.getElementById('add');
-            const nav = document.querySelector('.navh');
 
             if (id === 'add') {
                 add.classList.add('active');
-                setTimeout(() => nav.classList.add('hide'), 10);
                 return;
             }
 
             add.classList.remove('active');
-            nav.classList.remove('hide');
 
             document.querySelectorAll('.view').forEach(v => {
                 if (v.id !== 'add') v.classList.remove('active');
@@ -454,10 +453,7 @@
 
         function closeAdd() {
             const add = document.getElementById('add');
-            const nav = document.querySelector('.navh');
-
             add.classList.remove('active');
-            nav.classList.remove('hide');
         }
 
     </script>
