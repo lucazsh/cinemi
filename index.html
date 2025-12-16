@@ -445,7 +445,12 @@
         }
 
         function closeAdd() {
-            document.getElementById('add').classList.remove('active')
+            const add = document.getElementById('add');
+            add.classList.remove('active');
+            const nav = document.querySelector('.navh');
+            nav.style.transition = 'none';
+            nav.offsetHeight;
+            nav.style.transition = ''; 
         }
     </script>
 </body>
