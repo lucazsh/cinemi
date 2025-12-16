@@ -29,7 +29,12 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: transform 0.25s ease, opacity 0.25s ease;
+            transition: opacity 0.3s ease;
+        }
+
+        .navh.hide {
+            opacity: 0;
+            pointer-events: none;
         }
 
         button,
@@ -234,12 +239,6 @@
         }
 
 
-        #add.active ~ .navh {
-            transform: translateY(120%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
         #add.active {
             transform: translateY(0);
             pointer-events: auto;
@@ -429,29 +428,37 @@
         }
 
         function showView(id) {
+            const add = document.getElementById('add');
+            const nav = document.querySelector('.navh');
+
             if (id === 'add') {
-                document.getElementById('add').classList.add('active');
+                add.classList.add('active');
+                setTimeout(() => nav.classList.add('hide'), 10);
                 return;
             }
+
+            add.classList.remove('active');
+            nav.classList.remove('hide');
+
             document.querySelectorAll('.view').forEach(v => {
                 if (v.id !== 'add') v.classList.remove('active');
             });
-
             document.getElementById(id).classList.add('active');
-            buttons.forEach(btn => btn.classList.remove('active'));
 
+            const buttons = document.querySelectorAll('.navh button');
+            buttons.forEach(btn => btn.classList.remove('active'));
             const btn = Array.from(buttons).find(b => b.getAttribute('onclick')?.includes(id));
             if (btn) btn.classList.add('active');
         }
 
         function closeAdd() {
             const add = document.getElementById('add');
-            add.classList.remove('active');
             const nav = document.querySelector('.navh');
-            nav.style.transition = 'none';
-            nav.offsetHeight;
-            nav.style.transition = ''; 
+
+            add.classList.remove('active');
+            nav.classList.remove('hide');
         }
+
     </script>
 </body>
 </html>
