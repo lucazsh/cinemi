@@ -491,6 +491,7 @@
                 updateProgress();
             } else {
                 progress.style.width = '100%';
+                progress.textContent = '100%';
                 showView('home');
             }
         }
@@ -527,14 +528,11 @@
             add.classList.remove('active');
         }
         const postBtn = document.getElementById('postSubmit');
-        postBtn.setAttribute('type', 'button');
         const postsContainer = document.getElementById('posts');
         const textarea = document.getElementById('postTextarea');
         const addUsername = document.getElementById('addUsername');
         const fileInput = document.getElementById('postFiles');
         const filePreview = document.getElementById('filePreview');
-        const addView = document.getElementById('add');
-        addView.addEventListener('submit', (e) => e.preventDefault());
         let selectedFiles = [];
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -604,36 +602,27 @@
             const node = document.querySelector(`[data-file-id="${id}"]`);
             if (node) node.remove();
         }
-        function createPostWrapper(username, content, files, timeLabel) {
+        function buildPostElement(username, content, files) {
             const wrapper = document.createElement('div');
             wrapper.className = 'post';
             const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
             let filesHtml = '';
             if (files && files.length) {
-                const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
-                const others = files.filter(f => !((f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/')));
+                const imgs = files.filter(f => f.dataUrl && f.file.type.startsWith('image/'));
+                const others = files.filter(f => !(f.dataUrl && f.file.type.startsWith('image/')));
                 if (imgs.length) {
                     filesHtml += '<div class="post-images" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">';
                     imgs.forEach(f => {
-                        const src = f.dataUrl || f.url;
-                        filesHtml += `<img src="${src}" style="width:80%;border-radius:8px;object-fit:cover;max-width:500px;"/>`;
+                        filesHtml += `<img src="${f.dataUrl}" style="width:80%;border-radius:8px;object-fit:cover;max-width:500px;"/>`;
                     });
                     filesHtml += '</div>';
                 }
                 if (others.length) {
                     filesHtml += '<div class="post-files" style="margin-top:8px">';
-                    others.forEach(f => {
-                        let url;
-                        if (f.url) {
-                            url = f.url;
-                        } else if (f.file) {
-                            url = URL.createObjectURL(f.file);
-                            setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
-                        } else {
-                            return;
-                        }
-                        const name = f.file ? f.file.name : f.originalName || '';
-                        filesHtml += `<div><a href="${url}" download="${escapeHtml(name)}">${escapeHtml(name)}</a></div>`;
+                    others.forEach((f, i) => {
+                        const url = URL.createObjectURL(f.file);
+                        filesHtml += `<div><a href="${url}" download="${escapeHtml(f.file.name)}">${escapeHtml(f.file.name)}</a></div>`;
+                        setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
                     });
                     filesHtml += '</div>';
                 }
@@ -641,7 +630,7 @@
             wrapper.innerHTML = `
                 <div class="pt">
                     <span class="usr">${escapeHtml(username)}</span>
-                    <span class="time">${timeLabel}</span>
+                    <span class="time">${timeLabelForNow()}</span>
                     <div class="cnt">${safeContent}</div>
                     ${filesHtml}
                     <div class="re" style="margin-top:6px">
@@ -652,17 +641,6 @@
                 </div>
             `;
             return wrapper;
-        }
-        function buildPostElement(username, content, files) {
-            return createPostWrapper(username, content, files, timeLabelForNow());
-        }
-        function addPostToUIFromServer(post) {
-            const username = post.username || 'user_tag';
-            const content = post.text || '';
-            const files = post.files || [];
-            const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
-            const wrapper = createPostWrapper(username, content, files, timeLabel);
-            postsContainer.prepend(wrapper);
         }
         function submitPost() {
             const content = textarea.value || '';
@@ -691,101 +669,6 @@
                 submitPost();
             }
         });
-        window.submitPostLocal = submitPost;
-        window.addPostToUIFromServer = addPostToUIFromServer;
-        const SERVER_URL = 'https://f9ae704d4f43.ngrok-free.app';
-        const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
-        const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
-        function replacePostButtonListener(newHandler) {
-            const old = document.getElementById('postSubmit');
-            if (!old) return;
-            const clone = old.cloneNode(true);
-            clone.setAttribute('type', 'button');
-            old.parentNode.replaceChild(clone, old);
-            window.postBtnNode = clone;
-            clone.addEventListener('click', newHandler);
-        }
-        async function loadInitialPostsFromServer() {
-            if (!baseUrl) return;
-            try {
-                const res = await fetch(baseUrl + '/api/posts', {
-                    headers: ngrokHeaders
-                });
-                if (!res.ok) throw new Error('failed to load posts');
-                const list = await res.json();
-                list.slice().reverse().forEach(p => {
-                    if (typeof window.addPostToUIFromServer === 'function') {
-                        window.addPostToUIFromServer(p);
-                    }
-                });
-            } catch (err) {}
-        }
-        async function submitPostToServerHandler(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const content = (window.textarea && window.textarea.value) || (document.getElementById('postTextarea')?.value) || '';
-            const username = (window.addUsername && window.addUsername.textContent) || document.getElementById('addUsername')?.textContent || 'user_tag';
-            const selected = window.selectedFiles || selectedFiles || [];
-            if (content.trim() === '' && (!selected || selected.length === 0)) {
-                const ta = document.getElementById('postTextarea');
-                if (ta) {
-                    ta.focus();
-                    ta.style.borderColor = 'red';
-                    setTimeout(() => ta.style.borderColor = '#ccc', 900);
-                }
-                return;
-            }
-            const fd = new FormData();
-            fd.append('username', username);
-            fd.append('text', content)
-            (selected || []).forEach((f) => fd.append('files', f.file, f.file.name));
-            try {
-                const btn = document.getElementById('postSubmit');
-                if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
-                const res = await fetch(baseUrl + '/api/posts', {
-                    method: 'POST',
-                    body: fd,
-                    headers: ngrokHeaders
-                });
-                const json = await res.json();
-                if (!res.ok) throw new Error(json?.error || 'upload failed');
-                if (window.textarea) window.textarea.value = '';
-                if (typeof selectedFiles !== 'undefined') {
-                    selectedFiles = [];
-                    const fp = document.getElementById('filePreview');
-                    if (fp) fp.innerHTML = '';
-                    const fi = document.getElementById('postFiles');
-                    if (fi) fi.value = '';
-                }
-                try { document.getElementById('add').classList.remove('active'); } catch(e){}
-            } catch (err) {
-                if (typeof window.submitPostLocal === 'function') window.submitPostLocal();
-            } finally {
-                const btn = document.getElementById('postSubmit');
-                if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
-                try { showView('home'); } catch(e){}
-            }
-        }
-        function initSocket() {
-            if (!baseUrl) return;
-            try {
-                const socket = io(baseUrl, { 
-                    transports: ['websocket','polling'],
-                    extraHeaders: ngrokHeaders
-                });
-                socket.on('post_created', (post) => {
-                    if (typeof window.addPostToUIFromServer === 'function') {
-                        window.addPostToUIFromServer(post);
-                    }
-                });
-            } catch (err) {}
-        }
-        if (baseUrl) {
-            replacePostButtonListener(submitPostToServerHandler);
-            loadInitialPostsFromServer();
-            initSocket();
-        }
     </script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
 </html>
