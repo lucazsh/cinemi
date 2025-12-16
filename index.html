@@ -29,6 +29,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            transition: transform 0.25s ease, opacity 0.25s ease;
         }
         button,
         a {
@@ -216,6 +217,52 @@
             color: white;
         }
 
+        #add {
+            position: fixed;
+            inset: 0;
+            right: 0;
+            top: 1.4vh;
+            height: 100vh; 
+            margin-top: 1.4vh; 
+            transform: translateY(100vh);
+            background-color: #f9faff;
+            z-index: 2000;      
+            border: 1px solid #18191e52;
+            border-radius: 10px;   
+            opacity: 0;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        #add.active ~ .navh {
+            transform: translateY(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #add.active {
+            transform: translateY(0);
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .tp-add {
+            position: relative;
+            font-size: 18px;
+            display: flex;
+            padding: 15px 10px;
+            justify-content: space-between; 
+            align-items: center;         
+            width: 100%;                    
+            box-sizing: border-box;
+        }
+
+        .add-t {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+        
     </style>
 </head>
 <body>
@@ -275,7 +322,6 @@
                 <input class="q-input" type="text" placeholder="Your definition..." />
             </div>
         </div>
-
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
 
@@ -303,6 +349,7 @@
             </div>
         </div>
     </div>
+
     <div id="finder" class="view">
         <div class="nt">
             <span style="font-size: 21px; font-weight: bold;">
@@ -321,12 +368,16 @@
             </div>
         </div>
         <div class="input"></div>
-        
     </div>
     <div id="add" class="view">
-        <h2>
-            This is where you will post!
-        </h2>
+        <div class="tp-add">
+            <button onclick="closeAdd()" style="color: #18191ec2; font-size: 16px; align-items: center;  ">Cancel</button>
+            <span class="add-t" style="color:black;font-weight: bold;">New post</span>
+            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Zm120 480h200q17 0 28.5-11.5T560-320q0-17-11.5-28.5T520-360H320q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160h320q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160h320q17 0 28.5-11.5T680-640q0-17-11.5-28.5T640-680H320q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Z"/></svg></button>
+        </div>
+        <div class="ti-add">
+            
+        </div>
     </div>
     <div id="profile" class="view">
         <h2>
@@ -342,7 +393,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M360-480q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480Zm240 0q33 0 56.5-23.5T680-560q0-33-23.5-56.5T600-640q-33 0-56.5 23.5T520-560q0 33 23.5 56.5T600-480ZM360-120v-160h80v160h-80Zm160 0v-160h80v160h-80Zm-320 0q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120h-80v-160q0-33-23.5-56.5T600-360H360q-33 0-56.5 23.5T280-280v160h-80Z"/></svg>
             <span>Finder</span>
         </button>
-        <button>
+        <button onclick="showView('add')">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
             <span>Add</span>
         </button>
@@ -377,19 +428,25 @@
             progress.style.width = percent + '%';
         }
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('active'))
-                btn.classList.add('active')
-            })
-        })
         function showView(id) {
-        document.querySelectorAll('.view').forEach(v => {
-            v.classList.remove('active')
-        })
-        document.getElementById(id).classList.add('active')
+            if (id === 'add') {
+                document.getElementById('add').classList.add('active');
+                return;
+            }
+            document.querySelectorAll('.view').forEach(v => {
+                if (v.id !== 'add') v.classList.remove('active');
+            });
+
+            document.getElementById(id).classList.add('active');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const btn = Array.from(buttons).find(b => b.getAttribute('onclick')?.includes(id));
+            if (btn) btn.classList.add('active');
         }
 
+        function closeAdd() {
+            document.getElementById('add').classList.remove('active')
+        }
     </script>
 </body>
 </html>
