@@ -339,7 +339,7 @@
     </style>
 </head>
 <body>
-    <div id="setup" class="view active">
+    <div id="setup" class="view">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -388,7 +388,7 @@
         </div>
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
-    <div id="home" class="view">
+    <div id="home" class="view active">
         <div class="nt">
             <span class="logo">
                 cinemi
@@ -536,9 +536,9 @@ const filePreview = document.getElementById('filePreview');
 const addView = document.getElementById('add');
 addView.addEventListener('submit', (e) => e.preventDefault());
 let selectedFiles = [];
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
 function timeLabelForNow() {
     return 'just now';
 }
@@ -607,7 +607,7 @@ function removeFile(id) {
 function createPostWrapper(username, content, files, timeLabel) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post';
-    const safeContent = escapeHtml(content).replace(/\n/g, ' ');
+    const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
     let filesHtml = '';
     if (files && files.length) {
         const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
@@ -657,16 +657,11 @@ function buildPostElement(username, content, files) {
     return createPostWrapper(username, content, files, timeLabelForNow());
 }
 function addPostToUIFromServer(post) {
+    const username = post.username || 'user_tag';
+    const content = post.text || '';
+    const files = post.files || [];
     const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
-    if (post.tempId) {
-        const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
-        if (existing) {
-            const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel);
-            existing.parentNode.replaceChild(newWrapper, existing);
-            return;
-        }
-    }
-    const wrapper = createPostWrapper(post.username || 'user_tag', post.text || '', post.files || [], timeLabel);
+    const wrapper = createPostWrapper(username, content, files, timeLabel);
     postsContainer.prepend(wrapper);
 }
 function submitPost() {
@@ -698,8 +693,9 @@ textarea && textarea.addEventListener('keydown', (e) => {
 });
 window.submitPostLocal = submitPost;
 window.addPostToUIFromServer = addPostToUIFromServer;
-const SERVER_URL = 'https://f9ae704d4f43.ngrok-free.app';
+const SERVER_URL = 'https://f9ae704d4f43.ngrok-free.app'; 
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
+const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 function replacePostButtonListener(newHandler) {
     const old = document.getElementById('postSubmit');
     if (!old) return;
@@ -712,7 +708,9 @@ function replacePostButtonListener(newHandler) {
 async function loadInitialPostsFromServer() {
     if (!baseUrl) return;
     try {
-        const res = await fetch(baseUrl + '/api/posts');
+        const res = await fetch(baseUrl + '/api/posts', {
+            headers: ngrokHeaders
+        });
         if (!res.ok) throw new Error('failed to load posts');
         const list = await res.json();
         list.slice().reverse().forEach(p => {
@@ -720,17 +718,15 @@ async function loadInitialPostsFromServer() {
                 window.addPostToUIFromServer(p);
             }
         });
-    } catch (err) {
-        console.error(err);
-    }
+    } catch (err) {}
 }
 async function submitPostToServerHandler(e) {
     e.preventDefault();
     e.stopPropagation();
-    const content = document.getElementById('postTextarea')?.value || '';
-    const username = document.getElementById('addUsername')?.textContent || 'user_tag';
-    const selected = selectedFiles || [];
-    if (content.trim() === '' && selected.length === 0) {
+    const content = (window.textarea && window.textarea.value) || (document.getElementById('postTextarea')?.value) || '';
+    const username = (window.addUsername && window.addUsername.textContent) || document.getElementById('addUsername')?.textContent || 'user_tag';
+    const selected = window.selectedFiles || selectedFiles || [];
+    if (content.trim() === '' && (!selected || selected.length === 0)) {
         const ta = document.getElementById('postTextarea');
         if (ta) {
             ta.focus();
@@ -739,61 +735,50 @@ async function submitPostToServerHandler(e) {
         }
         return;
     }
-    const tempId = uid();
-    const filesForPost = selected.map(f => ({ ...f }));
-    const optimisticPostEl = buildPostElement(username, content, filesForPost);
-    optimisticPostEl.setAttribute('data-temp-id', tempId);
-    postsContainer.prepend(optimisticPostEl);
-    const ta = document.getElementById('postTextarea');
-    if (ta) ta.value = '';
-    const fp = document.getElementById('filePreview');
-    if (fp) fp.innerHTML = '';
-    const fi = document.getElementById('postFiles');
-    if (fi) fi.value = '';
-    const originalSelectedFiles = selectedFiles;
-    selectedFiles = [];
-    try { document.getElementById('add').classList.remove('active'); } catch(e){}
-    showView('home');
     const fd = new FormData();
     fd.append('username', username);
     fd.append('text', content);
-    fd.append('tempId', tempId);
-    selected.forEach((f) => fd.append('files', f.file, f.file.name));
+    (selected || []).forEach((f) => fd.append('files', f.file, f.file.name));
     try {
         const btn = document.getElementById('postSubmit');
         if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
         const res = await fetch(baseUrl + '/api/posts', {
             method: 'POST',
-            body: fd
+            body: fd,
+            headers: ngrokHeaders
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json?.error || 'upload failed');
+        if (window.textarea) window.textarea.value = '';
+        if (typeof selectedFiles !== 'undefined') {
+            selectedFiles = [];
+            const fp = document.getElementById('filePreview');
+            if (fp) fp.innerHTML = '';
+            const fi = document.getElementById('postFiles');
+            if (fi) fi.value = '';
+        }
+        try { document.getElementById('add').classList.remove('active'); } catch(e){}
     } catch (err) {
-        console.error('Post error:', err);
-        const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
-        if (optimisticEl) optimisticEl.remove();
-        alert('Failed to post. Please try again.');
-        if (ta) ta.value = content;
-        selectedFiles = filesForPost;
-        filesForPost.forEach(entry => renderFilePreview(entry));
-        showView('add');
+        if (typeof window.submitPostLocal === 'function') window.submitPostLocal();
     } finally {
         const btn = document.getElementById('postSubmit');
         if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
+        try { showView('home'); } catch(e){}
     }
 }
 function initSocket() {
     if (!baseUrl) return;
     try {
-        const socket = io(baseUrl, { transports: ['websocket','polling'] });
+        const socket = io(baseUrl, { 
+            transports: ['websocket','polling'],
+            extraHeaders: ngrokHeaders
+        });
         socket.on('post_created', (post) => {
             if (typeof window.addPostToUIFromServer === 'function') {
                 window.addPostToUIFromServer(post);
             }
         });
-    } catch (err) {
-        console.error('Socket error:', err);
-    }
+    } catch (err) {}
 }
 if (baseUrl) {
     replacePostButtonListener(submitPostToServerHandler);
