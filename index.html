@@ -671,9 +671,9 @@ function addPostToUIFromServer(post) {
     postsContainer.prepend(wrapper);
     lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
 }
-const SERVER_URL = 'https://f9ae704d4f43.ngrok-free.app'; 
+const SERVER_URL = 'https://follow-valid-boys-roland.trycloudflare.com'; 
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
-const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
+const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' }; // I am using cloudflare (but i'm leaving this here)
 function replacePostButtonListener(newHandler) {
     const old = document.getElementById('postSubmit');
     if (!old) return;
