@@ -24,7 +24,7 @@
             transform: translateX(-50%);
             border-radius: 20px;
             display: flex;
-            gap: calc((100% - 50px) / 4);
+            gap: calc((100% - 50px) / 5);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -477,6 +477,10 @@
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
             <span>Profile</span>
         </button>
+                <button>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
+            <span>Profile</span>
+        </button>
     </div>
 <script>
 let current = 0;
@@ -657,42 +661,20 @@ function buildPostElement(username, content, files) {
     return createPostWrapper(username, content, files, timeLabelForNow());
 }
 function addPostToUIFromServer(post) {
-    const username = post.username || 'user_tag';
-    const content = post.text || '';
-    const files = post.files || [];
     const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
-    const wrapper = createPostWrapper(username, content, files, timeLabel);
+    if (post.tempId) {
+        const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
+        if (existing) {
+            const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel);
+            existing.parentNode.replaceChild(newWrapper, existing);
+            lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
+            return;
+        }
+    }
+    const wrapper = createPostWrapper(post.username || 'user_tag', post.text || '', post.files || [], timeLabel);
     postsContainer.prepend(wrapper);
+    lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
 }
-function submitPost() {
-    const content = textarea.value || '';
-    const username = addUsername.textContent || 'user_tag';
-    if (content.trim() === '' && selectedFiles.length === 0) {
-        textarea.focus();
-        textarea.style.borderColor = 'red';
-        setTimeout(() => textarea.style.borderColor = '#ccc', 900);
-        return;
-    }
-    const filesForPost = selectedFiles.map(f => ({ ...f }));
-    const postEl = buildPostElement(username, content, filesForPost);
-    postsContainer.prepend(postEl);
-    textarea.value = '';
-    selectedFiles = [];
-    filePreview.innerHTML = '';
-    fileInput.value = '';
-    closeAdd();
-    showView('home');
-}
-if (postBtn) {
-    postBtn.addEventListener('click', submitPost);
-}
-textarea && textarea.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        submitPost();
-    }
-});
-window.submitPostLocal = submitPost;
-window.addPostToUIFromServer = addPostToUIFromServer;
 const SERVER_URL = 'https://f9ae704d4f43.ngrok-free.app'; 
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
@@ -705,6 +687,7 @@ function replacePostButtonListener(newHandler) {
     window.postBtnNode = clone;
     clone.addEventListener('click', newHandler);
 }
+let lastTimestamp = 0;
 async function loadInitialPostsFromServer() {
     if (!baseUrl) return;
     try {
@@ -714,19 +697,30 @@ async function loadInitialPostsFromServer() {
         if (!res.ok) throw new Error('failed to load posts');
         const list = await res.json();
         list.slice().reverse().forEach(p => {
-            if (typeof window.addPostToUIFromServer === 'function') {
-                window.addPostToUIFromServer(p);
-            }
+            addPostToUIFromServer(p);
         });
+        if (list.length) {
+            lastTimestamp = new Date(list[0].createdAt).getTime();
+        }
+    } catch (err) {}
+}
+async function pollForNewPosts() {
+    try {
+        const res = await fetch(`${baseUrl}/api/posts?since=${lastTimestamp}`, {
+            headers: ngrokHeaders
+        });
+        if (!res.ok) return;
+        const newPosts = await res.json();
+        newPosts.forEach(addPostToUIFromServer);
     } catch (err) {}
 }
 async function submitPostToServerHandler(e) {
     e.preventDefault();
     e.stopPropagation();
-    const content = (window.textarea && window.textarea.value) || (document.getElementById('postTextarea')?.value) || '';
-    const username = (window.addUsername && window.addUsername.textContent) || document.getElementById('addUsername')?.textContent || 'user_tag';
-    const selected = window.selectedFiles || selectedFiles || [];
-    if (content.trim() === '' && (!selected || selected.length === 0)) {
+    const content = document.getElementById('postTextarea')?.value || '';
+    const username = document.getElementById('addUsername')?.textContent || 'user_tag';
+    const selected = selectedFiles || [];
+    if (content.trim() === '' && selected.length === 0) {
         const ta = document.getElementById('postTextarea');
         if (ta) {
             ta.focus();
@@ -735,10 +729,25 @@ async function submitPostToServerHandler(e) {
         }
         return;
     }
+    const tempId = uid();
+    const filesForPost = selected.map(f => ({ ...f }));
+    const optimisticPostEl = buildPostElement(username, content, filesForPost);
+    optimisticPostEl.setAttribute('data-temp-id', tempId);
+    postsContainer.prepend(optimisticPostEl);
+    const ta = document.getElementById('postTextarea');
+    if (ta) ta.value = '';
+    const fp = document.getElementById('filePreview');
+    if (fp) fp.innerHTML = '';
+    const fi = document.getElementById('postFiles');
+    if (fi) fi.value = '';
+    selectedFiles = [];
+    try { document.getElementById('add').classList.remove('active'); } catch(e){}
+    showView('home');
     const fd = new FormData();
     fd.append('username', username);
     fd.append('text', content);
-    (selected || []).forEach((f) => fd.append('files', f.file, f.file.name));
+    fd.append('tempId', tempId);
+    selected.forEach((f) => fd.append('files', f.file, f.file.name));
     try {
         const btn = document.getElementById('postSubmit');
         if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
@@ -749,34 +758,29 @@ async function submitPostToServerHandler(e) {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json?.error || 'upload failed');
-        if (window.textarea) window.textarea.value = '';
-        if (typeof selectedFiles !== 'undefined') {
-            selectedFiles = [];
-            const fp = document.getElementById('filePreview');
-            if (fp) fp.innerHTML = '';
-            const fi = document.getElementById('postFiles');
-            if (fi) fi.value = '';
-        }
-        try { document.getElementById('add').classList.remove('active'); } catch(e){}
     } catch (err) {
-        if (typeof window.submitPostLocal === 'function') window.submitPostLocal();
+        console.error('Post error:', err);
+        const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
+        if (optimisticEl) optimisticEl.remove();
+        alert('Failed to post. Please try again.');
+        if (ta) ta.value = content;
+        selectedFiles = filesForPost;
+        filesForPost.forEach(entry => renderFilePreview(entry));
+        showView('add');
     } finally {
         const btn = document.getElementById('postSubmit');
         if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
-        try { showView('home'); } catch(e){}
     }
 }
 function initSocket() {
     if (!baseUrl) return;
     try {
         const socket = io(baseUrl, { 
-            transports: ['websocket','polling'],
-            extraHeaders: ngrokHeaders
+            transports: ['websocket','polling']
         });
+        socket.on('connect', () => console.log('Socket connected'));
         socket.on('post_created', (post) => {
-            if (typeof window.addPostToUIFromServer === 'function') {
-                window.addPostToUIFromServer(post);
-            }
+            addPostToUIFromServer(post);
         });
     } catch (err) {}
 }
@@ -784,6 +788,19 @@ if (baseUrl) {
     replacePostButtonListener(submitPostToServerHandler);
     loadInitialPostsFromServer();
     initSocket();
+    setInterval(pollForNewPosts, 5000);
+    textarea && textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            submitPostToServerHandler(e);
+        }
+    });
+} else {
+    if (postBtn) postBtn.addEventListener('click', submitPost);
+    textarea && textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            submitPost();
+        }
+    });
 }
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
