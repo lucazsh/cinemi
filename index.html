@@ -12,6 +12,76 @@
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+        :root {
+        --bg-primary: #f9faff;
+        --bg-secondary: #ffffff;
+        --text-primary: #18191e;
+        --text-secondary: rgb(56, 56, 56);
+        --text-subtle: rgba(128, 128, 128, 0.877);
+        --border-light: #ccc;
+        --border-medium: #e1e1e6;
+        --border-dark: #18191e;
+        --border-dark-alpha-1: #18191e52;
+        --border-dark-alpha-2: #18191e31;
+        --card-bg: #fff;
+        --placeholder-bg: #f2f2f6;
+        --remove-btn-bg: #111;
+        --nav-active-bg: rgba(225, 225, 231, 0.507);
+        --progress-bg: rgba(207, 205, 205, 0.582);
+        --button-bg: black;
+        --button-text: white;
+        --icon-fill-primary: #000000;
+        --icon-fill-secondary: #666666;
+        --cancel-text: #18191ec2;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not(.light-mode) {
+                --bg-primary: #0a0a0b;
+                --bg-secondary: #111111;
+                --text-primary: #f0f0f0;
+                --text-secondary: #bbbbbb;
+                --text-subtle: rgba(180, 180, 180, 0.8);
+                --border-light: #444444;
+                --border-medium: #333333;
+                --border-dark: #ffffff;
+                --border-dark-alpha-1: rgba(255, 255, 255, 0.3);
+                --border-dark-alpha-2: rgba(255, 255, 255, 0.2);
+                --card-bg: #1a1a1a;
+                --placeholder-bg: #222222;
+                --remove-btn-bg: #ffffff;
+                --nav-active-bg: rgba(255, 255, 255, 0.12);
+                --progress-bg: #333333;
+                --button-bg: #ffffff;
+                --button-text: #000000;
+                --icon-fill-primary: #ffffff;
+                --icon-fill-secondary: #aaaaaa;
+                --cancel-text: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        :root.light-mode {
+            --bg-primary: #f9faff;
+            --bg-secondary: #ffffff;
+            --text-primary: #18191e;
+            --text-secondary: rgb(56, 56, 56);
+            --text-subtle: rgba(128, 128, 128, 0.877);
+            --border-light: #ccc;
+            --border-medium: #e1e1e6;
+            --border-dark: #18191e;
+            --border-dark-alpha-1: #18191e52;
+            --border-dark-alpha-2: #18191e31;
+            --card-bg: #fff;
+            --placeholder-bg: #f2f2f6;
+            --remove-btn-bg: #111;
+            --nav-active-bg: rgba(225, 225, 231, 0.507);
+            --progress-bg: rgba(207, 205, 205, 0.582);
+            --button-bg: black;
+            --button-text: white;
+            --icon-fill-primary: #000000;
+            --icon-fill-secondary: #666666;
+            --cancel-text: #18191ec2;
+        }
         html::-webkit-scrollbar,
         body::-webkit-scrollbar {
             display: none;            
