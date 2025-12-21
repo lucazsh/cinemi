@@ -578,6 +578,13 @@
             object-fit: cover;
             display: block;
         }
+        .r-replies {
+            height: calc(100% - 55vh); 
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -886,6 +893,12 @@
     function closeReplies() {
         const replies = document.getElementById('replies');
         replies.classList.remove('active');
+        if (replyPollingInterval) {
+            clearInterval(replyPollingInterval);
+            replyPollingInterval = null;
+        }
+        seenReplyIds = new Set();
+        lastReplyTimestamp = 0;
     }
     const postBtn = document.getElementById('postSubmit');
     postBtn.setAttribute('type', 'button');
@@ -1176,6 +1189,9 @@
     const replyTextarea = document.getElementById('replyTextarea');
     const replySubmitBtn = document.getElementById('replySubmit');
     const rRepliesContainer = document.querySelector('.r-replies');
+    let replyPollingInterval = null;
+    let lastReplyTimestamp = 0;
+    let seenReplyIds = new Set();
 
     function renderReplyElement(reply) {
         const el = document.createElement('div');
@@ -1196,6 +1212,7 @@
     async function openReplies(postId) {
         if (!postId) return;
         currentReplyPostId = postId;
+        seenReplyIds = new Set();
         showView('replies');
         setTimeout(() => { replyTextarea?.focus(); }, 120);
         rRepliesContainer.innerHTML = '';
@@ -1205,12 +1222,36 @@
             const list = await res.json();
             if (!list.length) {
                 rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray" id="noReply">No replies yet. Be first!</div>';
-                return;
+            } else {
+                list.forEach(rep => {
+                    rRepliesContainer.appendChild(renderReplyElement(rep));
+                    seenReplyIds.add(rep.id);
+                });
+                lastReplyTimestamp = new Date(list[list.length - 1].createdAt).getTime();
             }
-            list.forEach(rep => rRepliesContainer.appendChild(renderReplyElement(rep)));
         } catch (e) {
             rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray">Failed to load replies</div>';
         }
+        if (replyPollingInterval) clearInterval(replyPollingInterval);
+        replyPollingInterval = setInterval(() => pollForNewReplies(postId), 1000);
+    }
+
+    async function pollForNewReplies(postId) {
+        if (!postId || !document.getElementById('replies').classList.contains('active')) return;
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/replies?since=${lastReplyTimestamp}`, { headers: ngrokHeaders });
+            if (!res.ok) return;
+            const replies = await res.json();
+            const newReplies = replies.filter(rep => !seenReplyIds.has(rep.id));
+            if (newReplies.length) {
+                newReplies.forEach(reply => {
+                    rRepliesContainer.appendChild(renderReplyElement(reply));
+                    seenReplyIds.add(reply.id);
+                });
+                document.getElementById('noReply')?.remove();
+                lastReplyTimestamp = new Date(newReplies[newReplies.length - 1].createdAt).getTime();
+            }
+        } catch (err) {}
     }
 
     document.addEventListener('click', function(e) {
@@ -1244,6 +1285,8 @@
             if (!res.ok) throw new Error(json?.error || 'reply failed');
             document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
             rRepliesContainer.appendChild(renderReplyElement(json.reply));
+            seenReplyIds.add(json.reply.id);
+            lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
         } catch (err) {
             document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
             alert('Failed to send reply. Try again.');
@@ -1257,94 +1300,12 @@
 
     const replySocket = io(baseUrl, { transports: ['websocket','polling'] });
     replySocket.on('reply_created', function(reply) {
-        if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId) {
+        if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId && !seenReplyIds.has(reply.id)) {
             rRepliesContainer.appendChild(renderReplyElement(reply));
+            seenReplyIds.add(reply.id);
+            document.getElementById('noReply')?.remove();
         }
     });
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const replyTextarea = document.getElementById('replyTextarea');
-    const repliesSection = document.getElementById('replies');
-
-    if (!replyTextarea || !repliesSection) return;
-
-    function enableRepliesScroll() {
-        const rReplies = document.querySelector('.r-replies');
-        const tp = document.querySelector('#replies .tp');
-        const iRep = document.querySelector('.i-rep');
-        if (rReplies && tp && iRep) {
-            const tpH = tp.offsetHeight;
-            const iRepH = iRep.offsetHeight;
-            rReplies.style.height = `calc(100% - ${tpH + iRepH}px)`;
-            rReplies.style.overflowY = 'auto';
-            rReplies.style.padding = '10px 20px';
-            rReplies.style.boxSizing = 'border-box';
-            rReplies.style.webkitOverflowScrolling = 'touch';
-        }
-    }
-
-    function showView(id) {
-        if (id === 'replies') {
-            const replies = document.getElementById('replies');
-            replies.classList.add('active');
-            setTimeout(() => {
-                replyTextarea.focus();
-                enableRepliesScroll();
-            }, 120);
-            return;
-        }
-    }
-
-    let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    let originalViewportHeight = window.innerHeight;
-
-    replyTextarea.addEventListener('focus', () => {
-        originalViewportHeight = window.innerHeight;
-    });
-
-    replyTextarea.addEventListener('blur', () => {
-        repliesSection.style.transform = 'translateY(0)';
-        repliesSection.style.transition = '';
-    });
-
-    window.addEventListener('resize', () => {
-        if (document.activeElement === replyTextarea) {
-            const newHeight = window.innerHeight;
-            const kbHeight = originalViewportHeight - newHeight;
-            if (kbHeight > 100) {
-                repliesSection.style.transform = `translateY(-${kbHeight}px)`;
-                repliesSection.style.transition = 'transform 0.3s ease';
-            } else {
-                repliesSection.style.transform = 'translateY(0)';
-            }
-        }
-    });
-
-    if ('virtualKeyboard' in navigator) {
-        const vk = navigator.virtualKeyboard;
-        vk.overlaysContent = true;
-        vk.addEventListener('geometrychange', () => {
-            const kbHeight = vk.boundingRect.height;
-            if (document.activeElement === replyTextarea) {
-                if (kbHeight > 0) {
-                    repliesSection.style.transform = `translateY(-${kbHeight}px)`;
-                    repliesSection.style.transition = 'transform 0.3s ease';
-                } else {
-                    repliesSection.style.transform = 'translateY(0)';
-                }
-            }
-        });
-    }
-
-    if (isIOS) {
-        replyTextarea.addEventListener('focus', () => {
-            setTimeout(() => {
-                replyTextarea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 300);
-        });
-    }
-});
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
