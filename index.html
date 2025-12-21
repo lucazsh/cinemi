@@ -547,6 +547,7 @@
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
+            will-change: top;
             box-sizing: border-box;
         }
         #replies.active {
@@ -554,10 +555,17 @@
             pointer-events: auto;
             opacity: 1;
         }
+        #replies.focused {
+            top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
         .i-rep {
             position: fixed;
             width: 90%;
             display: inline-flex;
+            align-items: center;
             bottom: 40vh;
 
         }
@@ -803,6 +811,7 @@
         </div>
         <div class="i-rep">
             <textarea id="replyTextarea" placeholder="What do you think of this?" rows="1"></textarea>
+            <button class="btn-p" id="replySubmit" style="margin-left: 5%;">Post</button>
         </div>
     </div>
     <div class="navh">
@@ -1023,12 +1032,16 @@
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
             if (existing) {
                 const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel);
+                newWrapper.setAttribute('data-post-id', post.id);
+                newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
                 existing.parentNode.replaceChild(newWrapper, existing);
                 lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
                 return;
             }
         }
         const wrapper = createPostWrapper(post.username, post.text || '', post.files || [], timeLabel);
+        wrapper.setAttribute('data-post-id', post.id);
+        wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
         postsContainer.prepend(wrapper);
         lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
     }
@@ -1166,6 +1179,103 @@
             }
         });
     }
+    let currentReplyPostId = null;
+    const replyTextarea = document.getElementById('replyTextarea');
+    const replySubmitBtn = document.getElementById('replySubmit');
+    const rRepliesContainer = document.querySelector('.r-replies');
+
+    function renderReplyElement(reply) {
+        const el = document.createElement('div');
+        el.className = 'post';
+        el.innerHTML = `
+            <div class="pt" data-reply-id="${reply.id}">
+                <div class="pr-img"><img src="https://i.imgflip.com/1ickup.jpg"></div>
+                <div>
+                    <span class="usr">${escapeHtml(reply.username || '')}</span>
+                    <span class="time">${new Date(reply.createdAt).toLocaleString()}</span>
+                    <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
+                </div>
+            </div>
+        `;
+        return el;
+    }
+
+    async function openReplies(postId) {
+        if (!postId) return;
+        currentReplyPostId = postId;
+        showView('replies');
+        setTimeout(() => { replyTextarea?.focus(); }, 120);
+        rRepliesContainer.innerHTML = '';
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/replies`, { headers: ngrokHeaders });
+            if (!res.ok) throw new Error('fail');
+            const list = await res.json();
+            if (!list.length) {
+                rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray" id="noReply">No replies yet. Be first!</div>';
+                return;
+            }
+            list.forEach(rep => rRepliesContainer.appendChild(renderReplyElement(rep)));
+        } catch (e) {
+            rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray">Failed to load replies</div>';
+        }
+    }
+
+    replyTextarea.addEventListener('focus', () => {
+        document.getElementById('replies')?.classList.add('focused');
+    });
+
+    replyTextarea.addEventListener('blur', () => {
+        document.getElementById('replies')?.classList.remove('focused');
+    });
+
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest && e.target.closest('.reply');
+        if (!btn) return;
+        const pid = btn.getAttribute('data-post-id') || (btn.closest && btn.closest('[data-post-id]') && btn.closest('[data-post-id]').getAttribute('data-post-id'));
+        if (pid) openReplies(pid);
+        else alert('Replies for this post are not available until it is posted to server.');
+    });
+
+    async function submitReplyHandler(e) {
+        e && e.preventDefault();
+        if (!currentReplyPostId) { alert('No post selected'); return; }
+        const text = (replyTextarea?.value || '').trim();
+        const username = (addUsername?.value || 'user_tag').trim() || 'user_tag';
+        if (!text) { replyTextarea?.focus(); replyTextarea.style.borderColor = 'red'; setTimeout(()=> replyTextarea.style.borderColor = '#ccc', 800); return; }
+        const optimisticReply = { id: 'temp-' + uid(), username, text, createdAt: new Date().toISOString() };
+        const optimisticEl = renderReplyElement(optimisticReply);
+        optimisticEl.setAttribute('data-temp-reply', optimisticReply.id);
+        rRepliesContainer.appendChild(optimisticEl);
+        replyTextarea.value = '';
+        document.getElementById('noReply')?.remove();
+        try {
+            replySubmitBtn.disabled = true; replySubmitBtn.textContent = 'Posting...';
+            const res = await fetch(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...ngrokHeaders },
+                body: JSON.stringify({ username, text })
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || 'reply failed');
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            rRepliesContainer.appendChild(renderReplyElement(json.reply));
+        } catch (err) {
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            alert('Failed to send reply. Try again.');
+        } finally {
+            replySubmitBtn.disabled = false; replySubmitBtn.textContent = 'Post';
+        }
+    }
+
+    replySubmitBtn && replySubmitBtn.addEventListener('click', submitReplyHandler);
+    replyTextarea && replyTextarea.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitReplyHandler(e); });
+
+    const replySocket = io(baseUrl, { transports: ['websocket','polling'] });
+    replySocket.on('reply_created', function(reply) {
+        if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId) {
+            rRepliesContainer.appendChild(renderReplyElement(reply));
+        }
+    });
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
