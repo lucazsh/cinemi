@@ -559,8 +559,10 @@
             width: 90%;
             display: inline-flex;
             align-items: center;
-            bottom: 40vh;
-
+            bottom: 40vh; 
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1300;
         }
         .i-rep textarea {
             padding: 12px;
@@ -577,6 +579,13 @@
             height: 100%;
             object-fit: cover;
             display: block;
+        }
+        .r-replies {
+            overflow-y: auto;
+            max-height: calc(100% - 100px);
+            padding: 10px 20px;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
@@ -1261,6 +1270,16 @@
             rRepliesContainer.appendChild(renderReplyElement(reply));
         }
     });
+const repliesSection = document.getElementById('replies');
+
+replyTextarea.addEventListener('focus', () => {
+    repliesSection.style.top = '0';  
+    repliesSection.style.transition = 'top 0.3s ease'; 
+});
+
+replyTextarea.addEventListener('blur', () => {
+    repliesSection.style.top = '35vh'; 
+});
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
