@@ -559,10 +559,8 @@
             width: 90%;
             display: inline-flex;
             align-items: center;
-            bottom: 40vh; 
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1300;
+            bottom: 40vh;
+
         }
         .i-rep textarea {
             padding: 12px;
@@ -579,13 +577,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-        }
-        .r-replies {
-            overflow-y: auto;
-            max-height: calc(100% - 100px);
-            padding: 10px 20px;
-            box-sizing: border-box;
-            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
@@ -1270,15 +1261,89 @@
             rRepliesContainer.appendChild(renderReplyElement(reply));
         }
     });
-const repliesSection = document.getElementById('replies');
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const replyTextarea = document.getElementById('replyTextarea');
+    const repliesSection = document.getElementById('replies');
 
-replyTextarea.addEventListener('focus', () => {
-    repliesSection.style.top = '0';  
-    repliesSection.style.transition = 'top 0.3s ease'; 
-});
+    if (!replyTextarea || !repliesSection) return;
 
-replyTextarea.addEventListener('blur', () => {
-    repliesSection.style.top = '35vh'; 
+    function enableRepliesScroll() {
+        const rReplies = document.querySelector('.r-replies');
+        const tp = document.querySelector('#replies .tp');
+        const iRep = document.querySelector('.i-rep');
+        if (rReplies && tp && iRep) {
+            const tpH = tp.offsetHeight;
+            const iRepH = iRep.offsetHeight;
+            rReplies.style.height = `calc(100% - ${tpH + iRepH}px)`;
+            rReplies.style.overflowY = 'auto';
+            rReplies.style.padding = '10px 20px';
+            rReplies.style.boxSizing = 'border-box';
+            rReplies.style.webkitOverflowScrolling = 'touch';
+        }
+    }
+
+    function showView(id) {
+        if (id === 'replies') {
+            const replies = document.getElementById('replies');
+            replies.classList.add('active');
+            setTimeout(() => {
+                replyTextarea.focus();
+                enableRepliesScroll();
+            }, 120);
+            return;
+        }
+    }
+
+    let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    let originalViewportHeight = window.innerHeight;
+
+    replyTextarea.addEventListener('focus', () => {
+        originalViewportHeight = window.innerHeight;
+    });
+
+    replyTextarea.addEventListener('blur', () => {
+        repliesSection.style.transform = 'translateY(0)';
+        repliesSection.style.transition = '';
+    });
+
+    window.addEventListener('resize', () => {
+        if (document.activeElement === replyTextarea) {
+            const newHeight = window.innerHeight;
+            const kbHeight = originalViewportHeight - newHeight;
+            if (kbHeight > 100) {
+                repliesSection.style.transform = `translateY(-${kbHeight}px)`;
+                repliesSection.style.transition = 'transform 0.3s ease';
+            } else {
+                repliesSection.style.transform = 'translateY(0)';
+            }
+        }
+    });
+
+    if ('virtualKeyboard' in navigator) {
+        const vk = navigator.virtualKeyboard;
+        vk.overlaysContent = true;
+        vk.addEventListener('geometrychange', () => {
+            const kbHeight = vk.boundingRect.height;
+            if (document.activeElement === replyTextarea) {
+                if (kbHeight > 0) {
+                    repliesSection.style.transform = `translateY(-${kbHeight}px)`;
+                    repliesSection.style.transition = 'transform 0.3s ease';
+                } else {
+                    repliesSection.style.transform = 'translateY(0)';
+                }
+            }
+        });
+    }
+
+    if (isIOS) {
+        replyTextarea.addEventListener('focus', () => {
+            setTimeout(() => {
+                replyTextarea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
+        });
+    }
 });
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
