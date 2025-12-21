@@ -547,7 +547,6 @@
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
-            will-change: top;
             box-sizing: border-box;
         }
         #replies.active {
@@ -555,12 +554,6 @@
             pointer-events: auto;
             opacity: 1;
         }
-        #replies.focused {
-            top: 0;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-
         .i-rep {
             position: fixed;
             width: 90%;
@@ -1219,14 +1212,6 @@
             rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray">Failed to load replies</div>';
         }
     }
-
-    replyTextarea.addEventListener('focus', () => {
-        document.getElementById('replies')?.classList.add('focused');
-    });
-
-    replyTextarea.addEventListener('blur', () => {
-        document.getElementById('replies')?.classList.remove('focused');
-    });
 
     document.addEventListener('click', function(e) {
         const btn = e.target.closest && e.target.closest('.reply');
