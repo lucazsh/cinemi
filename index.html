@@ -1036,7 +1036,6 @@
 
     if (img_input) {
         img_input.addEventListener('change', async function(e) {
-            console.log('File selected!');
             const file = e.target.files[0];
             if (!file) return;
 
@@ -1049,7 +1048,6 @@
             reader.onload = async function(event) {
                 const img = new Image();
                 img.onload = async function() {
-                    console.log('Image loaded:', img.width, 'x', img.height);
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const size = Math.min(img.width, img.height);
@@ -1061,10 +1059,10 @@
                     const startY = (img.height - size) / 2;
                     ctx.drawImage(img, startX, startY, size, size, 0, 0, size, size);
                     
-                    // Convert cropped canvas to blob
                     canvas.toBlob(async function(blob) {
                         const formData = new FormData();
                         formData.append('photo', blob, 'profile.jpg');
+                        formData.append('username', (document.getElementById('addUsername')?.value || 'user_tag').trim());
 
                         try {
                             const profileImg = document.getElementById('profileImg');
@@ -1083,13 +1081,9 @@
                             profileImg.src = result.photoUrl;
                             profileImg.style.opacity = '1';
                             
-                            console.log('Profile photo uploaded!');
-                            
                             try {
                                 localStorage.setItem('profilePhotoUrl', result.photoUrl);
-                            } catch(err) {
-                                console.log('Could not save:', err);
-                            }
+                            } catch(err) {}
 
                         } catch (error) {
                             console.error('Upload error:', error);
@@ -1193,10 +1187,11 @@
         const node = document.querySelector(`[data-file-id="${id}"]`);
         if (node) node.remove();
     }
-    function createPostWrapper(username, content, files, timeLabel) {
+    function createPostWrapper(username, content, files, timeLabel, photoUrl) {
         const wrapper = document.createElement('div');
         wrapper.className = 'post';
         const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
+        const imgSrc = photoUrl || 'https://i.imgflip.com/1ickup.jpg';
         let filesHtml = '';
         if (files && files.length) {
             const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
@@ -1229,7 +1224,7 @@
         }
         wrapper.innerHTML = `
             <div class="pt">
-                <div class="pr-img"><img src="https://i.imgflip.com/1ickup.jpg"></div>
+                <div class="pr-img"><img src="${imgSrc}"></div>
                 <div style="display: block;">
                 <span class="usr">${escapeHtml(username)}</span>
                 <span class="time">${timeLabel}</span>
@@ -1244,15 +1239,16 @@
         `;
         return wrapper;
     }
-    function buildPostElement(username, content, files) {
-        return createPostWrapper(username, content, files, timeLabelForNow());
+    function buildPostElement(username, content, files, photoUrl) {
+        return createPostWrapper(username, content, files, timeLabelForNow(), photoUrl);
     }
+
     function addPostToUIFromServer(post) {
         const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
         if (post.tempId) {
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
             if (existing) {
-                const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel);
+                const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel, post.photoUrl);
                 newWrapper.setAttribute('data-post-id', post.id);
                 newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
                 existing.parentNode.replaceChild(newWrapper, existing);
@@ -1260,7 +1256,7 @@
                 return;
             }
         }
-        const wrapper = createPostWrapper(post.username, post.text || '', post.files || [], timeLabel);
+        const wrapper = createPostWrapper(post.username, post.text || '', post.files || [], timeLabel, post.photoUrl);
         wrapper.setAttribute('data-post-id', post.id);
         wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
         postsContainer.prepend(wrapper);
@@ -1324,8 +1320,9 @@
         }
 
         const tempId = uid();
+        const currentPhotoUrl = localStorage.getItem('profilePhotoUrl') || 'https://i.imgflip.com/1ickup.jpg';
         const filesForPost = selected.map(f => ({ ...f }));
-        const optimisticPostEl = buildPostElement(username, content, filesForPost);
+        const optimisticPostEl = buildPostElement(username, content, filesForPost, currentPhotoUrl);
         optimisticPostEl.setAttribute('data-temp-id', tempId);
         postsContainer.prepend(optimisticPostEl);
 
@@ -1370,6 +1367,22 @@
         }
     }
 
+    function renderReplyElement(reply) {
+        const el = document.createElement('div');
+        el.className = 'post';
+        const imgSrc = reply.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        el.innerHTML = `
+            <div class="pt" data-reply-id="${reply.id}">
+                <div class="pr-img"><img src="${imgSrc}"></div>
+                <div>
+                    <span class="usr">${escapeHtml(reply.username || '')}</span>
+                    <span class="time">${new Date(reply.createdAt).toLocaleString()}</span>
+                    <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
+                </div>
+            </div>
+        `;
+        return el;
+    }
     function initSocket() {
         if (!baseUrl) return;
         try {
@@ -1519,6 +1532,13 @@
             rRepliesContainer.appendChild(renderReplyElement(reply));
             seenReplyIds.add(reply.id);
             document.getElementById('noReply')?.remove();
+        }
+    });
+    const profileSocket = io(baseUrl, { transports: ['websocket','polling'] });
+    profileSocket.on('profile_updated', function(data) {
+        if (data.username === (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
+            document.getElementById('profileImg').src = data.photoUrl;
+            localStorage.setItem('profilePhotoUrl', data.photoUrl);
         }
     });
 </script>
