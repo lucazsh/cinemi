@@ -840,11 +840,14 @@
         </div>
         <div class="p-user">
             <div class="p-img-wrap">
-                <img class="p-img" src="https://i.imgflip.com/1ickup.jpg">
+                <label for="img_input" style="cursor: pointer;">
+                    <img class="p-img" id="profileImg" src="https://i.imgflip.com/1ickup.jpg">
+                </label>
                 <span class="p-emoji">🔥</span>
             </div>
             <span class="p-name">user_name</span>
             <span class="p-tag">@user_tag</span>
+            <input type="file" id="img_input" accept="image/*" style="display: none;">
         </div>
     </div>
     <div id="settings" class="view">
@@ -1028,6 +1031,89 @@
         }
         seenReplyIds = new Set();
         lastReplyTimestamp = 0;
+    }
+    const img_input = document.getElementById('img_input');
+
+    if (img_input) {
+        img_input.addEventListener('change', async function(e) {
+            console.log('File selected!');
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const img = new Image();
+                img.onload = async function() {
+                    console.log('Image loaded:', img.width, 'x', img.height);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = Math.min(img.width, img.height);
+
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    const startX = (img.width - size) / 2;
+                    const startY = (img.height - size) / 2;
+                    ctx.drawImage(img, startX, startY, size, size, 0, 0, size, size);
+                    
+                    // Convert cropped canvas to blob
+                    canvas.toBlob(async function(blob) {
+                        const formData = new FormData();
+                        formData.append('photo', blob, 'profile.jpg');
+
+                        try {
+                            const profileImg = document.getElementById('profileImg');
+                            profileImg.style.opacity = '0.5';
+
+                            const response = await fetch(`${baseUrl}/api/profile/photo`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: ngrokHeaders
+                            });
+
+                            if (!response.ok) throw new Error('Upload failed');
+
+                            const result = await response.json();
+                            
+                            profileImg.src = result.photoUrl;
+                            profileImg.style.opacity = '1';
+                            
+                            console.log('Profile photo uploaded!');
+                            
+                            try {
+                                localStorage.setItem('profilePhotoUrl', result.photoUrl);
+                            } catch(err) {
+                                console.log('Could not save:', err);
+                            }
+
+                        } catch (error) {
+                            console.error('Upload error:', error);
+                            alert('Failed to upload. Please try again.');
+                            profileImg.style.opacity = '1';
+                        }
+                    }, 'image/jpeg', 0.9);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            img_input.value = '';
+        });
+                
+        try {
+            const savedPhotoUrl = localStorage.getItem('profilePhotoUrl');
+            if (savedPhotoUrl) {
+                document.getElementById('profileImg').src = savedPhotoUrl;
+                console.log('Loaded saved profile photo');
+            }
+        } catch(err) {
+            console.log('Could not load:', err);
+        }
     }
     const postBtn = document.getElementById('postSubmit');
     postBtn.setAttribute('type', 'button');
