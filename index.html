@@ -611,6 +611,27 @@
         .f-search button {
             display: none;
         }
+        #ai-chat {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+            background-color: #f9faff;
+            z-index: 1200;
+            height: 100%;
+            border-top: 1px solid #18191e52;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+        #ai-chat.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
         .i-chat {
             position: fixed;
             display: flex;
@@ -621,6 +642,7 @@
             right: 0;
             gap: 8px;
             padding: 0px 20px;
+            margin-bottom: 20px;
             bottom: 0;
         }
         .i-chat textarea {
@@ -659,7 +681,7 @@
             color: #000;
             padding: 10px 15px;
             border: 1px solid rgba(128, 128, 128, 0.8);
-            border-radius: 20px;
+            border-radius: 15px;
             word-wrap: break-word;
         }
         .ai-message {
