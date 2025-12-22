@@ -617,7 +617,10 @@
             align-items: center;
             box-sizing: border-box;
             width: 100%;
+            left: 0;
+            right: 0;
             gap: 8px;
+            padding: 0px 20px;
             bottom: 0;
         }
         .i-chat textarea {
@@ -628,7 +631,7 @@
             outline: none;
             overflow: hidden;
             resize: none;
-            width: 76%;
+            flex: 1;
             min-height: 40px;
             box-sizing: border-box;
         }
@@ -636,6 +639,7 @@
             background-color: #18191efe;
             min-height: 40px;
             padding: 4px 7px;
+            flex-shrink: 0;
             border-radius: 10px;
         }
         .a-chat {
