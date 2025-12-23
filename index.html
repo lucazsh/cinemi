@@ -1062,7 +1062,9 @@
                     canvas.toBlob(async function(blob) {
                         const formData = new FormData();
                         formData.append('photo', blob, 'profile.jpg');
-                        formData.append('username', (document.getElementById('addUsername')?.value || 'user_tag').trim());
+                        
+                        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+                        formData.append('username', username);
 
                         try {
                             const profileImg = document.getElementById('profileImg');
@@ -1081,8 +1083,10 @@
                             profileImg.src = result.photoUrl;
                             profileImg.style.opacity = '1';
                             
+                            updateAllProfilePhotos(username, result.photoUrl);
+                            
                             try {
-                                localStorage.setItem('profilePhotoUrl', result.photoUrl);
+                                localStorage.setItem(`profilePhotoUrl_${username}`, result.photoUrl);
                             } catch(err) {}
 
                         } catch (error) {
@@ -1098,12 +1102,13 @@
             
             img_input.value = '';
         });
-                
+
         try {
-            const savedPhotoUrl = localStorage.getItem('profilePhotoUrl');
+            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+            const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
             if (savedPhotoUrl) {
                 document.getElementById('profileImg').src = savedPhotoUrl;
-                console.log('Loaded saved profile photo');
+                console.log('Loaded saved profile photo for', username);
             }
         } catch(err) {
             console.log('Could not load:', err);
@@ -1367,6 +1372,16 @@
         }
     }
 
+    function updateAllProfilePhotos(username, photoUrl) {
+        document.querySelectorAll('.post').forEach(postEl => {
+            const usernameSpan = postEl.querySelector('.usr');
+            if (usernameSpan && usernameSpan.textContent.trim() === username) {
+                const img = postEl.querySelector('.pr-img img');
+                if (img) img.src = photoUrl;
+            }
+        });
+    }
+
     function renderReplyElement(reply) {
         const el = document.createElement('div');
         el.className = 'post';
@@ -1383,6 +1398,7 @@
         `;
         return el;
     }
+
     function initSocket() {
         if (!baseUrl) return;
         try {
@@ -1424,9 +1440,10 @@
     function renderReplyElement(reply) {
         const el = document.createElement('div');
         el.className = 'post';
+        const imgSrc = reply.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
         el.innerHTML = `
             <div class="pt" data-reply-id="${reply.id}">
-                <div class="pr-img"><img src="https://i.imgflip.com/1ickup.jpg"></div>
+                <div class="pr-img"><img src="${imgSrc}"></div>
                 <div>
                     <span class="usr">${escapeHtml(reply.username || '')}</span>
                     <span class="time">${new Date(reply.createdAt).toLocaleString()}</span>
@@ -1494,16 +1511,32 @@
         e && e.preventDefault();
         if (!currentReplyPostId) { alert('No post selected'); return; }
         const text = (replyTextarea?.value || '').trim();
-        const username = (addUsername?.value || 'user_tag').trim() || 'user_tag';
-        if (!text) { replyTextarea?.focus(); replyTextarea.style.borderColor = 'red'; setTimeout(()=> replyTextarea.style.borderColor = '#ccc', 800); return; }
-        const optimisticReply = { id: 'temp-' + uid(), username, text, createdAt: new Date().toISOString() };
+        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
+        
+        if (!text) { 
+            replyTextarea?.focus(); 
+            replyTextarea.style.borderColor = 'red'; 
+            setTimeout(()=> replyTextarea.style.borderColor = '#ccc', 800); 
+            return; 
+        }
+        
+        const optimisticReply = { 
+            id: 'temp-' + uid(), 
+            username, 
+            text, 
+            photoUrl,
+            createdAt: new Date().toISOString() 
+        };
         const optimisticEl = renderReplyElement(optimisticReply);
         optimisticEl.setAttribute('data-temp-reply', optimisticReply.id);
         rRepliesContainer.appendChild(optimisticEl);
         replyTextarea.value = '';
         document.getElementById('noReply')?.remove();
+        
         try {
-            replySubmitBtn.disabled = true; replySubmitBtn.textContent = 'Posting...';
+            replySubmitBtn.disabled = true; 
+            replySubmitBtn.textContent = 'Posting...';
             const res = await fetch(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...ngrokHeaders },
@@ -1519,7 +1552,8 @@
             document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
             alert('Failed to send reply. Try again.');
         } finally {
-            replySubmitBtn.disabled = false; replySubmitBtn.textContent = 'Post';
+            replySubmitBtn.disabled = false; 
+            replySubmitBtn.textContent = 'Post';
         }
     }
 
@@ -1536,9 +1570,16 @@
     });
     const profileSocket = io(baseUrl, { transports: ['websocket','polling'] });
     profileSocket.on('profile_updated', function(data) {
-        if (data.username === (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
-            document.getElementById('profileImg').src = data.photoUrl;
-            localStorage.setItem('profilePhotoUrl', data.photoUrl);
+        const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        
+        updateAllProfilePhotos(data.username, data.photoUrl);
+        
+        if (data.username === currentUsername) {
+            const profileImg = document.getElementById('profileImg');
+            if (profileImg) profileImg.src = data.photoUrl;
+            try {
+                localStorage.setItem(`profilePhotoUrl_${data.username}`, data.photoUrl);
+            } catch(err) {}
         }
     });
 </script>
