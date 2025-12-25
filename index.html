@@ -462,6 +462,99 @@
             border-radius: 15px;
             margin-top: 9px;
         }
+        .f-mov {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border-radius: 15px;
+            max-width: 360px;
+            min-width: 220px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            scroll-behavior: smooth;
+        }
+
+        .f-mov img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .f-mov::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 55%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.65) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fmov-over {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 30%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.900), rgba(0, 0, 0, 0.05));
+            z-index: 2;
+            color: #fff;
+        }
+        .fmov-title,
+        .fmov-desciption,
+        .fmov-buttons {
+            position: absolute;
+            left: 16px;
+            width: calc(100% - 32px);
+            color: #ffffff;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .fmov-title {
+            bottom: 56px;
+            margin-bottom: 22%;
+            z-index: 3;
+            font-weight: 700;
+            left: 17px;
+            font-size: 1.04rem;
+            line-height: 1.1;
+        }
+
+        .fmov-desciption {
+            bottom: 32px;
+            margin-bottom: 7%;
+            z-index: 2;
+            left: 18px;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            opacity: 0.95;
+        }
+
+        .fmov-buttons {
+            bottom: 12px;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .fmov-b {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 7px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
         .st {
             padding: 15px 2.4%;
         }
@@ -639,7 +732,7 @@
             right: 0;
             gap: 8px;
             padding: 0px 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             bottom: 0;
         }
         .i-chat input {
@@ -749,19 +842,43 @@
                 <button class="nt-rounded">Liked</button>
             </span>
             <span>                
-                <button onclick="showView('add')">
+                <button onclick="showView('finder')">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                 </button>
             </span>
         </div>
         <div class="m1-rec">
-            <span style="font-size: 21px; font-weight: 600;">
+            <div style="font-size: 21px; font-weight: 600;">
+                Good evening, user_name
+            </div>
+            <div class="f-mov">
+                <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
+                <div class="fmov-over">
+                <span class="fmov-title">
+                    Five Nights at Freddy's 2
+                </span>
+                <span class="fmov-desciption">
+                    A year after the original nightmare, Abby reconnects with the haunted animatronics, unknowingly unleashing dark secrets and forgotten horrors.
+                </span>
+                <span class="fmov-buttons">
+                    <button class="fmov-b">Play</button>
+                    <button class="fmov-b">Add to List</button>
+                </span>
+            </div>
+        </div>
+            <div style="font-size: 21px; font-weight: 600;">
                 Continue watching
-            </span>
+            </div>
             <div class="mov">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Just swipe
+            </div>
+            <div class="f-swipe">
+                
             </div>
         </div>
     </div>
