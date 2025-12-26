@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="inverted">
 <head>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -12,6 +12,17 @@
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+        /*
+        html.inverted {
+        filter: invert(1) hue-rotate(180deg);
+        }
+
+        html.inverted img,
+        html.inverted video,
+        html.inverted svg {
+        filter: invert(1) hue-rotate(180deg);
+        }
+        */
         :root {
         --bg-primary: #f9faff;
         --bg-secondary: #ffffff;
@@ -930,16 +941,24 @@
             <div style="font-size: 21px; font-weight: 600;">
                 Still nothing?
             </div>
-                <div class="f-nothing">
-                    <span class="fn-square">
-                        <span>Chat with Movi <span style="color: grey;">v1</span></span> 
-                        <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Z"/></svg></button> 
-                    </span> 
-                    <span class="fn-square"> 
-                        <span>Swipe left and right</span> 
-                        <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M218-121q-33 5-58-15t-30-53L81-546q-5-32 15.5-58t52.5-31h11v235q0 66 47 113t113 47h440q-8 21-24.5 35.5T695-187l-477 66Zm102-195q-33 0-56.5-23.5T240-396v-364q0-33 23.5-56.5T320-840h480q33 0 56.5 23.5T880-760v364q0 33-23.5 56.5T800-316H320Zm80-284h320v-80H400v80Zm0 120h200v-80H400v80Z"/></svg></button> 
-                    </span> 
-                </div>
+            <div class="f-nothing">
+                <span class="fn-square">
+                    <span>Chat with Movi <span style="color: grey;">v1</span></span> 
+                    <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Z"/></svg></button> 
+                </span> 
+                <span class="fn-square"> 
+                    <span>Swipe left and right</span> 
+                    <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M218-121q-33 5-58-15t-30-53L81-546q-5-32 15.5-58t52.5-31h11v235q0 66 47 113t113 47h440q-8 21-24.5 35.5T695-187l-477 66Zm102-195q-33 0-56.5-23.5T240-396v-364q0-33 23.5-56.5T320-840h480q33 0 56.5 23.5T880-760v364q0 33-23.5 56.5T800-316H320Zm80-284h320v-80H400v80Zm0 120h200v-80H400v80Z"/></svg></button> 
+                </span> 
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Trending for you
+            </div>
+            <div class="mov" style="margin: 10px 0px;">
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
         </div>
     </div>
     <div id="finder" class="view">
