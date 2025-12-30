@@ -1463,7 +1463,7 @@
         postsContainer.prepend(wrapper);
         lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
     }
-    const SERVER_URL = 'https://dame-families-consecutive-emma.trycloudflare.com  '; 
+    const SERVER_URL = 'https://dame-families-consecutive-emma.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' }; // I am using cloudflare (but i'm leaving this here)
     function replacePostButtonListener(newHandler) {
