@@ -129,7 +129,9 @@
             pointer-events: none;
         }
         button,
-        a {
+        a,
+        div,
+        span {
             outline: none;
             border: none;
             background-color: rgba(255, 255, 255, 0);
@@ -829,6 +831,144 @@
         .fn-b svg {
             display: block;
         }
+        .cards-container {
+            position: relative;
+            width: 100%;
+            max-width: 40%;
+            height: 200px;
+            perspective: 1000px;
+            margin-bottom: 100px;
+        }
+        
+        .movie-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform-origin: center bottom;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 25px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--border-medium);
+        }
+        
+        @media (hover: hover) and (pointer: fine) {
+            .cards-container:hover .card-1 {
+                transform: translateY(-10px) rotate(-2deg);
+            }
+            
+            .cards-container:hover .card-2 {
+                transform: rotate(-6deg) translateY(8px) scale(0.96);
+            }
+            
+            .cards-container:hover .card-3 {
+                transform: rotate(6deg) translateY(16px) scale(0.92);
+            }
+            
+            .card-1:hover {
+                z-index: 10 !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+            
+            .card-1:hover .card-content {
+                transform: translateY(0);
+            }
+        }
+        
+        .card-1 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=925&q=80');
+            z-index: 3;
+        }
+        
+        .card-2 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1489599809516-9827b6d1cf13?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80');
+            z-index: 2;
+            transform: rotate(-4deg) translateY(15px) scale(0.95);
+        }
+        
+        .card-3 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            z-index: 1;
+            transform: rotate(4deg) translateY(30px) scale(0.9);
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            transform: translateY(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-year {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            opacity: 0.9;
+        }
+        
+        .tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            padding: 6px 12px;
+            border: 1px solid #18191e;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(255, 138, 0, 0.3);
+            z-index: 4;
+        }
+      
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .cards-container {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .card-1:active {
+            transform: scale(0.98) !important;
+            transition: transform 0.2s ease;
+        }
     </style>
 </head>
 <body>
@@ -941,15 +1081,45 @@
             <div style="font-size: 21px; font-weight: 600;">
                 Still nothing?
             </div>
-            <div class="f-nothing">
-                <span class="fn-square">
-                    <span>Chat with Movi <span style="color: grey;">v1</span></span> 
-                    <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Z"/></svg></button> 
-                </span> 
-                <span class="fn-square"> 
-                    <span>Swipe left and right</span> 
-                    <button class="fn-b"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M218-121q-33 5-58-15t-30-53L81-546q-5-32 15.5-58t52.5-31h11v235q0 66 47 113t113 47h440q-8 21-24.5 35.5T695-187l-477 66Zm102-195q-33 0-56.5-23.5T240-396v-364q0-33 23.5-56.5T320-840h480q33 0 56.5 23.5T880-760v364q0 33-23.5 56.5T800-316H320Zm80-284h320v-80H400v80Zm0 120h200v-80H400v80Z"/></svg></button> 
-                </span> 
+            <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="cards-container" style="flex: 1; min-width: 280px;">
+                        <div class="movie-card card-1" data-card="1">
+                            <div class="card-counter">
+                                <i class="fas fa-film"></i> Tap to swipe
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Inception</div>
+                                <div class="card-year">2010 • Sci-Fi Thriller</div>
+                                <div class="card-tags">
+                                    <div class="tag">Mind-bending</div>
+                                    <div class="tag">Dreams</div>
+                                    <div class="tag">Heist</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-card card-2" data-card="2">
+                            <div class="card-content">
+                                <div class="card-title">Parasite</div>
+                                <div class="card-year">2019 • Dark Comedy</div>
+                                <div class="card-tags">
+                                    <div class="tag">Social Satire</div>
+                                    <div class="tag">Thriller</div>
+                                    <div class="tag">Oscar Winner</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-card card-3" data-card="3">
+                            <div class="card-content">
+                                <div class="card-title">La La Land</div>
+                                <div class="card-year">2016 • Musical Romance</div>
+                                <div class="card-tags">
+                                    <div class="tag">Musical</div>
+                                    <div class="tag">Romance</div>
+                                    <div class="tag">Hollywood</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
             <div style="font-size: 21px; font-weight: 600;">
                 Trending for you
