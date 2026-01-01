@@ -44,6 +44,13 @@
         --icon-fill-primary: #000000;
         --icon-fill-secondary: #666666;
         --cancel-text: #18191ec2;
+        --bg: #f2f2f7;
+        --card: #ffffff;
+        --muted: #8e8e93;
+        --text: #000000;
+        --radius: 24px;
+        --inner-radius: 14px;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -969,6 +976,112 @@
             transform: scale(0.98) !important;
             transition: transform 0.2s ease;
         }
+
+        .grid {
+            padding-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #18191e31;
+            border-radius: 24px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.33, 1, 0.68, 1);
+            position: relative;
+            outline: none;
+            text-align: left;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+            background: #fbfbfb;
+        }
+
+        .iconbox {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--inner-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f2;
+        }
+
+        .iconbox svg {
+             width: 20px; 
+             height: 20px; 
+        }
+
+        .meta { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1px; 
+        }
+        .title { 
+            font-weight: 700; 
+            font-size: 15px; 
+        }
+        .subtitle { 
+            font-size: 11px; 
+            color: var(--muted); 
+            font-weight: 500; 
+        }
+
+        .card.wide {
+            grid-column: 1 / -1;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 16px;
+            min-height: auto;
+        }
+  
+        .card.wide .iconbox { 
+            margin-right: 4px; 
+        }
+
+        .panel {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+        .panel.open { display: flex; }
+        .backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+        .sheet {
+            width: 100%;
+            background: var(--card);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp { 
+            from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .btn-close {
+            width: 100%;
+            background: #f0f0f2;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
     </style>
 </head>
 <body>
@@ -1215,6 +1328,48 @@
             <span class="p-tag">@user_tag</span>
             <input type="file" id="img_input" accept="image/*" style="display: none;">
         </div>
+        <section class="grid">
+            <button class="card" onclick="openPanel('friends')">
+            <div class="iconbox"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+            <div class="meta">
+                <div class="title">Friends</div>
+                <div class="subtitle">24 online</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('favorites')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Favorites</div>
+                <div class="subtitle">Collection</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('stats')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M101-88q-22 0-37.5-15.5T48-141v-438q0-22 15.5-37.5T101-632h140q22 0 37.5 15.5T294-579v438q0 22-15.5 37.5T241-88H101Zm309 0q-22 0-37.5-15.5T357-141v-678q0-22 15.5-37.5T410-872h140q22 0 37.5 15.5T603-819v678q0 22-15.5 37.5T550-88H410Zm309 0q-22 0-37.5-15.5T666-141v-358q0-22 15.5-37.5T719-552h140q22 0 37.5 15.5T912-499v358q0 22-15.5 37.5T859-88H719Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Stats</div>
+                <div class="subtitle">Activity</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('party')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m71-133 168-472q6-17 20-26t30-9q10 0 19.5 3.5T326-625l304 304q8 8 11.5 17.5T645-284q0 16-9 30t-26 20L138-66q-16 6-30.5 2.5T83-78q-10-11-13.5-25t1.5-30Zm890-559q-11 11-26 11t-26-11l-4-4q-13-13-30-13t-30 13L637-488q-11 11-26 11t-26-11q-11-11-11.5-26.5T584-541l209-209q35-35 83-35t83 35l5 5q11 11 10 26.5T961-692ZM403-821q11-11 26-10.5t26 11.5q32 32 32 77t-32 77q-10 10-24.5 9.5T402-671q-11-11-10.5-25t11.5-24q10-10 10-23t-10-23l-1-1q-11-11-10.5-27t11.5-27Zm173-94q11-11 27-10.5t27 11.5l43 44q35 35 35 83t-35 83L547-578q-11 11-26 11t-26-11q-11-11-11.5-26.5T494-631l127-127q13-13 13-30t-13-30l-45-44q-11-11-11-26.5t11-26.5Zm369 517q-11 11-26 11t-26-11l-58-58q-10-10-24-10t-24 10l-60 59q-11 11-26 10.5T675-398q-11-11-11.5-26.5T674-451l59-59q32-32 77-32t77 32l59 59q11 11 10.5 26.5T945-398Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Party</div>
+                <div class="subtitle">Live</div>
+            </div>
+            </button>
+
+            <button class="card wide" onclick="openPanel('swipe')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M468-603h246q22 0 37.5-15.5T767-656q0-22-15.5-37.5T714-709H467q-22 0-37 15.5T415-656q0 22 15 37.5t38 15.5Zm0 146h124q22 0 37.5-15.5T645-510q0-22-15.5-37.5T592-563H467q-22 0-37 15.5T415-510q0 22 15 37.5t38 15.5ZM219-88q-44 5-78-21t-40-70L52-548q-6-43 20-77t69-39v237q0 88 62 150t150 62h439q-2 23-18.5 42T731-151L219-88Zm109-207q-44 0-75-31t-31-75v-365q0-44 31-75t75-31h526q44 0 75 31t31 75v365q0 44-31 75t-75 31H328Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Swipify</div>
+                <div class="subtitle">Discover movies by swiping</div>
+            </div>
+            </button>
+        </section>
+</div>
     </div>
     <div id="settings" class="view">
         <div class="nt">
