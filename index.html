@@ -32,6 +32,7 @@
         --border-light: #ccc;
         --border-medium: #e1e1e6;
         --border-dark: #18191e;
+        --text-color-with1: #111;
         --border-dark-alpha-1: #18191e52;
         --border-dark-alpha-2: #18191e31;
         --card-bg: #fff;
@@ -51,6 +52,16 @@
         --radius: 24px;
         --inner-radius: 14px;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        --bg-log: #fafafa;
+        --bg-q: #eeeeee;
+        --bg-q-text: #cbcbcb;
+        --bg-q-2: #f5f5f5;
+        --emoji-br: 0.90;
+        --fill-log: rgba(255,255,255,0.8);
+        --border-log: #11111170;
+        --button-log: white;
+        --border-h: #18191e;
+        --navh-pressed: rgba(225, 225, 231, 0.507);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -58,6 +69,7 @@
                 --bg-primary: #0a0a0b;
                 --bg-secondary: #111111;
                 --text-primary: #f0f0f0;
+                --text-color-with1: #eeeeee;
                 --text-secondary: #bbbbbb;
                 --text-subtle: rgba(180, 180, 180, 0.8);
                 --border-light: #444444;
@@ -75,6 +87,16 @@
                 --icon-fill-primary: #ffffff;
                 --icon-fill-secondary: #aaaaaa;
                 --cancel-text: rgba(255, 255, 255, 0.7);
+                --bg-log: #050505;
+                --bg-q: #111;
+                --bg-q-text:#222;
+                --bg-q-2: #0a0a0a;
+                --emoji-br: 0.55;
+                --fill-log: rgba(0,0,0,0.8);
+                --border-log: #999999;
+                --button-log: #18191e;
+                --border-h: #f9faff50;
+                --navh-pressed: rgba(30, 30, 24, 0.493);
             }
         }
 
@@ -99,6 +121,14 @@
             --icon-fill-primary: #000000;
             --icon-fill-secondary: #666666;
             --cancel-text: #18191ec2;
+            --bg-log: #fafafa;
+            --bg-q: #eeeeee;
+            --bg-q-text: #222;
+            --border-log: #11111170;
+            --emoji-br: 0.90;
+            --fill-log: rgba(255,255,255,0.8);
+            --button-log: white;
+            --navh-pressed: rgba(225, 225, 231, 0.507);
         }
         html::-webkit-scrollbar,
         body::-webkit-scrollbar {
@@ -112,11 +142,11 @@
             -ms-overflow-style: none;
         }
         body {
-            background-color: #f9faff;
+            background-color: var(--bg-primary);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
         span {
-            color:#18191e;
+            color:var(--text-primary);
         }
         .navh {
             position: fixed;
@@ -157,7 +187,7 @@
             transition: background 0.4s;
         }
         .navh button.active {
-            background: rgba(225, 225, 231, 0.507);
+            background: var(--navh-pressed);
         }
         .navh button span {
             opacity: 1;
@@ -166,6 +196,9 @@
         .navh button svg {
             width: 24px;
             height: 24px;
+        }
+        svg {
+            fill: var(--text-primary);
         }
         .view {
             position: fixed;
@@ -193,7 +226,7 @@
             align-items: center;
             padding: 20px 3.4%;
             z-index: 2000;
-            background-color: #f9faff;
+            background-color: var(--bg-primary);
             position: sticky;
             overflow: visible;
             top: 0;
@@ -245,7 +278,7 @@
             display: flex;
             flex-direction: column;
             gap: 30px;
-            background: #f9faff;
+            background: var(--bg-primary);
         }
         .progress-bar {
             width: 100%;
@@ -326,10 +359,10 @@
             top: 1.4vh;
             bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
             transform: translateY(100%);
-            background-color: #f9faff;
+            background-color: var(--bg-primary);
             z-index: 1200;
             height: 100%;
-            border-top: 1px solid #18191e52;
+            border-top: 1px solid var(--border-dark-alpha-1);
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             opacity: 0;
@@ -404,7 +437,7 @@
             padding: 10px;
             border-radius: 12px;
             border: 1px solid #ccc;
-            background: #f9faff;
+            background: var(--bg-primary);
             cursor: pointer;
         }
         .fp {
@@ -443,7 +476,7 @@
             position:absolute;
             top:-6px;
             right:-6px;
-            background:#111;
+            background: var(--text-color-with1);
             color:white;
             border-radius:10px;
             width:20px;
@@ -456,8 +489,8 @@
             border:2px solid white;
         }
         .nt-rounded {
-            border: 1px solid #18191e;
-            color:#111;
+            border: 1px solid var(--text-primary);
+            color:var(--text-color-with1);
             border-radius: 20px;
             font-size: 13px;
             margin-left: 8px;
@@ -466,7 +499,7 @@
             transition: background-color 0.2s;
         }
         .nt-rounded:active {
-            background-color: #18191e;
+            background-color: var(--text-primary);
             color: #f2f2f6;
         }
         .m1-rec {
@@ -482,6 +515,7 @@
             max-width: 40%;
             border-radius: 15px;
             margin-top: 9px;
+            border: 1px solid var(--border-h);
         }
         .f-mov {
             position: relative;
@@ -493,6 +527,7 @@
             margin-top: 10px;
             margin-bottom: 5px;
             scroll-behavior: smooth;
+            border: 1px solid var(--border-h);
         }
 
         .f-mov img {
@@ -587,7 +622,7 @@
             color: rgba(128, 128, 128, 0.877);
         }
         .wrap {
-            border: 1px solid #18191e31;
+            border: 1px solid var(--border-dark-alpha-2);
             border-radius: 20px;
             margin-top: 9px;
             margin-bottom: 14px;
@@ -609,7 +644,7 @@
             margin-top: 12px;
         }
         .wrap .sp-wrap:not(:last-of-type) {
-            border-bottom: 1px solid #18191e31;
+            border-bottom: 1px solid var(--border-dark-alpha-2);
             padding-bottom: 12px;
         }
         .wrap .sp-wrap:last-of-type {
@@ -642,7 +677,7 @@
             right: 0;
             background-color: white;
             padding: 5px 5px;
-            border: 1px solid #18191e;
+            border: 1px solid var(--text-primary);
             border-radius: 13px;
             margin-bottom: 5px;
         }
@@ -653,10 +688,10 @@
             top: 35vh;
             bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
             transform: translateY(100%);
-            background-color: #f9faff;
+            background-color: var(--bg-primary);
             z-index: 1200;
             height: 100%;
-            border-top: 1px solid #18191e52;
+            border-top: 1px solid var(--border-dark-alpha-1);
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             opacity: 0;
@@ -732,7 +767,7 @@
             right: 0;
             top: 0;
             bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
-            background-color: #f9faff;
+            background-color: var(--bg-primary);
             z-index: 1200;
             height: 100%;
             opacity: 0;
@@ -830,7 +865,7 @@
         .fn-b {
             align-self: flex-end;
             border: none;
-            background-color: #111111;
+            background-color: var(--text-color-with1);
             border-radius: 12px;
             padding: 10px;
             cursor: pointer;
@@ -863,7 +898,7 @@
             padding: 25px;
             background-size: cover;
             background-position: center;
-            border: 1px solid var(--border-medium);
+            border: 1px solid var(--border-h);
         }
         
         @media (hover: hover) and (pointer: fine) {
@@ -948,7 +983,7 @@
             background: var(--button-bg);
             color: var(--button-text);
             padding: 6px 12px;
-            border: 1px solid #18191e;
+            border: 1px solid var(--text-primary);
             border-radius: 15px;
             font-size: 0.75rem;
             font-weight: 600;
@@ -986,7 +1021,7 @@
 
         .card {
             background-color: white;
-            border: 1px solid #18191e31;
+            border: 1px solid var(--border-dark-alpha-2);
             color: #18191e;
             border-radius: 24px;
             padding: 14px;
@@ -1083,41 +1118,108 @@
             font-weight: 700;
             margin-top: 16px;
         }
+        .emoji {
+            display: inline-block;
+            margin-right: 12px;
+
+            filter: brightness(var(--emoji-br)) saturate(0.7);
+            opacity: 0.7;
+
+            transition: filter 0.2s ease, opacity 0.2s ease;
+            will-change: filter;
+        }
+        .m1-rec {
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
-    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;">
-        <div style="text-align: center;">
-            <h1 style="font-size: 48px; font-weight: bold; margin-bottom: 10px; color: white;">Cinemi</h1>
-            <p style="color: var(--text-secondary); font-size: 16px;"></p>
+    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px; display: none;">
+        <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
+
+            <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
+                <span class="emoji">🎬</span> ACTION • 
+                <span class="emoji">🎭</span> DRAMA • 
+                <span class="emoji">🚀</span> SCI-FI • 
+                <span class="emoji">👻</span> HORROR • 
+                <span class="emoji">💘</span> ROMANCE • 
+                <span class="emoji">🔪</span> THRILLER • 
+                <span class="emoji">😂</span> COMEDY •
+            </div>
+
+            <div class="ticker-strip" style="background:var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-30%);">
+                <span class="emoji">🌊</span> "I'M THE KING OF THE WORLD" • 
+                <span class="emoji">⭐</span> "MAY THE FORCE BE WITH YOU" •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q);color:#222;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-5%);">
+                <span class="emoji">🎥</span> CINEMI • 
+                <span class="emoji">🎟</span> PREMIERES • 
+                <span class="emoji">🔴</span> RED CARPET • 
+                <span class="emoji">💰</span> BOX OFFICE • 
+                <span class="emoji">✂</span> DIRECTOR'S CUT •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-40%);">
+                <span class="emoji">😈</span> "WHY SO SERIOUS?" • 
+                <span class="emoji">🚪</span> "HERE'S JOHNNY!" • 
+                <span class="emoji">🎭</span> "TO BE OR NOT TO BE" •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q);color:#222;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-15%);">
+                <span class="emoji">🏆</span> OSCARS • 
+                <span class="emoji">🎬</span> CANNES • 
+                <span class="emoji">🔴</span> NETFLIX • 
+                <span class="emoji">📺</span> HBO • 
+                <span class="emoji">🏰</span> DISNEY • 
+                <span class="emoji">🦸</span> MARVEL • 
+                <span class="emoji">⚡</span> DC •
+            </div>
+
+            <div class="ticker-strip" style="background:var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-25%);">
+                <span class="emoji">🚕</span> "YOU TALKIN' TO ME?" • 
+                <span class="emoji">🕴</span> "BOND. JAMES BOND." • 
+                <span class="emoji">🤖</span> "I'LL BE BACK" •
+            </div>
         </div>
-        
-        <button id="google-signin-btn" style="
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        ">
-            <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Sign in with Google
-        </button>
-        
-        <p style="color: var(--text-subtle); font-size: 14px; max-width: 300px; text-align: center;">
-            Sign in to save your preferences, create posts, and connect with other movie lovers. (demo version)
-        </p>
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle, transparent 20%, var(--fill-log) 100%); pointer-events: none; z-index: 5;"></div>
+            <div style="position: relative; z-index: 10; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 40px;">
+                <div style="text-align: center;">
+                    <h1 style="font-size: 56px; font-weight: bold; margin-bottom: 5px; color: var(--text-primary); letter-spacing: -2px;">Cinemi</h1>
+                </div>
+            <button id="google-signin-btn" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--button-log);
+                color: var(--text-primary);
+                border: none;
+                padding: 16px 32px;
+                border-radius: 50px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin: 0 auto;
+                border: 1px solid var(--border-log);
+                transition: transform 0.2s;
+            " onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <p style="color: var(--text-subtle); font-size: 14px; max-width: 300px; text-align: center; margin-bottom: 20px;">
+
+                Sign in to save your preferences, create posts, and connect with other movie lovers. (Demo version)
+
+            </p>
+        </div>
     </div>
+
     <div id="setup" class="view">
         <div class="progress-container">
             <div class="progress-bar">
@@ -1519,7 +1621,119 @@
         </button>
     </div>
 <script>
-    const SERVER_URL = 'https://rover-tomorrow-clients-television.trycloudflare.com'; 
+    const container = document.getElementById('login-screen');
+    const tickerContainer = document.getElementById('ticker-container');
+    const strips = document.querySelectorAll('.ticker-strip');
+    let offsetX = 0;
+    let offsetY = 0;
+
+    let velocityX = 0;
+    let velocityY = 0;
+
+    let isInteracting = false;
+    let lastX = null;
+    let lastY = null;
+
+    let time = 0;
+    function getPoint(e) {
+        if (e.touches && e.touches.length) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+    function onMove(e) {
+        const { x, y } = getPoint(e);
+
+        if (!isInteracting) {
+            isInteracting = true;
+            lastX = x;
+            lastY = y;
+            return;
+        }
+
+        const dx = x - lastX;
+        const dy = y - lastY;
+
+        offsetX += dx * 0.35;
+        offsetY += dy * 0.35;
+
+        velocityX = dx;
+        velocityY = dy;
+
+        lastX = x;
+        lastY = y;
+    }
+
+    function onEnd() {
+        isInteracting = false;
+        lastX = null;
+        lastY = null;
+    }
+
+    container.addEventListener('mousemove', onMove);
+    container.addEventListener('touchmove', onMove, { passive: true });
+
+    container.addEventListener('mousedown', () => isInteracting = false);
+    container.addEventListener('mouseup', onEnd);
+    container.addEventListener('mouseleave', onEnd);
+    container.addEventListener('touchend', onEnd);
+
+    function animate() {
+        time += 0.01;
+
+        if (!isInteracting) {
+            offsetX += velocityX;
+            offsetY += velocityY;
+
+            velocityX *= 0.92;
+            velocityY *= 0.92;
+
+            if (Math.abs(velocityX) < 0.01) velocityX = 0;
+            if (Math.abs(velocityY) < 0.01) velocityY = 0;
+        }
+
+        tickerContainer.style.transform = `
+            rotate(-35deg)
+            translate(${offsetX * 0.2}px, ${offsetY * 0.2}px)
+        `;
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+
+            const bigint = parseInt(hex, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+
+            return `${r},${g},${b}`;
+        }
+
+        strips.forEach((strip, index) => {
+            const speed = (index + 1) * 0.4;
+            const direction = index % 2 === 0 ? 1 : -1;
+
+            const wave = Math.sin(time + index) * 20;
+
+            strip.style.transform = `
+                translateX(${direction * 15}%)
+                translateX(${offsetX * speed}px)
+                translateX(${wave}px)
+            `;
+            const baseColor = getComputedStyle(document.documentElement)
+                                .getPropertyValue('--bg-q-text').trim();
+
+            const opacity = 1 + Math.min(Math.abs(offsetX) / 100, 0.2);
+            strip.style.color = `rgba(${hexToRgb(baseColor)}, ${opacity})`;
+        });
+
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    const SERVER_URL = 'https://sports-amsterdam-stop-solomon.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
