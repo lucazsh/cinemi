@@ -62,6 +62,10 @@
         --button-log: white;
         --border-h: #18191e;
         --navh-pressed: rgba(225, 225, 231, 0.507);
+        --svg-settings: #666666;
+        --ichat-c: white;
+        --iconbox-bg: #f0f0f2;
+        --card-active: white;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -97,6 +101,10 @@
                 --button-log: #18191e;
                 --border-h: #f9faff50;
                 --navh-pressed: rgba(30, 30, 24, 0.493);
+                --svg-settings: #787878;
+                --ichat-c: #303030;
+                --iconbox-bg: rgb(39, 39, 39);
+                --card-active: #373737;
             }
         }
 
@@ -231,6 +239,9 @@
             overflow: visible;
             top: 0;
         }
+        .nt svg {
+            fill: #ffffff;
+        }
         .logo {
             font-size: 26px;
             font-weight: bold;
@@ -265,6 +276,7 @@
         }
         .cnt {
             padding-top: 2px;
+            color: var(--text-primary);
         }
         .re {
             padding-top: 2px;
@@ -627,7 +639,7 @@
             margin-top: 9px;
             margin-bottom: 14px;
             padding: 15px 15px;
-            background-color: #ffffff;
+            background-color: var(--bg-secondary);
         }
         .sp-wrap {
             display: flex;
@@ -639,6 +651,7 @@
         }
         .sp-wrap svg {
             margin-right: 20px;
+            fill: var(--svg-settings);
         }
         #not-t {
             margin-top: 12px;
@@ -796,9 +809,10 @@
             padding: 12px;
             font-size: 16px;
             border-radius: 12px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--bg-primary);
             outline: none;
             overflow: hidden;
+            background-color: var(--ichat-c);
             resize: none;
             flex: 1;
             min-height: 40px;
@@ -810,6 +824,9 @@
             padding: 4px 7px;
             flex-shrink: 0;
             border-radius: 10px;
+        }
+        .i-chat svg {
+            fill: white;
         }
         .a-chat {
             display: flex;
@@ -823,9 +840,9 @@
         }
         .user-message {
             align-self: flex-end;
-            background-color: #ffffff;
+            background-color: var(--ichat-c);
             max-width: calc(100% - 70px);
-            color: #000;
+            color: var(--text-secondary);
             padding: 10px 15px;
             border: 1px solid rgba(128, 128, 128, 0.8);
             border-radius: 15px;
@@ -833,7 +850,7 @@
         }
         .ai-message {
             align-self: flex-start;
-            color: #000;
+            color: var(--text-secondary);
             padding: 10px 8px;
             max-width: 70%;
             word-wrap: break-word;
@@ -1020,9 +1037,9 @@
         }
 
         .card {
-            background-color: white;
+            background-color: var(--bg-secondary);
             border: 1px solid var(--border-dark-alpha-2);
-            color: #18191e;
+            color: var(--text-primary);
             border-radius: 24px;
             padding: 14px;
             display: flex;
@@ -1038,7 +1055,7 @@
 
         .card:active {
             transform: scale(0.95);
-            background: #fbfbfb;
+            background: var(--card-active);
         }
 
         .iconbox {
@@ -1048,12 +1065,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f0f0f2;
+            background: var(--iconbox-bg);
         }
 
         .iconbox svg {
              width: 20px; 
-             height: 20px; 
+             height: 20px;
+             fill: var(--text-primary); 
         }
 
         .meta { 
@@ -1131,10 +1149,134 @@
         .m1-rec {
             color: var(--text-primary);
         }
+        #home .nt svg {
+            fill: var(--text-primary) !important;
+        }
+
+        #search-results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 10px;
+            color: var(--text-primary);
+        }
+
+        .search-result-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .search-result-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .search-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+        }
+
+        .search-info {
+            padding: 12px;
+            color: var(--text-primary);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            border-radius: 20px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .modal-header-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+
+            background-color: #18191e;
+            border: none;
+
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 10;
+        }
+
+        .modal-close-btn svg {
+            fill: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 16px;
+        }
+
+        .modal-overview {
+            line-height: 1.6;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .provider-badge {
+            display: inline-block;
+            background: var(--iconbox-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin: 4px 4px 0 0;
+        }
     </style>
 </head>
 <body>
-    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px; display: none;">
         <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
             <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
@@ -1278,8 +1420,8 @@
                 <button class="nt-rounded">Liked</button>
             </span>
             <span>                
-                <button onclick="showView('finder')">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                <button onclick="showView('finder')" style="fill: var(--text-primary)">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                 </button>
             </span>
         </div>
@@ -1392,13 +1534,14 @@
             <textarea rows="1" id="fs-textarea" placeholder="Search movies, films, or @users..."></textarea>
             <button style="font-size: 15px; font-weight: 500; color: rgb(50, 50, 50);">Cancel</button>
         </div>
+        <div id="search-results" style="padding: 20px 3.4%;"></div>
     </div>
     <div id="pos-t" class="view">
         <div class="nt">
             <span class="logo">
                 Posts
             </span>
-            <button onclick="showView('add')">
+            <button onclick="showView('add')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
             </button>
         </div>
@@ -1620,7 +1763,140 @@
             <span>Profile</span>
         </button>
     </div>
-<script>
+    <script>
+    const SERVER_URL = 'https://sports-amsterdam-stop-solomon.trycloudflare.com'; 
+    const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
+    const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
+    const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
+    const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
+
+    let searchTimer;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function initMovieSearch() {
+        const input = document.getElementById('fs-textarea');
+        const results = document.getElementById('search-results');
+        
+        if (!input || !results) return;
+
+        input.addEventListener('input', (e) => {
+            clearTimeout(searchTimer);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                results.innerHTML = '';
+                return;
+            }
+            
+            results.innerHTML = '<div style="color:var(--text-primary); padding:20px;">Searching...</div>';
+            searchTimer = setTimeout(() => fetchMovies(query, results), 500);
+        });
+    }
+
+    async function fetchMovies(query, container) {
+        try {
+            const response = await fetch(`${baseUrl}/api/tmdb/search/movie?query=${encodeURIComponent(query)}`, {
+                headers: ngrokHeaders
+            });
+            const data = await response.json();
+            const validMovies = data.results.filter(movie => movie.poster_path && movie.overview && movie.overview.length > 5);
+            
+            renderResults(validMovies, container);
+        } catch (error) {
+            container.innerHTML = '<div style="padding:20px;">Error loading movies.</div>';
+        }
+    }
+
+    function renderResults(movies, container) {
+        if (!movies || movies.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-primary); padding:20px;">No complete results found.</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+
+        movies.slice(0, 10).forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'search-result-card';
+            
+            const poster = `${IMG_W500}${movie.poster_path}`;
+            
+            card.innerHTML = `
+                <img src="${poster}" class="search-poster" alt="${escapeHtml(movie.title)}">
+                <div class="search-info">
+                    <div class="search-card-title">${escapeHtml(movie.title)}</div>
+                    <div style="font-size:12px; opacity:0.7;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</div>
+                </div>
+            `;
+            
+            card.onclick = () => showDetails(movie);
+            container.appendChild(card);
+        });
+    }
+
+    async function getWatchProviders(id) {
+        try {
+            const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
+                headers: ngrokHeaders
+            });
+            const data = await res.json();
+            return data.results?.US || data.results?.RO || null;
+        } catch { return null; }
+    }
+
+    function showDetails(movie) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        const backdrop = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : `${IMG_W500}${movie.poster_path}`;
+        
+        overlay.innerHTML = `
+            <div class="modal-content">
+                <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
+                <img src="${backdrop}" class="modal-header-img">
+                <div class="modal-body">
+                    <h2 class="modal-title">${escapeHtml(movie.title)}</h2>
+                    <div class="modal-meta">
+                        <span>${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+                        <span style="color:#46d369;">⭐ ${movie.vote_average.toFixed(1)}</span>
+                        <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">HD</span>
+                    </div>
+                    <p class="modal-overview">${escapeHtml(movie.overview)}</p>
+                    <div id="modal-providers-list" style="margin-top:20px;"></div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const close = () => {
+            overlay.remove();
+            document.body.style.overflow = 'auto';
+        };
+
+        overlay.querySelector('.modal-close-btn').onclick = close;
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+        getWatchProviders(movie.id).then(providers => {
+            const pList = document.getElementById('modal-providers-list');
+            if (providers && pList) {
+                const all = [...(providers.flatrate || []), ...(providers.buy || [])];
+                if (all.length > 0) {
+                    pList.innerHTML = '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Available on:</div>' +
+                        [...new Map(all.map(item => [item.provider_id, item])).values()]
+                        .slice(0, 5)
+                        .map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initMovieSearch);
+    
     const container = document.getElementById('login-screen');
     const tickerContainer = document.getElementById('ticker-container');
     const strips = document.querySelectorAll('.ticker-strip');
@@ -1732,10 +2008,6 @@
         requestAnimationFrame(animate);
     }
     animate();
-
-    const SERVER_URL = 'https://sports-amsterdam-stop-solomon.trycloudflare.com'; 
-    const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
-    const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
     let sessionToken = localStorage.getItem('sessionToken');
 
