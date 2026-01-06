@@ -1370,7 +1370,7 @@
             id="username-input" 
             type="text" 
             placeholder="Enter username..." 
-            style="width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); outline: none; margin-bottom: 10px;"
+            style="width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); outline: none; margin-bottom: 10px; box-sizing: border-box;"
         />
         <div id="username-error" style="color: #ff4444; font-size: 14px; min-height: 20px; margin-bottom: 20px;"></div>
         
@@ -2505,8 +2505,8 @@
             <div class="pt">
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div style="display: block;">
-                <span class="usr">${escapeHtml(displayName || username)}</span>
-                <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(username)} · ${timeLabel}</span>
+                <span class="usr">${escapeHtml(username)}</span>
+                <span class="time" style="color: var(--text-subtle); font-size: 13px;">${timeLabel}</span>
                 <div class="cnt">${safeContent}</div>
                 ${filesHtml}
                 <div class="re">
@@ -2657,8 +2657,8 @@
             <div class="pt" data-reply-id="${reply.id}">
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div>
-                    <span class="usr">${escapeHtml(reply.displayName || reply.username || '')}</span>
-                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(reply.username || '')} · ${new Date(reply.createdAt).toLocaleString()}</span>
+                    <span class="usr">${escapeHtml(reply.username)}</span>
+                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">${new Date(reply.createdAt).toLocaleString()}</span>
                     <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
                 </div>
             </div>
