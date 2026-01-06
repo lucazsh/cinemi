@@ -1,472 +1,2833 @@
-require('dotenv').config();
-const axios = require('axios');
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const cors = require('cors');
-const session = require('express-session');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const FRONTEND_ORIGIN = process.env.FRONTEND_URL || 'https://lucazsh.github.io';
-const TMDB_API_KEY = process.env.TMDB_API_KEY || '834a24b1cb360c280a61363b70c3d603';
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const UPLOAD_DIR = path.join(__dirname, 'uploads');
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+<!DOCTYPE html>
+<html class="inverted">
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+        html {
+            touch-action: manipulation;
+            user-select: none;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        /*
+        html.inverted {
+        filter: invert(1) hue-rotate(180deg);
+        }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const safe = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + path.extname(file.originalname);
-    cb(null, safe);
-  }
-});
+        html.inverted img,
+        html.inverted video,
+        html.inverted svg {
+        filter: invert(1) hue-rotate(180deg);
+        }
+        */
+        :root {
+        --bg-primary: #f9faff;
+        --bg-secondary: #ffffff;
+        --text-primary: #18191e;
+        --text-secondary: rgb(56, 56, 56);
+        --text-subtle: rgba(128, 128, 128, 0.877);
+        --border-light: #ccc;
+        --border-medium: #e1e1e6;
+        --border-dark: #18191e;
+        --text-color-with1: #111;
+        --border-dark-alpha-1: #18191e52;
+        --border-dark-alpha-2: #18191e31;
+        --card-bg: #fff;
+        --placeholder-bg: #f2f2f6;
+        --remove-btn-bg: #111;
+        --nav-active-bg: rgba(225, 225, 231, 0.507);
+        --progress-bg: rgba(207, 205, 205, 0.582);
+        --button-bg: black;
+        --button-text: white;
+        --icon-fill-primary: #000000;
+        --icon-fill-secondary: #666666;
+        --cancel-text: #18191ec2;
+        --bg: #f2f2f7;
+        --card: #ffffff;
+        --muted: #8e8e93;
+        --text: #000000;
+        --radius: 24px;
+        --inner-radius: 14px;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        --bg-log: #fafafa;
+        --bg-q: #eeeeee;
+        --bg-q-text: #cbcbcb;
+        --bg-q-2: #f5f5f5;
+        --emoji-br: 0.90;
+        --fill-log: rgba(255,255,255,0.8);
+        --border-log: #11111170;
+        --button-log: white;
+        --border-h: #18191e;
+        --navh-pressed: rgba(225, 225, 231, 0.507);
+        --svg-settings: #666666;
+        --ichat-c: white;
+        --iconbox-bg: #f0f0f2;
+        --card-active: white;
+        }
 
-const upload = multer({ storage });
+        @media (prefers-color-scheme: dark) {
+            :root:not(.light-mode) {
+                --bg-primary: #0a0a0b;
+                --bg-secondary: #111111;
+                --text-primary: #f0f0f0;
+                --text-color-with1: #eeeeee;
+                --text-secondary: #bbbbbb;
+                --text-subtle: rgba(180, 180, 180, 0.8);
+                --border-light: #444444;
+                --border-medium: #333333;
+                --border-dark: #ffffff;
+                --border-dark-alpha-1: rgba(255, 255, 255, 0.3);
+                --border-dark-alpha-2: rgba(255, 255, 255, 0.2);
+                --card-bg: #1a1a1a;
+                --placeholder-bg: #222222;
+                --remove-btn-bg: #ffffff;
+                --nav-active-bg: rgba(255, 255, 255, 0.12);
+                --progress-bg: #333333;
+                --button-bg: #ffffff;
+                --button-text: #000000;
+                --icon-fill-primary: #ffffff;
+                --icon-fill-secondary: #aaaaaa;
+                --cancel-text: rgba(255, 255, 255, 0.7);
+                --bg-log: #050505;
+                --bg-q: #111;
+                --bg-q-text:#222;
+                --bg-q-2: #0a0a0a;
+                --emoji-br: 0.55;
+                --fill-log: rgba(0,0,0,0.8);
+                --border-log: #999999;
+                --button-log: #18191e;
+                --border-h: #f9faff50;
+                --navh-pressed: rgba(30, 30, 24, 0.493);
+                --svg-settings: #787878;
+                --ichat-c: #303030;
+                --iconbox-bg: rgb(39, 39, 39);
+                --card-active: #373737;
+            }
+        }
 
-const app = express();
-app.set('trust proxy', 1);
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { 
-    origin: process.env.FRONTEND_URL || 'https://lucazsh.github.io/cinemi/',
-    methods: ['GET', 'POST'],
-    credentials: true
-  }
-});
+        :root.light-mode {
+            --bg-primary: #f9faff;
+            --bg-secondary: #ffffff;
+            --text-primary: #18191e;
+            --text-secondary: rgb(56, 56, 56);
+            --text-subtle: rgba(128, 128, 128, 0.877);
+            --border-light: #ccc;
+            --border-medium: #e1e1e6;
+            --border-dark: #18191e;
+            --border-dark-alpha-1: #18191e52;
+            --border-dark-alpha-2: #18191e31;
+            --card-bg: #fff;
+            --placeholder-bg: #f2f2f6;
+            --remove-btn-bg: #111;
+            --nav-active-bg: rgba(225, 225, 231, 0.507);
+            --progress-bg: rgba(207, 205, 205, 0.582);
+            --button-bg: black;
+            --button-text: white;
+            --icon-fill-primary: #000000;
+            --icon-fill-secondary: #666666;
+            --cancel-text: #18191ec2;
+            --bg-log: #fafafa;
+            --bg-q: #eeeeee;
+            --bg-q-text: #222;
+            --border-log: #11111170;
+            --emoji-br: 0.90;
+            --fill-log: rgba(255,255,255,0.8);
+            --button-log: white;
+            --navh-pressed: rgba(225, 225, 231, 0.507);
+        }
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;            
+        }
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        body {
+            background-color: var(--bg-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        span {
+            color:var(--text-primary);
+        }
+        .navh {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 20px;
+            display: flex;
+            gap: calc((100% - 50px) / 4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+        .navh.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        button,
+        a,
+        div,
+        span {
+            outline: none;
+            border: none;
+            background-color: rgba(255, 255, 255, 0);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .navh button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            border: none;
+            background: none;
+            padding: 6px 10px;
+            border-radius: 20%;
+            cursor: pointer;
+            transition: background 0.4s;
+        }
+        .navh button.active {
+            background: var(--navh-pressed);
+        }
+        .navh button span {
+            opacity: 1;
+            font-size: 12px;
+        }
+        .navh button svg {
+            width: 24px;
+            height: 24px;
+        }
+        svg {
+            fill: var(--text-primary);
+        }
+        .view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(100% - 85px);
+            margin-bottom: 85px;
+            padding: 0 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.19s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
+        }
+        .view.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+        .nt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 3.4%;
+            z-index: 2000;
+            background-color: var(--bg-primary);
+            position: sticky;
+            overflow: visible;
+            top: 0;
+        }
+        .nt svg {
+            fill: #ffffff;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+        .post {
+            margin-top: 5px;
+            padding: 0px 2.3%;
+        }
+        .usr {
+            font-weight: bold;
+        }
+        .time {
+            color: rgb(56, 56, 56);
+        }
+        .pt {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-sizing: border-box;
+            padding: 10px 0;
+        }
+        .pr-img {
+            margin-top: 3px;
+            flex: 0 0 30px;
+            width: 30px;
+            height: 30px;
+            border-radius: 36%;
+            overflow: hidden;    
+            display: inline-block;
+            background: var(--placeholder-bg);
+            flex-shrink: 0;
+        }
+        .cnt {
+            padding-top: 2px;
+            color: var(--text-primary);
+        }
+        .re {
+            padding-top: 2px;
+            margin-left: -6.5px;
+        }
+        #setup {
+            height: 100vh;
+            display: flex;
+            z-index: 1200;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            background: var(--bg-primary);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: rgba(207, 205, 205, 0.582);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: black;
+            font-size: 12px;
+            text-align: center;
+            line-height: 18px;
+            transition: width 0.4s ease;
+        }
+        .questions {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .question {
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .next {
+            align-self: flex-end;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+        .q-input {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 420px;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 14px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        .q-input:focus {
+            border-color: black;
+        }
+        .q-yn {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .q-yn input {
+            display: none;
+        }
+        .q-yn label {
+            padding: 12px 32px;
+            border-radius: 14px;
+            border: 1px solid black;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .q-yn input:checked + label {
+            background: black;
+            color: white;
+        }
+        #add {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 1.4vh;
+            bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+            transform: translateY(100%);
+            background-color: var(--bg-primary);
+            z-index: 1200;
+            height: 100%;
+            border-top: 1px solid var(--border-dark-alpha-1);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+        #add.active {
+            transform: translateY(0);
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .tp {
+            position: relative;
+            font-size: 18px;
+            display: flex;
+            padding: 15px 10px;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .add-t {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+        .ti-add {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .ti-add .username {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            display: inline-block;
+        }
+        .ti-add textarea {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            resize: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .ti-add .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .ti-add .left-controls {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-p {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+        .btn-g {
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            background: var(--bg-primary);
+            cursor: pointer;
+        }
+        .fp {
+            margin-top: 6px;
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+        .fc {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            padding:6px;
+            border-radius:10px;
+            border:1px solid #e1e1e6;
+            background:#fff;
+            font-size:13px;
+            max-width:160px;
+            box-sizing:border-box;
+            position:relative;
+        }
+        .ft {
+            width:56px;
+            height:56px;
+            border-radius:8px;
+            object-fit:cover;
+            background:#f2f2f6;
+            flex-shrink:0;
+        }
+        .fn {
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+        .fr {
+            position:absolute;
+            top:-6px;
+            right:-6px;
+            background: var(--text-color-with1);
+            color:white;
+            border-radius:10px;
+            width:20px;
+            height:20px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:12px;
+            border:2px solid white;
+        }
+        .nt-rounded {
+            border: 1px solid var(--text-primary);
+            color:var(--text-color-with1);
+            border-radius: 20px;
+            font-size: 13px;
+            margin-left: 8px;
+            font-weight: 600;
+            padding: 5px 11px;
+            transition: background-color 0.2s;
+        }
+        .nt-rounded:active {
+            background-color: var(--text-primary);
+            color: #f2f2f6;
+        }
+        .m1-rec {
+            padding: 15px 2.4%;
+        }
+        .mov {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            scroll-behavior: smooth;
+        }
+        .mov img {
+            max-width: 40%;
+            border-radius: 15px;
+            margin-top: 9px;
+            border: 1px solid var(--border-h);
+        }
+        .f-mov {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border-radius: 15px;
+            max-width: 360px;
+            min-width: 220px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            scroll-behavior: smooth;
+            border: 1px solid var(--border-h);
+        }
 
-// Session setup MUST come FIRST
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
-  resave: false,
-  saveUninitialized: false,
-  proxy: true,
-  cookie: { 
-    secure: false,
-    httpOnly: false, // Allow JavaScript to read the cookie
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'none' // Allow cross-site cookies
-  }
-}));
+        .f-mov img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
 
-// Passport MUST come after session
-app.use(passport.initialize());
-app.use(passport.session());
+        .f-mov::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 55%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.65) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fmov-over {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.900), rgba(0, 0, 0, 0.05));
+            z-index: 2;
+            color: #fff;
+        }
+        .fmov-title,
+        .fmov-desciption,
+        .fmov-buttons {
+            position: absolute;
+            left: 16px;
+            width: calc(100% - 32px);
+            color: #ffffff;
+            text-align: left;
+            box-sizing: border-box;
+        }
 
-// CORS must come after session and passport
-  app.use(cors({
-    origin: FRONTEND_ORIGIN,
-    credentials: true
-  }));
+        .fmov-title {
+            bottom: 56px;
+            margin-bottom: 19%;
+            z-index: 3;
+            font-weight: 700;
+            left: 17px;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
 
+        .fmov-desciption {
+            bottom: 32px;
+            margin-bottom: 9%;
+            color: rgba(255, 255, 255, 0.700);
+            z-index: 2;
+            left: 18px;
+            font-size: 0.9rem;
+            line-height: 1.2;
+            opacity: 0.95;
+        }
 
-app.use(express.json());
-app.use('/uploads', express.static(UPLOAD_DIR));
+        .fmov-buttons {
+            bottom: 12px;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
 
-// Store active sessions with user data
-const activeSessions = new Map();
+        .fmov-b {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 9px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
 
-// Google OAuth Strategy
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${process.env.PUBLIC_URL}/auth/google/callback`
-  },
-  (accessToken, refreshToken, profile, done) => {
-    console.log('✅ Google auth successful for:', profile.displayName);
-    const user = {
-      id: profile.id,
-      displayName: profile.displayName,
-      username: null,
-      email: profile.emails[0].value,
-      photoUrl: profile.photos[0].value
-    };
-    return done(null, user);
-  }
-));
+        .st {
+            padding: 15px 2.4%;
+        }
+        .sub-s {
+            font-size: 14px;
+            font-weight: 600;
+            padding-left: 5px;
+            color: rgba(128, 128, 128, 0.877);
+        }
+        .wrap {
+            border: 1px solid var(--border-dark-alpha-2);
+            border-radius: 20px;
+            margin-top: 9px;
+            margin-bottom: 14px;
+            padding: 15px 15px;
+            background-color: var(--bg-secondary);
+        }
+        .sp-wrap {
+            display: flex;
+            align-items: center;
+            padding: 0 15px 6px;
+            font-weight: 500;
+            margin: 0 -15px;
+            line-height: 1;
+        }
+        .sp-wrap svg {
+            margin-right: 20px;
+            fill: var(--svg-settings);
+        }
+        #not-t {
+            margin-top: 12px;
+        }
+        .wrap .sp-wrap:not(:last-of-type) {
+            border-bottom: 1px solid var(--border-dark-alpha-2);
+            padding-bottom: 12px;
+        }
+        .wrap .sp-wrap:last-of-type {
+            margin-bottom: -6px;
+        }
+        .p-user {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .p-img {
+            max-width: 100px;
+            border-radius: 30%;
+            margin-bottom: 8px;
+        }
+        .p-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .p-tag {
+            color: grey;
+        }
+        .p-img-wrap {
+            position: relative;
+            display: inline-block;
+        }
+        .p-emoji {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: white;
+            padding: 5px 5px;
+            border: 1px solid var(--text-primary);
+            border-radius: 13px;
+            margin-bottom: 5px;
+        }
+        #replies {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 35vh;
+            bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+            transform: translateY(100%);
+            background-color: var(--bg-primary);
+            z-index: 1200;
+            height: 100%;
+            border-top: 1px solid var(--border-dark-alpha-1);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+        #replies.active {
+            transform: translateY(0);
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .i-rep {
+            position: fixed;
+            width: 90%;
+            display: inline-flex;
+            align-items: center;
+            bottom: 40vh;
 
-passport.serializeUser((user, done) => {
-  console.log('📝 Serializing user:', user.username);
-  done(null, user);
-});
+        }
+        .i-rep textarea {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            resize: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .pr-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .r-replies {
+            height: calc(100% - 55vh); 
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
+        }
+        .f-search {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0px 3.4%;
+        }
+        .f-search textarea {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            overflow: hidden;
+            resize: none;
+            width: 100%;
+            min-height: 40px;
+            box-sizing: border-box;
+        }
+        textarea::placeholder {
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .f-search button {
+            display: none;
+        }
+        #ai-chat {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
+            background-color: var(--bg-primary);
+            z-index: 1200;
+            height: 100%;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+        #ai-chat.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .i-chat {
+            position: fixed;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            width: 100%;
+            left: 0;
+            right: 0;
+            gap: 8px;
+            padding: 0px 20px;
+            margin-bottom: 30px;
+            bottom: 0;
+        }
+        .i-chat input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--bg-primary);
+            outline: none;
+            overflow: hidden;
+            background-color: var(--ichat-c);
+            resize: none;
+            flex: 1;
+            min-height: 40px;
+            box-sizing: border-box;
+        }
+        .i-chat button {
+            background-color: #18191efe;
+            min-height: 40px;
+            padding: 4px 7px;
+            flex-shrink: 0;
+            border-radius: 10px;
+        }
+        .i-chat svg {
+            fill: white;
+        }
+        .a-chat {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0px 1.6%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            overflow-y: auto;
+            height: calc(100% - 100px);
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--ichat-c);
+            max-width: calc(100% - 70px);
+            color: var(--text-secondary);
+            padding: 10px 15px;
+            border: 1px solid rgba(128, 128, 128, 0.8);
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+        .ai-message {
+            align-self: flex-start;
+            color: var(--text-secondary);
+            padding: 10px 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .f-nothing {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
 
-passport.deserializeUser((user, done) => {
-  console.log('📖 Deserializing user:', user.username);
-  done(null, user);
-});
+        .fn-square {
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 16px;
+            background-color: #ededed4c;
+            display: flex;
+            border: 1px solid #18191e76;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 14px;
+            box-sizing: border-box;
+        }
 
-// Auth routes
-app.get('/auth/google', (req, res, next) => {
-  // Store the temporary session ID in the state parameter
-  const state = req.sessionID;
-  passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    state: state
-  })(req, res, next);
-});
-
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/auth/failed' }),
-  (req, res) => {
-    console.log('🎉 Login successful! User:', req.user?.displayName);
-    console.log('🔐 Session ID:', req.sessionID);
-    
-    if (req.user) {
-      const existingUser = userTags.get(req.user.id);
-      if (existingUser && existingUser.username) {
-        req.user.username = existingUser.username;
-      }
+        .fn-square > span {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .fn-b {
+            align-self: flex-end;
+            border: none;
+            background-color: var(--text-color-with1);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .fn-b svg {
+            display: block;
+        }
+        .cards-container {
+            position: relative;
+            width: 100%;
+            max-width: 40%;
+            height: 200px;
+            perspective: 1000px;
+            margin-bottom: 100px;
+        }
+        
+        .movie-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform-origin: center bottom;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 25px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--border-h);
+        }
+        
+        @media (hover: hover) and (pointer: fine) {
+            .cards-container:hover .card-1 {
+                transform: translateY(-10px) rotate(-2deg);
+            }
+            
+            .cards-container:hover .card-2 {
+                transform: rotate(-6deg) translateY(8px) scale(0.96);
+            }
+            
+            .cards-container:hover .card-3 {
+                transform: rotate(6deg) translateY(16px) scale(0.92);
+            }
+            
+            .card-1:hover {
+                z-index: 10 !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+            
+            .card-1:hover .card-content {
+                transform: translateY(0);
+            }
+        }
+        
+        .card-1 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=925&q=80');
+            z-index: 3;
+        }
+        
+        .card-2 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1489599809516-9827b6d1cf13?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80');
+            z-index: 2;
+            transform: rotate(-4deg) translateY(15px) scale(0.95);
+        }
+        
+        .card-3 {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            z-index: 1;
+            transform: rotate(4deg) translateY(30px) scale(0.9);
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            transform: translateY(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-year {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            opacity: 0.9;
+        }
+        
+        .tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            padding: 6px 12px;
+            border: 1px solid var(--text-primary);
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(255, 138, 0, 0.3);
+            z-index: 4;
+        }
       
-      if (req.user.photoUrl) {
-        userProfiles.set(req.user.username || req.user.id, req.user.photoUrl);
-      }
-      
-      const sessionToken = req.sessionID;
-      activeSessions.set(sessionToken, {
-        user: req.user,
-        createdAt: Date.now()
-      });
-      
-      console.log('💾 Session token created:', sessionToken);
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .cards-container {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .card-1:active {
+            transform: scale(0.98) !important;
+            transition: transform 0.2s ease;
+        }
+
+        .grid {
+            padding-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-dark-alpha-2);
+            color: var(--text-primary);
+            border-radius: 24px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.33, 1, 0.68, 1);
+            position: relative;
+            outline: none;
+            text-align: left;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+            background: var(--card-active);
+        }
+
+        .iconbox {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--inner-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--iconbox-bg);
+        }
+
+        .iconbox svg {
+             width: 20px; 
+             height: 20px;
+             fill: var(--text-primary); 
+        }
+
+        .meta { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1px; 
+        }
+        .title { 
+            font-weight: 700; 
+            font-size: 15px; 
+        }
+        .subtitle { 
+            font-size: 11px; 
+            color: var(--muted); 
+            font-weight: 500; 
+        }
+
+        .card.wide {
+            grid-column: 1 / -1;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 16px;
+            min-height: auto;
+        }
+  
+        .card.wide .iconbox { 
+            margin-right: 4px; 
+        }
+
+        .panel {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+        .panel.open { display: flex; }
+        .backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+        .sheet {
+            width: 100%;
+            background: var(--card);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp { 
+            from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .btn-close {
+            width: 100%;
+            background: #f0f0f2;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+        .emoji {
+            display: inline-block;
+            margin-right: 12px;
+
+            filter: brightness(var(--emoji-br)) saturate(0.7);
+            opacity: 0.7;
+
+            transition: filter 0.2s ease, opacity 0.2s ease;
+            will-change: filter;
+        }
+        .m1-rec {
+            color: var(--text-primary);
+        }
+        #home .nt svg {
+            fill: var(--text-primary) !important;
+        }
+
+        #search-results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 10px;
+            color: var(--text-primary);
+        }
+
+        .search-result-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .search-result-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .search-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+        }
+
+        .search-info {
+            padding: 12px;
+            color: var(--text-primary);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            border-radius: 20px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .modal-header-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+
+            background-color: #18191e;
+            border: none;
+
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 10;
+        }
+
+        .modal-close-btn svg {
+            fill: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 16px;
+        }
+
+        .modal-overview {
+            line-height: 1.6;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .provider-badge {
+            display: inline-block;
+            background: var(--iconbox-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin: 4px 4px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+        <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
+
+            <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
+                <span class="emoji">🎬</span> ACTION • 
+                <span class="emoji">🎭</span> DRAMA • 
+                <span class="emoji">🚀</span> SCI-FI • 
+                <span class="emoji">👻</span> HORROR • 
+                <span class="emoji">💘</span> ROMANCE • 
+                <span class="emoji">🔪</span> THRILLER • 
+                <span class="emoji">😂</span> COMEDY •
+            </div>
+
+            <div class="ticker-strip" style="background:var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-30%);">
+                <span class="emoji">🌊</span> "I'M THE KING OF THE WORLD" • 
+                <span class="emoji">⭐</span> "MAY THE FORCE BE WITH YOU" •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q);color:#222;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-5%);">
+                <span class="emoji">🎥</span> CINEMI • 
+                <span class="emoji">🎟</span> PREMIERES • 
+                <span class="emoji">🔴</span> RED CARPET • 
+                <span class="emoji">💰</span> BOX OFFICE • 
+                <span class="emoji">✂</span> DIRECTOR'S CUT •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-40%);">
+                <span class="emoji">😈</span> "WHY SO SERIOUS?" • 
+                <span class="emoji">🚪</span> "HERE'S JOHNNY!" • 
+                <span class="emoji">🎭</span> "TO BE OR NOT TO BE" •
+            </div>
+
+            <div class="ticker-strip" style="background: var(--bg-q);color:#222;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-15%);">
+                <span class="emoji">🏆</span> OSCARS • 
+                <span class="emoji">🎬</span> CANNES • 
+                <span class="emoji">🔴</span> NETFLIX • 
+                <span class="emoji">📺</span> HBO • 
+                <span class="emoji">🏰</span> DISNEY • 
+                <span class="emoji">🦸</span> MARVEL • 
+                <span class="emoji">⚡</span> DC •
+            </div>
+
+            <div class="ticker-strip" style="background:var(--bg-q-2);color:#1a1a1a;padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-25%);">
+                <span class="emoji">🚕</span> "YOU TALKIN' TO ME?" • 
+                <span class="emoji">🕴</span> "BOND. JAMES BOND." • 
+                <span class="emoji">🤖</span> "I'LL BE BACK" •
+            </div>
+        </div>
+        <div style="position: absolute; inset: 0; background: radial-gradient(circle, transparent 20%, var(--fill-log) 100%); pointer-events: none; z-index: 5;"></div>
+            <div style="position: relative; z-index: 10; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 40px;">
+                <div style="text-align: center;">
+                    <h1 style="font-size: 56px; font-weight: bold; margin-bottom: 5px; color: var(--text-primary); letter-spacing: -2px;">Cinemi</h1>
+                </div>
+            <button id="google-signin-btn" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--button-log);
+                color: var(--text-primary);
+                border: none;
+                padding: 16px 32px;
+                border-radius: 50px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin: 0 auto;
+                border: 1px solid var(--border-log);
+                transition: transform 0.2s;
+            " onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <p style="color: var(--text-subtle); font-size: 14px; max-width: 300px; text-align: center; margin-bottom: 20px;">
+
+                Sign in to save your preferences, create posts, and connect with other movie lovers. (Demo version)
+
+            </p>
+        </div>
+    </div>
+    <div id="username-setup" style="position: fixed; inset: 0; background: var(--bg-primary); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
+    <div style="max-width: 400px; width: 100%; text-align: center;">
+        <h1 style="font-size: 32px; margin-bottom: 10px; color: var(--text-primary);">Choose your username</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">This will be your unique identifier in Cinemi</p>
+        
+        <input 
+            id="username-input" 
+            type="text" 
+            placeholder="Enter username..." 
+            style="width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); outline: none; margin-bottom: 10px;"
+        />
+        <div id="username-error" style="color: #ff4444; font-size: 14px; min-height: 20px; margin-bottom: 20px;"></div>
+        
+        <button 
+            id="username-submit" 
+            style="width: 100%; padding: 16px; font-size: 18px; font-weight: bold; border-radius: 12px; border: none; background: var(--button-bg); color: var(--button-text); cursor: pointer;"
+        >
+            Continue
+        </button>
+    </div>
+</div>
+    <div id="setup" class="view">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        <div class="questions">
+            <div class="question active">
+                <h1>What motivates you the most?</h1>
+                <input class="q-input" type="text" placeholder="Type your answer..." />
+            </div>
+            <div class="question">
+                <h1>Do you prefer working alone or in a team?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q2a" name="q2">
+                    <label for="q2a">Yes</label>
+                    <input type="radio" id="q2b" name="q2">
+                    <label for="q2b">No</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>Are you more logical or creative?</h1>
+                <input class="q-input" type="text" placeholder="Logical / Creative / Both..." />
+            </div>
+            <div class="question">
+                <h1>Do you like taking risks?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q4a" name="q4">
+                    <label for="q4a">Yes</label>
+                    <input type="radio" id="q4b" name="q4">
+                    <label for="q4b">No</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>Do you plan ahead or improvise?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q5a" name="q5">
+                    <label for="q5a">Yes</label>
+                    <input type="radio" id="q5b" name="q5">
+                    <label for="q5b">No</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>What defines success for you?</h1>
+                <input class="q-input" type="text" placeholder="Your definition..." />
+            </div>
+        </div>
+        <button class="next" onclick="nextQuestion()">Next</button>
+    </div>
+    <div id="home" class="view active">
+        <div class="nt">
+            <span class="logo" style="display:flex; align-items: center;">
+                Home
+                <button class="nt-rounded" style="margin-left: 20px;">All</button>
+                <button class="nt-rounded">Wrapped</button>
+                <button class="nt-rounded">Liked</button>
+            </span>
+            <span>                
+                <button onclick="showView('finder')" style="fill: var(--text-primary)">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                </button>
+            </span>
+        </div>
+        <div class="m1-rec">
+            <div style="font-size: 21px; font-weight: 600;">
+                Good evening, <span class="p-name" style="font-size: 21px; font-weight: 600;"></span>
+            </div>
+            <div class="f-mov">
+                <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
+                <div class="fmov-over">
+                    <span class="fmov-title">
+                        Five Nights at Freddy's 2
+                    </span>
+                    <span class="fmov-desciption">
+                        A year later, Abby awakens haunted animatronics, unleashing long-buried secrets and horrors.
+                    </span>
+                    <span class="fmov-buttons">
+                        <button class="fmov-b" style="color:#18191e; background-color: #fffffff9;">Play</button>
+                        <button class="fmov-b">Add to List</button>
+                    </span>
+                </div>
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Continue watching
+            </div>
+            <div class="mov" style="margin: 10px 0px;">
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Because you watched movie_name
+            </div>
+            <div class="mov" style="margin: 10px 0px;">
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                You're in the mood for
+            </div>
+            <div class="mov" style="margin: 10px 0px;">
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Still nothing?
+            </div>
+            <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="cards-container" style="flex: 1; min-width: 280px;">
+                        <div class="movie-card card-1" data-card="1">
+                            <div class="card-counter">
+                                <i class="fas fa-film"></i> Tap to swipe
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Inception</div>
+                                <div class="card-year">2010 • Sci-Fi Thriller</div>
+                                <div class="card-tags">
+                                    <div class="tag">Mind-bending</div>
+                                    <div class="tag">Dreams</div>
+                                    <div class="tag">Heist</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-card card-2" data-card="2">
+                            <div class="card-content">
+                                <div class="card-title">Parasite</div>
+                                <div class="card-year">2019 • Dark Comedy</div>
+                                <div class="card-tags">
+                                    <div class="tag">Social Satire</div>
+                                    <div class="tag">Thriller</div>
+                                    <div class="tag">Oscar Winner</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-card card-3" data-card="3">
+                            <div class="card-content">
+                                <div class="card-title">La La Land</div>
+                                <div class="card-year">2016 • Musical Romance</div>
+                                <div class="card-tags">
+                                    <div class="tag">Musical</div>
+                                    <div class="tag">Romance</div>
+                                    <div class="tag">Hollywood</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div style="font-size: 21px; font-weight: 600;">
+                Trending for you
+            </div>
+            <div class="mov" style="margin: 10px 0px;">
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
+        </div>
+    </div>
+    <div id="finder" class="view">
+        <div class="nt">
+            <span class="logo">
+                Search
+            </span>
+            <button onclick="showView('ai-chat')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M360-480q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480Zm240 0q33 0 56.5-23.5T680-560q0-33-23.5-56.5T600-640q-33 0-56.5 23.5T520-560q0 33 23.5 56.5T600-480ZM360-120v-160h80v160h-80Zm160 0v-160h80v160h-80Zm-320 0q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120h-80v-160q0-33-23.5-56.5T600-360H360q-33 0-56.5 23.5T280-280v160h-80Z"/></svg>
+            </button>
+        </div>
+        <div class="f-search">
+            <textarea rows="1" id="fs-textarea" placeholder="Search movies, films, or @users..."></textarea>
+            <button style="font-size: 15px; font-weight: 500; color: rgb(50, 50, 50);">Cancel</button>
+        </div>
+        <div id="search-results" style="padding: 20px 3.4%;"></div>
+    </div>
+    <div id="pos-t" class="view">
+        <div class="nt">
+            <span class="logo">
+                Posts
+            </span>
+            <button onclick="showView('add')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
+            </button>
+        </div>
+        <div id="posts">
+            <div class="post">
+                <div class="pt">
+                    <div class="pr-img"><img src="https://i.imgflip.com/1ickup.jpg"></div>
+                    <div style="display: block;">
+                    <span class="usr">user_tag</span>
+                    <span class="time">2h</span>
+                    <div class="cnt">
+                        I like this movie: [SAMPLE], because... and...
+                    </div>
+                    <div class="re">
+                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                        <button class="reply" onclick="showView('replies')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+    </div>
+    <div id="add" class="view">
+        <div class="tp">
+            <button onclick="closeAdd()" style="color: #18191ec2; font-size: 16px; align-items: center;  ">Cancel</button>
+            <span class="add-t" style="color:black;font-weight: bold;">New post</span>
+            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560Zm120 480h200q17 0 28.5-11.5T560-320q0-17-11.5-28.5T520-360H320q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160h320q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160h320q17 0 28.5-11.5T680-640q0-17-11.5-28.5T640-680H320q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Z"/></svg></button>
+        </div>
+        <div class="ti-add">
+            <textarea id="addUsername" class="username" rows="1">user_tag</textarea>
+            <textarea id="postTextarea" placeholder="What's on your mind?" rows="4"></textarea>
+            <input id="postFiles" type="file" accept="image/*,video/*,application/pdf" multiple style="display:none">
+            <div id="filePreview" class="fp" aria-live="polite"></div>
+            <div class="controls">
+                <div class="left-controls">
+                    <button class="btn-g" title="Add photo" onclick="document.getElementById('postFiles').click()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0 0v-560 560Zm80-80h400q12 0 18-11t-2-21L586-459q-6-8-16-8t-16 8L450-320l-74-99q-6-8-16-8t-16 8l-80 107q-8 10-2 21t18 11Z"/></svg></button>
+                    <button class="btn-g" title="Add audio" onclick="document.getElementById('postFiles').click()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z"/></svg></button>
+                </div>
+                <div>
+                    <button id="postSubmit" class="btn-p">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="profile" class="view">
+        <div class="nt">
+            <button>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h80q17 0 28.5 11.5T360-600q0 17-11.5 28.5T320-560h-80v400h480v-400h-80q-17 0-28.5-11.5T600-600q0-17 11.5-28.5T640-640h80q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-240q-17 0-28.5-11.5T440-360v-407l-36 36q-12 12-28 11.5T348-732q-11-12-11.5-28t11.5-28l104-104q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l104 104q11 11 11 27.5T612-732q-12 12-28.5 12T555-732l-35-35v407q0 17-11.5 28.5T480-320Z"/></svg>
+            </button>
+            <button onclick="showView('settings')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M433-80q-27 0-46.5-18T363-142l-9-66q-13-5-24.5-12T307-235l-62 26q-25 11-50 2t-39-32l-47-82q-14-23-8-49t27-43l53-40q-1-7-1-13.5v-27q0-6.5 1-13.5l-53-40q-21-17-27-43t8-49l47-82q14-23 39-32t50 2l62 26q11-8 23-15t24-12l9-66q4-26 23.5-44t46.5-18h94q27 0 46.5 18t23.5 44l9 66q13 5 24.5 12t22.5 15l62-26q25-11 50-2t39 32l47 82q14 23 8 49t-27 43l-53 40q1 7 1 13.5v27q0 6.5-2 13.5l53 40q21 17 27 43t-8 49l-48 82q-14 23-39 32t-50-2l-60-26q-11 8-23 15t-24 12l-9 66q-4 26-23.5 44T527-80h-94Zm49-260q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Z"/></svg>
+            </button>
+        </div>
+        <div class="p-user">
+            <div class="p-img-wrap">
+                <label for="img_input" style="cursor: pointer;">
+                    <img class="p-img" id="profileImg" src="https://i.imgflip.com/1ickup.jpg">
+                </label>
+                <span class="p-emoji">🔥</span>
+            </div>
+            <span class="p-name">user_name</span>
+            <span class="p-tag">@user_tag</span>
+            <input type="file" id="img_input" accept="image/*" style="display: none;">
+        </div>
+        <section class="grid">
+            <button class="card" onclick="openPanel('friends')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Friends</div>
+                <div class="subtitle">24 online</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('favorites')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Favorites</div>
+                <div class="subtitle">Collection</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('stats')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M101-88q-22 0-37.5-15.5T48-141v-438q0-22 15.5-37.5T101-632h140q22 0 37.5 15.5T294-579v438q0 22-15.5 37.5T241-88H101Zm309 0q-22 0-37.5-15.5T357-141v-678q0-22 15.5-37.5T410-872h140q22 0 37.5 15.5T603-819v678q0 22-15.5 37.5T550-88H410Zm309 0q-22 0-37.5-15.5T666-141v-358q0-22 15.5-37.5T719-552h140q22 0 37.5 15.5T912-499v358q0 22-15.5 37.5T859-88H719Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Stats</div>
+                <div class="subtitle">Activity</div>
+            </div>
+            </button>
+
+            <button class="card" onclick="openPanel('party')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m71-133 168-472q6-17 20-26t30-9q10 0 19.5 3.5T326-625l304 304q8 8 11.5 17.5T645-284q0 16-9 30t-26 20L138-66q-16 6-30.5 2.5T83-78q-10-11-13.5-25t1.5-30Zm890-559q-11 11-26 11t-26-11l-4-4q-13-13-30-13t-30 13L637-488q-11 11-26 11t-26-11q-11-11-11.5-26.5T584-541l209-209q35-35 83-35t83 35l5 5q11 11 10 26.5T961-692ZM403-821q11-11 26-10.5t26 11.5q32 32 32 77t-32 77q-10 10-24.5 9.5T402-671q-11-11-10.5-25t11.5-24q10-10 10-23t-10-23l-1-1q-11-11-10.5-27t11.5-27Zm173-94q11-11 27-10.5t27 11.5l43 44q35 35 35 83t-35 83L547-578q-11 11-26 11t-26-11q-11-11-11.5-26.5T494-631l127-127q13-13 13-30t-13-30l-45-44q-11-11-11-26.5t11-26.5Zm369 517q-11 11-26 11t-26-11l-58-58q-10-10-24-10t-24 10l-60 59q-11 11-26 10.5T675-398q-11-11-11.5-26.5T674-451l59-59q32-32 77-32t77 32l59 59q11 11 10.5 26.5T945-398Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Party</div>
+                <div class="subtitle">Live</div>
+            </div>
+            </button>
+
+            <button class="card wide" onclick="openPanel('swipe')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M468-603h246q22 0 37.5-15.5T767-656q0-22-15.5-37.5T714-709H467q-22 0-37 15.5T415-656q0 22 15 37.5t38 15.5Zm0 146h124q22 0 37.5-15.5T645-510q0-22-15.5-37.5T592-563H467q-22 0-37 15.5T415-510q0 22 15 37.5t38 15.5ZM219-88q-44 5-78-21t-40-70L52-548q-6-43 20-77t69-39v237q0 88 62 150t150 62h439q-2 23-18.5 42T731-151L219-88Zm109-207q-44 0-75-31t-31-75v-365q0-44 31-75t75-31h526q44 0 75 31t31 75v365q0 44-31 75t-75 31H328Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Swipify</div>
+                <div class="subtitle">Discover movies by swiping</div>
+            </div>
+            </button>
+        </section>
+</div>
+    </div>
+    <div id="settings" class="view">
+        <div class="nt">
+            <span class="logo">
+                Settings
+            </span>
+            <button>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            </button>
+        </div>
+        <div class="st">
+            <div class="st-pre">
+                <span class="sub-s">PREFERENCES</span>
+                <div class="wrap">
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M440-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v160q0 17-11.5 28.5T840-520q-17 0-28.5-11.5T800-560v-160H160v480h280q17 0 28.5 11.5T480-200q0 17-11.5 28.5T440-160Zm-60-195v-250q0-18 15.5-26.5T426-630l195 125q14 9 14 25t-14 25L426-330q-15 10-30.5 1.5T380-355ZM711-56l-9-44q-12-5-22.5-10.5T658-124l-43 13q-7 2-13-.5t-10-8.5l-24-40q-4-6-2-13t7-12l33-29q-2-14-2-26t2-26l-33-29q-5-5-7-12t2-13l24-40q4-6 10-8.5t13-.5l43 13q11-8 21.5-13.5T702-380l9-44q2-7 6.5-11.5T730-440h48q8 0 12.5 4.5T797-424l9 44q12 5 22.5 11t21.5 15l42-15q7-2 13.5.5T916-360l24 42q4 6 2.5 13t-6.5 12l-34 29q2 12 2 25t-2 25l33 29q5 5 7 12t-2 13l-24 40q-4 6-10 8.5t-13 .5l-43-13q-11 8-21.5 13.5T806-100l-9 44q-2 7-6.5 11.5T778-40h-48q-8 0-12.5-4.5T711-56Zm43-104q33 0 56.5-23.5T834-240q0-33-23.5-56.5T754-320q-33 0-56.5 23.5T674-240q0 33 23.5 56.5T754-160Z"/></svg>Streaming services</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M460-360q64 0 113.5-39.5T637-500q2-6-3-10.5t-11-2.5l-282 79q-8 2-9.5 9.5T335-412q25 24 57 38t68 14ZM294-510l106-30q4-28-14-49t-46-21q-25 0-42.5 17.5T280-550q0 11 4 21t10 19Zm240-70 106-30q5-28-13.5-49T580-680q-25 0-42.5 17.5T520-620q0 11 4 21t10 19ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v407q0 16-6 30.5T817-297L663-143q-11 11-25.5 17t-30.5 6H200Zm400-80 160-160h-80q-33 0-56.5 23.5T600-280v80Z"/></svg>Personality</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M360-400v-160q0-17 11.5-28.5T400-600h160q17 0 28.5 11.5T600-560v160q0 17-11.5 28.5T560-360H400q-17 0-28.5-11.5T360-400Zm0 240v-40h-80q-33 0-56.5-23.5T200-280v-80h-40q-17 0-28.5-11.5T120-400q0-17 11.5-28.5T160-440h40v-80h-40q-17 0-28.5-11.5T120-560q0-17 11.5-28.5T160-600h40v-80q0-33 23.5-56.5T280-760h80v-40q0-17 11.5-28.5T400-840q17 0 28.5 11.5T440-800v40h80v-40q0-17 11.5-28.5T560-840q17 0 28.5 11.5T600-800v40h80q33 0 56.5 23.5T760-680v80h40q17 0 28.5 11.5T840-560q0 17-11.5 28.5T800-520h-40v80h40q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360h-40v80q0 33-23.5 56.5T680-200h-80v40q0 17-11.5 28.5T560-120q-17 0-28.5-11.5T520-160v-40h-80v40q0 17-11.5 28.5T400-120q-17 0-28.5-11.5T360-160Zm320-120v-400H280v400h400Z"/></svg>AI Memory</span>
+                </div>
+            </div>
+            <div class="st-app">
+                <span class="sub-s">APP SETTINGS</span>
+                <div class="wrap">
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80ZM260-440q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120-160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm200 0q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120 160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Z"/></svg>Theme</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/></svg>Notifications</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q83 0 155.5 31.5t127 86q54.5 54.5 86 127T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Zm0-82q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z"/></svg>Language</span>
+                </div>
+            </div>
+            <div class="st-acc">
+                <span class="sub-s">ACCOUNT</span>
+                <div class="wrap">
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-440q58 0 99-41t41-99q0-58-41-99t-99-41q-58 0-99 41t-41 99q0 58 41 99t99 41ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-46q-54-53-125.5-83.5T480-360q-83 0-154.5 30.5T200-246v46Z"/></svg>Profile</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-164q97-30 162-118.5T718-480H480v-315l-240 90v207q0 7 2 18h238v316Zm0 80q-7 0-13-1t-12-3q-135-45-215-166.5T160-516v-189q0-25 14.5-45t37.5-29l240-90q14-5 28-5t28 5l240 90q23 9 37.5 29t14.5 45v189q0 140-80 261.5T505-88q-6 2-12 3t-13 1Z"/></svg>Security</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M160-80q-33 0-56.5-23.5T80-160v-400q0-33 23.5-56.5T160-640h640q33 0 56.5 23.5T880-560v400q0 33-23.5 56.5T800-80H160Zm271-141 184-122q9-6 9-17t-9-17L431-499q-10-7-20.5-1.5T400-483v246q0 12 10.5 17.5T431-221ZM200-680q-17 0-28.5-11.5T160-720q0-17 11.5-28.5T200-760h560q17 0 28.5 11.5T800-720q0 17-11.5 28.5T760-680H200Zm120-120q-17 0-28.5-11.5T280-840q0-17 11.5-28.5T320-880h320q17 0 28.5 11.5T680-840q0 17-11.5 28.5T640-800H320Z"/></svg>Subscription</span>
+                    <span class="sp-wrap" id="not-t" data-action="logout" role="button" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h240q17 0 28.5 11.5T480-800q0 17-11.5 28.5T440-760H200v560h240q17 0 28.5 11.5T480-160q0 17-11.5 28.5T440-120H200Zm487-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h287l-75-75q-11-11-11-27t11-28q11-12 28-12.5t29 11.5l143 143q12 12 12 28t-12 28L669-309q-12 12-28.5 11.5T612-310q-11-12-10.5-28.5T613-366l74-74Z"/></svg>Log out</span>
+                </div>
+            </div>
+            <div class="st-help">
+                <span class="sub-s">NEED HELP?</span>
+                <div class="wrap">
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-120q-65 0-120.5-32T272-240h-72q-17 0-28.5-11.5T160-280q0-17 11.5-28.5T200-320h44q-3-20-3.5-40t-.5-40h-40q-17 0-28.5-11.5T160-440q0-17 11.5-28.5T200-480h40q0-20 .5-40t3.5-40h-44q-17 0-28.5-11.5T160-600q0-17 11.5-28.5T200-640h72q14-23 31.5-43t40.5-35l-37-38q-11-11-11-27.5t12-28.5q11-11 28-11t28 11l58 58q28-9 57-9t57 9l60-59q11-11 27.5-11t28.5 12q11 11 11 28t-11 28l-38 38q23 15 41.5 34.5T688-640h72q17 0 28.5 11.5T800-600q0 17-11.5 28.5T760-560h-44q3 20 3.5 40t.5 40h40q17 0 28.5 11.5T800-440q0 17-11.5 28.5T760-400h-40q0 20-.5 40t-3.5 40h44q17 0 28.5 11.5T800-280q0 17-11.5 28.5T760-240h-72q-32 56-87.5 88T480-120Zm-40-200h80q17 0 28.5-11.5T560-360q0-17-11.5-28.5T520-400h-80q-17 0-28.5 11.5T400-360q0 17 11.5 28.5T440-320Zm0-160h80q17 0 28.5-11.5T560-520q0-17-11.5-28.5T520-560h-80q-17 0-28.5 11.5T400-520q0 17 11.5 28.5T440-480Z"/></svg>Report a bug</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-240q21 0 35.5-14.5T530-290q0-21-14.5-35.5T480-340q-21 0-35.5 14.5T430-290q0 21 14.5 35.5T480-240Zm144-362q0-54-36.5-86T491-720q-45 0-79.5 18.5T357-648q-7 11-.5 24t20.5 19q12 5 25 .5t22-16.5q11-15 27.5-23t35.5-8q28 0 45.5 15t17.5 38q0 18-12 38t-36 40q-26 23-39 43t-17 47q-2 14 8.5 25.5T481-394q14 0 25.5-9.5T521-429q3-16 11-28.5t28-32.5q38-38 51-61t13-51ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>Help center</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M470-200h-10q-142 0-241-99t-99-241q0-142 99-241t241-99q71 0 132.5 26.5t108 73q46.5 46.5 73 108T800-540q0 134-75.5 249T534-111q-10 5-20 5.5t-18-4.5q-8-5-14-13t-7-19l-5-58Zm-11-121q17 0 29-12t12-29q0-17-12-29t-29-12q-17 0-29 12t-12 29q0 17 12 29t29 12Zm-87-304q11 5 22 .5t18-14.5q9-12 21-18.5t27-6.5q24 0 39 13.5t15 34.5q0 13-7.5 26T480-558q-25 22-37 41.5T431-477q0 12 8.5 20.5T460-448q12 0 20-9t12-21q5-17 18-31t24-25q21-21 31.5-42t10.5-42q0-46-31.5-74T460-720q-32 0-59 15.5T357-662q-6 11-1.5 21.5T372-625Z"/></svg>Contact support</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="replies" class="view">
+        <div class="tp">
+            <button onclick="closeReplies()" style="color: #18191ec2; font-size: 16px; align-items: center;">Back</button>
+            <span class="add-t" style="color:black;font-weight: bold;">Replies</span>
+            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m480-240 160-160-56-56-64 64v-168h-80v168l-64-64-56 56 160 160ZM200-640v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z"/></svg></button>
+        </div>
+        <div class="r-replies">
+            <div class="post">
+                <div class="pt">
+                    <div class="pr-img"><img src="https://i.imgflip.com/1ickup.jpg"></div>
+                    <div style="display: block;">
+                    <span class="usr">user_tag</span>
+                    <span class="time">2h</span>
+                    <div class="cnt">
+                        I like this movie: [SAMPLE], because... and...
+                    </div>
+                    <div class="re">
+                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                        <button class="reply" onclick="showView('replies')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+        <div class="i-rep">
+            <textarea id="replyTextarea" placeholder="What do you think of this?" rows="1"></textarea>
+            <button class="btn-p" id="replySubmit" style="margin-left: 5%;">Post</button>
+        </div>
+    </div>
+    <div id="ai-chat" class="view">
+        <div class="nt">
+            <span class="logo">
+                Movi <span style="color:grey; font-size: 20px;">v1</span>
+            </span>
+            <button onclick="showView('finder')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            </button>
+        </div>
+        <div class="a-chat">
+            <div class="user-message">
+                Hello! I am searching for a movie!
+            </div>
+            <div class="ai-message">
+                Hello there! Here's some based on you taste:
+            </div>
+        </div>
+        <div class="i-chat">
+            <input type="text" inputmode="text" enterkeyhint="done" placeholder="Ask anything about movies..." rows="1"></input>
+            <button><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg></button>
+        </div>
+    </div>
+    <div class="navh">
+        <button class="active" onclick="showView('home')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000"><path d="M160-186.67v-380q0-15.83 7.08-30 7.09-14.16 19.59-23.33L440-810q17.45-13.33 39.89-13.33T520-810l253.33 190q12.5 9.17 19.59 23.33 7.08 14.17 7.08 30v380q0 27.5-19.58 47.09Q760.83-120 733.33-120h-140q-14.16 0-23.75-9.58-9.58-9.59-9.58-23.75v-213.34q0-14.16-9.58-23.75-9.59-9.58-23.75-9.58h-93.34q-14.16 0-23.75 9.58-9.58 9.59-9.58 23.75v213.34q0 14.16-9.58 23.75-9.59 9.58-23.75 9.58h-140q-27.5 0-47.09-19.58Q160-159.17 160-186.67Z"/></svg>
+            <span>Home</span>
+        </button>
+        <button onclick="showView('finder')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M360-480q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480Zm240 0q33 0 56.5-23.5T680-560q0-33-23.5-56.5T600-640q-33 0-56.5 23.5T520-560q0 33 23.5 56.5T600-480ZM360-120v-160h80v160h-80Zm160 0v-160h80v160h-80Zm-320 0q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120h-80v-160q0-33-23.5-56.5T600-360H360q-33 0-56.5 23.5T280-280v160h-80Z"/></svg>
+            <span>Finder</span>
+        </button>
+        <button onclick="showView('pos-t')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m560-200 200-200H600q-17 0-28.5 11.5T560-360v160Zm-360 80q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v367q0 16-6 30.5T817-337L623-143q-11 11-25.5 17t-30.5 6H200Zm120-280h120q17 0 28.5-11.5T480-440q0-17-11.5-28.5T440-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Z"/></svg>
+            <span>Posts</span>
+        </button>
+        <button onclick="showView('profile')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
+            <span>Profile</span>
+        </button>
+    </div>
+    <script>
+    const SERVER_URL = 'https://sports-amsterdam-stop-solomon.trycloudflare.com'; 
+    const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
+    const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
+    const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
+    const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
+
+    let searchTimer;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
-    
-    res.redirect(`${FRONTEND_ORIGIN}/cinemi/?sessionToken=${req.sessionID}`);
-  }
-);
 
-app.get('/auth/failed', (req, res) => {
-  res.send('<h1>Login Failed</h1><a href="/">Go back</a>');
-});
+    function initMovieSearch() {
+        const input = document.getElementById('fs-textarea');
+        const results = document.getElementById('search-results');
+        
+        if (!input || !results) return;
 
-app.get('/auth/logout', (req, res) => {
-  const sessionToken = req.headers['x-session-token'];
-  
-  if (sessionToken) {
-    activeSessions.delete(sessionToken);
-    console.log('👋 Session removed:', sessionToken);
-  }
-  
-  req.logout((err) => {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.status(500).json({ ok: false });
-    }
-    req.session.destroy((err) => {
-      if (err) console.error('Session destroy error:', err);
-      res.json({ ok: true });
-    });
-  });
-});
-
-app.get('/auth/user', (req, res) => {
-  console.log('🔍 /auth/user called');
-  
-  // Check for session token in header or query
-  const sessionToken = req.headers['x-session-token'] || req.query.sessionToken;
-  
-  console.log('📦 Session token:', sessionToken);
-  
-  if (sessionToken && activeSessions.has(sessionToken)) {
-    const sessionData = activeSessions.get(sessionToken);
-    console.log('✅ Valid session found for:', sessionData.user.username);
-    return res.json({ ok: true, user: sessionData.user });
-  }
-  
-  // Fallback to regular session
-  if (req.isAuthenticated()) {
-    console.log('✅ User authenticated via cookie:', req.user.username);
-    return res.json({ ok: true, user: req.user });
-  }
-  
-  console.log('❌ No valid session found');
-  res.json({ ok: false, user: null });
-});
-
-// Middleware to check authentication
-function isAuthenticated(req, res, next) {
-  const sessionToken = req.headers['x-session-token'];
-  
-  if (sessionToken && activeSessions.has(sessionToken)) {
-    const sessionData = activeSessions.get(sessionToken);
-    req.user = sessionData.user;
-    console.log('🔒 Auth via token - User:', req.user.username);
-    return next();
-  }
-  
-  if (req.isAuthenticated()) {
-    console.log('🔒 Auth via cookie - User:', req.user.username);
-    return next();
-  }
-  
-  res.status(401).json({ ok: false, error: 'Not authenticated' });
-}
-
-let posts = [];
-let userProfiles = new Map();
-
-let userTags = new Map();
-
-function isUserTagTaken(tag) {
-  return Array.from(userTags.values()).some(user => user.username === tag);
-}
-
-app.post('/auth/set-username', isAuthenticated, (req, res) => {
-  const { username } = req.body;
-  
-  if (!username || username.trim().length < 3) {
-    return res.status(400).json({ ok: false, error: 'Username must be at least 3 characters' });
-  }
-
-  const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-  
-  if (isUserTagTaken(cleanUsername)) {
-    return res.status(409).json({ ok: false, error: 'Username already taken' });
-  }
-
-  const oldUsername = req.user.username;
-  req.user.username = cleanUsername;
-  userTags.set(req.user.id, req.user);
-  
-  posts.forEach(post => {
-    if (post.username === oldUsername) post.username = cleanUsername;
-    if (post.replies) {
-      post.replies.forEach(reply => {
-        if (reply.username === oldUsername) reply.username = cleanUsername;
-      });
-    }
-  });
-
-  res.json({ 
-    ok: true, 
-    username: cleanUsername,
-    displayName: req.user.displayName
-  });
-});
-
-app.get('/api/search/users', (req, res) => {
-  const query = (req.query.q || '').toLowerCase();
-  if (!query) return res.json([]);
-  
-  const results = Array.from(userTags.values())
-    .filter(user => user.username.toLowerCase().includes(query))
-    .slice(0, 10)
-    .map(u => ({
-      username: u.username,
-      photoUrl: u.photoUrl || 'https://i.imgflip.com/1ickup.jpg'
-    }));
-  
-  res.json(results);
-});
-
-function findPostById(id) {
-  return posts.find(p => p.id === id);
-}
-
-app.get('/api/posts', (req, res) => {
-  let filtered = posts.slice().reverse();
-  if (req.query.since) {
-    const since = parseInt(req.query.since);
-    filtered = filtered.filter(p => new Date(p.createdAt).getTime() > since);
-  }
-  res.json(filtered);
-});
-
-app.post('/api/posts', isAuthenticated, upload.array('files', 6), (req, res) => {
-  const username = req.user.username;
-  const displayName = req.user.displayName;
-  const text = (req.body.text || '').toString();
-  const tempId = req.body.tempId;
-  const photoUrl = req.user.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
-
-  const files = (req.files || []).map(f => ({
-    originalName: f.originalname,
-    mime: f.mimetype,
-    url: `${getBaseUrl(req)}/uploads/${f.filename}`
-  }));
-
-  const post = {
-    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
-    username,
-    displayName,
-    text,
-    photoUrl,
-    files,
-    replies: [],
-    createdAt: new Date().toISOString()
-  };
-
-  if (tempId) post.tempId = tempId;
-  posts.push(post);
-  io.emit('post_created', post);
-  res.json({ ok: true, post });
-});
-
-app.post('/api/posts/:postId/replies', isAuthenticated, (req, res) => {
-  const postId = req.params.postId;
-  const post = findPostById(postId);
-  if (!post) return res.status(404).json({ ok: false, error: 'Post not found' });
-
-  const username = req.user.username;
-  const displayName = req.user.displayName;
-  const text = (req.body.text || '').toString();
-  if (!text.trim()) return res.status(400).json({ ok: false, error: 'Empty reply' });
-
-  const photoUrl = req.user.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
-
-  const reply = {
-    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
-    postId,
-    username,
-    displayName,
-    text,
-    photoUrl,
-    createdAt: new Date().toISOString()
-  };
-
-  post.replies = post.replies || [];
-  post.replies.push(reply);
-  io.emit('reply_created', reply);
-  res.json({ ok: true, reply });
-});
-app.get('/api/posts/:postId/replies', (req, res) => {
-  const postId = req.params.postId;
-  const post = findPostById(postId);
-  if (!post) {
-    return res.status(404).json({ ok: false, error: 'Post not found' });
-  }
-
-  let replies = (post.replies || []).slice().sort((a, b) => 
-    new Date(a.createdAt) - new Date(b.createdAt)
-  );
-
-  if (req.query.since) {
-    const since = parseInt(req.query.since);
-    if (!isNaN(since)) {
-      replies = replies.filter(r => new Date(r.createdAt).getTime() > since);
-    }
-  }
-  res.json(replies);
-});
-
-app.post('/api/profile/photo', isAuthenticated, upload.single('photo'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ ok: false, error: 'No file uploaded' });
-    }
-
-    const username = req.user.username;
-    const photoUrl = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
-    userProfiles.set(username, photoUrl);
-
-    req.user.photoUrl = photoUrl;
-    
-    posts.forEach(post => {
-      if (post.username === username) post.photoUrl = photoUrl;
-      if (post.replies) {
-        post.replies.forEach(reply => {
-          if (reply.username === username) reply.photoUrl = photoUrl;
+        input.addEventListener('input', (e) => {
+            clearTimeout(searchTimer);
+            const query = e.target.value.trim();
+            
+            if (query.length < 1) {
+                results.innerHTML = '';
+                return;
+            }
+            
+            if (query.startsWith('@')) {
+                searchTimer = setTimeout(() => fetchUsers(query.slice(1), results), 300);
+                return;
+            }
+            
+            if (query.length < 2) {
+                results.innerHTML = '';
+                return;
+            }
+            
+            results.innerHTML = '<div style="color:var(--text-primary); padding:20px;">Searching...</div>';
+            searchTimer = setTimeout(() => fetchMovies(query, results), 500);
         });
-      }
+    }
+
+    async function fetchUsers(query, container) {
+        try {
+            const response = await fetch(`${baseUrl}/api/search/users?q=${encodeURIComponent(query)}`, {
+                headers: ngrokHeaders
+            });
+            const users = await response.json();
+            
+            if (!users.length) {
+                container.innerHTML = '<div style="color:var(--text-primary); padding:20px;">No users found</div>';
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 12px; cursor: pointer; border: 1px solid var(--border-dark-alpha-2);">
+                    <img src="${user.photoUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-primary);">@${user.username}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            container.innerHTML = '<div style="padding:20px;">Error loading users.</div>';
+        }
+    }
+    async function fetchMovies(query, container) {
+        try {
+            const response = await fetch(`${baseUrl}/api/tmdb/search/movie?query=${encodeURIComponent(query)}`, {
+                headers: ngrokHeaders
+            });
+            const data = await response.json();
+            const validMovies = data.results.filter(movie => movie.poster_path && movie.overview && movie.overview.length > 5);
+            
+            renderResults(validMovies, container);
+        } catch (error) {
+            container.innerHTML = '<div style="padding:20px;">Error loading movies.</div>';
+        }
+    }
+
+    function renderResults(movies, container) {
+        if (!movies || movies.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-primary); padding:20px;">No complete results found.</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+
+        movies.slice(0, 10).forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'search-result-card';
+            
+            const poster = `${IMG_W500}${movie.poster_path}`;
+            
+            card.innerHTML = `
+                <img src="${poster}" class="search-poster" alt="${escapeHtml(movie.title)}">
+                <div class="search-info">
+                    <div class="search-card-title">${escapeHtml(movie.title)}</div>
+                    <div style="font-size:12px; opacity:0.7;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</div>
+                </div>
+            `;
+            
+            card.onclick = () => showDetails(movie);
+            container.appendChild(card);
+        });
+    }
+
+    async function getWatchProviders(id) {
+        try {
+            const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
+                headers: ngrokHeaders
+            });
+            const data = await res.json();
+            return data.results?.US || data.results?.RO || null;
+        } catch { return null; }
+    }
+
+    function showDetails(movie) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        const backdrop = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : `${IMG_W500}${movie.poster_path}`;
+        
+        overlay.innerHTML = `
+            <div class="modal-content">
+                <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
+                <img src="${backdrop}" class="modal-header-img">
+                <div class="modal-body">
+                    <h2 class="modal-title">${escapeHtml(movie.title)}</h2>
+                    <div class="modal-meta">
+                        <span>${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+                        <span style="color:#46d369;">⭐ ${movie.vote_average.toFixed(1)}</span>
+                        <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">HD</span>
+                    </div>
+                    <p class="modal-overview">${escapeHtml(movie.overview)}</p>
+                    <div id="modal-providers-list" style="margin-top:20px;"></div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const close = () => {
+            overlay.remove();
+            document.body.style.overflow = 'auto';
+        };
+
+        overlay.querySelector('.modal-close-btn').onclick = close;
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+        getWatchProviders(movie.id).then(providers => {
+            const pList = document.getElementById('modal-providers-list');
+            if (providers && pList) {
+                const all = [...(providers.flatrate || []), ...(providers.buy || [])];
+                if (all.length > 0) {
+                    pList.innerHTML = '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Available on:</div>' +
+                        [...new Map(all.map(item => [item.provider_id, item])).values()]
+                        .slice(0, 5)
+                        .map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initMovieSearch);
+    
+    const container = document.getElementById('login-screen');
+    const tickerContainer = document.getElementById('ticker-container');
+    const strips = document.querySelectorAll('.ticker-strip');
+    let offsetX = 0;
+    let offsetY = 0;
+
+    let velocityX = 0;
+    let velocityY = 0;
+
+    let isInteracting = false;
+    let lastX = null;
+    let lastY = null;
+
+    let time = 0;
+    function getPoint(e) {
+        if (e.touches && e.touches.length) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+    function onMove(e) {
+        const { x, y } = getPoint(e);
+
+        if (!isInteracting) {
+            isInteracting = true;
+            lastX = x;
+            lastY = y;
+            return;
+        }
+
+        const dx = x - lastX;
+        const dy = y - lastY;
+
+        offsetX += dx * 0.35;
+        offsetY += dy * 0.35;
+
+        velocityX = dx;
+        velocityY = dy;
+
+        lastX = x;
+        lastY = y;
+    }
+
+    function onEnd() {
+        isInteracting = false;
+        lastX = null;
+        lastY = null;
+    }
+
+    container.addEventListener('mousemove', onMove);
+    container.addEventListener('touchmove', onMove, { passive: true });
+
+    container.addEventListener('mousedown', () => isInteracting = false);
+    container.addEventListener('mouseup', onEnd);
+    container.addEventListener('mouseleave', onEnd);
+    container.addEventListener('touchend', onEnd);
+
+    function animate() {
+        time += 0.01;
+
+        if (!isInteracting) {
+            offsetX += velocityX;
+            offsetY += velocityY;
+
+            velocityX *= 0.92;
+            velocityY *= 0.92;
+
+            if (Math.abs(velocityX) < 0.01) velocityX = 0;
+            if (Math.abs(velocityY) < 0.01) velocityY = 0;
+        }
+
+        tickerContainer.style.transform = `
+            rotate(-35deg)
+            translate(${offsetX * 0.2}px, ${offsetY * 0.2}px)
+        `;
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+
+            const bigint = parseInt(hex, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+
+            return `${r},${g},${b}`;
+        }
+
+        strips.forEach((strip, index) => {
+            const speed = (index + 1) * 0.4;
+            const direction = index % 2 === 0 ? 1 : -1;
+
+            const wave = Math.sin(time + index) * 20;
+
+            strip.style.transform = `
+                translateX(${direction * 15}%)
+                translateX(${offsetX * speed}px)
+                translateX(${wave}px)
+            `;
+            const baseColor = getComputedStyle(document.documentElement)
+                                .getPropertyValue('--bg-q-text').trim();
+
+            const opacity = 1 + Math.min(Math.abs(offsetX) / 100, 0.2);
+            strip.style.color = `rgba(${hexToRgb(baseColor)}, ${opacity})`;
+        });
+
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    let sessionToken = localStorage.getItem('sessionToken');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSessionToken = urlParams.get('sessionToken');
+
+    if (urlSessionToken) {
+        console.log('Received session token from Google login');
+        sessionToken = urlSessionToken;
+        localStorage.setItem('sessionToken', sessionToken);
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    async function fetchWithAuth(url, options = {}) {
+        if (!options.headers) options.headers = {};
+        
+        if (sessionToken) {
+            options.headers['X-Session-Token'] = sessionToken;
+        }
+        
+        Object.assign(options.headers, ngrokHeaders);
+        options.credentials = 'include';
+        
+        return fetch(url, options);
+    }
+
+    async function checkAuthStatus() {
+        try {
+            const res = await fetchWithAuth(baseUrl + '/auth/user');
+            
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            
+            const data = await res.json();
+            
+            if (data.ok && data.user) {
+                const loginScreen = document.getElementById('login-screen');
+                if (loginScreen) loginScreen.style.display = 'none';
+                
+                if (!data.user.username) {
+                    showUsernameSetup();
+                    return false;
+                }
+                
+                const usernameField = document.getElementById('addUsername');
+                if (usernameField) {
+                    usernameField.value = data.user.username;
+                    usernameField.disabled = true;
+                }
+                
+                if (data.user.photoUrl) {
+                    const profileImg = document.getElementById('profileImg');
+                    if (profileImg) profileImg.src = data.user.photoUrl;
+                    try {
+                        localStorage.setItem(`profilePhotoUrl_${data.user.username}`, data.user.photoUrl);
+                    } catch(e) {}
+                }
+                
+                document.querySelectorAll('.p-name').forEach(el => {
+                    el.textContent = data.user.displayName || data.user.username;
+                });
+                
+                document.querySelectorAll('.p-tag').forEach(el => {
+                    el.textContent = '@' + data.user.username;
+                });
+                
+                return true;
+            } else {
+                localStorage.removeItem('sessionToken');
+                sessionToken = null;
+                const loginScreen = document.getElementById('login-screen');
+                if (loginScreen) loginScreen.style.display = 'flex';
+                return false;
+            }
+        } catch (err) {
+            console.error("Auth check failed:", err);
+            localStorage.removeItem('sessionToken');
+            sessionToken = null;
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) loginScreen.style.display = 'flex';
+            return false;
+        }
+    }
+    async function showUsernameSetup() {
+    const setup = document.getElementById('username-setup');
+    const input = document.getElementById('username-input');
+    const error = document.getElementById('username-error');
+    const btn = document.getElementById('username-submit');
+    
+    setup.style.display = 'flex';
+    setTimeout(() => input.focus(), 100);
+    
+    input.addEventListener('input', () => {
+        error.textContent = '';
+        input.style.borderColor = 'var(--border-light)';
     });
-
-    io.emit('profile_updated', { username, photoUrl });
-    res.json({ ok: true, photoUrl });
-  } catch (err) {
-    console.error('Profile photo upload error:', err);
-    res.status(500).json({ ok: false, error: 'Upload failed' });
-  }
-});
-
-app.get('/api/profile/photo/:username', (req, res) => {
-  const username = req.params.username;
-  const photoUrl = userProfiles.get(username);
-  res.json({ 
-    ok: true, 
-    photoUrl: photoUrl || 'https://i.imgflip.com/1ickup.jpg' 
-  });
-});
-
-function getBaseUrl(req) {
-  if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, '');
-  return `${req.protocol}://${req.get('host')}`;
+    
+    const submit = async () => {
+        const username = input.value.trim();
+        
+        if (username.length < 3) {
+            error.textContent = 'Username must be at least 3 characters';
+            input.style.borderColor = '#ff4444';
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/auth/set-username`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            
+            const data = await res.json();
+            
+            if (!res.ok) {
+                error.textContent = data.error || 'Username taken or invalid';
+                input.style.borderColor = '#ff4444';
+                btn.disabled = false;
+                btn.textContent = 'Continue';
+                return;
+            }
+            
+            setup.style.display = 'none';
+            
+            document.getElementById('addUsername').value = data.username;
+            document.querySelectorAll('.p-tag').forEach(el => {
+                el.textContent = '@' + data.username;
+            });
+            
+            checkAuthStatus();
+            
+        } catch (err) {
+            error.textContent = 'Network error. Please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Continue';
+        }
+    };
+    
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submit();
+    });
 }
-
-io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
-  socket.on('disconnect', () => console.log('Socket disconnected:', socket.id));
-});
-
-app.get('/api/tmdb/search/movie', async (req, res) => {
-  try {
-    const query = req.query.query;
-    if (!query) {
-      return res.status(400).json({ error: 'Query parameter required' });
+    const googleSigninBtn = document.getElementById('google-signin-btn');
+    if (googleSigninBtn) {
+        googleSigninBtn.addEventListener('click', function() {
+            window.location.href = baseUrl + '/auth/google';
+        });
     }
 
-    const response = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
-      params: {
-        api_key: TMDB_API_KEY,
-        query: query
-      }
+    const logoutBtn = document.querySelector('[data-action="logout"]');
+
+    logoutBtn.addEventListener('click', logout);
+    logoutBtn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            logout();
+        }
     });
 
-    res.json(response.data);
-  } catch (error) {
-    console.error('TMDB search error:', error);
-    res.status(500).json({ error: 'Failed to fetch movies' });
-  }
-});
-
-// Proxy endpoint pentru watch providers
-app.get('/api/tmdb/movie/:id/watch/providers', async (req, res) => {
-  try {
-    const movieId = req.params.id;
-    
-    const response = await axios.get(`${TMDB_BASE_URL}/movie/${movieId}/watch/providers`, {
-      params: {
-        api_key: TMDB_API_KEY
-      }
-    });
-
-    res.json(response.data);
-  } catch (error) {
-    console.error('TMDB providers error:', error);
-    res.status(500).json({ error: 'Failed to fetch providers' });
-  }
-});
-
-// Proxy endpoint pentru movie details (optional, pentru viitor)
-app.get('/api/tmdb/movie/:id', async (req, res) => {
-  try {
-    const movieId = req.params.id;
-    
-    const response = await axios.get(`${TMDB_BASE_URL}/movie/${movieId}`, {
-      params: {
-        api_key: TMDB_API_KEY
-      }
-    });
-
-    res.json(response.data);
-  } catch (error) {
-    console.error('TMDB details error:', error);
-    res.status(500).json({ error: 'Failed to fetch movie details' });
-  }
-});
-
-// Clean up old sessions (older than 7 days)
-setInterval(() => {
-  const now = Date.now();
-  const sevenDays = 7 * 24 * 60 * 60 * 1000;
-  
-  for (const [token, data] of activeSessions.entries()) {
-    if (now - data.createdAt > sevenDays) {
-      activeSessions.delete(token);
-      console.log('🧹 Cleaned up old session:', token);
+    function logout() {
+        fetchWithAuth(baseUrl + '/auth/logout')
+            .then(() => {
+                localStorage.removeItem('sessionToken');
+                sessionToken = null;
+                localStorage.clear();
+                window.location.reload();
+            })
+            .catch(err => console.error(err));
     }
-  }
-}, 60 * 60 * 1000); // Check every hour
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+    checkAuthStatus();
+
+    let current = 0;
+    const questions = document.querySelectorAll('.question');
+    const progress = document.getElementById('progressFill');
+    const total = questions.length;
+    function nextQuestion() {
+        questions[current].classList.remove('active');
+        current++;
+        if (current < total) {
+            questions[current].classList.add('active');
+            updateProgress();
+        } else {
+            progress.style.width = '100%';
+            showView('home');
+        }
+    }
+    function updateProgress() {
+        const percent = Math.round((current / total) * 100);
+        progress.style.width = percent + '%';
+    }
+    function showView(id) {
+        const add = document.getElementById('add');
+        if (id === 'replies') {
+            const replies = document.getElementById('replies');
+            replies.classList.add('active');
+            setTimeout(() => {
+                document.getElementById('replyTextarea')?.focus();
+            }, 120);
+            return;
+        }
+        if (id === 'add') {
+            add.classList.add('active');
+            setTimeout(() => {
+                const ta = document.getElementById('postTextarea');
+                if (ta) ta.focus();
+            }, 120);
+            updateNavActive(id);
+            return;
+        }
+        add.classList.remove('active');
+        document.querySelectorAll('.view').forEach(v => {
+            if (v.id !== 'add') v.classList.remove('active');
+        });
+        document.getElementById('replies')?.classList.remove('active')
+        document.getElementById(id).classList.add('active');
+        updateNavActive(id);
+    }
+    function updateNavActive(id) {
+        const buttons = document.querySelectorAll('.navh button');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        const btn = Array.from(buttons).find(b => b.getAttribute('onclick')?.includes(id));
+        if (btn) btn.classList.add('active');
+    }
+
+    function closeAdd() {
+        const add = document.getElementById('add');
+        add.classList.remove('active');
+    }
+    function closeReplies() {
+        const replies = document.getElementById('replies');
+        replies.classList.remove('active');
+        if (replyPollingInterval) {
+            clearInterval(replyPollingInterval);
+            replyPollingInterval = null;
+        }
+        seenReplyIds = new Set();
+        lastReplyTimestamp = 0;
+    }
+    const img_input = document.getElementById('img_input');
+
+    if (img_input) {
+        img_input.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const img = new Image();
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = Math.min(img.width, img.height);
+
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    const startX = (img.width - size) / 2;
+                    const startY = (img.height - size) / 2;
+                    ctx.drawImage(img, startX, startY, size, size, 0, 0, size, size);
+                    
+                    canvas.toBlob(async function(blob) {
+                        const formData = new FormData();
+                        formData.append('photo', blob, 'profile.jpg');
+                        
+                        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+                        formData.append('username', username);
+
+                        try {
+                            const profileImg = document.getElementById('profileImg');
+                            profileImg.style.opacity = '0.5';
+
+                            const response = await fetchWithAuth(`${baseUrl}/api/profile/photo`, {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (!response.ok) throw new Error('Upload failed');
+
+                            const result = await response.json();
+                            
+                            profileImg.src = result.photoUrl;
+                            profileImg.style.opacity = '1';
+                            
+                            updateAllProfilePhotos(username, result.photoUrl);
+                            
+                            try {
+                                localStorage.setItem(`profilePhotoUrl_${username}`, result.photoUrl);
+                            } catch(err) {}
+
+                        } catch (error) {
+                            console.error('Upload error:', error);
+                            alert('Failed to upload. Please try again.');
+                            profileImg.style.opacity = '1';
+                        }
+                    }, 'image/jpeg', 0.9);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            img_input.value = '';
+        });
+
+        try {
+            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+            const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
+            if (savedPhotoUrl) {
+                document.getElementById('profileImg').src = savedPhotoUrl;
+                console.log('Loaded saved profile photo for', username);
+            }
+        } catch(err) {
+            console.log('Could not load:', err);
+        }
+    }
+    const postBtn = document.getElementById('postSubmit');
+    postBtn.setAttribute('type', 'button');
+    const postsContainer = document.getElementById('posts');
+    const textarea = document.getElementById('postTextarea');
+    const addUsername = document.getElementById('addUsername');
+    const fileInput = document.getElementById('postFiles');
+    const filePreview = document.getElementById('filePreview');
+    const addView = document.getElementById('add');
+    addView.addEventListener('submit', (e) => e.preventDefault());
+    let selectedFiles = [];
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+    function timeLabelForNow() {
+        return 'just now';
+    }
+    function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+    }
+    fileInput && fileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const MAX_FILES = 6;
+        const remaining = Math.max(0, MAX_FILES - selectedFiles.length);
+        const toAdd = files.slice(0, remaining);
+        toAdd.forEach(file => {
+            const id = uid();
+            const entry = { id, file, dataUrl: null };
+            selectedFiles.push(entry);
+            if (file.type.startsWith('image/')) {
+                const fr = new FileReader();
+                fr.onload = (ev) => {
+                    entry.dataUrl = ev.target.result;
+                    renderFilePreview(entry);
+                };
+                fr.readAsDataURL(file);
+            } else {
+                renderFilePreview(entry);
+            }
+        });
+        fileInput.value = '';
+    });
+    function renderFilePreview(entry) {
+        if (document.querySelector(`[data-file-id="${entry.id}"]`)) return;
+        const el = document.createElement('div');
+        el.className = 'fc';
+        el.setAttribute('data-file-id', entry.id);
+        if (entry.dataUrl) {
+            const img = document.createElement('img');
+            img.className = 'ft';
+            img.src = entry.dataUrl;
+            el.appendChild(img);
+        } else {
+            const ph = document.createElement('div');
+            ph.className = 'ft';
+            ph.style.display = 'flex';
+            ph.style.alignItems = 'center';
+            ph.style.justifyContent = 'center';
+            ph.textContent = entry.file.type.split('/')[0] || 'file';
+            el.appendChild(ph);
+        }
+        const name = document.createElement('div');
+        name.className = 'fn';
+        name.textContent = entry.file.name;
+        el.appendChild(name);
+        const remove = document.createElement('div');
+        remove.className = 'fr';
+        remove.title = 'Remove';
+        remove.innerHTML = '×';
+        remove.addEventListener('click', () => removeFile(entry.id));
+        el.appendChild(remove);
+        filePreview.appendChild(el);
+    }
+    function removeFile(id) {
+        selectedFiles = selectedFiles.filter(f => f.id !== id);
+        const node = document.querySelector(`[data-file-id="${id}"]`);
+        if (node) node.remove();
+    }
+    function createPostWrapper(username, displayName, content, files, timeLabel, photoUrl) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'post';
+        const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
+        const imgSrc = photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        let filesHtml = '';
+        if (files && files.length) {
+            const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
+            const others = files.filter(f => !((f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/')));
+            if (imgs.length) {
+                filesHtml += '<div class="post-images" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">';
+                imgs.forEach(f => {
+                    const src = f.dataUrl || f.url;
+                    filesHtml += `<img src="${src}" style="width:80%;border-radius:8px;object-fit:cover;max-width:500px;"/>`;
+                });
+                filesHtml += '</div>';
+            }
+            if (others.length) {
+                filesHtml += '<div class="post-files" style="margin-top:8px">';
+                others.forEach(f => {
+                    let url;
+                    if (f.url) {
+                        url = f.url;
+                    } else if (f.file) {
+                        url = URL.createObjectURL(f.file);
+                        setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+                    } else {
+                        return;
+                    }
+                    const name = f.file ? f.file.name : f.originalName || '';
+                    filesHtml += `<div><a href="${url}" download="${escapeHtml(name)}">${escapeHtml(name)}</a></div>`;
+                });
+                filesHtml += '</div>';
+            }
+        }
+        wrapper.innerHTML = `
+            <div class="pt">
+                <div class="pr-img"><img src="${imgSrc}"></div>
+                <div style="display: block;">
+                <span class="usr">${escapeHtml(displayName || username)}</span>
+                <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(username)} · ${timeLabel}</span>
+                <div class="cnt">${safeContent}</div>
+                ${filesHtml}
+                <div class="re">
+                    <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                    <button class="reply" onclick="showView('replies')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                    <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                </div>
+            </div></div>
+        `;
+        return wrapper;
+    }
+    function buildPostElement(username, displayName, content, files, photoUrl) {
+        return createPostWrapper(username, displayName, content, files, timeLabelForNow(), photoUrl);
+    }
+
+    function addPostToUIFromServer(post) {
+        const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
+        if (post.tempId) {
+            const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
+            if (existing) {
+                const newWrapper = createPostWrapper(post.username, post.displayName, post.text, post.files, timeLabel, post.photoUrl);
+                newWrapper.setAttribute('data-post-id', post.id);
+                newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
+                existing.parentNode.replaceChild(newWrapper, existing);
+                lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
+                return;
+            }
+        }
+        const wrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files || [], timeLabel, post.photoUrl);
+        wrapper.setAttribute('data-post-id', post.id);
+        wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
+        postsContainer.prepend(wrapper);
+        lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
+    }
+    function replacePostButtonListener(newHandler) {
+        const old = document.getElementById('postSubmit');
+        if (!old) return;
+        const clone = old.cloneNode(true);
+        clone.setAttribute('type', 'button');
+        old.parentNode.replaceChild(clone, old);
+        window.postBtnNode = clone;
+        clone.addEventListener('click', newHandler);
+    }
+    let lastTimestamp = 0;
+    async function loadInitialPostsFromServer() {
+        if (!baseUrl) return;
+        try {
+            const res = await fetchWithAuth(baseUrl + '/api/posts');
+            if (!res.ok) throw new Error('failed to load posts');
+            const list = await res.json();
+            list.slice().reverse().forEach(p => {
+                addPostToUIFromServer(p);
+            });
+            if (list.length) {
+                lastTimestamp = new Date(list[0].createdAt).getTime();
+            }
+        } catch (err) {}
+    }
+    async function pollForNewPosts() {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/posts?since=${lastTimestamp}`);
+            if (!res.ok) return;
+            const newPosts = await res.json();
+            newPosts.forEach(addPostToUIFromServer);
+        } catch (err) {}
+    }
+    async function submitPostToServerHandler(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const content = document.getElementById('postTextarea')?.value || '';
+        const username = (document.getElementById('addUsername')?.value || '').trim() || 'user_tag';
+        const displayName = document.querySelector('.p-name')?.textContent || username;
+        const selected = selectedFiles || [];
+
+        if (content.trim() === '' && selected.length === 0) {
+            const ta = document.getElementById('postTextarea');
+            if (ta) {
+                ta.focus();
+                ta.style.borderColor = 'red';
+                setTimeout(() => ta.style.borderColor = '#ccc', 900);
+            }
+            return;
+        }
+
+        const tempId = uid();
+        const currentPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
+        const filesForPost = selected.map(f => ({ ...f }));
+        const optimisticPostEl = buildPostElement(username, displayName, content, filesForPost, currentPhotoUrl);
+        optimisticPostEl.setAttribute('data-temp-id', tempId);
+        postsContainer.prepend(optimisticPostEl);
+
+        const ta = document.getElementById('postTextarea');
+        if (ta) ta.value = '';
+        const fp = document.getElementById('filePreview');
+        if (fp) fp.innerHTML = '';
+        const fi = document.getElementById('postFiles');
+        if (fi) fi.value = '';
+        selectedFiles = [];
+        try { document.getElementById('add').classList.remove('active'); } catch(e){}
+        showView('pos-t');
+
+        const fd = new FormData();
+        fd.append('username', username);
+        fd.append('text', content);
+        fd.append('tempId', tempId);
+        selected.forEach((f) => fd.append('files', f.file, f.file.name));
+
+        try {
+            const btn = document.getElementById('postSubmit');
+            if (btn) { btn.disabled = true; btn.textContent = 'Posting...'; }
+            const res = await fetchWithAuth(baseUrl + '/api/posts', {
+                method: 'POST',
+                body: fd
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || 'upload failed');
+        } catch (err) {
+            console.error('Post error:', err);
+            const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
+            if (optimisticEl) optimisticEl.remove();
+            alert('Failed to post. Please try again.');
+            if (ta) ta.value = content;
+            selectedFiles = filesForPost;
+            filesForPost.forEach(entry => renderFilePreview(entry));
+            showView('add');
+        } finally {
+            const btn = document.getElementById('postSubmit');
+            if (btn) { btn.disabled = false; btn.textContent = 'Post'; }
+        }
+    }
+
+    function updateAllProfilePhotos(username, photoUrl) {
+        document.querySelectorAll('.post').forEach(postEl => {
+            const usernameSpan = postEl.querySelector('.usr');
+            if (usernameSpan && usernameSpan.textContent.trim() === username) {
+                const img = postEl.querySelector('.pr-img img');
+                if (img) img.src = photoUrl;
+            }
+        });
+    }
+
+    function renderReplyElement(reply) {
+        const el = document.createElement('div');
+        el.className = 'post';
+        const imgSrc = reply.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        el.innerHTML = `
+            <div class="pt" data-reply-id="${reply.id}">
+                <div class="pr-img"><img src="${imgSrc}"></div>
+                <div>
+                    <span class="usr">${escapeHtml(reply.displayName || reply.username || '')}</span>
+                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(reply.username || '')} · ${new Date(reply.createdAt).toLocaleString()}</span>
+                    <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
+                </div>
+            </div>
+        `;
+        return el;
+    }
+
+    function initSocket() {
+        if (!baseUrl) return;
+        try {
+            const socket = io(baseUrl, { 
+                transports: ['websocket','polling']
+            });
+            socket.on('connect', () => console.log('Socket connected'));
+            socket.on('post_created', (post) => {
+                addPostToUIFromServer(post);
+            });
+        } catch (err) {}
+    }
+    if (baseUrl) {
+        replacePostButtonListener(submitPostToServerHandler);
+        loadInitialPostsFromServer();
+        initSocket();
+        setInterval(pollForNewPosts, 5000);
+        textarea && textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                submitPostToServerHandler(e);
+            }
+        });
+    }
+    let currentReplyPostId = null;
+    const replyTextarea = document.getElementById('replyTextarea');
+    const replySubmitBtn = document.getElementById('replySubmit');
+    const rRepliesContainer = document.querySelector('.r-replies');
+    let replyPollingInterval = null;
+    let lastReplyTimestamp = 0;
+    let seenReplyIds = new Set();
+
+    async function openReplies(postId) {
+        if (!postId) return;
+        currentReplyPostId = postId;
+        seenReplyIds = new Set();
+        showView('replies');
+        setTimeout(() => { replyTextarea?.focus(); }, 120);
+        rRepliesContainer.innerHTML = '';
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/posts/${postId}/replies`);
+            if (!res.ok) throw new Error('fail');
+            const list = await res.json();
+            if (!list.length) {
+                rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray" id="noReply">No replies yet. Be first!</div>';
+            } else {
+                list.forEach(rep => {
+                    rRepliesContainer.appendChild(renderReplyElement(rep));
+                    seenReplyIds.add(rep.id);
+                });
+                lastReplyTimestamp = new Date(list[list.length - 1].createdAt).getTime();
+            }
+        } catch (e) {
+            rRepliesContainer.innerHTML = '<div style="padding:12px;color:gray">Failed to load replies</div>';
+        }
+        if (replyPollingInterval) clearInterval(replyPollingInterval);
+        replyPollingInterval = setInterval(() => pollForNewReplies(postId), 1000);
+    }
+
+    async function pollForNewReplies(postId) {
+        if (!postId || !document.getElementById('replies').classList.contains('active')) return;
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/posts/${postId}/replies?since=${lastReplyTimestamp}`);
+            if (!res.ok) return;
+            const replies = await res.json();
+            const newReplies = replies.filter(rep => !seenReplyIds.has(rep.id));
+            if (newReplies.length) {
+                newReplies.forEach(reply => {
+                    rRepliesContainer.appendChild(renderReplyElement(reply));
+                    seenReplyIds.add(reply.id);
+                });
+                document.getElementById('noReply')?.remove();
+                lastReplyTimestamp = new Date(newReplies[newReplies.length - 1].createdAt).getTime();
+            }
+        } catch (err) {}
+    }
+
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest && e.target.closest('.reply');
+        if (!btn) return;
+        const pid = btn.getAttribute('data-post-id') || (btn.closest && btn.closest('[data-post-id]') && btn.closest('[data-post-id]').getAttribute('data-post-id'));
+        if (pid) openReplies(pid);
+        else alert('Replies for this post are not available until it is posted to server.');
+    });
+
+    async function submitReplyHandler(e) {
+        e && e.preventDefault();
+        if (!currentReplyPostId) { alert('No post selected'); return; }
+        const text = (replyTextarea?.value || '').trim();
+        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const displayName = document.querySelector('.p-name')?.textContent || username;
+        const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
+        
+        if (!text) { 
+            replyTextarea?.focus(); 
+            replyTextarea.style.borderColor = 'red'; 
+            setTimeout(()=> replyTextarea.style.borderColor = '#ccc', 800); 
+            return; 
+        }
+        
+        const optimisticReply = { 
+            id: 'temp-' + uid(), 
+            username,
+            displayName,
+            text, 
+            photoUrl,
+            createdAt: new Date().toISOString() 
+        };
+        const optimisticEl = renderReplyElement(optimisticReply);
+        optimisticEl.setAttribute('data-temp-reply', optimisticReply.id);
+        rRepliesContainer.appendChild(optimisticEl);
+        replyTextarea.value = '';
+        document.getElementById('noReply')?.remove();
+        
+        try {
+            replySubmitBtn.disabled = true; 
+            replySubmitBtn.textContent = 'Posting...';
+            const res = await fetchWithAuth(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, text })
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || 'reply failed');
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            rRepliesContainer.appendChild(renderReplyElement(json.reply));
+            seenReplyIds.add(json.reply.id);
+            lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
+        } catch (err) {
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            alert('Failed to send reply. Try again.');
+        } finally {
+            replySubmitBtn.disabled = false; 
+            replySubmitBtn.textContent = 'Post';
+        }
+    }
+
+    replySubmitBtn && replySubmitBtn.addEventListener('click', submitReplyHandler);
+    replyTextarea && replyTextarea.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitReplyHandler(e); });
+
+    const replySocket = io(baseUrl, { transports: ['websocket','polling'] });
+    replySocket.on('reply_created', function(reply) {
+        if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId && !seenReplyIds.has(reply.id)) {
+            rRepliesContainer.appendChild(renderReplyElement(reply));
+            seenReplyIds.add(reply.id);
+            document.getElementById('noReply')?.remove();
+        }
+    });
+    const profileSocket = io(baseUrl, { transports: ['websocket','polling'] });
+    profileSocket.on('profile_updated', function(data) {
+        const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        
+        updateAllProfilePhotos(data.username, data.photoUrl);
+        
+        if (data.username === currentUsername) {
+            const profileImg = document.getElementById('profileImg');
+            if (profileImg) profileImg.src = data.photoUrl;
+            try {
+                localStorage.setItem(`profilePhotoUrl_${data.username}`, data.photoUrl);
+            } catch(err) {}
+        }
+    });
+</script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</body>
+</html>
