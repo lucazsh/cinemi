@@ -2166,13 +2166,60 @@
         card.addEventListener('mouseup', onEnd);
         card.addEventListener('touchend', onEnd);
         card.addEventListener('mouseleave', onEnd);
-
-        const leftBtn = document.getElementById('swipe-left-btn');
-        const rightBtn = document.getElementById('swipe-right-btn');
-        
-        if (leftBtn) leftBtn.onclick = () => swipeCard('left', movie);
-        if (rightBtn) rightBtn.onclick = () => swipeCard('right', movie);
     }
+
+    async function swipeCard(direction, movie) {
+        const container = document.getElementById('swipify-container');
+        const card = container.querySelector('.swipify-card');
+        if (!card) return;
+        
+        const distance = direction === 'right' ? 1000 : -1000;
+        card.style.transition = 'transform 0.5s ease';
+        card.style.transform = `translateX(${distance}px) rotate(${distance/10}deg)`;
+        card.style.opacity = '0';
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        currentSwipifyIndex++;
+        renderSwipifyCard();
+    }
+
+    function openPanel(panelName) {
+        const panel = document.getElementById(`${panelName}-panel`);
+        if (!panel) return;
+        
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => {
+            panel.classList.add('open');
+        });
+        
+        if (panelName === 'swipify') {
+            loadSwipifyMovies();
+            
+            const leftBtn = document.getElementById('swipe-left-btn');
+            const rightBtn = document.getElementById('swipe-right-btn');
+            
+            if (leftBtn) {
+                leftBtn.onclick = () => {
+                    if (swipifyMovies[currentSwipifyIndex]) {
+                        swipeCard('left', swipifyMovies[currentSwipifyIndex]);
+                    }
+                };
+            }
+            if (rightBtn) {
+                rightBtn.onclick = () => {
+                    if (swipifyMovies[currentSwipifyIndex]) {
+                        swipeCard('right', swipifyMovies[currentSwipifyIndex]);
+                    }
+                };
+            }
+        }
+        
+        const backdrop = panel.querySelector('.backdrop');
+        if (backdrop) {
+            backdrop.onclick = () => closePanel(panelName);
+        }
+}
     document.addEventListener('DOMContentLoaded', function() {
         const movieCards = document.querySelectorAll('.movie-card');
         movieCards.forEach(card => {
