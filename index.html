@@ -2538,7 +2538,7 @@
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div style="display: block;">
                 <span class="usr">${escapeHtml(username)}</span>
-                <span class="time" style="color: var(--text-subtle); font-size: 13px;">${timeLabel}</span>
+                <span class="time">${timeLabel}</span>
                 <div class="cnt">${safeContent}</div>
                 ${filesHtml}
                 <div class="re">
@@ -2695,7 +2695,7 @@
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div>
                     <span class="usr">${escapeHtml(reply.username)}</span>
-                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">${timeLabel}</span>
+                    <span class="time">${timeLabel}</span>
                     <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
                 </div>
             </div>
