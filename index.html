@@ -1361,7 +1361,27 @@
             </p>
         </div>
     </div>
-
+    <div id="username-setup" style="position: fixed; inset: 0; background: var(--bg-primary); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
+    <div style="max-width: 400px; width: 100%; text-align: center;">
+        <h1 style="font-size: 32px; margin-bottom: 10px; color: var(--text-primary);">Choose your username</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">This will be your unique identifier in Cinemi</p>
+        
+        <input 
+            id="username-input" 
+            type="text" 
+            placeholder="Enter username..." 
+            style="width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); outline: none; margin-bottom: 10px;"
+        />
+        <div id="username-error" style="color: #ff4444; font-size: 14px; min-height: 20px; margin-bottom: 20px;"></div>
+        
+        <button 
+            id="username-submit" 
+            style="width: 100%; padding: 16px; font-size: 18px; font-weight: bold; border-radius: 12px; border: none; background: var(--button-bg); color: var(--button-text); cursor: pointer;"
+        >
+            Continue
+        </button>
+    </div>
+</div>
     <div id="setup" class="view">
         <div class="progress-container">
             <div class="progress-bar">
@@ -1787,6 +1807,16 @@
             clearTimeout(searchTimer);
             const query = e.target.value.trim();
             
+            if (query.length < 1) {
+                results.innerHTML = '';
+                return;
+            }
+            
+            if (query.startsWith('@')) {
+                searchTimer = setTimeout(() => fetchUsers(query.slice(1), results), 300);
+                return;
+            }
+            
             if (query.length < 2) {
                 results.innerHTML = '';
                 return;
@@ -1797,6 +1827,31 @@
         });
     }
 
+    async function fetchUsers(query, container) {
+        try {
+            const response = await fetch(`${baseUrl}/api/search/users?q=${encodeURIComponent(query)}`, {
+                headers: ngrokHeaders
+            });
+            const users = await response.json();
+            
+            if (!users.length) {
+                container.innerHTML = '<div style="color:var(--text-primary); padding:20px;">No users found</div>';
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 12px; cursor: pointer; border: 1px solid var(--border-dark-alpha-2);">
+                    <img src="${user.photoUrl}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-primary);">@${user.username}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            container.innerHTML = '<div style="padding:20px;">Error loading users.</div>';
+        }
+    }
     async function fetchMovies(query, container) {
         try {
             const response = await fetch(`${baseUrl}/api/tmdb/search/movie?query=${encodeURIComponent(query)}`, {
@@ -2038,18 +2093,17 @@
         try {
             const res = await fetchWithAuth(baseUrl + '/auth/user');
             
-            console.log('Response status:', res.status);
-            
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             
             const data = await res.json();
             
-            if (data.ok && data.user) {               
+            if (data.ok && data.user) {
                 const loginScreen = document.getElementById('login-screen');
-                if (loginScreen) {
-                    loginScreen.style.display = 'none';
+                if (loginScreen) loginScreen.style.display = 'none';
+                
+                if (!data.user.username || data.user.username.includes('@') || data.user.username.length < 3) {
+                    showUsernameSetup();
+                    return false;
                 }
                 
                 const usernameField = document.getElementById('addUsername');
@@ -2060,9 +2114,7 @@
                 
                 if (data.user.photoUrl) {
                     const profileImg = document.getElementById('profileImg');
-                    if (profileImg) {
-                        profileImg.src = data.user.photoUrl;
-                    }
+                    if (profileImg) profileImg.src = data.user.photoUrl;
                     try {
                         localStorage.setItem(`profilePhotoUrl_${data.user.username}`, data.user.photoUrl);
                     } catch(e) {}
@@ -2072,31 +2124,91 @@
                     el.textContent = data.user.username;
                 });
                 
+                document.querySelectorAll('.p-tag').forEach(el => {
+                    el.textContent = '@' + data.user.username;
+                });
+                
                 return true;
             } else {
-                console.log('If you are reading this: you are not logged in');
                 localStorage.removeItem('sessionToken');
                 sessionToken = null;
-                
                 const loginScreen = document.getElementById('login-screen');
-                if (loginScreen) {
-                    loginScreen.style.display = 'flex';
-                }
+                if (loginScreen) loginScreen.style.display = 'flex';
                 return false;
             }
         } catch (err) {
-            console.error("If you see this it's my fault sry: Auth check failed:", err);
+            console.error("Auth check failed:", err);
             localStorage.removeItem('sessionToken');
             sessionToken = null;
-            
             const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) {
-                loginScreen.style.display = 'flex';
-            }
+            if (loginScreen) loginScreen.style.display = 'flex';
             return false;
         }
     }
-
+    async function showUsernameSetup() {
+    const setup = document.getElementById('username-setup');
+    const input = document.getElementById('username-input');
+    const error = document.getElementById('username-error');
+    const btn = document.getElementById('username-submit');
+    
+    setup.style.display = 'flex';
+    setTimeout(() => input.focus(), 100);
+    
+    input.addEventListener('input', () => {
+        error.textContent = '';
+        input.style.borderColor = 'var(--border-light)';
+    });
+    
+    const submit = async () => {
+        const username = input.value.trim();
+        
+        if (username.length < 3) {
+            error.textContent = 'Username must be at least 3 characters';
+            input.style.borderColor = '#ff4444';
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/auth/set-username`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+            
+            const data = await res.json();
+            
+            if (!res.ok) {
+                error.textContent = data.error || 'Username taken or invalid';
+                input.style.borderColor = '#ff4444';
+                btn.disabled = false;
+                btn.textContent = 'Continue';
+                return;
+            }
+            
+            setup.style.display = 'none';
+            
+            document.getElementById('addUsername').value = data.username;
+            document.querySelectorAll('.p-tag').forEach(el => {
+                el.textContent = '@' + data.username;
+            });
+            
+            checkAuthStatus();
+            
+        } catch (err) {
+            error.textContent = 'Network error. Please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Continue';
+        }
+    };
+    
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submit();
+    });
+}
     const googleSigninBtn = document.getElementById('google-signin-btn');
     if (googleSigninBtn) {
         googleSigninBtn.addEventListener('click', function() {
