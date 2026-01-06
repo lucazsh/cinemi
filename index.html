@@ -1792,6 +1792,36 @@
 
     let searchTimer;
 
+    function formatTimeAgo(dateString) {
+        const now = new Date();
+        const past = new Date(dateString);
+        const diffMs = now - past;
+        const diffSeconds = Math.floor(diffMs / 1000);
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        const diffWeeks = Math.floor(diffDays / 7);
+        const diffMonths = Math.floor(diffDays / 30);
+        const diffYears = Math.floor(diffDays / 365);
+
+        if (diffSeconds < 30) {
+            return 'now';
+        } else if (diffSeconds < 60) {
+            return diffSeconds + 's';
+        } else if (diffMinutes < 60) {
+            return diffMinutes + 'm';
+        } else if (diffHours < 24) {
+            return diffHours + 'h';
+        } else if (diffDays < 7) {
+            return diffDays + 'd';
+        } else if (diffWeeks < 4) {
+            return diffWeeks + 'w';
+        } else if (diffMonths < 12) {
+            return diffMonths + 'mo';
+        } else {
+            return diffYears + 'y';
+        }
+    }
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -2402,7 +2432,7 @@
         return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
     function timeLabelForNow() {
-        return 'just now';
+        return 'now';
     }
     function uid() {
         return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
@@ -2471,6 +2501,7 @@
         wrapper.className = 'post';
         const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
         const imgSrc = photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        
         let filesHtml = '';
         if (files && files.length) {
             const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
@@ -2501,6 +2532,7 @@
                 filesHtml += '</div>';
             }
         }
+        
         wrapper.innerHTML = `
             <div class="pt">
                 <div class="pr-img"><img src="${imgSrc}"></div>
@@ -2523,12 +2555,13 @@
     }
 
     function addPostToUIFromServer(post) {
-        const timeLabel = post.createdAt ? new Date(post.createdAt).toLocaleString() : timeLabelForNow();
+        const timeLabel = post.createdAt ? formatTimeAgo(post.createdAt) : timeLabelForNow();
         if (post.tempId) {
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
             if (existing) {
                 const newWrapper = createPostWrapper(post.username, post.displayName, post.text, post.files, timeLabel, post.photoUrl);
                 newWrapper.setAttribute('data-post-id', post.id);
+                newWrapper.setAttribute('data-timestamp', post.createdAt);
                 newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
                 existing.parentNode.replaceChild(newWrapper, existing);
                 lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
@@ -2537,6 +2570,7 @@
         }
         const wrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files || [], timeLabel, post.photoUrl);
         wrapper.setAttribute('data-post-id', post.id);
+        wrapper.setAttribute('data-timestamp', post.createdAt);
         wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
         postsContainer.prepend(wrapper);
         lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
@@ -2652,13 +2686,16 @@
     function renderReplyElement(reply) {
         const el = document.createElement('div');
         el.className = 'post';
+        el.setAttribute('data-timestamp', reply.createdAt);
         const imgSrc = reply.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        const timeLabel = formatTimeAgo(reply.createdAt);
+        
         el.innerHTML = `
             <div class="pt" data-reply-id="${reply.id}">
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div>
                     <span class="usr">${escapeHtml(reply.username)}</span>
-                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">${new Date(reply.createdAt).toLocaleString()}</span>
+                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">${timeLabel}</span>
                     <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
                 </div>
             </div>
@@ -2827,6 +2864,18 @@
             } catch(err) {}
         }
     });
+    function updateAllTimestamps() {
+        document.querySelectorAll('[data-timestamp]').forEach(element => {
+            const timestamp = element.getAttribute('data-timestamp');
+            if (!timestamp) return;
+            
+            const timeSpan = element.querySelector('.time');
+            if (timeSpan) {
+                timeSpan.textContent = formatTimeAgo(timestamp);
+            }
+        });
+    }
+    setInterval(updateAllTimestamps, 30000);
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
