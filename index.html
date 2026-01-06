@@ -2466,7 +2466,7 @@
         const node = document.querySelector(`[data-file-id="${id}"]`);
         if (node) node.remove();
     }
-    function createPostWrapper(username, content, files, timeLabel, photoUrl) {
+    function createPostWrapper(username, displayName, content, files, timeLabel, photoUrl) {
         const wrapper = document.createElement('div');
         wrapper.className = 'post';
         const safeContent = escapeHtml(content).replace(/\n/g, '<br>');
@@ -2505,8 +2505,8 @@
             <div class="pt">
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div style="display: block;">
-                <span class="usr">${escapeHtml(username)}</span>
-                <span class="time">${timeLabel}</span>
+                <span class="usr">${escapeHtml(displayName || username)}</span>
+                <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(username)} · ${timeLabel}</span>
                 <div class="cnt">${safeContent}</div>
                 ${filesHtml}
                 <div class="re">
@@ -2518,8 +2518,8 @@
         `;
         return wrapper;
     }
-    function buildPostElement(username, content, files, photoUrl) {
-        return createPostWrapper(username, content, files, timeLabelForNow(), photoUrl);
+    function buildPostElement(username, displayName, content, files, photoUrl) {
+        return createPostWrapper(username, displayName, content, files, timeLabelForNow(), photoUrl);
     }
 
     function addPostToUIFromServer(post) {
@@ -2527,7 +2527,7 @@
         if (post.tempId) {
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
             if (existing) {
-                const newWrapper = createPostWrapper(post.username, post.text, post.files, timeLabel, post.photoUrl);
+                const newWrapper = createPostWrapper(post.username, post.displayName, post.text, post.files, timeLabel, post.photoUrl);
                 newWrapper.setAttribute('data-post-id', post.id);
                 newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
                 existing.parentNode.replaceChild(newWrapper, existing);
@@ -2535,7 +2535,7 @@
                 return;
             }
         }
-        const wrapper = createPostWrapper(post.username, post.text || '', post.files || [], timeLabel, post.photoUrl);
+        const wrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files || [], timeLabel, post.photoUrl);
         wrapper.setAttribute('data-post-id', post.id);
         wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
         postsContainer.prepend(wrapper);
@@ -2579,6 +2579,7 @@
 
         const content = document.getElementById('postTextarea')?.value || '';
         const username = (document.getElementById('addUsername')?.value || '').trim() || 'user_tag';
+        const displayName = document.querySelector('.p-name')?.textContent || username;
         const selected = selectedFiles || [];
 
         if (content.trim() === '' && selected.length === 0) {
@@ -2592,9 +2593,9 @@
         }
 
         const tempId = uid();
-        const currentPhotoUrl = localStorage.getItem('profilePhotoUrl') || 'https://i.imgflip.com/1ickup.jpg';
+        const currentPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
         const filesForPost = selected.map(f => ({ ...f }));
-        const optimisticPostEl = buildPostElement(username, content, filesForPost, currentPhotoUrl);
+        const optimisticPostEl = buildPostElement(username, displayName, content, filesForPost, currentPhotoUrl);
         optimisticPostEl.setAttribute('data-temp-id', tempId);
         postsContainer.prepend(optimisticPostEl);
 
@@ -2656,8 +2657,8 @@
             <div class="pt" data-reply-id="${reply.id}">
                 <div class="pr-img"><img src="${imgSrc}"></div>
                 <div>
-                    <span class="usr">${escapeHtml(reply.username || '')}</span>
-                    <span class="time">${new Date(reply.createdAt).toLocaleString()}</span>
+                    <span class="usr">${escapeHtml(reply.displayName || reply.username || '')}</span>
+                    <span class="time" style="color: var(--text-subtle); font-size: 13px;">@${escapeHtml(reply.username || '')} · ${new Date(reply.createdAt).toLocaleString()}</span>
                     <div class="cnt">${escapeHtml(reply.text || '').replace(/\n/g,'<br>')}</div>
                 </div>
             </div>
@@ -2754,6 +2755,7 @@
         if (!currentReplyPostId) { alert('No post selected'); return; }
         const text = (replyTextarea?.value || '').trim();
         const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const displayName = document.querySelector('.p-name')?.textContent || username;
         const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
         
         if (!text) { 
@@ -2765,7 +2767,8 @@
         
         const optimisticReply = { 
             id: 'temp-' + uid(), 
-            username, 
+            username,
+            displayName,
             text, 
             photoUrl,
             createdAt: new Date().toISOString() 
