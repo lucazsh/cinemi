@@ -1311,6 +1311,13 @@
             margin-top: 16px;
             color: var(--text-primary);
         }
+        #swipe-left-btn:active {
+            transform: scale(0.9);
+        }
+
+        #swipe-right-btn:active {
+            transform: scale(0.9);
+        }
     </style>
 </head>
 <body>
@@ -1821,33 +1828,46 @@
             <span>Profile</span>
         </button>
     </div>
-    <div id="swipify-panel" class="panel">
-        <div class="backdrop"></div>
-        <div class="sheet" style="height: 85vh; border-radius: 24px 24px 0 0;">
-            <div style="width: 40px; height: 4px; background: var(--border-light); border-radius: 2px; margin: 0 auto 20px;"></div>
-            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Swipify</h2>
-            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Swipe right if you like it, left if not</p>
-            
-            <div id="swipify-container" style="position: relative; width: 100%; height: 500px; margin: 20px 0;">
-                <div id="swipify-loading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-                    Loading movies...
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
-                <button id="swipe-left-btn" style="width: 64px; height: 64px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border-light); display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#ff4444">
+    <div id="swipify-panel" class="panel" style="display: none;">
+        <div class="backdrop" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9999;"></div>
+        <div style="position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column;">
+            <div style="position: absolute; top: 15px; left: 15px; z-index: 10001;">
+                <button onclick="closePanel('swipify')" style="background-color: #18191e; border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white">
                         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                     </svg>
                 </button>
-                <button id="swipe-right-btn" style="width: 64px; height: 64px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border-light); display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#46d369">
+            </div>
+            
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 10001;">
+                <button style="background-color: #18191e; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: white; font-weight: 600; font-size: 14px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
+                        <path d="m612-292 56-56-148-148v-184h-80v216l172 172ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/>
+                    </svg>
+                    Create Party
+                </button>
+            </div>
+
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 80px 20px 120px;">
+                <div id="swipify-container" style="position: relative; width: 100%; max-width: 500px; height: 600px;">
+                    <div id="swipify-loading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;">
+                        Loading movies...
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 10001;">
+                <button id="swipe-left-btn" style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255, 68, 68, 0.95); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 68, 68, 0.4); transition: transform 0.2s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white">
+                        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                    </svg>
+                </button>
+                <button id="swipe-right-btn" style="width: 70px; height: 70px; border-radius: 50%; background: rgba(70, 211, 105, 0.95); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(70, 211, 105, 0.4); transition: transform 0.2s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white">
                         <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/>
                     </svg>
                 </button>
             </div>
-
-            <button class="btn-close" onclick="closePanel('swipify')">Close</button>
         </div>
     </div>
 
@@ -1967,7 +1987,10 @@
         const panel = document.getElementById(`${panelName}-panel`);
         if (!panel) return;
         
-        panel.classList.add('open');
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => {
+            panel.classList.add('open');
+        });
         
         if (panelName === 'swipify') {
             loadSwipifyMovies();
@@ -1981,9 +2004,13 @@
 
     function closePanel(panelName) {
         const panel = document.getElementById(`${panelName}-panel`);
-        if (panel) panel.classList.remove('open');
+        if (panel) {
+            panel.classList.remove('open');
+            setTimeout(() => {
+                panel.style.display = 'none';
+            }, 300);
+        }
     }
-
     async function loadSwipifyMovies() {
         const container = document.getElementById('swipify-container');
         const loading = document.getElementById('swipify-loading');
@@ -2031,7 +2058,7 @@
         card.style.cssText = `
             position: absolute;
             inset: 0;
-            border-radius: 24px;
+            border-radius: 20px;
             background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('${backdropUrl}');
             background-size: cover;
             background-position: center;
@@ -2045,15 +2072,29 @@
             touch-action: none;
             transition: transform 0.3s ease;
             border: 2px solid var(--border-h);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         `;
         
         card.innerHTML = `
-            <div style="position: absolute; top: 16px; right: 16px; background: var(--button-bg); color: var(--button-text); padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid var(--text-primary);">
-                ${currentSwipifyIndex + 1} / ${swipifyMovies.length}
+            <div class="swipe-indicator swipe-left" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.2s ease;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 68, 68, 0.9); display: flex; align-items: center; justify-content: center; border: 4px solid #ff4444;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px" fill="white">
+                        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                    </svg>
+                </div>
             </div>
-            <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1.1;">${escapeHtml(movie.title)}</div>
-            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 12px;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'} • ⭐ ${movie.vote_average.toFixed(1)}</div>
-            <div style="font-size: 14px; line-height: 1.4; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(movie.overview)}</div>
+            <div class="swipe-indicator swipe-right" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.2s ease;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: rgba(70, 211, 105, 0.9); display: flex; align-items: center; justify-content: center; border: 4px solid #46d369;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px" fill="white">
+                        <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/>
+                    </svg>
+                </div>
+            </div>
+            <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1.1;">${escapeHtml(movie.title)}</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 12px;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'} • ⭐ ${movie.vote_average.toFixed(1)}</div>
+                <div style="font-size: 14px; line-height: 1.4; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(movie.overview)}</div>
+            </div>
         `;
         
         container.appendChild(card);
@@ -2065,6 +2106,9 @@
         let startY = 0;
         let currentX = 0;
         let isDragging = false;
+
+        const leftIndicator = card.querySelector('.swipe-left');
+        const rightIndicator = card.querySelector('.swipe-right');
 
         const onStart = (e) => {
             isDragging = true;
@@ -2083,12 +2127,26 @@
             
             const rotation = currentX / 20;
             card.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotate(${rotation}deg)`;
+            
+            if (currentX < -50) {
+                leftIndicator.style.opacity = Math.min(Math.abs(currentX) / 150, 1);
+                rightIndicator.style.opacity = 0;
+            } else if (currentX > 50) {
+                rightIndicator.style.opacity = Math.min(currentX / 150, 1);
+                leftIndicator.style.opacity = 0;
+            } else {
+                leftIndicator.style.opacity = 0;
+                rightIndicator.style.opacity = 0;
+            }
         };
 
         const onEnd = () => {
             if (!isDragging) return;
             isDragging = false;
             card.style.cursor = 'grab';
+            
+            leftIndicator.style.opacity = 0;
+            rightIndicator.style.opacity = 0;
             
             const threshold = 100;
             
@@ -2109,35 +2167,11 @@
         card.addEventListener('touchend', onEnd);
         card.addEventListener('mouseleave', onEnd);
 
-        document.getElementById('swipe-left-btn').onclick = () => swipeCard('left', movie);
-        document.getElementById('swipe-right-btn').onclick = () => swipeCard('right', movie);
-    }
-
-    async function swipeCard(direction, movie) {
-        const card = document.querySelector('.swipify-card');
-        if (!card) return;
+        const leftBtn = document.getElementById('swipe-left-btn');
+        const rightBtn = document.getElementById('swipe-right-btn');
         
-        const distance = direction === 'right' ? 1000 : -1000;
-        card.style.transition = 'transform 0.5s ease';
-        card.style.transform = `translateX(${distance}px) rotate(${direction === 'right' ? 45 : -45}deg)`;
-        
-        try {
-            await fetchWithAuth(`${baseUrl}/api/movies/swipe`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    movieId: movie.id, 
-                    direction 
-                })
-            });
-        } catch (err) {
-            console.error('Swipe record error:', err);
-        }
-        
-        setTimeout(() => {
-            currentSwipifyIndex++;
-            renderSwipifyCard();
-        }, 500);
+        if (leftBtn) leftBtn.onclick = () => swipeCard('left', movie);
+        if (rightBtn) rightBtn.onclick = () => swipeCard('right', movie);
     }
     document.addEventListener('DOMContentLoaded', function() {
         const movieCards = document.querySelectorAll('.movie-card');
