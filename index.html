@@ -2575,12 +2575,25 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
+                    <div id="modal-reviews-section" class="modal-reviews"></div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
+
+        const modalContent = overlay.querySelector('.modal-content');
+        const modalBody = overlay.querySelector('.modal-body');
+        let isFullscreen = false;
+
+        modalBody.addEventListener('scroll', () => {
+            if (modalBody.scrollTop > 100 && !isFullscreen) {
+                isFullscreen = true;
+                overlay.classList.add('fullscreen');
+                modalContent.classList.add('fullscreen');
+            }
+        });
 
         const close = () => {
             overlay.remove();
@@ -2602,6 +2615,8 @@
                 }
             }
         });
+
+        loadMovieReviews(movie.id);
     }
 
     document.addEventListener('DOMContentLoaded', initMovieSearch);
