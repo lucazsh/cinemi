@@ -2176,12 +2176,16 @@
     }
     function filterPosts(type) {
         const postsContainer = document.getElementById('posts');
+        const titleElement = document.querySelector('#pos-t .logo');
         
         if (type === 'all') {
+            if (titleElement) titleElement.innerHTML = 'Posts <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
             loadAllPosts();
         } else if (type === 'reviews') {
+            if (titleElement) titleElement.innerHTML = 'Reviews <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
             loadReviewPosts();
         } else if (type === 'friends') {
+            if (titleElement) titleElement.innerHTML = 'Friends <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
             loadFriendsPosts();
         }
         
@@ -3569,8 +3573,28 @@
             socket.on('post_created', (post) => {
                 addPostToUIFromServer(post);
             });
+            socket.on('post_created', (post) => {
+                const currentView = document.querySelector('#pos-t .logo').textContent.trim();
+                if (post.isReview && currentView !== 'Reviews') {
+                    return; 
+                }
+                if (!post.isReview && currentView === 'Reviews') {
+                    return;
+                }
+                
+                addPostToUIFromServer(post);
+            });
+            socket.on('review_created', (review) => {
+
+                const currentView = document.querySelector('#pos-t .logo').textContent.trim();
+                if (currentView === 'Reviews') {
+                    const wrapper = createReviewPostElement(review);
+                    postsContainer.prepend(wrapper);
+                }
+            });
         } catch (err) {}
     }
+    
     if (baseUrl) {
         replacePostButtonListener(submitPostToServerHandler);
         loadInitialPostsFromServer();
