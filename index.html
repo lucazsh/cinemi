@@ -2184,16 +2184,19 @@
 
         try {
             const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
-            if (!res.ok) throw new Error('Failed to load reviews');
+            if (!res.ok) {
+                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
+                return;
+            }
             
             const reviews = await res.json();
             
             if (reviews.length === 0) {
-                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet</div>';
+                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
                 return;
             }
 
-            reviewsSection.innerHTML = '<h3 style="margin-bottom:16px; color:var(--text-primary);">Reviews</h3>' +
+            reviewsSection.innerHTML = '<h3 style="margin-bottom:16px; color:var(--text-primary); padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">Reviews (' + reviews.length + ')</h3>' +
                 reviews.map(review => `
                     <div class="review-card">
                         <div class="review-header">
@@ -2204,9 +2207,11 @@
                             </div>
                         </div>
                         <div class="review-text">${escapeHtml(review.text)}</div>
+                        <div style="font-size:12px; color:var(--text-subtle); margin-top:8px;">${formatTimeAgo(review.createdAt)}</div>
                     </div>
                 `).join('');
         } catch (err) {
+            console.error('Review load error:', err);
             reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">Failed to load reviews</div>';
         }
     }
@@ -2575,6 +2580,29 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
+                    
+                    <div id="add-review-section" style="margin-top:30px; padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">
+                        <h3 style="margin-bottom:16px; color:var(--text-primary);">Write a Review</h3>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                            <span style="color:var(--text-primary);">Rating:</span>
+                            <div id="star-rating" style="display:flex; gap:4px; font-size:24px; cursor:pointer;">
+                                <span data-rating="1">☆</span>
+                                <span data-rating="2">☆</span>
+                                <span data-rating="3">☆</span>
+                                <span data-rating="4">☆</span>
+                                <span data-rating="5">☆</span>
+                                <span data-rating="6">☆</span>
+                                <span data-rating="7">☆</span>
+                                <span data-rating="8">☆</span>
+                                <span data-rating="9">☆</span>
+                                <span data-rating="10">☆</span>
+                            </div>
+                            <span id="rating-display" style="color:var(--text-primary); font-weight:600;">0/10</span>
+                        </div>
+                        <textarea id="review-text" placeholder="Share your thoughts about this movie..." style="width:100%; min-height:100px; padding:12px; border-radius:12px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:14px; resize:vertical; box-sizing:border-box;"></textarea>
+                        <button id="submit-review-btn" style="margin-top:12px; padding:10px 20px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:12px; font-weight:600; cursor:pointer;">Post Review</button>
+                    </div>
+                    
                     <div id="modal-reviews-section" class="modal-reviews"></div>
                 </div>
             </div>
@@ -2616,9 +2644,97 @@
             }
         });
 
+        setupStarRating(movie);
         loadMovieReviews(movie.id);
     }
+    function setupStarRating(movie) {
+        const starContainer = document.getElementById('star-rating');
+        const ratingDisplay = document.getElementById('rating-display');
+        const reviewText = document.getElementById('review-text');
+        const submitBtn = document.getElementById('submit-review-btn');
+        let selectedRating = 0;
 
+        starContainer.querySelectorAll('span').forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.getAttribute('data-rating'));
+                updateStars(selectedRating);
+                ratingDisplay.textContent = `${selectedRating}/10`;
+            });
+
+            star.addEventListener('mouseenter', () => {
+                const rating = parseInt(star.getAttribute('data-rating'));
+                updateStars(rating);
+            });
+        });
+
+        starContainer.addEventListener('mouseleave', () => {
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            starContainer.querySelectorAll('span').forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.textContent = '★';
+                    star.style.color = '#ffd700';
+                } else {
+                    star.textContent = '☆';
+                    star.style.color = 'var(--text-primary)';
+                }
+            });
+        }
+
+        submitBtn.addEventListener('click', async () => {
+            const text = reviewText.value.trim();
+
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+
+            if (!text) {
+                alert('Please write a review');
+                reviewText.focus();
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting...';
+
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/api/movies/${movie.id}/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        movieId: movie.id,
+                        movieTitle: movie.title,
+                        rating: selectedRating,
+                        text: text
+                    })
+                });
+
+                if (!res.ok) throw new Error('Failed to post review');
+
+                const data = await res.json();
+                
+                reviewText.value = '';
+                selectedRating = 0;
+                updateStars(0);
+                ratingDisplay.textContent = '0/10';
+                
+                loadMovieReviews(movie.id);
+                
+                alert('Review posted successfully!');
+
+            } catch (error) {
+                console.error('Review submission error:', error);
+                alert('Failed to post review. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Review';
+            }
+        });
+    }
     document.addEventListener('DOMContentLoaded', initMovieSearch);
     
     const container = document.getElementById('login-screen');
