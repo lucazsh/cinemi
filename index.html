@@ -1321,73 +1321,6 @@
         .btn-sw svg {
             fill: white;
         }
-        .modal-content.fullscreen {
-            max-width: 100%;
-            max-height: 100vh;
-            height: 100vh;
-            border-radius: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .modal-header-img.fullscreen {
-            height: 40vh;
-            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .reviews-section {
-            padding: 24px;
-            background: var(--bg-secondary);
-        }
-
-        .review-item {
-            padding: 16px;
-            margin-bottom: 12px;
-            background: var(--bg-primary);
-            border-radius: 12px;
-            border: 1px solid var(--border-dark-alpha-2);
-        }
-
-        .review-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .review-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .review-author {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .review-rating {
-            color: #46d369;
-            font-size: 13px;
-        }
-
-        .review-text {
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-secondary);
-        }
-
-        .add-review-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 16px;
-        }
     </style>
 </head>
 <body>
@@ -1977,7 +1910,7 @@
         </div>
     </div>
     <script>
-    const SERVER_URL = 'https://buzz-harry-bless-telephony.trycloudflare.com'; 
+    const SERVER_URL = 'https://edit-hamburg-capture-weed.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
@@ -2451,16 +2384,16 @@
         } catch { return null; }
     }
 
-    async function showDetails(movie) {
+    function showDetails(movie) {
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
         const backdrop = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : `${IMG_W500}${movie.poster_path}`;
         
         overlay.innerHTML = `
-            <div class="modal-content" id="movie-modal-content">
+            <div class="modal-content">
                 <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
-                <img src="${backdrop}" class="modal-header-img" id="modal-header-img">
-                <div class="modal-body" id="modal-body">
+                <img src="${backdrop}" class="modal-header-img">
+                <div class="modal-body">
                     <h2 class="modal-title">${escapeHtml(movie.title)}</h2>
                     <div class="modal-meta">
                         <span>${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
@@ -2469,36 +2402,12 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
-                    
-                    <div class="reviews-section" id="reviews-section">
-                        <h3 style="margin-bottom: 16px; font-size: 20px;">Reviews</h3>
-                        <button class="add-review-btn" onclick="addReview(${movie.id})">✍️ Write a Review</button>
-                        <div id="reviews-list"></div>
-                    </div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
-
-        const modalContent = document.getElementById('movie-modal-content');
-        const modalBody = document.getElementById('modal-body');
-        let isFullscreen = false;
-
-        modalBody.addEventListener('scroll', () => {
-            const scrollTop = modalBody.scrollTop;
-            
-            if (scrollTop > 100 && !isFullscreen) {
-                isFullscreen = true;
-                modalContent.classList.add('fullscreen');
-                document.getElementById('modal-header-img').classList.add('fullscreen');
-            } else if (scrollTop <= 100 && isFullscreen) {
-                isFullscreen = false;
-                modalContent.classList.remove('fullscreen');
-                document.getElementById('modal-header-img').classList.remove('fullscreen');
-            }
-        });
 
         const close = () => {
             overlay.remove();
@@ -2520,8 +2429,6 @@
                 }
             }
         });
-
-        loadReviews(movie.id);
     }
 
     document.addEventListener('DOMContentLoaded', initMovieSearch);
@@ -2814,66 +2721,6 @@
 
     checkAuthStatus();
 
-    let movieReviews = new Map();
-
-    async function loadReviews(movieId) {
-        const reviewsList = document.getElementById('reviews-list');
-        if (!reviewsList) return;
-        
-        const reviews = movieReviews.get(movieId) || [];
-        
-        if (reviews.length === 0) {
-            reviewsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-subtle);">No reviews yet. Be the first!</div>';
-            return;
-        }
-        
-        reviewsList.innerHTML = reviews.map(review => `
-            <div class="review-item">
-                <div class="review-header">
-                    <img src="${review.photoUrl}" class="review-avatar" alt="${review.username}">
-                    <div style="flex: 1;">
-                        <div class="review-author">@${review.username}</div>
-                        <div class="review-rating">⭐ ${review.rating}/10</div>
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-subtle);">${formatTimeAgo(review.createdAt)}</div>
-                </div>
-                <div class="review-text">${escapeHtml(review.text)}</div>
-            </div>
-        `).join('');
-    }
-
-    function addReview(movieId) {
-        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-        const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
-        
-        const rating = prompt('Rate this movie (1-10):');
-        if (!rating || isNaN(rating) || rating < 1 || rating > 10) {
-            alert('Please enter a valid rating between 1 and 10');
-            return;
-        }
-        
-        const text = prompt('Write your review:');
-        if (!text || !text.trim()) {
-            alert('Review cannot be empty');
-            return;
-        }
-        
-        const review = {
-            id: Date.now(),
-            movieId,
-            username,
-            photoUrl,
-            rating: parseInt(rating),
-            text: text.trim(),
-            createdAt: new Date().toISOString()
-        };
-        
-        const reviews = movieReviews.get(movieId) || [];
-        reviews.unshift(review);
-        movieReviews.set(movieId, reviews);
-        
-        loadReviews(movieId);
-    }
     let current = 0;
     const questions = document.querySelectorAll('.question');
     const progress = document.getElementById('progressFill');
