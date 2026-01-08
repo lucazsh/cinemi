@@ -2,6 +2,7 @@
 <html class="inverted">
 <head>
     <meta charset='utf-8'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         html {
@@ -1430,6 +1431,28 @@
         .filter-option svg {
             fill: var(--text-primary);
         }
+        .material-symbols-rounded.filled {
+            font-variation-settings: 'FILL' 1;
+            color: #ffd700;
+        }
+
+        .review-card {
+            text-align: left;
+        }
+
+        .modal-body {
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                border-radius: 20px 20px 0 0;
+            }
+            
+            .modal-header-img {
+                height: 200px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2151,7 +2174,88 @@
         const modal = document.getElementById('posts-filter-modal');
         if (modal) modal.classList.remove('open');
     }
+    function filterPosts(type) {
+        const postsContainer = document.getElementById('posts');
+        
+        if (type === 'all') {
+            loadAllPosts();
+        } else if (type === 'reviews') {
+            loadReviewPosts();
+        } else if (type === 'friends') {
+            loadFriendsPosts();
+        }
+        
+        closePostsFilter();
+    }
 
+    async function loadAllPosts() {
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = '';
+        try {
+            const res = await fetchWithAuth(baseUrl + '/api/posts');
+            if (!res.ok) throw new Error('failed to load posts');
+            const list = await res.json();
+            list.slice().reverse().forEach(p => {
+                if (!p.isReview) {
+                    addPostToUIFromServer(p);
+                }
+            });
+        } catch (err) {}
+    }
+
+    async function loadReviewPosts() {
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = '';
+        try {
+            const res = await fetchWithAuth(baseUrl + '/api/posts');
+            if (!res.ok) throw new Error('failed to load posts');
+            const list = await res.json();
+            list.slice().reverse().forEach(p => {
+                if (p.isReview) {
+                    const wrapper = createReviewPostElement(p);
+                    postsContainer.prepend(wrapper);
+                }
+            });
+        } catch (err) {}
+    }
+
+    function loadFriendsPosts() {
+        alert('Friends filter coming soon!');
+        loadAllPosts();
+    }
+
+    function createReviewPostElement(review) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'post';
+        wrapper.setAttribute('data-post-id', review.id);
+        wrapper.setAttribute('data-timestamp', review.createdAt);
+        
+        const imgSrc = review.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        const timeLabel = formatTimeAgo(review.createdAt);
+        const posterUrl = review.moviePoster ? `${IMG_W500}${review.moviePoster}` : '';
+        
+        wrapper.innerHTML = `
+            <div class="pt">
+                <div class="pr-img"><img src="${imgSrc}"></div>
+                <div style="display: block;">
+                    <span class="usr">${escapeHtml(review.username)}</span>
+                    <span class="time">${timeLabel}</span>
+                    <div class="cnt">
+                        <div style="font-weight:600; margin-bottom:4px;">⭐ ${review.rating}/10 - ${escapeHtml(review.movieTitle)}</div>
+                        ${posterUrl ? `<img src="${posterUrl}" style="width:100%; max-width:200px; border-radius:8px; margin:8px 0;">` : ''}
+                        <div>${escapeHtml(review.text)}</div>
+                    </div>
+                    <div class="re">
+                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
+                        <button class="reply" data-post-id="${review.id}"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
+                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return wrapper;
+    }
     function filterPosts(type) {
         closePostsFilter();
     }
@@ -2185,14 +2289,14 @@
         try {
             const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
             if (!res.ok) {
-                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
+                reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
                 return;
             }
             
             const reviews = await res.json();
             
             if (reviews.length === 0) {
-                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
+                reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
                 return;
             }
 
@@ -2212,7 +2316,7 @@
                 `).join('');
         } catch (err) {
             console.error('Review load error:', err);
-            reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">Failed to load reviews</div>';
+            reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">Failed to load reviews</div>';
         }
     }
     function renderSwipifyCard() {
@@ -2580,29 +2684,27 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
-                    
-                    <div id="add-review-section" style="margin-top:30px; padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">
-                        <h3 style="margin-bottom:16px; color:var(--text-primary);">Write a Review</h3>
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                            <span style="color:var(--text-primary);">Rating:</span>
-                            <div id="star-rating" style="display:flex; gap:4px; font-size:24px; cursor:pointer;">
-                                <span data-rating="1">☆</span>
-                                <span data-rating="2">☆</span>
-                                <span data-rating="3">☆</span>
-                                <span data-rating="4">☆</span>
-                                <span data-rating="5">☆</span>
-                                <span data-rating="6">☆</span>
-                                <span data-rating="7">☆</span>
-                                <span data-rating="8">☆</span>
-                                <span data-rating="9">☆</span>
-                                <span data-rating="10">☆</span>
+                        <div id="add-review-section" style="margin-top:30px; padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">
+                            <h3 style="margin-bottom:16px; color:var(--text-primary);">Write a Review</h3>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:12px;">
+                                <span style="color:var(--text-primary);">Rating:</span>
+                                <div id="star-rating" style="display:flex; gap:2px; cursor:pointer; flex-wrap:wrap;">
+                                    <span class="material-symbols-rounded" data-rating="1" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="2" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="3" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="4" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="5" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="6" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="7" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="8" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="9" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                    <span class="material-symbols-rounded" data-rating="10" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
+                                </div>
+                                <span id="rating-display" style="color:var(--text-primary); font-weight:600; font-size:clamp(14px, 3vw, 16px);">0/10</span>
                             </div>
-                            <span id="rating-display" style="color:var(--text-primary); font-weight:600;">0/10</span>
+                            <textarea id="review-text" placeholder="Share your thoughts about this movie..." style="width:100%; min-height:100px; padding:12px; border-radius:12px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:14px; resize:vertical; box-sizing:border-box;"></textarea>
+                            <button id="submit-review-btn" style="margin-top:12px; padding:10px 20px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:12px; font-weight:600; cursor:pointer;">Post Review</button>
                         </div>
-                        <textarea id="review-text" placeholder="Share your thoughts about this movie..." style="width:100%; min-height:100px; padding:12px; border-radius:12px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:14px; resize:vertical; box-sizing:border-box;"></textarea>
-                        <button id="submit-review-btn" style="margin-top:12px; padding:10px 20px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:12px; font-weight:600; cursor:pointer;">Post Review</button>
-                    </div>
-                    
                     <div id="modal-reviews-section" class="modal-reviews"></div>
                 </div>
             </div>
@@ -2675,11 +2777,9 @@
             starContainer.querySelectorAll('span').forEach(star => {
                 const starRating = parseInt(star.getAttribute('data-rating'));
                 if (starRating <= rating) {
-                    star.textContent = '★';
-                    star.style.color = '#ffd700';
+                    star.classList.add('filled');
                 } else {
-                    star.textContent = '☆';
-                    star.style.color = 'var(--text-primary)';
+                    star.classList.remove('filled');
                 }
             });
         }
@@ -2708,6 +2808,7 @@
                     body: JSON.stringify({
                         movieId: movie.id,
                         movieTitle: movie.title,
+                        moviePoster: movie.poster_path,
                         rating: selectedRating,
                         text: text
                     })
