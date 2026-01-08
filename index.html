@@ -2,7 +2,6 @@
 <html class="inverted">
 <head>
     <meta charset='utf-8'>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         html {
@@ -1322,137 +1321,6 @@
         .btn-sw svg {
             fill: white;
         }
-        .modal-overlay.fullscreen {
-            align-items: flex-start;
-        }
-
-        .modal-content.fullscreen {
-            max-width: 100%;
-            max-height: 100vh;
-            height: 100vh;
-            border-radius: 0;
-            animation: expandToFullscreen 0.3s ease-out forwards;
-        }
-
-        @keyframes expandToFullscreen {
-            from {
-                border-radius: 20px;
-                max-width: 600px;
-            }
-            to {
-                border-radius: 0;
-                max-width: 100%;
-            }
-        }
-
-        .modal-reviews {
-            padding: 24px;
-        }
-
-        .review-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-dark-alpha-2);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .review-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .review-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .review-meta {
-            flex: 1;
-        }
-
-        .review-author {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .review-rating {
-            color: #46d369;
-            font-size: 14px;
-        }
-
-        .review-text {
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .posts-filter-modal {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: flex-end;
-            z-index: 10000;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
-        }
-
-        .posts-filter-modal.open {
-            display: flex;
-        }
-
-        .posts-filter-sheet {
-            width: 100%;
-            background: var(--bg-secondary);
-            border-radius: 24px 24px 0 0;
-            padding: 20px;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        .filter-option {
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-primary);
-        }
-
-        .filter-option:active {
-            background: var(--nav-active-bg);
-        }
-
-        .filter-option svg {
-            fill: var(--text-primary);
-        }
-        .material-symbols-rounded.filled {
-            font-variation-settings: 'FILL' 1;
-            color: #ffd700;
-        }
-
-        .review-card {
-            text-align: left;
-        }
-
-        .modal-body {
-            max-width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .modal-content {
-                border-radius: 20px 20px 0 0;
-            }
-            
-            .modal-header-img {
-                height: 200px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -1738,9 +1606,8 @@
     </div>
     <div id="pos-t" class="view">
         <div class="nt">
-            <span class="logo" style="cursor: pointer;" onclick="openPostsFilter()">
+            <span class="logo">
                 Posts
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
             </span>
             <button onclick="showView('add')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
@@ -1785,24 +1652,6 @@
                     <button id="postSubmit" class="btn-p">Post</button>
                 </div>
             </div>
-        </div>
-    </div>
-    <div id="posts-filter-modal" class="posts-filter-modal">
-        <div class="posts-filter-sheet">
-            <h3 style="margin-bottom:20px; color:var(--text-primary);">Filter Posts</h3>
-            <div class="filter-option" onclick="filterPosts('all')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
-                <span>All Posts</span>
-            </div>
-            <div class="filter-option" onclick="filterPosts('friends')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg>
-                <span>Friends</span>
-            </div>
-            <div class="filter-option" onclick="filterPosts('reviews')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>
-                <span>Reviews</span>
-            </div>
-            <button class="btn-close" onclick="closePostsFilter()">Close</button>
         </div>
     </div>
     <div id="profile" class="view">
@@ -2165,104 +2014,6 @@
             }, 300);
         }
     }
-    function openPostsFilter() {
-    const modal = document.getElementById('posts-filter-modal');
-    if (modal) modal.classList.add('open');
-    }
-
-    function closePostsFilter() {
-        const modal = document.getElementById('posts-filter-modal');
-        if (modal) modal.classList.remove('open');
-    }
-    function filterPosts(type) {
-        const postsContainer = document.getElementById('posts');
-        const titleElement = document.querySelector('#pos-t .logo');
-        
-        if (type === 'all') {
-            if (titleElement) titleElement.innerHTML = 'Posts <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
-            loadAllPosts();
-        } else if (type === 'reviews') {
-            if (titleElement) titleElement.innerHTML = 'Reviews <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
-            loadReviewPosts();
-        } else if (type === 'friends') {
-            if (titleElement) titleElement.innerHTML = 'Friends <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>';
-            loadFriendsPosts();
-        }
-        
-        closePostsFilter();
-    }
-
-    async function loadAllPosts() {
-        const postsContainer = document.getElementById('posts');
-        postsContainer.innerHTML = '';
-        try {
-            const res = await fetchWithAuth(baseUrl + '/api/posts');
-            if (!res.ok) throw new Error('failed to load posts');
-            const list = await res.json();
-            list.slice().reverse().forEach(p => {
-                if (!p.isReview) {
-                    addPostToUIFromServer(p);
-                }
-            });
-        } catch (err) {}
-    }
-
-    async function loadReviewPosts() {
-        const postsContainer = document.getElementById('posts');
-        postsContainer.innerHTML = '';
-        try {
-            const res = await fetchWithAuth(baseUrl + '/api/posts');
-            if (!res.ok) throw new Error('failed to load posts');
-            const list = await res.json();
-            list.slice().reverse().forEach(p => {
-                if (p.isReview) {
-                    const wrapper = createReviewPostElement(p);
-                    postsContainer.prepend(wrapper);
-                }
-            });
-        } catch (err) {}
-    }
-
-    function loadFriendsPosts() {
-        alert('Friends filter coming soon!');
-        loadAllPosts();
-    }
-
-    function createReviewPostElement(review) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'post';
-        wrapper.setAttribute('data-post-id', review.id);
-        wrapper.setAttribute('data-timestamp', review.createdAt);
-        
-        const imgSrc = review.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
-        const timeLabel = formatTimeAgo(review.createdAt);
-        const posterUrl = review.moviePoster ? `${IMG_W500}${review.moviePoster}` : '';
-        
-        wrapper.innerHTML = `
-            <div class="pt">
-                <div class="pr-img"><img src="${imgSrc}"></div>
-                <div style="display: block;">
-                    <span class="usr">${escapeHtml(review.username)}</span>
-                    <span class="time">${timeLabel}</span>
-                    <div class="cnt">
-                        <div style="font-weight:600; margin-bottom:4px;">⭐ ${review.rating}/10 - ${escapeHtml(review.movieTitle)}</div>
-                        ${posterUrl ? `<img src="${posterUrl}" style="width:100%; max-width:200px; border-radius:8px; margin:8px 0;">` : ''}
-                        <div>${escapeHtml(review.text)}</div>
-                    </div>
-                    <div class="re">
-                        <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="0 -960 960 960" width="21px" fill="#666666"><path d="M480-170q-13 0-25.5-4.5T431-189l-59-54q-109-97-192.5-189.5T96-634q0-88.02 59.85-147.01Q215.7-840 305-840q51.2 0 96.6 21.5Q447-797 480-757q35-40 79.66-61.5t95.02-21.5Q744-840 804-781.01T864-634q0 109-83.5 201.5T588-243l-59 54q-11 10-23.5 14.5T480-170Zm-34-512q-24-41-60-63.5T305-768q-58.71 0-97.86 38Q168-692 168-633.61 168-583 204-527t86 109.5Q340-364 393-318t87 76q34-30 87-76t103-99.5Q720-471 756-527t36-106.61Q792-692 752.86-730q-39.15-38-97.86-38-45 0-81.5 22.5T513-682q-5 10-14.05 14.5t-19 4.5q-9.95 0-19.45-4.5T446-682Zm34 177Z"/></svg></button>
-                        <button class="reply" data-post-id="${review.id}"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z"/></svg></button>
-                        <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M780-447 193-212q-18 7-33.5-3.5T144-245v-470q0-19 15.5-29.5T193-748l587 235q23 9 23 33t-23 33ZM216-299l454-181-454-181v109l216 72-216 72v109Zm0 0v-362 362Z"/></svg></button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        return wrapper;
-    }
-    function filterPosts(type) {
-        closePostsFilter();
-    }
     async function loadSwipifyMovies() {
         const container = document.getElementById('swipify-container');
         const loading = document.getElementById('swipify-loading');
@@ -2286,43 +2037,6 @@
         }
     }
 
-    async function loadMovieReviews(movieId) {
-        const reviewsSection = document.getElementById('modal-reviews-section');
-        if (!reviewsSection) return;
-
-        try {
-            const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
-            if (!res.ok) {
-                reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
-                return;
-            }
-            
-            const reviews = await res.json();
-            
-            if (reviews.length === 0) {
-                reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">No reviews yet. Be the first to review!</div>';
-                return;
-            }
-
-            reviewsSection.innerHTML = '<h3 style="margin-bottom:16px; color:var(--text-primary); padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">Reviews (' + reviews.length + ')</h3>' +
-                reviews.map(review => `
-                    <div class="review-card">
-                        <div class="review-header">
-                            <img src="${review.photoUrl || 'https://i.imgflip.com/1ickup.jpg'}" class="review-avatar">
-                            <div class="review-meta">
-                                <div class="review-author">${escapeHtml(review.username)}</div>
-                                <div class="review-rating">⭐ ${review.rating}/10</div>
-                            </div>
-                        </div>
-                        <div class="review-text">${escapeHtml(review.text)}</div>
-                        <div style="font-size:12px; color:var(--text-subtle); margin-top:8px;">${formatTimeAgo(review.createdAt)}</div>
-                    </div>
-                `).join('');
-        } catch (err) {
-            console.error('Review load error:', err);
-            reviewsSection.innerHTML = '<div style="padding:20px; color:var(--text-subtle);">Failed to load reviews</div>';
-        }
-    }
     function renderSwipifyCard() {
         const container = document.getElementById('swipify-container');
         
@@ -2688,46 +2402,12 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
-                        <div id="add-review-section" style="margin-top:30px; padding-top:20px; border-top:1px solid var(--border-dark-alpha-2);">
-                            <h3 style="margin-bottom:16px; color:var(--text-primary);">Write a Review</h3>
-                            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:12px;">
-                                <span style="color:var(--text-primary);">Rating:</span>
-                                <div id="star-rating" style="display:flex; gap:2px; cursor:pointer; flex-wrap:wrap;">
-                                    <span class="material-symbols-rounded" data-rating="1" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="2" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="3" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="4" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="5" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="6" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="7" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="8" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="9" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                    <span class="material-symbols-rounded" data-rating="10" style="font-size:clamp(20px, 5vw, 28px); color:var(--text-primary); transition:color 0.2s;">star</span>
-                                </div>
-                                <span id="rating-display" style="color:var(--text-primary); font-weight:600; font-size:clamp(14px, 3vw, 16px);">0/10</span>
-                            </div>
-                            <textarea id="review-text" placeholder="Share your thoughts about this movie..." style="width:100%; min-height:100px; padding:12px; border-radius:12px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); font-size:14px; resize:vertical; box-sizing:border-box;"></textarea>
-                            <button id="submit-review-btn" style="margin-top:12px; padding:10px 20px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:12px; font-weight:600; cursor:pointer;">Post Review</button>
-                        </div>
-                    <div id="modal-reviews-section" class="modal-reviews"></div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
-
-        const modalContent = overlay.querySelector('.modal-content');
-        const modalBody = overlay.querySelector('.modal-body');
-        let isFullscreen = false;
-
-        modalBody.addEventListener('scroll', () => {
-            if (modalBody.scrollTop > 100 && !isFullscreen) {
-                isFullscreen = true;
-                overlay.classList.add('fullscreen');
-                modalContent.classList.add('fullscreen');
-            }
-        });
 
         const close = () => {
             overlay.remove();
@@ -2749,97 +2429,8 @@
                 }
             }
         });
-
-        setupStarRating(movie);
-        loadMovieReviews(movie.id);
     }
-    function setupStarRating(movie) {
-        const starContainer = document.getElementById('star-rating');
-        const ratingDisplay = document.getElementById('rating-display');
-        const reviewText = document.getElementById('review-text');
-        const submitBtn = document.getElementById('submit-review-btn');
-        let selectedRating = 0;
 
-        starContainer.querySelectorAll('span').forEach(star => {
-            star.addEventListener('click', () => {
-                selectedRating = parseInt(star.getAttribute('data-rating'));
-                updateStars(selectedRating);
-                ratingDisplay.textContent = `${selectedRating}/10`;
-            });
-
-            star.addEventListener('mouseenter', () => {
-                const rating = parseInt(star.getAttribute('data-rating'));
-                updateStars(rating);
-            });
-        });
-
-        starContainer.addEventListener('mouseleave', () => {
-            updateStars(selectedRating);
-        });
-
-        function updateStars(rating) {
-            starContainer.querySelectorAll('span').forEach(star => {
-                const starRating = parseInt(star.getAttribute('data-rating'));
-                if (starRating <= rating) {
-                    star.classList.add('filled');
-                } else {
-                    star.classList.remove('filled');
-                }
-            });
-        }
-
-        submitBtn.addEventListener('click', async () => {
-            const text = reviewText.value.trim();
-
-            if (selectedRating === 0) {
-                alert('Please select a rating');
-                return;
-            }
-
-            if (!text) {
-                alert('Please write a review');
-                reviewText.focus();
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Posting...';
-
-            try {
-                const res = await fetchWithAuth(`${baseUrl}/api/movies/${movie.id}/reviews`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        movieId: movie.id,
-                        movieTitle: movie.title,
-                        moviePoster: movie.poster_path,
-                        rating: selectedRating,
-                        text: text
-                    })
-                });
-
-                if (!res.ok) throw new Error('Failed to post review');
-
-                const data = await res.json();
-                
-                reviewText.value = '';
-                selectedRating = 0;
-                updateStars(0);
-                ratingDisplay.textContent = '0/10';
-                
-                loadMovieReviews(movie.id);
-                
-                alert('Review posted successfully!');
-
-            } catch (error) {
-                console.error('Review submission error:', error);
-                alert('Failed to post review. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Post Review';
-            }
-        });
-    }
     document.addEventListener('DOMContentLoaded', initMovieSearch);
     
     const container = document.getElementById('login-screen');
@@ -3573,28 +3164,8 @@
             socket.on('post_created', (post) => {
                 addPostToUIFromServer(post);
             });
-            socket.on('post_created', (post) => {
-                const currentView = document.querySelector('#pos-t .logo').textContent.trim();
-                if (post.isReview && currentView !== 'Reviews') {
-                    return; 
-                }
-                if (!post.isReview && currentView === 'Reviews') {
-                    return;
-                }
-                
-                addPostToUIFromServer(post);
-            });
-            socket.on('review_created', (review) => {
-
-                const currentView = document.querySelector('#pos-t .logo').textContent.trim();
-                if (currentView === 'Reviews') {
-                    const wrapper = createReviewPostElement(review);
-                    postsContainer.prepend(wrapper);
-                }
-            });
         } catch (err) {}
     }
-    
     if (baseUrl) {
         replacePostButtonListener(submitPostToServerHandler);
         loadInitialPostsFromServer();
