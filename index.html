@@ -1321,10 +1321,119 @@
         .btn-sw svg {
             fill: white;
         }
+        .modal-overlay.fullscreen {
+            align-items: flex-start;
+        }
+
+        .modal-content.fullscreen {
+            max-width: 100%;
+            max-height: 100vh;
+            height: 100vh;
+            border-radius: 0;
+            animation: expandToFullscreen 0.3s ease-out forwards;
+        }
+
+        @keyframes expandToFullscreen {
+            from {
+                border-radius: 20px;
+                max-width: 600px;
+            }
+            to {
+                border-radius: 0;
+                max-width: 100%;
+            }
+        }
+
+        .modal-reviews {
+            padding: 24px;
+        }
+
+        .review-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-dark-alpha-2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .review-meta {
+            flex: 1;
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .review-rating {
+            color: #46d369;
+            font-size: 14px;
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .posts-filter-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: flex-end;
+            z-index: 10000;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .posts-filter-modal.open {
+            display: flex;
+        }
+
+        .posts-filter-sheet {
+            width: 100%;
+            background: var(--bg-secondary);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .filter-option {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+        }
+
+        .filter-option:active {
+            background: var(--nav-active-bg);
+        }
+
+        .filter-option svg {
+            fill: var(--text-primary);
+        }
     </style>
 </head>
 <body>
-    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
         <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
             <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
@@ -1606,8 +1715,9 @@
     </div>
     <div id="pos-t" class="view">
         <div class="nt">
-            <span class="logo">
+            <span class="logo" style="cursor: pointer;" onclick="openPostsFilter()">
                 Posts
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" style="margin-left:8px; vertical-align:middle;"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
             </span>
             <button onclick="showView('add')" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
@@ -1652,6 +1762,24 @@
                     <button id="postSubmit" class="btn-p">Post</button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="posts-filter-modal" class="posts-filter-modal">
+        <div class="posts-filter-sheet">
+            <h3 style="margin-bottom:20px; color:var(--text-primary);">Filter Posts</h3>
+            <div class="filter-option" onclick="filterPosts('all')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>
+                <span>All Posts</span>
+            </div>
+            <div class="filter-option" onclick="filterPosts('friends')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg>
+                <span>Friends</span>
+            </div>
+            <div class="filter-option" onclick="filterPosts('reviews')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>
+                <span>Reviews</span>
+            </div>
+            <button class="btn-close" onclick="closePostsFilter()">Close</button>
         </div>
     </div>
     <div id="profile" class="view">
@@ -2014,6 +2142,19 @@
             }, 300);
         }
     }
+    function openPostsFilter() {
+    const modal = document.getElementById('posts-filter-modal');
+    if (modal) modal.classList.add('open');
+    }
+
+    function closePostsFilter() {
+        const modal = document.getElementById('posts-filter-modal');
+        if (modal) modal.classList.remove('open');
+    }
+
+    function filterPosts(type) {
+        closePostsFilter();
+    }
     async function loadSwipifyMovies() {
         const container = document.getElementById('swipify-container');
         const loading = document.getElementById('swipify-loading');
@@ -2037,6 +2178,38 @@
         }
     }
 
+    async function loadMovieReviews(movieId) {
+        const reviewsSection = document.getElementById('modal-reviews-section');
+        if (!reviewsSection) return;
+
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
+            if (!res.ok) throw new Error('Failed to load reviews');
+            
+            const reviews = await res.json();
+            
+            if (reviews.length === 0) {
+                reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">No reviews yet</div>';
+                return;
+            }
+
+            reviewsSection.innerHTML = '<h3 style="margin-bottom:16px; color:var(--text-primary);">Reviews</h3>' +
+                reviews.map(review => `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="${review.photoUrl || 'https://i.imgflip.com/1ickup.jpg'}" class="review-avatar">
+                            <div class="review-meta">
+                                <div class="review-author">${escapeHtml(review.username)}</div>
+                                <div class="review-rating">⭐ ${review.rating}/10</div>
+                            </div>
+                        </div>
+                        <div class="review-text">${escapeHtml(review.text)}</div>
+                    </div>
+                `).join('');
+        } catch (err) {
+            reviewsSection.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-subtle);">Failed to load reviews</div>';
+        }
+    }
     function renderSwipifyCard() {
         const container = document.getElementById('swipify-container');
         
