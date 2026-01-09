@@ -1910,7 +1910,7 @@
         </div>
     </div>
     <script>
-    const SERVER_URL = 'https://edit-hamburg-capture-weed.trycloudflare.com'; 
+    const SERVER_URL = 'https://deserve-parker-mining-relying.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
@@ -2384,6 +2384,22 @@
         } catch { return null; }
     }
 
+    async function loadReviews(movieId) {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
+            if (!res.ok) throw new Error('Failed to load reviews');
+            const reviews = await res.json();
+            
+            const statsRes = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/stats`);
+            const stats = statsRes.ok ? await statsRes.json() : { count: 0, averageRating: 0 };
+            
+            return { reviews, stats };
+        } catch (err) {
+            console.error('Review load error:', err);
+            return { reviews: [], stats: { count: 0, averageRating: 0 } };
+        }
+    }
+
     function showDetails(movie) {
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
@@ -2402,6 +2418,26 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(movie.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
+                    
+                    <div id="reviews-section" style="margin-top:30px; border-top: 1px solid var(--border-dark-alpha-2); padding-top:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <h3 style="margin:0; font-size:18px;">Reviews</h3>
+                            <div id="review-stats" style="font-size:14px; color:var(--text-subtle);"></div>
+                        </div>
+                        
+                        <div id="add-review-form" style="margin-bottom:20px; padding:15px; background:var(--iconbox-bg); border-radius:12px;">
+                            <div style="margin-bottom:10px;">
+                                <label style="font-size:14px; font-weight:600; display:block; margin-bottom:8px;">Your Rating</label>
+                                <div id="star-rating" style="display:flex; gap:5px;">
+                                    ${[1,2,3,4,5].map(n => `<button class="star-btn" data-rating="${n}" style="background:none; border:none; font-size:28px; cursor:pointer; padding:0;">☆</button>`).join('')}
+                                </div>
+                            </div>
+                            <textarea id="review-text" placeholder="Write your review... (optional)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); resize:none; font-family:inherit; box-sizing:border-box;" rows="3"></textarea>
+                            <button id="submit-review" style="margin-top:10px; padding:8px 16px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">Submit Review</button>
+                        </div>
+                        
+                        <div id="reviews-list"></div>
+                    </div>
                 </div>
             </div>
         `;
@@ -2429,8 +2465,87 @@
                 }
             }
         });
+
+        let selectedRating = 0;
+        const starBtns = overlay.querySelectorAll('.star-btn');
+        
+        starBtns.forEach(btn => {
+            btn.onclick = () => {
+                selectedRating = parseInt(btn.dataset.rating);
+                starBtns.forEach((s, i) => {
+                    s.textContent = i < selectedRating ? '★' : '☆';
+                    s.style.color = i < selectedRating ? '#ffc107' : 'var(--text-subtle)';
+                });
+            };
+        });
+
+        overlay.querySelector('#submit-review').onclick = async () => {
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            const text = overlay.querySelector('#review-text').value.trim();
+            
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/api/movies/${movie.id}/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rating: selectedRating, text })
+                });
+                
+                if (!res.ok) throw new Error('Failed to submit review');
+                
+                overlay.querySelector('#review-text').value = '';
+                selectedRating = 0;
+                starBtns.forEach(s => {
+                    s.textContent = '☆';
+                    s.style.color = 'var(--text-subtle)';
+                });
+                
+                loadAndDisplayReviews(movie.id);
+            } catch (err) {
+                alert('Failed to submit review. Please try again.');
+            }
+        };
+
+        loadAndDisplayReviews(movie.id);
     }
 
+    async function loadAndDisplayReviews(movieId) {
+        const { reviews, stats } = await loadReviews(movieId);
+        
+        const statsEl = document.getElementById('review-stats');
+        if (statsEl) {
+            if (stats.count > 0) {
+                statsEl.innerHTML = `⭐ ${stats.averageRating} (${stats.count} review${stats.count !== 1 ? 's' : ''})`;
+            } else {
+                statsEl.innerHTML = 'No reviews yet';
+            }
+        }
+        
+        const listEl = document.getElementById('reviews-list');
+        if (!listEl) return;
+        
+        if (reviews.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-subtle);">No reviews yet. Be the first!</div>';
+            return;
+        }
+        
+        listEl.innerHTML = reviews.map(r => `
+            <div style="padding:15px; border-bottom:1px solid var(--border-dark-alpha-2);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <img src="${r.photoUrl}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                        <div style="font-weight:600; font-size:14px;">${escapeHtml(r.displayName || r.username)}</div>
+                        <div style="font-size:12px; color:var(--text-subtle);">${formatTimeAgo(r.createdAt)}</div>
+                    </div>
+                    <div style="color:#ffc107; font-size:16px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                </div>
+                ${r.text ? `<div style="font-size:14px; line-height:1.4; color:var(--text-secondary);">${escapeHtml(r.text)}</div>` : ''}
+            </div>
+        `).join('');
+    }
     document.addEventListener('DOMContentLoaded', initMovieSearch);
     
     const container = document.getElementById('login-screen');
