@@ -3371,6 +3371,10 @@
     }
 
     function addPostToUIFromServer(post) {
+        if (currentFeed !== 'posts') {
+            return;
+        }
+        
         const timeLabel = post.createdAt ? formatTimeAgo(post.createdAt) : timeLabelForNow();
         if (post.tempId) {
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
@@ -3384,6 +3388,12 @@
                 return;
             }
         }
+        
+        const noPostsMsg = postsContainer.querySelector('div[style*="No posts yet"]');
+        if (noPostsMsg) {
+            postsContainer.innerHTML = '';
+        }
+        
         const wrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files || [], timeLabel, post.photoUrl);
         wrapper.setAttribute('data-post-id', post.id);
         wrapper.setAttribute('data-timestamp', post.createdAt);
@@ -3483,6 +3493,14 @@
             });
             const json = await res.json();
             if (!res.ok) throw new Error(json?.error || 'upload failed');
+            
+            if (currentFeed === 'posts') {
+                const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
+                if (optimisticEl) {
+                    optimisticEl.remove();
+                }
+            }
+            
         } catch (err) {
             console.error('Post error:', err);
             if (currentFeed === 'posts') {
