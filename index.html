@@ -1333,6 +1333,39 @@
         #posts-menu-btn:hover {
             opacity: 0.8;
         }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .post {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .feed-transition {
+            animation: fadeOut 0.2s ease-out;
+        }
+
+        .post:nth-child(1) { animation-delay: 0s; }
+        .post:nth-child(2) { animation-delay: 0.05s; }
+        .post:nth-child(3) { animation-delay: 0.1s; }
+        .post:nth-child(4) { animation-delay: 0.15s; }
+        .post:nth-child(5) { animation-delay: 0.2s; }
     </style>
 </head>
 <body>
@@ -2421,10 +2454,15 @@
     });
 
     feedOptions.forEach(option => {
-        option.addEventListener('click', () => {
+        option.addEventListener('click', async () => {
             const selectedFeed = option.getAttribute('data-feed');
-            currentFeed = selectedFeed;
             
+            if (currentFeed === selectedFeed) {
+                feedMenu.style.display = 'none';
+                return;
+            }
+            
+            currentFeed = selectedFeed;
             currentFeedLabel.textContent = option.textContent;
             
             feedOptions.forEach(opt => opt.classList.remove('active'));
@@ -2432,13 +2470,21 @@
             
             feedMenu.style.display = 'none';
             
-            filterPostsByFeed(selectedFeed);
+            const postsContainer = document.getElementById('posts');
+            postsContainer.classList.add('feed-transition');
+            
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            await filterPostsByFeed(selectedFeed);
+            
+            postsContainer.classList.remove('feed-transition');
         });
     });
 
     async function filterPostsByFeed(feedType) {
         const postsContainer = document.getElementById('posts');
-        const currentUsername = (document.getElementById('addUsername')?.value || '').trim();
+        
+        postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">Loading...</div>';
         
         if (feedType === 'posts') {
             try {
@@ -2467,24 +2513,10 @@
                 
                 postsContainer.innerHTML = '';
                 
-                allReviews.forEach(review => {
-                    const reviewPost = document.createElement('div');
-                    reviewPost.className = 'post';
-                    reviewPost.innerHTML = `
-                        <div class="pt">
-                            <div class="pr-img"><img src="${review.photoUrl}"></div>
-                            <div style="display: block;">
-                                <span class="usr">${escapeHtml(review.username)}</span>
-                                <span class="time">${formatTimeAgo(review.createdAt)}</span>
-                                <div class="cnt">
-                                    <div style="color: #ffc107; margin-bottom: 8px;">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
-                                    ${review.text ? escapeHtml(review.text) : 'No review text'}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                for (const review of allReviews) {
+                    const reviewPost = await createReviewPost(review);
                     postsContainer.appendChild(reviewPost);
-                });
+                }
                 
                 if (allReviews.length === 0) {
                     postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">No reviews yet</div>';
@@ -2495,6 +2527,76 @@
         }
     }
 
+    async function createReviewPost(review) {
+        const reviewPost = document.createElement('div');
+        reviewPost.className = 'post';
+        
+        let movieInfo = '';
+        try {
+            const movieRes = await fetch(`${baseUrl}/api/tmdb/movie/${review.movieId}`, {
+                headers: ngrokHeaders
+            });
+            if (movieRes.ok) {
+                const movie = await movieRes.json();
+                const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
+                
+                movieInfo = `
+                    <div class="review-movie-info" data-movie-id="${review.movieId}" style="margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;">
+                        ${posterUrl ? `<img src="${posterUrl}" style="width: 60px; height: 90px; border-radius: 8px; object-fit: cover;">` : ''}
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${escapeHtml(movie.title)}</div>
+                            <div style="font-size: 12px; color: var(--text-subtle);">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'} • ⭐ ${movie.vote_average.toFixed(1)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            console.error('Failed to fetch movie info:', err);
+        }
+        
+        reviewPost.innerHTML = `
+            <div class="pt">
+                <div class="pr-img"><img src="${review.photoUrl}"></div>
+                <div style="display: block; width: 100%;">
+                    <span class="usr">${escapeHtml(review.username)}</span>
+                    <span class="time">${formatTimeAgo(review.createdAt)}</span>
+                    <div class="cnt">
+                        <div style="color: #ffc107; margin-bottom: 8px; font-size: 18px;">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                        ${review.text ? `<div style="margin-bottom: 8px;">${escapeHtml(review.text)}</div>` : ''}
+                        ${movieInfo}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const movieInfoEl = reviewPost.querySelector('.review-movie-info');
+        if (movieInfoEl) {
+            movieInfoEl.addEventListener('mouseenter', function() {
+                this.style.background = 'var(--nav-active-bg)';
+            });
+            movieInfoEl.addEventListener('mouseleave', function() {
+                this.style.background = 'var(--iconbox-bg)';
+            });
+            movieInfoEl.addEventListener('click', async function() {
+                const movieId = this.getAttribute('data-movie-id');
+                showView('finder');
+                
+                try {
+                    const res = await fetch(`${baseUrl}/api/tmdb/movie/${movieId}`, {
+                        headers: ngrokHeaders
+                    });
+                    if (res.ok) {
+                        const movie = await res.json();
+                        showDetails(movie);
+                    }
+                } catch (err) {
+                    console.error('Failed to open movie:', err);
+                }
+            });
+        }
+        
+        return reviewPost;
+    }
     feedOptions[0].classList.add('active');
     async function getWatchProviders(id) {
         try {
@@ -2608,6 +2710,32 @@
             }
             
             const text = overlay.querySelector('#review-text').value.trim();
+            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+            const displayName = document.querySelector('.p-name')?.textContent || username;
+            const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
+            
+            const optimisticReview = {
+                id: 'temp-' + Date.now(),
+                movieId: movie.id,
+                username,
+                displayName,
+                photoUrl,
+                rating: selectedRating,
+                text,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (currentFeed === 'reviews') {
+                const postsContainer = document.getElementById('posts');
+                const noReviewsMsg = postsContainer.querySelector('div[style*="No reviews yet"]');
+                if (noReviewsMsg) {
+                    postsContainer.innerHTML = '';
+                }
+                
+                const reviewPost = await createReviewPost(optimisticReview);
+                reviewPost.setAttribute('data-temp-review-id', optimisticReview.id);
+                postsContainer.insertBefore(reviewPost, postsContainer.firstChild);
+            }
             
             try {
                 const res = await fetchWithAuth(`${baseUrl}/api/movies/${movie.id}/reviews`, {
@@ -2618,6 +2746,16 @@
                 
                 if (!res.ok) throw new Error('Failed to submit review');
                 
+                const result = await res.json();
+                
+                if (currentFeed === 'reviews') {
+                    const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
+                    if (tempReview) {
+                        const actualReviewPost = await createReviewPost(result.review);
+                        tempReview.parentNode.replaceChild(actualReviewPost, tempReview);
+                    }
+                }
+                
                 overlay.querySelector('#review-text').value = '';
                 selectedRating = 0;
                 starBtns.forEach(s => {
@@ -2627,6 +2765,10 @@
                 
                 loadAndDisplayReviews(movie.id);
             } catch (err) {
+                if (currentFeed === 'reviews') {
+                    const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
+                    if (tempReview) tempReview.remove();
+                }
                 alert('Failed to submit review. Please try again.');
             }
         };
@@ -3295,6 +3437,7 @@
             newPosts.forEach(addPostToUIFromServer);
         } catch (err) {}
     }
+    
     async function submitPostToServerHandler(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -3317,9 +3460,17 @@
         const tempId = uid();
         const currentPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
         const filesForPost = selected.map(f => ({ ...f }));
-        const optimisticPostEl = buildPostElement(username, displayName, content, filesForPost, currentPhotoUrl);
-        optimisticPostEl.setAttribute('data-temp-id', tempId);
-        postsContainer.prepend(optimisticPostEl);
+        
+        if (currentFeed === 'posts') {
+            const noPostsMsg = postsContainer.querySelector('div[style*="No posts yet"]');
+            if (noPostsMsg) {
+                postsContainer.innerHTML = '';
+            }
+            
+            const optimisticPostEl = buildPostElement(username, displayName, content, filesForPost, currentPhotoUrl);
+            optimisticPostEl.setAttribute('data-temp-id', tempId);
+            postsContainer.prepend(optimisticPostEl);
+        }
 
         const ta = document.getElementById('postTextarea');
         if (ta) ta.value = '';
@@ -3348,8 +3499,10 @@
             if (!res.ok) throw new Error(json?.error || 'upload failed');
         } catch (err) {
             console.error('Post error:', err);
-            const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
-            if (optimisticEl) optimisticEl.remove();
+            if (currentFeed === 'posts') {
+                const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
+                if (optimisticEl) optimisticEl.remove();
+            }
             alert('Failed to post. Please try again.');
             if (ta) ta.value = content;
             selectedFiles = filesForPost;
