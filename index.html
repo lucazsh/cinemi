@@ -2436,22 +2436,38 @@
         });
     });
 
-    function filterPostsByFeed(feedType) {
+    async function filterPostsByFeed(feedType) {
         const postsContainer = document.getElementById('posts');
         const currentUsername = (document.getElementById('addUsername')?.value || '').trim();
         
         if (feedType === 'posts') {
-            Array.from(postsContainer.children).forEach(post => {
-                post.style.display = 'block';
-            });
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/api/posts`);
+                if (!res.ok) throw new Error('Failed to load posts');
+                const list = await res.json();
+                
+                postsContainer.innerHTML = '';
+                list.slice().reverse().forEach(p => {
+                    addPostToUIFromServer(p);
+                });
+                
+                if (list.length === 0) {
+                    postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">No posts yet</div>';
+                }
+            } catch (err) {
+                postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">Failed to load posts</div>';
+            }
         } else if (feedType === 'friends') {
             postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">Friends feed coming soon...</div>';
         } else if (feedType === 'reviews') {
-            const allPosts = Array.from(postsContainer.children);
-            postsContainer.innerHTML = '';
-            
-            Object.entries(Object.fromEntries(movieReviews)).forEach(([movieId, reviews]) => {
-                reviews.forEach(review => {
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/api/reviews/all`);
+                if (!res.ok) throw new Error('Failed to load reviews');
+                const allReviews = await res.json();
+                
+                postsContainer.innerHTML = '';
+                
+                allReviews.forEach(review => {
                     const reviewPost = document.createElement('div');
                     reviewPost.className = 'post';
                     reviewPost.innerHTML = `
@@ -2469,10 +2485,12 @@
                     `;
                     postsContainer.appendChild(reviewPost);
                 });
-            });
-            
-            if (postsContainer.children.length === 0) {
-                postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">No reviews yet</div>';
+                
+                if (allReviews.length === 0) {
+                    postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">No reviews yet</div>';
+                }
+            } catch (err) {
+                postsContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-subtle);">Failed to load reviews</div>';
             }
         }
     }
