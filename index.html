@@ -2086,11 +2086,11 @@
         try {
             loading.style.display = 'flex';
             
-            const res = await fetchWithAuth(`${baseUrl}/api/movies/recommend`);
-            if (!res.ok) throw new Error('Failed to load movies');
+            const res = await fetchWithAuth(`${baseUrl}/api/content/recommend`);
+            if (!res.ok) throw new Error('Failed to load content');
             
             const data = await res.json();
-            swipifyMovies = data.movies;
+            swipifyMovies = data.content;
             currentSwipifyIndex = 0;
             
             loading.style.display = 'none';
@@ -2098,10 +2098,10 @@
             
         } catch (error) {
             console.error('Swipify load error:', error);
-            loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load movies. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
+            loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load content. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
         }
     }
-
+    
     function renderSwipifyCard() {
         const container = document.getElementById('swipify-container');
         
@@ -2400,41 +2400,46 @@
     }
     async function fetchMovies(query, container) {
         try {
-            const response = await fetch(`${baseUrl}/api/tmdb/search/movie?query=${encodeURIComponent(query)}`, {
+            const response = await fetch(`${baseUrl}/api/tmdb/search/multi?query=${encodeURIComponent(query)}`, {
                 headers: ngrokHeaders
             });
             const data = await response.json();
-            const validMovies = data.results.filter(movie => movie.poster_path && movie.overview && movie.overview.length > 5);
+            const validResults = data.results.filter(item => 
+                item.poster_path && item.overview && item.overview.length > 5
+            );
             
-            renderResults(validMovies, container);
+            renderResults(validResults, container);
         } catch (error) {
-            container.innerHTML = '<div style="padding:20px;">Error loading movies.</div>';
+            container.innerHTML = '<div style="padding:20px;">Error loading results.</div>';
         }
     }
 
-    function renderResults(movies, container) {
-        if (!movies || movies.length === 0) {
+    function renderResults(items, container) {
+        if (!items || items.length === 0) {
             container.innerHTML = '<div style="color:var(--text-primary); padding:20px;">No complete results found.</div>';
             return;
         }
         
         container.innerHTML = '';
 
-        movies.slice(0, 10).forEach(movie => {
+        items.slice(0, 10).forEach(item => {
             const card = document.createElement('div');
             card.className = 'search-result-card';
             
-            const poster = `${IMG_W500}${movie.poster_path}`;
+            const poster = `${IMG_W500}${item.poster_path}`;
+            const title = item.title || item.name;
+            const releaseDate = item.release_date || item.first_air_date;
+            const mediaType = item.media_type === 'tv' ? 'TV' : 'Movie';
             
             card.innerHTML = `
-                <img src="${poster}" class="search-poster" alt="${escapeHtml(movie.title)}">
+                <img src="${poster}" class="search-poster" alt="${escapeHtml(title)}">
                 <div class="search-info">
-                    <div class="search-card-title">${escapeHtml(movie.title)}</div>
-                    <div style="font-size:12px; opacity:0.7;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</div>
+                    <div class="search-card-title">${escapeHtml(title)}</div>
+                    <div style="font-size:12px; opacity:0.7;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} • ${mediaType}</div>
                 </div>
             `;
             
-            card.onclick = () => showDetails(movie);
+            card.onclick = () => showDetails(item);
             container.appendChild(card);
         });
     }
@@ -2640,23 +2645,27 @@
         }
     }
 
-    function showDetails(movie) {
+    async function showDetails(item) {
+        const isTV = item.media_type === 'tv';
+        const title = item.title || item.name;
+        const releaseDate = item.release_date || item.first_air_date;
+        
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
-        const backdrop = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : `${IMG_W500}${movie.poster_path}`;
+        const backdrop = item.backdrop_path ? `${IMG_BACKDROP}${item.backdrop_path}` : `${IMG_W500}${item.poster_path}`;
         
         overlay.innerHTML = `
             <div class="modal-content">
                 <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
                 <img src="${backdrop}" class="modal-header-img">
                 <div class="modal-body">
-                    <h2 class="modal-title">${escapeHtml(movie.title)}</h2>
+                    <h2 class="modal-title">${escapeHtml(title)}</h2>
                     <div class="modal-meta">
-                        <span>${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
-                        <span style="color:#46d369;">⭐ ${movie.vote_average.toFixed(1)}</span>
-                        <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">HD</span>
+                        <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
+                        <span style="color:#46d369;">⭐ ${item.vote_average.toFixed(1)}</span>
+                        <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">${isTV ? 'TV' : 'HD'}</span>
                     </div>
-                    <p class="modal-overview">${escapeHtml(movie.overview)}</p>
+                    <p class="modal-overview">${escapeHtml(item.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
                     
                     <div id="reviews-section" style="margin-top:30px; border-top: 1px solid var(--border-dark-alpha-2); padding-top:20px;">
@@ -2693,18 +2702,27 @@
         overlay.querySelector('.modal-close-btn').onclick = close;
         overlay.onclick = (e) => { if (e.target === overlay) close(); };
 
-        getWatchProviders(movie.id).then(providers => {
-            const pList = document.getElementById('modal-providers-list');
-            if (providers && pList) {
-                const all = [...(providers.flatrate || []), ...(providers.buy || [])];
-                if (all.length > 0) {
-                    pList.innerHTML = '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Available on:</div>' +
-                        [...new Map(all.map(item => [item.provider_id, item])).values()]
-                        .slice(0, 5)
-                        .map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+        const endpoint = isTV ? 'tv' : 'movie';
+        fetch(`${baseUrl}/api/tmdb/${endpoint}/${item.id}/watch/providers`, { headers: ngrokHeaders })
+            .then(res => res.json())
+            .then(providers => {
+                const pList = document.getElementById('modal-providers-list');
+                if (providers.results && pList) {
+                    const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
+                    for (const region of regions) {
+                        if (providers.results[region]) {
+                            const all = [...(providers.results[region].flatrate || []), ...(providers.results[region].buy || [])];
+                            if (all.length > 0) {
+                                pList.innerHTML = '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Available on:</div>' +
+                                    [...new Map(all.map(p => [p.provider_id, p])).values()]
+                                    .slice(0, 5)
+                                    .map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
-        });
+            });
 
         let selectedRating = 0;
         const starBtns = overlay.querySelectorAll('.star-btn');
@@ -2730,9 +2748,11 @@
             const displayName = document.querySelector('.p-name')?.textContent || username;
             const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
             
+            const contentId = `${item.media_type}-${item.id}`;
+            
             const optimisticReview = {
                 id: 'temp-' + Date.now(),
-                movieId: movie.id,
+                movieId: contentId,
                 username,
                 displayName,
                 photoUrl,
@@ -2754,7 +2774,7 @@
             }
             
             try {
-                const res = await fetchWithAuth(`${baseUrl}/api/movies/${movie.id}/reviews`, {
+                const res = await fetchWithAuth(`${baseUrl}/api/movies/${contentId}/reviews`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rating: selectedRating, text })
@@ -2779,7 +2799,7 @@
                     s.style.color = 'var(--text-subtle)';
                 });
                 
-                loadAndDisplayReviews(movie.id);
+                loadAndDisplayReviews(contentId);
             } catch (err) {
                 if (currentFeed === 'reviews') {
                     const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
@@ -2789,7 +2809,7 @@
             }
         };
 
-        loadAndDisplayReviews(movie.id);
+        loadAndDisplayReviews(`${item.media_type}-${item.id}`);
     }
 
     async function loadAndDisplayReviews(movieId) {
