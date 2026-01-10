@@ -2602,26 +2602,27 @@
     }
     feedOptions[0].classList.add('active');
     async function getWatchProviders(id) {
-            try {
-                const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
-                    headers: ngrokHeaders
-                });
-                const data = await res.json();
-                const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
-                for (const region of regions) {
-                    if (data.results?.[region]) {
-                        console.log(`Found providers for region: ${region}`, data.results[region]);
-                        return data.results[region];
-                    }
+        try {
+            const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
+                headers: ngrokHeaders
+            });
+            const data = await res.json();
+            
+            const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
+            for (const region of regions) {
+                if (data.results?.[region]) {
+                    console.log(`Found providers for region: ${region}`, data.results[region]);
+                    return data.results[region];
                 }
-                
-                console.log('No providers found in any region');
-                return null;
-            } catch (err) {
-                console.error('Provider fetch error:', err);
-                return null;
             }
+            
+            console.log('No providers found in any region');
+            return null;
+        } catch (err) {
+            console.error('Provider fetch error:', err);
+            return null;
         }
+    }
 
     async function loadReviews(movieId) {
         try {
@@ -2695,16 +2696,34 @@
         getWatchProviders(movie.id).then(providers => {
             const pList = document.getElementById('modal-providers-list');
             if (providers && pList) {
-                const all = [...(providers.flatrate || []), ...(providers.buy || [])];
-                if (all.length > 0) {
-                    pList.innerHTML = '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Available on:</div>' +
-                        [...new Map(all.map(item => [item.provider_id, item])).values()]
-                        .slice(0, 5)
-                        .map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                const streaming = providers.flatrate || [];
+                const rent = providers.rent || [];
+                const buy = providers.buy || [];
+                
+                let html = '';
+                
+                if (streaming.length > 0) {
+                    const uniqueStreaming = [...new Map(streaming.map(item => [item.provider_id, item])).values()];
+                    html += '<div style="margin-bottom:12px;">';
+                    html += '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Stream:</div>';
+                    html += uniqueStreaming.slice(0, 5).map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                    html += '</div>';
+                }
+                
+                const purchaseOptions = [...(rent || []), ...(buy || [])];
+                if (purchaseOptions.length > 0) {
+                    const uniquePurchase = [...new Map(purchaseOptions.map(item => [item.provider_id, item])).values()];
+                    html += '<div>';
+                    html += '<div style="font-size:13px; margin-bottom:8px; font-weight:600;">Rent/Buy:</div>';
+                    html += uniquePurchase.slice(0, 5).map(p => `<span class="provider-badge">${p.provider_name}</span>`).join('');
+                    html += '</div>';
+                }
+                
+                if (html) {
+                    pList.innerHTML = html;
                 }
             }
         });
-
         let selectedRating = 0;
         const starBtns = overlay.querySelectorAll('.star-btn');
         
