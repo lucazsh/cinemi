@@ -2602,14 +2602,26 @@
     }
     feedOptions[0].classList.add('active');
     async function getWatchProviders(id) {
-        try {
-            const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
-                headers: ngrokHeaders
-            });
-            const data = await res.json();
-            return data.results?.US || data.results?.RO || null;
-        } catch { return null; }
-    }
+            try {
+                const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
+                    headers: ngrokHeaders
+                });
+                const data = await res.json();
+                const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
+                for (const region of regions) {
+                    if (data.results?.[region]) {
+                        console.log(`Found providers for region: ${region}`, data.results[region]);
+                        return data.results[region];
+                    }
+                }
+                
+                console.log('No providers found in any region');
+                return null;
+            } catch (err) {
+                console.error('Provider fetch error:', err);
+                return null;
+            }
+        }
 
     async function loadReviews(movieId) {
         try {
