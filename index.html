@@ -2608,7 +2608,7 @@
                 });
                 const data = await res.json();
 
-                const regions = ['RO', 'CA', 'DE', 'FR'];
+                const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
                 for (const region of regions) {
                     if (data.results?.[region]) {
                         console.log(`Found providers for region: ${region}`, data.results[region]);
