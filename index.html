@@ -2084,8 +2084,6 @@
         const container = document.getElementById('swipify-container');
         const loading = document.getElementById('swipify-loading');
         
-        if (!container || !loading) return;
-        
         try {
             loading.style.display = 'flex';
             
@@ -2096,22 +2094,24 @@
             swipifyMovies = data.content || [];
             currentSwipifyIndex = 0;
             
+            if (swipifyMovies.length === 0) {
+                loading.innerHTML = '<div style="color: var(--text-primary);">No content available</div>';
+                return;
+            }
+            
             loading.style.display = 'none';
             renderSwipifyCard();
             
         } catch (error) {
             console.error('Swipify load error:', error);
-            if (loading) {
-                loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load content. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
-            }
+            loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load content. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
         }
     }
     
     function renderSwipifyCard() {
         const container = document.getElementById('swipify-container');
-        if (!container) return;
         
-        if (currentSwipifyIndex >= swipifyMovies.length) {
+        if (!swipifyMovies || currentSwipifyIndex >= swipifyMovies.length) {
             container.innerHTML = `
                 <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
                     <div style="font-size: 48px;">🎬</div>
@@ -2125,9 +2125,16 @@
         container.innerHTML = '';
         
         const movie = swipifyMovies[currentSwipifyIndex];
-        if (!movie) return;
+        if (!movie) {
+            loadSwipifyMovies();
+            return;
+        }
         
-        const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : '';
+        const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
+        const title = movie.title || movie.name || 'Unknown';
+        const releaseDate = movie.release_date || movie.first_air_date || '';
+        const overview = movie.overview || 'No overview available';
+        const rating = movie.vote_average || 0;
         
         const card = document.createElement('div');
         card.className = 'swipify-card';
@@ -2146,9 +2153,10 @@
             cursor: grab;
             user-select: none;
             touch-action: none;
-            transition: transform 0.3s ease;
             border: 2px solid var(--border-h);
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: scale(0.8);
         `;
         
         card.innerHTML = `
@@ -2167,13 +2175,20 @@
                 </div>
             </div>
             <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
-                <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1.1;">${escapeHtml(movie.title)}</div>
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 12px;">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'} • ⭐ ${movie.vote_average.toFixed(1)}</div>
-                <div style="font-size: 14px; line-height: 1.4; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(movie.overview)}</div>
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1.1;">${escapeHtml(title)}</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 12px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} • ⭐ ${rating.toFixed(1)}</div>
+                <div style="font-size: 14px; line-height: 1.4; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(overview)}</div>
             </div>
         `;
         
         container.appendChild(card);
+        
+        requestAnimationFrame(() => {
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        });
+        
         setupSwipeGestures(card, movie);
     }
 
