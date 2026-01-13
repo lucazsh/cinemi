@@ -2541,11 +2541,7 @@
         
         let movieInfo = '';
         try {
-            const numericId = review.movieId.includes('-') 
-                ? review.movieId.split('-').pop() 
-                : review.movieId;
-            
-            const movieRes = await fetch(`${baseUrl}/api/tmdb/movie/${numericId}`, {
+            const movieRes = await fetch(`${baseUrl}/api/tmdb/movie/${review.movieId}`, {
                 headers: ngrokHeaders
             });
             if (movieRes.ok) {
@@ -2553,7 +2549,7 @@
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 
                 movieInfo = `
-                    <div class="review-movie-info" data-movie-id="${numericId}" style="margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;">
+                    <div class="review-movie-info" data-movie-id="${review.movieId}" style="margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;">
                         ${posterUrl ? `<img src="${posterUrl}" style="width: 60px; height: 90px; border-radius: 8px; object-fit: cover;">` : ''}
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${escapeHtml(movie.title)}</div>
@@ -2741,77 +2737,80 @@
             };
         });
 
-    overlay.querySelector('#submit-review').onclick = async () => {
-        if (selectedRating === 0) {
-            alert('Please select a rating');
-            return;
-        }
-        
-        const text = overlay.querySelector('#review-text').value.trim();
-        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-        const displayName = document.querySelector('.p-name')?.textContent || username;
-        const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
-        
-        const contentId = `${item.media_type}-${item.id}`;
-        
-        const optimisticReview = {
-            id: 'temp-' + Date.now(),
-            movieId: item.id,
-            username,
-            displayName,
-            photoUrl,
-            rating: selectedRating,
-            text,
-            createdAt: new Date().toISOString()
-        };
-        
-        if (currentFeed === 'reviews') {
-            const postsContainer = document.getElementById('posts');
-            const noReviewsMsg = postsContainer.querySelector('div[style*="No reviews yet"]');
-            if (noReviewsMsg) {
-                postsContainer.innerHTML = '';
+        overlay.querySelector('#submit-review').onclick = async () => {
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
             }
             
-            const reviewPost = await createReviewPost(optimisticReview);
-            reviewPost.setAttribute('data-temp-review-id', optimisticReview.id);
-            postsContainer.insertBefore(reviewPost, postsContainer.firstChild);
-        }
-        
-        try {
-            const res = await fetchWithAuth(`${baseUrl}/api/movies/${contentId}/reviews`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rating: selectedRating, text })
-            });
+            const text = overlay.querySelector('#review-text').value.trim();
+            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+            const displayName = document.querySelector('.p-name')?.textContent || username;
+            const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
             
-            if (!res.ok) throw new Error('Failed to submit review');
+            const contentId = `${item.media_type}-${item.id}`;
             
-            const result = await res.json();
+            const optimisticReview = {
+                id: 'temp-' + Date.now(),
+                movieId: contentId,
+                username,
+                displayName,
+                photoUrl,
+                rating: selectedRating,
+                text,
+                createdAt: new Date().toISOString()
+            };
             
             if (currentFeed === 'reviews') {
-                const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
-                if (tempReview) {
-                    const actualReviewPost = await createReviewPost(result.review);
-                    tempReview.parentNode.replaceChild(actualReviewPost, tempReview);
+                const postsContainer = document.getElementById('posts');
+                const noReviewsMsg = postsContainer.querySelector('div[style*="No reviews yet"]');
+                if (noReviewsMsg) {
+                    postsContainer.innerHTML = '';
                 }
+                
+                const reviewPost = await createReviewPost(optimisticReview);
+                reviewPost.setAttribute('data-temp-review-id', optimisticReview.id);
+                postsContainer.insertBefore(reviewPost, postsContainer.firstChild);
             }
             
-            overlay.querySelector('#review-text').value = '';
-            selectedRating = 0;
-            starBtns.forEach(s => {
-                s.textContent = '☆';
-                s.style.color = 'var(--text-subtle)';
-            });
-            
-            loadAndDisplayReviews(contentId);
-        } catch (err) {
-            if (currentFeed === 'reviews') {
-                const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
-                if (tempReview) tempReview.remove();
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/api/movies/${contentId}/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rating: selectedRating, text })
+                });
+                
+                if (!res.ok) throw new Error('Failed to submit review');
+                
+                const result = await res.json();
+                
+                if (currentFeed === 'reviews') {
+                    const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
+                    if (tempReview) {
+                        const actualReviewPost = await createReviewPost(result.review);
+                        tempReview.parentNode.replaceChild(actualReviewPost, tempReview);
+                    }
+                }
+                
+                overlay.querySelector('#review-text').value = '';
+                selectedRating = 0;
+                starBtns.forEach(s => {
+                    s.textContent = '☆';
+                    s.style.color = 'var(--text-subtle)';
+                });
+                
+                loadAndDisplayReviews(contentId);
+            } catch (err) {
+                if (currentFeed === 'reviews') {
+                    const tempReview = document.querySelector(`[data-temp-review-id="${optimisticReview.id}"]`);
+                    if (tempReview) tempReview.remove();
+                }
+                alert('Failed to submit review. Please try again.');
             }
-            alert('Failed to submit review. Please try again.');
-        }
-    };
+        };
+
+        loadAndDisplayReviews(`${item.media_type}-${item.id}`);
+    }
 
     async function loadAndDisplayReviews(movieId) {
         const { reviews, stats } = await loadReviews(movieId);
