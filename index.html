@@ -1975,7 +1975,7 @@
         </div>
     </div>
     <script>
-    const SERVER_URL = 'https://deserve-parker-mining-relying.trycloudflare.com'; 
+    const SERVER_URL = 'https://casting-wrestling-blocked-just.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
@@ -2330,7 +2330,79 @@
         
         setupSwipeGestures(card, movie);
     }
+        const aiChatView = document.getElementById('ai-chat');
+        const aiChatContainer = document.querySelector('.a-chat');
+        const aiInputField = document.querySelector('.i-chat input');
+        const aiSendButton = document.querySelector('.i-chat button');
 
+        const OLLAMA_URL = 'http://192.168.0.180:11434';
+
+        async function sendToOllama(userMessage) {
+            try {
+                const response = await fetch(`${OLLAMA_URL}/api/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'gemma2:2b',
+                        prompt: userMessage,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ollama request failed');
+                
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                console.error('Ollama error:', error);
+                return 'Sorry, I could not process your request. Make sure Ollama is running.';
+            }
+        }
+
+        function addMessageToChat(text, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = isUser ? 'user-message' : 'ai-message';
+            msgDiv.textContent = text;
+            aiChatContainer.appendChild(msgDiv);
+            aiChatContainer.scrollTop = aiChatContainer.scrollHeight;
+        }
+
+        async function handleAiChatSend() {
+            const userInput = aiInputField.value.trim();
+            if (!userInput) {
+                aiInputField.focus();
+                return;
+            }
+
+            addMessageToChat(userInput, true);
+            aiInputField.value = '';
+
+            addMessageToChat('Thinking...', false);
+            const thinkingMsg = aiChatContainer.lastChild;
+
+            const aiResponse = await sendToOllama(userInput);
+            thinkingMsg.textContent = aiResponse;
+        }
+
+        if (aiSendButton) {
+            aiSendButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleAiChatSend();
+            });
+        }
+
+        if (aiInputField) {
+            aiInputField.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAiChatSend();
+                }
+            });
+        }
     function openPanel(panelName) {
         const panel = document.getElementById(`${panelName}-panel`);
         if (!panel) return;
@@ -3771,6 +3843,7 @@
         });
     }
     setInterval(updateAllTimestamps, 30000);
+
 </script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
