@@ -2534,14 +2534,17 @@
             }
         }
     }
-
     async function createReviewPost(review) {
         const reviewPost = document.createElement('div');
         reviewPost.className = 'post';
         
         let movieInfo = '';
         try {
-            const movieRes = await fetch(`${baseUrl}/api/tmdb/movie/${review.movieId}`, {
+            const numericId = review.movieId.includes('-') 
+                ? review.movieId.split('-').pop() 
+                : review.movieId;
+            
+            const movieRes = await fetch(`${baseUrl}/api/tmdb/movie/${numericId}`, {
                 headers: ngrokHeaders
             });
             if (movieRes.ok) {
@@ -2549,7 +2552,7 @@
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 
                 movieInfo = `
-                    <div class="review-movie-info" data-movie-id="${review.movieId}" style="margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;">
+                    <div class="review-movie-info" data-movie-id="${numericId}" style="margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;">
                         ${posterUrl ? `<img src="${posterUrl}" style="width: 60px; height: 90px; border-radius: 8px; object-fit: cover;">` : ''}
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${escapeHtml(movie.title)}</div>
@@ -2752,7 +2755,7 @@
             
             const optimisticReview = {
                 id: 'temp-' + Date.now(),
-                movieId: contentId,
+                movieId: item.id,
                 username,
                 displayName,
                 photoUrl,
