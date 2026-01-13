@@ -3345,6 +3345,10 @@
             return;
         }
         
+        if (document.querySelector(`[data-post-id="${post.id}"]`)) {
+            return;
+        }
+        
         const timeLabel = post.createdAt ? formatTimeAgo(post.createdAt) : timeLabelForNow();
         if (post.tempId) {
             const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
@@ -3381,6 +3385,8 @@
         clone.addEventListener('click', newHandler);
     }
     let lastTimestamp = 0;
+    const seenPostIds = new Set();
+
     async function loadInitialPostsFromServer() {
         if (!baseUrl) return;
         try {
@@ -3388,6 +3394,7 @@
             if (!res.ok) throw new Error('failed to load posts');
             const list = await res.json();
             list.slice().reverse().forEach(p => {
+                seenPostIds.add(p.id);
                 addPostToUIFromServer(p);
             });
             if (list.length) {
@@ -3395,15 +3402,20 @@
             }
         } catch (err) {}
     }
+
     async function pollForNewPosts() {
         try {
             const res = await fetchWithAuth(`${baseUrl}/api/posts?since=${lastTimestamp}`);
             if (!res.ok) return;
             const newPosts = await res.json();
-            newPosts.forEach(addPostToUIFromServer);
+            newPosts.forEach(post => {
+                if (!seenPostIds.has(post.id)) {
+                    seenPostIds.add(post.id);
+                    addPostToUIFromServer(post);
+                }
+            });
         } catch (err) {}
     }
-
     async function submitPostToServerHandler(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -3526,7 +3538,10 @@
             });
             socket.on('connect', () => console.log('Socket connected'));
             socket.on('post_created', (post) => {
-                addPostToUIFromServer(post);
+                if (!seenPostIds.has(post.id)) {
+                    seenPostIds.add(post.id);
+                    addPostToUIFromServer(post);
+                }
             });
         } catch (err) {
             console.error('Socket initialization error:', err);
