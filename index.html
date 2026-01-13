@@ -1980,6 +1980,11 @@
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
+    let movieId = this.getAttribute('data-movie-id');
+
+    if (movieId.includes('-')) {
+    movieId = movieId.split('-').pop();
+    }
 
     let searchTimer;
 
