@@ -1370,6 +1370,7 @@
         .post:nth-child(7) { animation-delay: 0.48s; }
         .post:nth-child(8) { animation-delay: 0.56s; }
     </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
     <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
@@ -2083,6 +2084,8 @@
         const container = document.getElementById('swipify-container');
         const loading = document.getElementById('swipify-loading');
         
+        if (!container || !loading) return;
+        
         try {
             loading.style.display = 'flex';
             
@@ -2090,7 +2093,7 @@
             if (!res.ok) throw new Error('Failed to load content');
             
             const data = await res.json();
-            swipifyMovies = data.content;
+            swipifyMovies = data.content || [];
             currentSwipifyIndex = 0;
             
             loading.style.display = 'none';
@@ -2098,12 +2101,15 @@
             
         } catch (error) {
             console.error('Swipify load error:', error);
-            loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load content. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
+            if (loading) {
+                loading.innerHTML = '<div style="color: var(--text-primary);">Failed to load content. <button onclick="loadSwipifyMovies()" style="margin-top: 10px; padding: 8px 16px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer;">Retry</button></div>';
+            }
         }
     }
     
     function renderSwipifyCard() {
         const container = document.getElementById('swipify-container');
+        if (!container) return;
         
         if (currentSwipifyIndex >= swipifyMovies.length) {
             container.innerHTML = `
@@ -2119,7 +2125,9 @@
         container.innerHTML = '';
         
         const movie = swipifyMovies[currentSwipifyIndex];
-        const backdropUrl = `${IMG_BACKDROP}${movie.backdrop_path}`;
+        if (!movie) return;
+        
+        const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : '';
         
         const card = document.createElement('div');
         card.className = 'swipify-card';
@@ -3602,7 +3610,7 @@
     }
 
     function initSocket() {
-        if (!baseUrl) return;
+        if (!baseUrl || typeof io === 'undefined') return;
         try {
             const socket = io(baseUrl, { 
                 transports: ['websocket','polling']
@@ -3611,7 +3619,9 @@
             socket.on('post_created', (post) => {
                 addPostToUIFromServer(post);
             });
-        } catch (err) {}
+        } catch (err) {
+            console.error('Socket initialization error:', err);
+        }
     }
     if (baseUrl) {
         replacePostButtonListener(submitPostToServerHandler);
@@ -3740,26 +3750,36 @@
     replySubmitBtn && replySubmitBtn.addEventListener('click', submitReplyHandler);
     replyTextarea && replyTextarea.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitReplyHandler(e); });
 
-    const replySocket = io(baseUrl, { transports: ['websocket','polling'] });
-    replySocket.on('reply_created', function(reply) {
-        if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId && !seenReplyIds.has(reply.id)) {
-            rRepliesContainer.appendChild(renderReplyElement(reply));
-            seenReplyIds.add(reply.id);
-            document.getElementById('noReply')?.remove();
-        }
-    });
-    const profileSocket = io(baseUrl, { transports: ['websocket','polling'] });
-    profileSocket.on('profile_updated', function(data) {
-        const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-        
-        updateAllProfilePhotos(data.username, data.photoUrl);
-        
-        if (data.username === currentUsername) {
-            const profileImg = document.getElementById('profileImg');
-            if (profileImg) profileImg.src = data.photoUrl;
-            try {
-                localStorage.setItem(`profilePhotoUrl_${data.username}`, data.photoUrl);
-            } catch(err) {}
+    let replySocket;
+    let profileSocket;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof io !== 'undefined') {
+            initSocket();
+            
+            replySocket = io(baseUrl, { transports: ['websocket','polling'] });
+            replySocket.on('reply_created', function(reply) {
+                if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId && !seenReplyIds.has(reply.id)) {
+                    rRepliesContainer.appendChild(renderReplyElement(reply));
+                    seenReplyIds.add(reply.id);
+                    document.getElementById('noReply')?.remove();
+                }
+            });
+            
+            profileSocket = io(baseUrl, { transports: ['websocket','polling'] });
+            profileSocket.on('profile_updated', function(data) {
+                const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+                
+                updateAllProfilePhotos(data.username, data.photoUrl);
+                
+                if (data.username === currentUsername) {
+                    const profileImg = document.getElementById('profileImg');
+                    if (profileImg) profileImg.src = data.photoUrl;
+                    try {
+                        localStorage.setItem(`profilePhotoUrl_${data.username}`, data.photoUrl);
+                    } catch(err) {}
+                }
+            });
         }
     });
     function updateAllTimestamps() {
