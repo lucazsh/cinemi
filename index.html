@@ -2016,7 +2016,7 @@
     }
     function escapeHtml(str) {
         if (!str) return '';
-        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
     function initMovieSearch() {
@@ -2121,6 +2121,14 @@
         container.innerHTML = '';
         
         const movie = swipifyMovies[currentSwipifyIndex];
+        
+        if (!movie || !movie.overview || !movie.title && !movie.name) {
+            console.error('Invalid movie data:', movie);
+            currentSwipifyIndex++;
+            renderSwipifyCard();
+            return;
+        }
+        
         const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
         const title = movie.title || movie.name || 'Unknown';
         const releaseDate = movie.release_date || movie.first_air_date || '';
