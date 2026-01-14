@@ -1978,6 +1978,7 @@
     <script>
     const SERVER_URL = 'https://onion-activation-compromise-timer.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
+    baseUrlAI = 'https://however-tickets-collector-charles.trycloudflare.com';
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
@@ -2793,7 +2794,7 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
         
         try {
-            const response = await fetch(`${baseUrl}/api/ai/chat`, {
+            const response = await fetch(`${baseUrlAI}/api/ai/chat`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
