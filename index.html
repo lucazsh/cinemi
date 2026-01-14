@@ -2767,7 +2767,84 @@
         `).join('');
     }
     document.addEventListener('DOMContentLoaded', initMovieSearch);
-    
+    let chatHistory = [];
+
+    async function sendAIMessage() {
+        const input = document.querySelector('.i-chat input');
+        const chatContainer = document.querySelector('.a-chat');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const userMsg = document.createElement('div');
+        userMsg.className = 'user-message';
+        userMsg.textContent = message;
+        chatContainer.appendChild(userMsg);
+        
+        input.value = '';
+        
+        chatHistory.push({ role: 'user', content: message });
+        
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'ai-message';
+        aiMsg.textContent = '';
+        chatContainer.appendChild(aiMsg);
+        
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        try {
+            const response = await fetch(`${baseUrl}/api/ai/chat`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Session-Token': sessionToken || ''
+                },
+                body: JSON.stringify({ 
+                    message, 
+                    history: chatHistory.slice(-10)
+                })
+            });
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]') break;
+                        
+                        try {
+                            const json = JSON.parse(data);
+                            if (json.token) {
+                                fullResponse += json.token;
+                                aiMsg.textContent = fullResponse;
+                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                            }
+                        } catch (e) {}
+                    }
+                }
+            }
+            
+            chatHistory.push({ role: 'assistant', content: fullResponse });
+            
+        } catch (error) {
+            aiMsg.textContent = 'Error: Failed to connect to AI';
+            aiMsg.style.color = '#ff4444';
+        }
+    }
+
+    document.querySelector('.i-chat button').onclick = sendAIMessage;
+    document.querySelector('.i-chat input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendAIMessage();
+    });
     const container = document.getElementById('login-screen');
     const tickerContainer = document.getElementById('ticker-container');
     const strips = document.querySelectorAll('.ticker-strip');
