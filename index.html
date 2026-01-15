@@ -2032,10 +2032,16 @@
             const data = await res.json();
             const validMovies = (data.content || []).filter(m => m.poster_path && m.overview);
             
-            if (validMovies.length === 0) return;
+            if (validMovies.length === 0) {
+                console.log('No valid movies for featured');
+                return;
+            }
             
             featuredMovie = validMovies[0];
             featuredGenres = featuredMovie.genre_ids || [];
+            
+            console.log('Featured movie:', featuredMovie.title);
+            console.log('Featured genres:', featuredGenres);
             
             const posterUrl = `${IMG_W500}${featuredMovie.poster_path}`;
             const title = featuredMovie.title || featuredMovie.name;
@@ -2061,7 +2067,6 @@
             console.error('Failed to load featured movie:', err);
         }
     }
-
     async function loadGenreMovies() {
         try {
             if (!featuredGenres || featuredGenres.length === 0) return;
@@ -2133,8 +2138,12 @@
         }
         
         await loadFeaturedMovie();
-        await loadGenreMovies();
-        await loadMoodMovies();
+        
+        if (featuredGenres && featuredGenres.length > 0) {
+            await loadGenreMovies();
+            await loadMoodMovies();
+        }
+        
         await loadTrendingMovies();
     }
     async function loadTrendingMovies() {
@@ -3290,9 +3299,9 @@
 
 
     checkAuthStatus();
-    checkAuthStatus().then(isAuth => {
+    checkAuthStatus().then(async isAuth => {
         if (isAuth) {
-            initHomeFeed();
+            await initHomeFeed();
         }
     });
     let current = 0;
