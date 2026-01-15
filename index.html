@@ -2066,6 +2066,8 @@
 
     async function loadGenreMovies() {
         try {
+            if (!featuredGenres || featuredGenres.length === 0) return;
+            
             const genreName = await getGenreName(featuredGenres[0]);
             const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
             if (genreLabel) {
@@ -2096,6 +2098,45 @@
         }
     }
 
+    async function loadMoodMovies() {
+        try {
+            const genreIds = featuredGenres.length > 1 ? featuredGenres.slice(0, 2) : featuredGenres;
+            const genreParam = genreIds.join(',');
+            
+            const res = await fetch(`${baseUrl}/api/tmdb/discover/mood?genres=${genreParam}`, {
+                headers: ngrokHeaders
+            });
+            const data = await res.json();
+            
+            const moodContainer = document.querySelectorAll('.m1-rec .mov')[1];
+            if (moodContainer && data.results) {
+                moodContainer.innerHTML = '';
+                data.results.slice(0, 6).forEach(movie => {
+                    const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
+                    if (posterUrl) {
+                        const img = document.createElement('img');
+                        img.src = posterUrl;
+                        img.style.cursor = 'pointer';
+                        img.onclick = () => showDetails(movie);
+                        moodContainer.appendChild(img);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load mood movies:', err);
+        }
+    }
+
+    async function initHomeFeed() {
+        const greetingEl = document.querySelector('.m1-rec > div:first-child');
+        if (greetingEl) {
+            greetingEl.innerHTML = getTimeBasedGreeting();
+        }
+        
+        await loadFeaturedMovie();
+        await loadMoodMovies();
+        await loadTrendingMovies();
+    }
     async function loadTrendingMovies() {
         try {
             const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
