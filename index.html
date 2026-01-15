@@ -2057,8 +2057,6 @@
                 
                 fMovContainer.onclick = () => showDetails(featuredMovie);
             }
-            
-            loadGenreMovies();
         } catch (err) {
             console.error('Failed to load featured movie:', err);
         }
@@ -2100,6 +2098,8 @@
 
     async function loadMoodMovies() {
         try {
+            if (!featuredGenres || featuredGenres.length === 0) return;
+            
             const genreIds = featuredGenres.length > 1 ? featuredGenres.slice(0, 2) : featuredGenres;
             const genreParam = genreIds.join(',');
             
@@ -2125,6 +2125,18 @@
         } catch (err) {
             console.error('Failed to load mood movies:', err);
         }
+    }
+
+    async function initHomeFeed() {
+        const greetingEl = document.querySelector('.m1-rec > div:first-child');
+        if (greetingEl) {
+            greetingEl.innerHTML = getTimeBasedGreeting();
+        }
+        
+        await loadFeaturedMovie();
+        await loadGenreMovies();
+        await loadMoodMovies();
+        await loadTrendingMovies();
     }
 
     async function initHomeFeed() {
