@@ -2126,7 +2126,6 @@
             console.error('Failed to load mood movies:', err);
         }
     }
-
     async function initHomeFeed() {
         const greetingEl = document.querySelector('.m1-rec > div:first-child');
         if (greetingEl) {
@@ -2135,17 +2134,6 @@
         
         await loadFeaturedMovie();
         await loadGenreMovies();
-        await loadMoodMovies();
-        await loadTrendingMovies();
-    }
-
-    async function initHomeFeed() {
-        const greetingEl = document.querySelector('.m1-rec > div:first-child');
-        if (greetingEl) {
-            greetingEl.innerHTML = getTimeBasedGreeting();
-        }
-        
-        await loadFeaturedMovie();
         await loadMoodMovies();
         await loadTrendingMovies();
     }
@@ -2184,15 +2172,6 @@
         return genreMap[genreId] || 'recommended';
     }
 
-    async function initHomeFeed() {
-        const greetingEl = document.querySelector('.m1-rec > div:first-child');
-        if (greetingEl) {
-            greetingEl.innerHTML = getTimeBasedGreeting();
-        }
-        
-        await loadFeaturedMovie();
-        await loadTrendingMovies();
-    }
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
