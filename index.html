@@ -534,21 +534,22 @@
             display: inline-block;
             overflow: hidden;
             border-radius: 15px;
+            width: 100%;
             max-width: 360px;
-            min-width: 220px;
+            aspect-ratio: 2/3;
             margin-top: 10px;
             margin-bottom: 5px;
-            scroll-behavior: smooth;
             border: 1px solid var(--border-h);
+            cursor: pointer;
         }
 
         .f-mov img {
             display: block;
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
             border-radius: 15px;
         }
-
         .f-mov::after {
             content: "";
             position: absolute;
@@ -2029,39 +2030,32 @@
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
             const data = await res.json();
-            const validMovies = (data.content || []).filter(m => m.backdrop_path && m.overview);
+            const validMovies = (data.content || []).filter(m => m.poster_path && m.overview);
             
             if (validMovies.length === 0) return;
             
             featuredMovie = validMovies[0];
             featuredGenres = featuredMovie.genre_ids || [];
             
-            const backdropUrl = `${IMG_BACKDROP}${featuredMovie.backdrop_path}`;
+            const posterUrl = `${IMG_W500}${featuredMovie.poster_path}`;
             const title = featuredMovie.title || featuredMovie.name;
-            const overview = truncateText(featuredMovie.overview, 120);
+            const overview = truncateText(featuredMovie.overview, 100);
             
             const fMovContainer = document.querySelector('.f-mov');
             if (fMovContainer) {
                 fMovContainer.innerHTML = `
-                    <img src="${backdropUrl}" style="cursor: pointer;">
-                    <div class="fmov-over" style="cursor: pointer;">
+                    <img src="${posterUrl}">
+                    <div class="fmov-over">
                         <span class="fmov-title">${escapeHtml(title)}</span>
                         <span class="fmov-desciption">${escapeHtml(overview)}</span>
                         <span class="fmov-buttons">
                             <button class="fmov-b" onclick="event.stopPropagation();" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
-                            <button class="fmov-b" onclick="event.stopPropagation();">Details</button>
+                            <button class="fmov-b" onclick="event.stopPropagation(); showDetails(featuredMovie);">Details</button>
                         </span>
                     </div>
                 `;
                 
                 fMovContainer.onclick = () => showDetails(featuredMovie);
-                const detailsBtn = fMovContainer.querySelector('.fmov-buttons .fmov-b:last-child');
-                if (detailsBtn) {
-                    detailsBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        showDetails(featuredMovie);
-                    };
-                }
             }
             
             loadGenreMovies();
