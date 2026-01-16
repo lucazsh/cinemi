@@ -1974,7 +1974,10 @@
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     let featuredMovie = null;
+    let moviesLoaded = false;
+    const loadingIndicators = new Set();
     let featuredGenres = [];
+    const originalShowView = showView;
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 
     let searchTimer;
@@ -2132,19 +2135,60 @@
         }
     }
     async function initHomeFeed() {
+        if (moviesLoaded) return;
+        
         const greetingEl = document.querySelector('.m1-rec > div:first-child');
         if (greetingEl) {
             greetingEl.innerHTML = getTimeBasedGreeting();
         }
         
-        await loadFeaturedMovie();
+        showLoadingState();
         
-        if (featuredGenres && featuredGenres.length > 0) {
-            await loadGenreMovies();
-            await loadMoodMovies();
+        try {
+            await loadFeaturedMovie();
+            
+            if (featuredGenres && featuredGenres.length > 0) {
+                await Promise.all([
+                    loadGenreMovies(),
+                    loadMoodMovies()
+                ]);
+            }
+            
+            await loadTrendingMovies();
+            
+            moviesLoaded = true;
+        } catch (err) {
+            console.error('Failed to load content:', err);
+        } finally {
+            hideLoadingState();
         }
+    }
+    function showLoadingState() {
+        const containers = [
+            document.querySelector('.f-mov'),
+            document.getElementById('genre'),
+            document.getElementById('mood'),
+            document.querySelector('.m1-rec .mov:last-of-type')
+        ];
         
-        await loadTrendingMovies();
+        containers.forEach(container => {
+            if (!container) return;
+            const loader = document.createElement('div');
+            loader.className = 'content-loader';
+            loader.style.cssText = 'display:flex;align-items:center;justify-content:center;min-height:200px;';
+            loader.innerHTML = '<div style="width:40px;height:40px;border:3px solid var(--border-dark-alpha-2);border-top-color:var(--text-primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>';
+            container.innerHTML = '';
+            container.appendChild(loader);
+            loadingIndicators.add(loader);
+        });
+        
+        const style = document.createElement('style');
+        style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+        document.head.appendChild(style);
+    }
+    function hideLoadingState() {
+        loadingIndicators.forEach(loader => loader.remove());
+        loadingIndicators.clear();
     }
     async function loadTrendingMovies() {
         try {
@@ -3301,9 +3345,13 @@
     checkAuthStatus();
     checkAuthStatus().then(async isAuth => {
         if (isAuth) {
-            await initHomeFeed();
+            const homeView = document.getElementById('home');
+            if (homeView && homeView.classList.contains('active')) {
+                await initHomeFeed();
+            }
         }
     });
+
     let current = 0;
     const questions = document.querySelectorAll('.question');
     const progress = document.getElementById('progressFill');
@@ -3323,6 +3371,13 @@
         const percent = Math.round((current / total) * 100);
         progress.style.width = percent + '%';
     }
+    showView = function(id) {
+        originalShowView(id);
+        
+        if (id === 'home' && !moviesLoaded) {
+            initHomeFeed();
+        }
+    };
     function showView(id) {
         const add = document.getElementById('add');
         if (id === 'replies') {
