@@ -3216,6 +3216,12 @@
     }
 
     async function checkAuthStatus() {
+        const loginScreen = document.getElementById('login-screen');
+        
+        if (sessionToken && localStorage.getItem('isAuthenticated') === 'true') {
+            if (loginScreen) loginScreen.style.display = 'none';
+        }
+        
         try {
             const res = await fetchWithAuth(baseUrl + '/auth/user');
             
@@ -3224,7 +3230,8 @@
             const data = await res.json();
             
             if (data.ok && data.user) {
-                const loginScreen = document.getElementById('login-screen');
+                localStorage.setItem('isAuthenticated', 'true');
+                
                 if (loginScreen) loginScreen.style.display = 'none';
                 
                 if (!data.user.username) {
@@ -3257,16 +3264,16 @@
                 return true;
             } else {
                 localStorage.removeItem('sessionToken');
+                localStorage.removeItem('isAuthenticated');
                 sessionToken = null;
-                const loginScreen = document.getElementById('login-screen');
                 if (loginScreen) loginScreen.style.display = 'flex';
                 return false;
             }
         } catch (err) {
             console.error("Auth check failed:", err);
             localStorage.removeItem('sessionToken');
+            localStorage.removeItem('isAuthenticated');
             sessionToken = null;
-            const loginScreen = document.getElementById('login-screen');
             if (loginScreen) loginScreen.style.display = 'flex';
             return false;
         }
@@ -3356,6 +3363,7 @@
         fetchWithAuth(baseUrl + '/auth/logout')
             .then(() => {
                 localStorage.removeItem('sessionToken');
+                localStorage.removeItem('isAuthenticated');
                 sessionToken = null;
                 localStorage.clear();
                 window.location.reload();
