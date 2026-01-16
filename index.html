@@ -1565,7 +1565,7 @@
             <div style="font-size: 21px; font-weight: 600;">
                 Because you watched movie_name
             </div>
-            <div class="mov" style="margin: 10px 0px;">
+            <div class="mov" id="genre" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
@@ -1573,7 +1573,7 @@
             <div style="font-size: 21px; font-weight: 600;">
                 You're in the mood for
             </div>
-            <div class="mov" style="margin: 10px 0px;">
+            <div class="mov" id="mood" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
@@ -2098,7 +2098,7 @@
             const data = await res.json();
             console.log('Genre movies received:', data.results?.length);
             
-            const movContainer = document.querySelector('.m1-rec .mov:first-of-type');
+            const movContainer = document.getElementById('genre');
             if (movContainer && data.results) {
                 movContainer.innerHTML = '';
                 data.results.slice(0, 6).forEach(movie => {
@@ -2129,7 +2129,7 @@
             });
             const data = await res.json();
             
-            const moodContainer = document.querySelectorAll('.m1-rec .mov')[1];
+            const moodContainer = document.getElementById('mood');
             if (moodContainer && data.results) {
                 moodContainer.innerHTML = '';
                 data.results.slice(0, 6).forEach(movie => {
