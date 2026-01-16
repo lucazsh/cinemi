@@ -2025,7 +2025,6 @@
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength).trim() + '...';
     }
-
     async function loadFeaturedMovie() {
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
@@ -2063,24 +2062,41 @@
                 
                 fMovContainer.onclick = () => showDetails(featuredMovie);
             }
+            
+            await loadGenreMovies();
+            await loadMoodMovies();
+            
         } catch (err) {
             console.error('Failed to load featured movie:', err);
         }
     }
     async function loadGenreMovies() {
         try {
-            if (!featuredGenres || featuredGenres.length === 0) return;
+            if (!featuredGenres || featuredGenres.length === 0) {
+                console.log('No featured genres available');
+                return;
+            }
             
-            const genreName = await getGenreName(featuredGenres[0]);
+            const genreId = featuredGenres[0];
+            console.log('Loading movies for genre:', genreId);
+            
+            const genreName = await getGenreName(genreId);
             const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
             if (genreLabel) {
                 genreLabel.textContent = `Because you watched ${genreName} movies`;
             }
             
-            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${featuredGenres[0]}`, {
+            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, {
                 headers: ngrokHeaders
             });
+            
+            if (!res.ok) {
+                console.error('Failed to fetch genre movies:', res.status);
+                return;
+            }
+            
             const data = await res.json();
+            console.log('Genre movies received:', data.results?.length);
             
             const movContainer = document.querySelector('.m1-rec .mov:first-of-type');
             if (movContainer && data.results) {
