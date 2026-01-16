@@ -1372,6 +1372,71 @@
         .post:nth-child(6) { animation-delay: 0.40s; }
         .post:nth-child(7) { animation-delay: 0.48s; }
         .post:nth-child(8) { animation-delay: 0.56s; }
+        #trailer-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000;
+            display: none;
+        }
+
+        #trailer-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #custom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #trailer-container:hover #custom-controls {
+            opacity: 1;
+        }
+
+        #custom-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: white;
+        }
+
+        #custom-controls button svg {
+            fill: white;
+        }
+
+        #progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--button-bg);
+            border-radius: 2px;
+            width: 0%;
+        }
+
+        #time-display {
+            color: white;
+            font-size: 12px;
+            min-width: 80px;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -2810,13 +2875,36 @@
         overlay.innerHTML = `
             <div class="modal-content">
                 <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
-                <img src="${backdrop}" class="modal-header-img">
+                <div id="trailer-container">
+                    <div id="youtube-player"></div>
+                    <div id="custom-controls">
+                        <button id="play-pause-btn">
+                            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+                            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="display: none;"><path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Z"/></svg>
+                        </button>
+                        <div id="progress-bar">
+                            <div id="progress-fill"></div>
+                        </div>
+                        <span id="time-display">0:00 / 0:00</span>
+                        <button id="mute-btn">
+                            <svg id="volume-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Z"/></svg>
+                            <svg id="mute-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="display: none;"><path d="M792-56 671-177q-25 16-53 27.5T560-131v-82q14-5 27.5-10t25.5-12L480-368v208L280-360H120v-240h128L56-792l56-56 736 736-56 56Z"/></svg>
+                        </button>
+                        <button id="fullscreen-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <img src="${backdrop}" class="modal-header-img" id="backdrop-img">
                 <div class="modal-body">
                     <h2 class="modal-title">${escapeHtml(title)}</h2>
                     <div class="modal-meta">
                         <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
                         <span style="color:#46d369;">⭐ ${item.vote_average.toFixed(1)}</span>
                         <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">${isTV ? 'TV' : 'HD'}</span>
+                        <button id="watch-trailer-btn" style="margin-left: 10px; padding: 6px 12px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px;">
+                            ▶ Watch Trailer
+                        </button>
                     </div>
                     <p class="modal-overview">${escapeHtml(item.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
@@ -2848,12 +2936,156 @@
         document.body.style.overflow = 'hidden';
 
         const close = () => {
+            if (window.trailerPlayer) {
+                window.trailerPlayer.destroy();
+                window.trailerPlayer = null;
+            }
             overlay.remove();
             document.body.style.overflow = 'auto';
         };
 
         overlay.querySelector('.modal-close-btn').onclick = close;
         overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+        let player = null;
+        let updateInterval = null;
+        
+        const trailerBtn = overlay.querySelector('#watch-trailer-btn');
+        const trailerContainer = overlay.querySelector('#trailer-container');
+        const backdropImg = overlay.querySelector('#backdrop-img');
+        const customControls = overlay.querySelector('#custom-controls');
+        const playPauseBtn = overlay.querySelector('#play-pause-btn');
+        const playIcon = overlay.querySelector('#play-icon');
+        const pauseIcon = overlay.querySelector('#pause-icon');
+        const progressBar = overlay.querySelector('#progress-bar');
+        const progressFill = overlay.querySelector('#progress-fill');
+        const timeDisplay = overlay.querySelector('#time-display');
+        const muteBtn = overlay.querySelector('#mute-btn');
+        const volumeIcon = overlay.querySelector('#volume-icon');
+        const muteIcon = overlay.querySelector('#mute-icon');
+        const fullscreenBtn = overlay.querySelector('#fullscreen-btn');
+        
+        trailerBtn.onclick = async () => {
+            try {
+                const endpoint = isTV ? 'tv' : 'movie';
+                const res = await fetch(`${baseUrl}/api/tmdb/${endpoint}/${item.id}/videos`, {
+                    headers: ngrokHeaders
+                });
+                const data = await res.json();
+                
+                const trailer = data.results.find(v => 
+                    v.type === 'Trailer' && v.site === 'YouTube'
+                );
+                
+                if (!trailer) {
+                    alert('No trailer available');
+                    return;
+                }
+                
+                backdropImg.style.display = 'none';
+                trailerContainer.style.display = 'block';
+                trailerBtn.style.display = 'none';
+                
+                if (!window.YT) {
+                    const tag = document.createElement('script');
+                    tag.src = 'https://www.youtube.com/iframe_api';
+                    document.head.appendChild(tag);
+                    
+                    await new Promise(resolve => {
+                        window.onYouTubeIframeAPIReady = resolve;
+                    });
+                }
+                
+                player = new YT.Player('youtube-player', {
+                    height: '280',
+                    width: '100%',
+                    videoId: trailer.key,
+                    playerVars: {
+                        'controls': 0,
+                        'modestbranding': 1,
+                        'rel': 0,
+                        'showinfo': 0
+                    },
+                    events: {
+                        'onReady': () => {
+                            window.trailerPlayer = player;
+                            updateTimeDisplay();
+                            updateInterval = setInterval(updateTimeDisplay, 100);
+                        }
+                    }
+                });
+                
+                playPauseBtn.onclick = () => {
+                    const state = player.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        player.pauseVideo();
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
+                    } else {
+                        player.playVideo();
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                    }
+                };
+                
+                progressBar.onclick = (e) => {
+                    const rect = progressBar.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    const duration = player.getDuration();
+                    player.seekTo(duration * percent);
+                };
+                
+                muteBtn.onclick = () => {
+                    if (player.isMuted()) {
+                        player.unMute();
+                        volumeIcon.style.display = 'block';
+                        muteIcon.style.display = 'none';
+                    } else {
+                        player.mute();
+                        volumeIcon.style.display = 'none';
+                        muteIcon.style.display = 'block';
+                    }
+                };
+                
+                fullscreenBtn.onclick = () => {
+                    if (trailerContainer.requestFullscreen) {
+                        trailerContainer.requestFullscreen();
+                    } else if (trailerContainer.webkitRequestFullscreen) {
+                        trailerContainer.webkitRequestFullscreen();
+                    }
+                };
+                
+                function updateTimeDisplay() {
+                    if (!player || !player.getDuration) return;
+                    
+                    const current = player.getCurrentTime();
+                    const duration = player.getDuration();
+                    const percent = (current / duration) * 100;
+                    
+                    progressFill.style.width = `${percent}%`;
+                    timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+                    
+                    const state = player.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                    } else {
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
+                    }
+                }
+                
+                function formatTime(seconds) {
+                    const mins = Math.floor(seconds / 60);
+                    const secs = Math.floor(seconds % 60);
+                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+                
+            } catch (err) {
+                console.error('Trailer load error:', err);
+                alert('Failed to load trailer');
+            }
+        };
 
         const endpoint = isTV ? 'tv' : 'movie';
         fetch(`${baseUrl}/api/tmdb/${endpoint}/${item.id}/watch/providers`, { headers: ngrokHeaders })
