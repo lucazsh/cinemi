@@ -1565,7 +1565,7 @@
             <div style="font-size: 21px; font-weight: 600;">
                 Because you watched movie_name
             </div>
-            <div class="mov" id="genre" style="margin: 10px 0px;">
+            <div class="mov" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
@@ -1573,7 +1573,7 @@
             <div style="font-size: 21px; font-weight: 600;">
                 You're in the mood for
             </div>
-            <div class="mov" id="mood" style="margin: 10px 0px;">
+            <div class="mov" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
@@ -2025,6 +2025,7 @@
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength).trim() + '...';
     }
+
     async function loadFeaturedMovie() {
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
@@ -2062,43 +2063,26 @@
                 
                 fMovContainer.onclick = () => showDetails(featuredMovie);
             }
-            
-            await loadGenreMovies();
-            await loadMoodMovies();
-            
         } catch (err) {
             console.error('Failed to load featured movie:', err);
         }
     }
     async function loadGenreMovies() {
         try {
-            if (!featuredGenres || featuredGenres.length === 0) {
-                console.log('No featured genres available');
-                return;
-            }
+            if (!featuredGenres || featuredGenres.length === 0) return;
             
-            const genreId = featuredGenres[0];
-            console.log('Loading movies for genre:', genreId);
-            
-            const genreName = await getGenreName(genreId);
+            const genreName = await getGenreName(featuredGenres[0]);
             const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
             if (genreLabel) {
                 genreLabel.textContent = `Because you watched ${genreName} movies`;
             }
             
-            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, {
+            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${featuredGenres[0]}`, {
                 headers: ngrokHeaders
             });
-            
-            if (!res.ok) {
-                console.error('Failed to fetch genre movies:', res.status);
-                return;
-            }
-            
             const data = await res.json();
-            console.log('Genre movies received:', data.results?.length);
             
-            const movContainer = document.getElementById('genre');
+            const movContainer = document.querySelector('.m1-rec .mov:first-of-type');
             if (movContainer && data.results) {
                 movContainer.innerHTML = '';
                 data.results.slice(0, 6).forEach(movie => {
@@ -2129,7 +2113,7 @@
             });
             const data = await res.json();
             
-            const moodContainer = document.getElementById('mood');
+            const moodContainer = document.querySelectorAll('.m1-rec .mov')[1];
             if (moodContainer && data.results) {
                 moodContainer.innerHTML = '';
                 data.results.slice(0, 6).forEach(movie => {
