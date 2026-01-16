@@ -1974,10 +1974,7 @@
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     let featuredMovie = null;
-    let moviesLoaded = false;
-    const loadingIndicators = new Set();
     let featuredGenres = [];
-    const originalShowView = showView;
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 
     let searchTimer;
@@ -2029,6 +2026,56 @@
         return text.substring(0, maxLength).trim() + '...';
     }
 
+    function showSkeletonLoaders() {
+        const fMovContainer = document.querySelector('.f-mov');
+        if (fMovContainer) {
+            fMovContainer.innerHTML = `
+                <div class="skeleton-loader" style="width:100%;aspect-ratio:2/2.5;border-radius:15px;background:linear-gradient(90deg,var(--placeholder-bg) 25%,var(--bg-secondary) 50%,var(--placeholder-bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            `;
+        }
+        
+        const genreContainer = document.getElementById('genre');
+        if (genreContainer) {
+            genreContainer.innerHTML = Array(3).fill(0).map(() => `
+                <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--placeholder-bg) 25%,var(--bg-secondary) 50%,var(--placeholder-bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            `).join('');
+        }
+        
+        const moodContainer = document.getElementById('mood');
+        if (moodContainer) {
+            moodContainer.innerHTML = Array(3).fill(0).map(() => `
+                <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--placeholder-bg) 25%,var(--bg-secondary) 50%,var(--placeholder-bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            `).join('');
+        }
+        
+        const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
+        if (trendingContainer) {
+            trendingContainer.innerHTML = Array(3).fill(0).map(() => `
+                <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--placeholder-bg) 25%,var(--bg-secondary) 50%,var(--placeholder-bg) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            `).join('');
+        }
+        
+        if (!document.getElementById('shimmer-style')) {
+            const style = document.createElement('style');
+            style.id = 'shimmer-style';
+            style.textContent = `
+                @keyframes shimmer {
+                    0% { background-position: -200% 0; }
+                    100% { background-position: 200% 0; }
+                }
+                .fade-in-content {
+                    animation: fadeInContent 0.6s ease-out forwards;
+                    opacity: 0;
+                }
+                @keyframes fadeInContent {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
     async function loadFeaturedMovie() {
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
@@ -2043,9 +2090,6 @@
             featuredMovie = validMovies[0];
             featuredGenres = featuredMovie.genre_ids || [];
             
-            console.log('Featured movie:', featuredMovie.title);
-            console.log('Featured genres:', featuredGenres);
-            
             const posterUrl = `${IMG_W500}${featuredMovie.poster_path}`;
             const title = featuredMovie.title || featuredMovie.name;
             const overview = truncateText(featuredMovie.overview, 100);
@@ -2053,8 +2097,8 @@
             const fMovContainer = document.querySelector('.f-mov');
             if (fMovContainer) {
                 fMovContainer.innerHTML = `
-                    <img src="${posterUrl}">
-                    <div class="fmov-over">
+                    <img src="${posterUrl}" class="fade-in-content">
+                    <div class="fmov-over fade-in-content" style="animation-delay:0.1s;">
                         <span class="fmov-title">${escapeHtml(title)}</span>
                         <span class="fmov-desciption">${escapeHtml(overview)}</span>
                         <span class="fmov-buttons">
@@ -2070,6 +2114,7 @@
             console.error('Failed to load featured movie:', err);
         }
     }
+
     async function loadGenreMovies() {
         try {
             if (!featuredGenres || featuredGenres.length === 0) return;
@@ -2088,11 +2133,13 @@
             const movContainer = document.getElementById('genre');
             if (movContainer && data.results) {
                 movContainer.innerHTML = '';
-                data.results.slice(0, 6).forEach(movie => {
+                data.results.slice(0, 6).forEach((movie, idx) => {
                     const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                     if (posterUrl) {
                         const img = document.createElement('img');
                         img.src = posterUrl;
+                        img.className = 'fade-in-content';
+                        img.style.animationDelay = `${idx * 0.1}s`;
                         img.style.cursor = 'pointer';
                         img.onclick = () => showDetails(movie);
                         movContainer.appendChild(img);
@@ -2119,11 +2166,13 @@
             const moodContainer = document.getElementById('mood');
             if (moodContainer && data.results) {
                 moodContainer.innerHTML = '';
-                data.results.slice(0, 6).forEach(movie => {
+                data.results.slice(0, 6).forEach((movie, idx) => {
                     const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                     if (posterUrl) {
                         const img = document.createElement('img');
                         img.src = posterUrl;
+                        img.className = 'fade-in-content';
+                        img.style.animationDelay = `${idx * 0.1}s`;
                         img.style.cursor = 'pointer';
                         img.onclick = () => showDetails(movie);
                         moodContainer.appendChild(img);
@@ -2134,62 +2183,7 @@
             console.error('Failed to load mood movies:', err);
         }
     }
-    async function initHomeFeed() {
-        if (moviesLoaded) return;
-        
-        const greetingEl = document.querySelector('.m1-rec > div:first-child');
-        if (greetingEl) {
-            greetingEl.innerHTML = getTimeBasedGreeting();
-        }
-        
-        showLoadingState();
-        
-        try {
-            await loadFeaturedMovie();
-            
-            if (featuredGenres && featuredGenres.length > 0) {
-                await Promise.all([
-                    loadGenreMovies(),
-                    loadMoodMovies()
-                ]);
-            }
-            
-            await loadTrendingMovies();
-            
-            moviesLoaded = true;
-        } catch (err) {
-            console.error('Failed to load content:', err);
-        } finally {
-            hideLoadingState();
-        }
-    }
-    function showLoadingState() {
-        const containers = [
-            document.querySelector('.f-mov'),
-            document.getElementById('genre'),
-            document.getElementById('mood'),
-            document.querySelector('.m1-rec .mov:last-of-type')
-        ];
-        
-        containers.forEach(container => {
-            if (!container) return;
-            const loader = document.createElement('div');
-            loader.className = 'content-loader';
-            loader.style.cssText = 'display:flex;align-items:center;justify-content:center;min-height:200px;';
-            loader.innerHTML = '<div style="width:40px;height:40px;border:3px solid var(--border-dark-alpha-2);border-top-color:var(--text-primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>';
-            container.innerHTML = '';
-            container.appendChild(loader);
-            loadingIndicators.add(loader);
-        });
-        
-        const style = document.createElement('style');
-        style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
-        document.head.appendChild(style);
-    }
-    function hideLoadingState() {
-        loadingIndicators.forEach(loader => loader.remove());
-        loadingIndicators.clear();
-    }
+
     async function loadTrendingMovies() {
         try {
             const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
@@ -2198,11 +2192,13 @@
             const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
             if (trendingContainer && data.results) {
                 trendingContainer.innerHTML = '';
-                data.results.slice(0, 6).forEach(movie => {
+                data.results.slice(0, 6).forEach((movie, idx) => {
                     const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                     if (posterUrl) {
                         const img = document.createElement('img');
                         img.src = posterUrl;
+                        img.className = 'fade-in-content';
+                        img.style.animationDelay = `${idx * 0.1}s`;
                         img.style.cursor = 'pointer';
                         img.onclick = () => showDetails(movie);
                         trendingContainer.appendChild(img);
@@ -2212,6 +2208,30 @@
         } catch (err) {
             console.error('Failed to load trending:', err);
         }
+    }
+
+    let moviesLoaded = false;
+
+    async function initHomeFeed() {
+        if (moviesLoaded) return;
+        
+        const greetingEl = document.querySelector('.m1-rec > div:first-child');
+        if (greetingEl) {
+            greetingEl.innerHTML = getTimeBasedGreeting();
+        }
+        
+        showSkeletonLoaders();
+        
+        await loadFeaturedMovie();
+        
+        if (featuredGenres && featuredGenres.length > 0) {
+            await loadGenreMovies();
+            await loadMoodMovies();
+        }
+        
+        await loadTrendingMovies();
+        
+        moviesLoaded = true;
     }
 
     async function getGenreName(genreId) {
@@ -3345,13 +3365,9 @@
     checkAuthStatus();
     checkAuthStatus().then(async isAuth => {
         if (isAuth) {
-            const homeView = document.getElementById('home');
-            if (homeView && homeView.classList.contains('active')) {
-                await initHomeFeed();
-            }
+            await initHomeFeed();
         }
     });
-
     let current = 0;
     const questions = document.querySelectorAll('.question');
     const progress = document.getElementById('progressFill');
@@ -3371,13 +3387,6 @@
         const percent = Math.round((current / total) * 100);
         progress.style.width = percent + '%';
     }
-    showView = function(id) {
-        originalShowView(id);
-        
-        if (id === 'home' && !moviesLoaded) {
-            initHomeFeed();
-        }
-    };
     function showView(id) {
         const add = document.getElementById('add');
         if (id === 'replies') {
