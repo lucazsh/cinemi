@@ -2677,42 +2677,6 @@
     renderSwipifyCard();
     }
 
-    function openPanel(panelName) {
-        const panel = document.getElementById(`${panelName}-panel`);
-        if (!panel) return;
-        
-        panel.style.display = 'flex';
-        requestAnimationFrame(() => {
-            panel.classList.add('open');
-        });
-        
-        if (panelName === 'swipify') {
-            loadSwipifyMovies();
-            
-            const leftBtn = document.getElementById('swipe-left-btn');
-            const rightBtn = document.getElementById('swipe-right-btn');
-            
-            if (leftBtn) {
-                leftBtn.onclick = () => {
-                    if (swipifyMovies[currentSwipifyIndex]) {
-                        swipeCard('left', swipifyMovies[currentSwipifyIndex]);
-                    }
-                };
-            }
-            if (rightBtn) {
-                rightBtn.onclick = () => {
-                    if (swipifyMovies[currentSwipifyIndex]) {
-                        swipeCard('right', swipifyMovies[currentSwipifyIndex]);
-                    }
-                };
-            }
-        }
-        
-        const backdrop = panel.querySelector('.backdrop');
-        if (backdrop) {
-            backdrop.onclick = () => closePanel(panelName);
-        }
-    }
     document.addEventListener('DOMContentLoaded', function() {
         const movieCards = document.querySelectorAll('.movie-card');
         movieCards.forEach(card => {
