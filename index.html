@@ -1818,7 +1818,7 @@
             <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
             <div class="meta">
                 <div class="title">Friends</div>
-                <div class="subtitle">24 online</div>
+                <div class="subtitle" id="friendsCount">0 friends</div>
             </div>
             </button>
 
@@ -2072,6 +2072,13 @@
             </div>
         </div>
         <section class="grid">
+            <button class="card" onclick="openUserPanel('friends')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Friends</div>
+                <div class="subtitle" id="userFriendsCount">0 friends</div>
+            </div>
+            </button>
             <button class="card" onclick="openUserPanel('favorites')">
                 <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
                 <div class="meta">
@@ -2104,6 +2111,15 @@
             <h2>Favorites</h2>
             <p>Loading...</p>
             <button class="btn-close" onclick="closePanel('user-favorites')">Close</button>
+        </div>
+    </div>
+
+    <div id="user-friends-panel" class="panel">
+        <div class="backdrop"></div>
+        <div class="sheet">
+            <h2>Friends</h2>
+            <p>Loading...</p>
+            <button class="btn-close" onclick="closePanel('user-friends')">Close</button>
         </div>
     </div>
     <script>
@@ -2267,6 +2283,149 @@
     }
     }
 
+    async function updateMyFriendsCount() {
+        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        
+        try {
+            const [followersRes, followingRes] = await Promise.all([
+            fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
+            ]);
+            
+            const followers = await followersRes.json();
+            const following = await followingRes.json();
+            
+            const totalFriends = new Set([
+            ...followers.map(f => f.username),
+            ...following.map(f => f.username)
+            ]).size;
+            
+            document.getElementById('friendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
+        } catch (err) {
+            console.error('Failed to update friends count:', err);
+        }
+    }
+
+    checkAuthStatus().then(async isAuth => {
+        if (isAuth) {
+            await initHomeFeed();
+            await updateMyFriendsCount();
+        }
+    });
+
+    async function viewUserProfile(username) {
+        if (!username) return;
+        currentViewedUser = username;
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/user/${username}`);
+            if (!res.ok) throw new Error('User not found');
+            const data = await res.json();
+            
+            document.getElementById('userProfileName').textContent = data.user.displayName;
+            document.getElementById('userProfileTag').textContent = '@' + data.user.username;
+            document.getElementById('userProfileImg').src = data.user.photoUrl;
+            
+            const [followersRes, followingRes, isFollowingRes] = await Promise.all([
+            fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/following`),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/is-following`)
+            ]);
+            
+            const followers = await followersRes.json();
+            const following = await followingRes.json();
+            const followData = await isFollowingRes.json();
+            
+            const totalFriends = new Set([
+            ...followers.map(f => f.username),
+            ...following.map(f => f.username)
+            ]).size;
+            
+            document.getElementById('userFriendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
+            
+            const followBtn = document.getElementById('followBtn');
+            if (followData.isFollowing) {
+                followBtn.textContent = 'Unfollow';
+                followBtn.style.background = 'var(--iconbox-bg)';
+                followBtn.style.color = 'var(--text-primary)';
+                followBtn.style.border = '1px solid var(--border-dark-alpha-2)';
+            } else {
+                followBtn.textContent = 'Follow';
+                followBtn.style.background = 'var(--button-bg)';
+                followBtn.style.color = 'var(--button-text)';
+                followBtn.style.border = 'none';
+            }
+            
+            showView('user-profile');
+        } catch (err) {
+            console.error('Failed to load user profile:', err);
+            alert('Failed to load user profile');
+        }
+    }
+
+    async function showFriendsPanel() {
+    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+    const panel = document.getElementById('friends-panel');
+    const sheet = panel.querySelector('.sheet');
+    
+    try {
+        const [followersRes, followingRes] = await Promise.all([
+        fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+        fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
+        ]);
+        
+        const followers = await followersRes.json();
+        const following = await followingRes.json();
+        
+        const totalFriends = new Set([
+        ...followers.map(f => f.username),
+        ...following.map(f => f.username)
+        ]).size;
+        
+        sheet.innerHTML = `
+        <h2>Friends (${totalFriends})</h2>
+        <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+            ${followers.length > 0 ? `
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:16px; margin-bottom:10px;">Followers (${followers.length})</h3>
+                ${followers.map(f => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
+                    <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            ${following.length > 0 ? `
+            <div>
+                <h3 style="font-size:16px; margin-bottom:10px;">Following (${following.length})</h3>
+                ${following.map(f => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
+                    <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            ${totalFriends === 0 ? '<p style="text-align:center; color:var(--text-subtle); padding:40px;">No friends yet</p>' : ''}
+        </div>
+        <button class="btn-close" onclick="closePanel('friends')">Close</button>
+        `;
+    } catch (err) {
+        sheet.innerHTML = `
+        <h2>Friends</h2>
+        <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
+        <button class="btn-close" onclick="closePanel('friends')">Close</button>
+        `;
+    }
+    }
+
     async function showFavoritesPanel() {
     const movies = await loadFavorites();
     const panel = document.getElementById('favorites-panel');
@@ -2384,6 +2543,75 @@
 
     async function openUserPanel(panelType) {
         if (!currentViewedUser) return;
+        
+        if (panelType === 'friends') {
+            const panel = document.getElementById('user-friends-panel');
+            const sheet = panel.querySelector('.sheet');
+            
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => panel.classList.add('open'));
+            
+            try {
+                const [followersRes, followingRes] = await Promise.all([
+                fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/followers`),
+                fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/following`)
+                ]);
+                
+                const followers = await followersRes.json();
+                const following = await followingRes.json();
+                
+                const totalFriends = new Set([
+                ...followers.map(f => f.username),
+                ...following.map(f => f.username)
+                ]).size;
+                
+                sheet.innerHTML = `
+                <h2>Friends (${totalFriends})</h2>
+                <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                    ${followers.length > 0 ? `
+                    <div style="margin-bottom:20px;">
+                        <h3 style="font-size:16px; margin-bottom:10px;">Followers (${followers.length})</h3>
+                        ${followers.map(f => `
+                        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('user-friends'); viewUserProfile('${f.username}')">
+                            <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            <div style="flex:1;">
+                            <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                            <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                            </div>
+                        </div>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                    ${following.length > 0 ? `
+                    <div>
+                        <h3 style="font-size:16px; margin-bottom:10px;">Following (${following.length})</h3>
+                        ${following.map(f => `
+                        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('user-friends'); viewUserProfile('${f.username}')">
+                            <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            <div style="flex:1;">
+                            <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                            <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                            </div>
+                        </div>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                    ${totalFriends === 0 ? '<p style="text-align:center; color:var(--text-subtle); padding:40px;">No friends yet</p>' : ''}
+                </div>
+                <button class="btn-close" onclick="closePanel('user-friends')">Close</button>
+                `;
+            } catch (err) {
+                sheet.innerHTML = `
+                <h2>Friends</h2>
+                <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
+                <button class="btn-close" onclick="closePanel('user-friends')">Close</button>
+                `;
+            }
+            
+            const backdrop = panel.querySelector('.backdrop');
+            if (backdrop) backdrop.onclick = () => closePanel('user-friends');
+            return;
+        }
         
         const panelId = `user-${panelType}-panel`;
         const panel = document.getElementById(panelId);
