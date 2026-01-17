@@ -2996,10 +2996,30 @@
                 clearInterval(updateInterval);
                 updateInterval = null;
             }
+            
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+            
+            const navh = document.querySelector('.navh');
+            if (navh) {
+                navh.style.bottom = '0';
+                navh.style.paddingBottom = '0';
+            }
+            
             overlay.remove();
-            forceSafeAreaUpdate();
-            setTimeout(forceSafeAreaUpdate, 100);
-            setTimeout(forceSafeAreaUpdate, 300);
+            
+            requestAnimationFrame(() => {
+                document.documentElement.style.setProperty('--safe-area-bottom', '0px');
+                requestAnimationFrame(() => {
+                    document.documentElement.style.setProperty('--safe-area-bottom', 'env(safe-area-inset-bottom)');
+                    if (navh) {
+                        navh.style.bottom = '';
+                        navh.style.paddingBottom = '';
+                    }
+                });
+            });
         };
         overlay.querySelector('.modal-close-btn').onclick = close;
         overlay.onclick = (e) => { if (e.target === overlay) close(); };
