@@ -178,7 +178,7 @@
 
         .navh-inner {
             display: flex;
-            gap: calc((100% - 50px) / 4);
+            gap: calc((100vw - 90px) / 4);
             justify-content: center;
             align-items: center;
             pointer-events: auto;
@@ -2102,20 +2102,6 @@
         if (hour >= 17 && hour < 22) return `Good evening, ${name}`;
         return `Good night, ${name}`;
     }
-
-    window.debugSafeArea = setInterval(() => {
-        const computed = getComputedStyle(document.documentElement);
-        const safeBottom = computed.getPropertyValue('--safe-area-bottom');
-        const actualInset = getComputedStyle(document.body).paddingBottom;
-        
-        console.log('Safe area var:', safeBottom);
-        console.log('Actual inset:', window.visualViewport?.height, window.innerHeight);
-        
-        const navh = document.querySelector('.navh');
-        if (navh) {
-            console.log('Navh bottom:', navh.style.bottom, getComputedStyle(navh).bottom);
-        }
-    }, 1000);
 
     function truncateText(text, maxLength) {
         if (!text) return '';
