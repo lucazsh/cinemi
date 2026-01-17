@@ -2475,33 +2475,21 @@
         const panel = document.getElementById(`${panelName}-panel`);
         if (!panel) return;
         
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => {
+            panel.classList.add('open');
+        });
+        
         if (panelName === 'swipify') {
-            panel.style.display = 'flex';
-            requestAnimationFrame(() => {
-                panel.classList.add('open');
-            });
             loadSwipifyMovies();
             const leftBtn = document.getElementById('swipe-left-btn');
             const rightBtn = document.getElementById('swipe-right-btn');
             if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
             if (rightBtn) rightBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('right', swipifyMovies[currentSwipifyIndex]);
         } else if (panelName === 'watchlist') {
-            panel.style.display = 'flex';
-            requestAnimationFrame(() => {
-                panel.classList.add('open');
-            });
             showWatchlistPanel();
         } else if (panelName === 'favorites') {
-            panel.style.display = 'flex';
-            requestAnimationFrame(() => {
-                panel.classList.add('open');
-            });
             showFavoritesPanel();
-        } else {
-            panel.style.display = 'flex';
-            requestAnimationFrame(() => {
-                panel.classList.add('open');
-            });
         }
         
         const backdrop = panel.querySelector('.backdrop');
