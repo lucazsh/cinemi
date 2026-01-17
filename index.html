@@ -2486,8 +2486,19 @@
             document.getElementById('userProfileTag').textContent = '@' + data.user.username;
             document.getElementById('userProfileImg').src = data.user.photoUrl;
             
-            const followRes = await fetchWithAuth(`${baseUrl}/api/user/${username}/is-following`);
-            const followData = await followRes.json();
+            const [followersRes, followingRes, isFollowingRes] = await Promise.all([
+                fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+                fetchWithAuth(`${baseUrl}/api/user/${username}/following`),
+                fetchWithAuth(`${baseUrl}/api/user/${username}/is-following`)
+            ]);
+            
+            const followers = await followersRes.json();
+            const following = await followingRes.json();
+            const followData = await isFollowingRes.json();
+            
+            const totalFriends = followers.length + following.length;
+            
+            document.getElementById('userFriendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
             
             const followBtn = document.getElementById('followBtn');
             if (followData.isFollowing) {
@@ -2508,38 +2519,6 @@
             alert('Failed to load user profile');
         }
     }
-
-    document.getElementById('followBtn').onclick = async function() {
-        if (!currentViewedUser) return;
-        
-        const isFollowing = this.textContent === 'Unfollow';
-        
-        try {
-            const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, {
-                method: isFollowing ? 'DELETE' : 'POST'
-            });
-            
-            if (!res.ok) throw new Error('Failed');
-            
-            if (isFollowing) {
-                this.textContent = 'Follow';
-                this.style.background = 'var(--button-bg)';
-                this.style.color = 'var(--button-text)';
-                this.style.border = 'none';
-            } else {
-                this.textContent = 'Unfollow';
-                this.style.background = 'var(--iconbox-bg)';
-                this.style.color = 'var(--text-primary)';
-                this.style.border = '1px solid var(--border-dark-alpha-2)';
-            }
-        } catch (err) {
-            console.error('Follow error:', err);
-        }
-    };
-
-    document.getElementById('messageBtn').onclick = function() {
-        alert('Messaging feature coming soon!');
-    };
 
     async function openUserPanel(panelType) {
         if (!currentViewedUser) return;
