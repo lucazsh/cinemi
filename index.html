@@ -2496,7 +2496,10 @@
             const following = await followingRes.json();
             const followData = await isFollowingRes.json();
             
-            const totalFriends = followers.length + following.length;
+            const totalFriends = new Set([
+                ...followers.map(f => f.username),
+                ...following.map(f => f.username)
+            ]).size;
             
             document.getElementById('userFriendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
             
