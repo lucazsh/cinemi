@@ -2999,7 +2999,26 @@
             }
             
             overlay.remove();
-            
+
+            const navh = document.querySelector('.navh');
+            if (navh) {
+                navh.style.transition = 'none';
+                navh.style.bottom = 'calc(20px + env(safe-area-inset-bottom, 0px))';
+                
+                void navh.offsetHeight;
+                
+                setTimeout(() => {
+                    navh.style.transition = '';
+                }, 50);
+            }
+
+            window.visualViewport?.addEventListener('resize', function handler() {
+                const navh = document.querySelector('.navh');
+                if (navh) {
+                    navh.style.bottom = 'calc(20px + env(safe-area-inset-bottom, 0px))';
+                }
+                window.visualViewport.removeEventListener('resize', handler);
+            }, { once: true });
             const metaViewport = document.querySelector('meta[name="viewport"]');
             const currentContent = metaViewport.content;
             metaViewport.content = 'width=device-width, initial-scale=1.0001';
