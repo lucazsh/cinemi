@@ -2878,6 +2878,99 @@
             return { reviews: [], stats: { count: 0, averageRating: 0 } };
         }
     }
+    async function addToWatchlist(movie) {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            movieId: `${movie.media_type}-${movie.id}`,
+            title: movie.title || movie.name,
+            posterPath: movie.poster_path,
+            mediaType: movie.media_type || 'movie',
+            overview: movie.overview,
+            rating: movie.vote_average
+        })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+        alert(`✅ Added "${movie.title || movie.name}" to Watchlist!`);
+        return true;
+        } else {
+        alert(data.error || 'Failed to add to watchlist');
+        return false;
+        }
+    } catch (err) {
+        console.error('Watchlist error:', err);
+        alert('Network error');
+        return false;
+    }
+    }
+
+    async function addToFavorites(movie) {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            movieId: `${movie.media_type}-${movie.id}`,
+            title: movie.title || movie.name,
+            posterPath: movie.poster_path,
+            mediaType: movie.media_type || 'movie',
+            overview: movie.overview,
+            rating: movie.vote_average
+        })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+        alert(`❤️ Added "${movie.title || movie.name}" to Favorites!`);
+        return true;
+        } else {
+        alert(data.error || 'Failed to add to favorites');
+        return false;
+        }
+    } catch (err) {
+        console.error('Favorites error:', err);
+        alert('Network error');
+        return false;
+    }
+    }
+
+    async function removeFromWatchlist(movieId) {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist/${movieId}`, {
+        method: 'DELETE'
+        });
+        
+        if (res.ok) {
+        return true;
+        }
+        return false;
+    } catch (err) {
+        console.error('Remove error:', err);
+        return false;
+    }
+    }
+
+    async function removeFromFavorites(movieId) {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites/${movieId}`, {
+        method: 'DELETE'
+        });
+        
+        if (res.ok) {
+        return true;
+        }
+        return false;
+    } catch (err) {
+        console.error('Remove error:', err);
+        return false;
+    }
+    }
     function forceSafeAreaUpdate() {
         const root = document.documentElement;
         const navh = document.querySelector('.navh');
