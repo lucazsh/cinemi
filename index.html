@@ -2520,6 +2520,38 @@
         }
     }
 
+    document.getElementById('followBtn').onclick = async function() {
+        if (!currentViewedUser) return;
+        
+        const isFollowing = this.textContent === 'Unfollow';
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, {
+                method: isFollowing ? 'DELETE' : 'POST'
+            });
+            
+            if (!res.ok) throw new Error('Failed');
+            
+            if (isFollowing) {
+                this.textContent = 'Follow';
+                this.style.background = 'var(--button-bg)';
+                this.style.color = 'var(--button-text)';
+                this.style.border = 'none';
+            } else {
+                this.textContent = 'Unfollow';
+                this.style.background = 'var(--iconbox-bg)';
+                this.style.color = 'var(--text-primary)';
+                this.style.border = '1px solid var(--border-dark-alpha-2)';
+            }
+        } catch (err) {
+            console.error('Follow error:', err);
+        }
+    };
+
+    document.getElementById('messageBtn').onclick = function() {
+        alert('Messaging feature coming soon!');
+    };
+
     async function openUserPanel(panelType) {
         if (!currentViewedUser) return;
         
