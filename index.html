@@ -2312,6 +2312,161 @@
     }
     }
 
+    let currentViewedUser = null;
+
+    async function viewUserProfile(username) {
+        if (!username) return;
+        currentViewedUser = username;
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/user/${username}`);
+            if (!res.ok) throw new Error('User not found');
+            const data = await res.json();
+            
+            document.getElementById('userProfileName').textContent = data.user.displayName;
+            document.getElementById('userProfileTag').textContent = '@' + data.user.username;
+            document.getElementById('userProfileImg').src = data.user.photoUrl;
+            
+            const followRes = await fetchWithAuth(`${baseUrl}/api/user/${username}/is-following`);
+            const followData = await followRes.json();
+            
+            const followBtn = document.getElementById('followBtn');
+            if (followData.isFollowing) {
+                followBtn.textContent = 'Unfollow';
+                followBtn.style.background = 'var(--iconbox-bg)';
+                followBtn.style.color = 'var(--text-primary)';
+                followBtn.style.border = '1px solid var(--border-dark-alpha-2)';
+            } else {
+                followBtn.textContent = 'Follow';
+                followBtn.style.background = 'var(--button-bg)';
+                followBtn.style.color = 'var(--button-text)';
+                followBtn.style.border = 'none';
+            }
+            
+            showView('user-profile');
+        } catch (err) {
+            console.error('Failed to load user profile:', err);
+            alert('Failed to load user profile');
+        }
+    }
+
+    document.getElementById('followBtn').onclick = async function() {
+        if (!currentViewedUser) return;
+        
+        const isFollowing = this.textContent === 'Unfollow';
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, {
+                method: isFollowing ? 'DELETE' : 'POST'
+            });
+            
+            if (!res.ok) throw new Error('Failed');
+            
+            if (isFollowing) {
+                this.textContent = 'Follow';
+                this.style.background = 'var(--button-bg)';
+                this.style.color = 'var(--button-text)';
+                this.style.border = 'none';
+            } else {
+                this.textContent = 'Unfollow';
+                this.style.background = 'var(--iconbox-bg)';
+                this.style.color = 'var(--text-primary)';
+                this.style.border = '1px solid var(--border-dark-alpha-2)';
+            }
+        } catch (err) {
+            console.error('Follow error:', err);
+        }
+    };
+
+    document.getElementById('messageBtn').onclick = function() {
+        alert('Messaging feature coming soon!');
+    };
+
+    async function openUserPanel(panelType) {
+        if (!currentViewedUser) return;
+        
+        const panelId = `user-${panelType}-panel`;
+        const panel = document.getElementById(panelId);
+        const sheet = panel.querySelector('.sheet');
+        
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => panel.classList.add('open'));
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/${panelType}`);
+            const movies = await res.json();
+            
+            if (movies.length === 0) {
+                sheet.innerHTML = `
+                    <h2>${panelType === 'favorites' ? 'Favorites' : 'Watch List'}</h2>
+                    <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies yet!</p>
+                    <button class="btn-close" onclick="closePanel('user-${panelType}')">Close</button>
+                `;
+            } else {
+                sheet.innerHTML = `
+                    <h2>${panelType === 'favorites' ? 'Favorites' : 'Watch List'} (${movies.length})</h2>
+                    <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                        ${movies.map(m => `
+                            <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="showMovieDetails('${m.movieId}')">
+                                <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                                <div style="flex:1;">
+                                    <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                                    <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn-close" onclick="closePanel('user-${panelType}')">Close</button>
+                `;
+            }
+        } catch (err) {
+            sheet.innerHTML = `
+                <h2>${panelType === 'favorites' ? 'Favorites' : 'Watch List'}</h2>
+                <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
+                <button class="btn-close" onclick="closePanel('user-${panelType}')">Close</button>
+            `;
+        }
+        
+        const backdrop = panel.querySelector('.backdrop');
+        if (backdrop) backdrop.onclick = () => closePanel(`user-${panelType}`);
+    }
+
+    async function showMovieDetails(movieId) {
+        const numericId = movieId.includes('-') ? movieId.split('-').pop() : movieId;
+        const mediaType = movieId.startsWith('tv-') ? 'tv' : 'movie';
+        
+        try {
+            const res = await fetch(`${baseUrl}/api/tmdb/${mediaType === 'tv' ? 'tv' : 'movie'}/${numericId}`, {
+                headers: ngrokHeaders
+            });
+            if (res.ok) {
+                const movie = await res.json();
+                movie.media_type = mediaType;
+                showDetails(movie);
+            }
+        } catch (err) {
+            console.error('Failed to load movie:', err);
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const usernameEl = e.target.closest('.usr');
+        if (usernameEl) {
+            const username = usernameEl.textContent.trim();
+            if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
+                viewUserProfile(username);
+            }
+        }
+        
+        const profileImg = e.target.closest('.pr-img img');
+        if (profileImg && !e.target.closest('#profileImg')) {
+            const username = profileImg.closest('.pt')?.querySelector('.usr')?.textContent.trim();
+            if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
+                viewUserProfile(username);
+            }
+        }
+    });
+
     async function loadFeaturedMovie() {
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
