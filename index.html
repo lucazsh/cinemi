@@ -1637,7 +1637,7 @@
                         A year later, Abby awakens haunted animatronics, unleashing long-buried secrets and horrors.
                     </span>
                     <span class="fmov-buttons">
-                        <button class="fmov-b" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
+                        <button class="fmov-b add-to-watchlist-feat" style="color:#18191e; background-color: #fffffff9;">Add to Watchlist</button>
                         <button class="fmov-b">Details</button>
                     </span>
                 </div>
@@ -1838,11 +1838,11 @@
             </div>
             </button>
 
-            <button class="card" onclick="openPanel('party')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m71-133 168-472q6-17 20-26t30-9q10 0 19.5 3.5T326-625l304 304q8 8 11.5 17.5T645-284q0 16-9 30t-26 20L138-66q-16 6-30.5 2.5T83-78q-10-11-13.5-25t1.5-30Zm890-559q-11 11-26 11t-26-11l-4-4q-13-13-30-13t-30 13L637-488q-11 11-26 11t-26-11q-11-11-11.5-26.5T584-541l209-209q35-35 83-35t83 35l5 5q11 11 10 26.5T961-692ZM403-821q11-11 26-10.5t26 11.5q32 32 32 77t-32 77q-10 10-24.5 9.5T402-671q-11-11-10.5-25t11.5-24q10-10 10-23t-10-23l-1-1q-11-11-10.5-27t11.5-27Zm173-94q11-11 27-10.5t27 11.5l43 44q35 35 35 83t-35 83L547-578q-11 11-26 11t-26-11q-11-11-11.5-26.5T494-631l127-127q13-13 13-30t-13-30l-45-44q-11-11-11-26.5t11-26.5Zm369 517q-11 11-26 11t-26-11l-58-58q-10-10-24-10t-24 10l-60 59q-11 11-26 10.5T675-398q-11-11-11.5-26.5T674-451l59-59q32-32 77-32t77 32l59 59q11 11 10.5 26.5T945-398Z"/></svg></div>
+            <button class="card" onclick="openPanel('watchlist')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h400v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Z"/></svg></div>
             <div class="meta">
-                <div class="title">Party</div>
-                <div class="subtitle">Live</div>
+                <div class="title">Watch List</div>
+                <div class="subtitle">Movies to watch</div>
             </div>
             </button>
 
@@ -2159,6 +2159,104 @@
         }
     }
 
+    async function loadWatchlist() {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist`);
+        if (!res.ok) throw new Error('Failed to load watchlist');
+        return await res.json();
+    } catch (err) {
+        console.error('Watchlist load error:', err);
+        return [];
+    }
+    }
+
+    async function loadFavorites() {
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites`);
+        if (!res.ok) throw new Error('Failed to load favorites');
+        return await res.json();
+    } catch (err) {
+        console.error('Favorites load error:', err);
+        return [];
+    }
+    }
+
+    async function showWatchlistPanel() {
+    const movies = await loadWatchlist();
+    const panel = document.getElementById('watchlist-panel');
+    const sheet = panel.querySelector('.sheet');
+    
+    if (movies.length === 0) {
+        sheet.innerHTML = `
+        <h2>Watch List</h2>
+        <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies in your watchlist yet!</p>
+        <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        `;
+    } else {
+        sheet.innerHTML = `
+        <h2>Watch List (${movies.length})</h2>
+        <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+            ${movies.map(m => `
+            <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                <div style="flex:1;">
+                <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                </div>
+                <button onclick="removeFromWatchlistUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
+            </div>
+            `).join('')}
+        </div>
+        <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        `;
+    }
+    }
+
+    async function showFavoritesPanel() {
+    const movies = await loadFavorites();
+    const panel = document.getElementById('favorites-panel');
+    const sheet = panel.querySelector('.sheet');
+    
+    if (movies.length === 0) {
+        sheet.innerHTML = `
+        <h2>Favorites</h2>
+        <p style="text-align:center; color:var(--text-subtle); padding:40px;">No favorite movies yet!</p>
+        <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+        `;
+    } else {
+        sheet.innerHTML = `
+        <h2>Favorites (${movies.length})</h2>
+        <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+            ${movies.map(m => `
+            <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                <div style="flex:1;">
+                <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                </div>
+                <button onclick="removeFromFavoritesUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
+            </div>
+            `).join('')}
+        </div>
+        <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+        `;
+    }
+    }
+
+    async function removeFromWatchlistUI(movieId) {
+    const success = await removeFromWatchlist(movieId);
+    if (success) {
+        showWatchlistPanel();
+    }
+    }
+
+    async function removeFromFavoritesUI(movieId) {
+    const success = await removeFromFavorites(movieId);
+    if (success) {
+        showFavoritesPanel();
+    }
+    }
+
     async function loadFeaturedMovie() {
         try {
             const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
@@ -2192,6 +2290,13 @@
                 `;
                 
                 fMovContainer.onclick = () => showDetails(featuredMovie);
+                const watchlistBtn = fMovContainer.querySelector('.add-to-watchlist-feat');
+                if (watchlistBtn) {
+                watchlistBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    addToWatchlist(featuredMovie);
+                };
+                }
             }
         } catch (err) {
             console.error('Failed to load featured movie:', err);
@@ -2367,22 +2472,28 @@
     let currentSwipifyIndex = 0;
 
     function openPanel(panelName) {
-        const panel = document.getElementById(`${panelName}-panel`);
-        if (!panel) return;
-        
-        panel.style.display = 'flex';
-        requestAnimationFrame(() => {
-            panel.classList.add('open');
-        });
-        
-        if (panelName === 'swipify') {
-            loadSwipifyMovies();
-        }
-        
-        const backdrop = panel.querySelector('.backdrop');
-        if (backdrop) {
-            backdrop.onclick = () => closePanel(panelName);
-        }
+    const panel = document.getElementById(`${panelName}-panel`);
+    if (!panel) return;
+    
+    panel.style.display = 'flex';
+    requestAnimationFrame(() => {
+        panel.classList.add('open');
+    });
+    
+    if (panelName === 'swipify') {
+        loadSwipifyMovies();
+        const leftBtn = document.getElementById('swipe-left-btn');
+        const rightBtn = document.getElementById('swipe-right-btn');
+        if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
+        if (rightBtn) rightBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('right', swipifyMovies[currentSwipifyIndex]);
+    } else if (panelName === 'watchlist') {
+        showWatchlistPanel();
+    } else if (panelName === 'favorites') {
+        showFavoritesPanel();
+    }
+    
+    const backdrop = panel.querySelector('.backdrop');
+    if (backdrop) backdrop.onclick = () => closePanel(panelName);
     }
 
     function closePanel(panelName) {
@@ -2548,18 +2659,22 @@
     }
 
     async function swipeCard(direction, movie) {
-        const container = document.getElementById('swipify-container');
-        const card = container.querySelector('.swipify-card');
-        if (!card) return;
-        
-        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.8)';
-        
-        await new Promise(resolve => setTimeout(resolve, 400));
-        
-        currentSwipifyIndex++;
-        renderSwipifyCard();
+    const container = document.getElementById('swipify-container');
+    const card = container.querySelector('.swipify-card');
+    if (!card) return;
+    
+    if (direction === 'right') {
+        await addToFavorites(movie);
+    }
+    
+    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.8)';
+    
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    currentSwipifyIndex++;
+    renderSwipifyCard();
     }
 
     function openPanel(panelName) {
@@ -3035,7 +3150,14 @@
                     </div>
                     <p class="modal-overview">${escapeHtml(item.overview)}</p>
                     <div id="modal-providers-list" style="margin-top:20px;"></div>
-                    
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button id="add-to-watchlist-btn" style="flex:1; padding:10px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                        Add to Watchlist
+                    </button>
+                    <button id="add-to-favorites-btn" style="flex:1; padding:10px; background:#ff4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                        Add to Favorites
+                    </button>
+                    </div>
                     <div id="reviews-section" style="margin-top:30px; border-top: 1px solid var(--border-dark-alpha-2); padding-top:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                             <h3 style="margin:0; font-size:18px;">Reviews</h3>
@@ -3060,6 +3182,8 @@
         `;
 
         document.body.appendChild(overlay);
+        overlay.querySelector('#add-to-watchlist-btn').onclick = () => addToWatchlist(item);
+        overlay.querySelector('#add-to-favorites-btn').onclick = () => addToFavorites(item);
         document.body.style.overflow = 'hidden';
 
         let player = null;
