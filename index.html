@@ -2975,10 +2975,8 @@
         const data = await res.json();
         
         if (res.ok) {
-        alert(`✅ Added "${movie.title || movie.name}" to Watchlist!`);
         return true;
         } else {
-        alert(data.error || 'Failed to add to watchlist');
         return false;
         }
     } catch (err) {
@@ -3006,10 +3004,8 @@
         const data = await res.json();
         
         if (res.ok) {
-        alert(`❤️ Added "${movie.title || movie.name}" to Favorites!`);
         return true;
         } else {
-        alert(data.error || 'Failed to add to favorites');
         return false;
         }
     } catch (err) {
