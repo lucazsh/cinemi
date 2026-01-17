@@ -2103,6 +2103,20 @@
         return `Good night, ${name}`;
     }
 
+    window.debugSafeArea = setInterval(() => {
+        const computed = getComputedStyle(document.documentElement);
+        const safeBottom = computed.getPropertyValue('--safe-area-bottom');
+        const actualInset = getComputedStyle(document.body).paddingBottom;
+        
+        console.log('Safe area var:', safeBottom);
+        console.log('Actual inset:', window.visualViewport?.height, window.innerHeight);
+        
+        const navh = document.querySelector('.navh');
+        if (navh) {
+            console.log('Navh bottom:', navh.style.bottom, getComputedStyle(navh).bottom);
+        }
+    }, 1000);
+
     function truncateText(text, maxLength) {
         if (!text) return '';
         if (text.length <= maxLength) return text;
