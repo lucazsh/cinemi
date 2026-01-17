@@ -2029,7 +2029,7 @@
         <div class="backdrop"></div>
         <div class="sheet">
             <h2>Favorites</h2>
-            <p>Coming soon...</p>
+            <p>Loading...</p>
             <button class="btn-close" onclick="closePanel('favorites')">Close</button>
         </div>
     </div>
@@ -2043,12 +2043,12 @@
         </div>
     </div>
 
-    <div id="party-panel" class="panel">
+    <div id="watchlist-panel" class="panel">
         <div class="backdrop"></div>
         <div class="sheet">
-            <h2>Party</h2>
-            <p>Coming soon...</p>
-            <button class="btn-close" onclick="closePanel('party')">Close</button>
+            <h2>Watch List</h2>
+            <p>Loading...</p>
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
         </div>
     </div>
     <script>
@@ -2472,28 +2472,40 @@
     let currentSwipifyIndex = 0;
 
     function openPanel(panelName) {
-    const panel = document.getElementById(`${panelName}-panel`);
-    if (!panel) return;
-    
-    panel.style.display = 'flex';
-    requestAnimationFrame(() => {
-        panel.classList.add('open');
-    });
-    
-    if (panelName === 'swipify') {
-        loadSwipifyMovies();
-        const leftBtn = document.getElementById('swipe-left-btn');
-        const rightBtn = document.getElementById('swipe-right-btn');
-        if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
-        if (rightBtn) rightBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('right', swipifyMovies[currentSwipifyIndex]);
-    } else if (panelName === 'watchlist') {
-        showWatchlistPanel();
-    } else if (panelName === 'favorites') {
-        showFavoritesPanel();
-    }
-    
-    const backdrop = panel.querySelector('.backdrop');
-    if (backdrop) backdrop.onclick = () => closePanel(panelName);
+        const panel = document.getElementById(`${panelName}-panel`);
+        if (!panel) return;
+        
+        if (panelName === 'swipify') {
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => {
+                panel.classList.add('open');
+            });
+            loadSwipifyMovies();
+            const leftBtn = document.getElementById('swipe-left-btn');
+            const rightBtn = document.getElementById('swipe-right-btn');
+            if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
+            if (rightBtn) rightBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('right', swipifyMovies[currentSwipifyIndex]);
+        } else if (panelName === 'watchlist') {
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => {
+                panel.classList.add('open');
+            });
+            showWatchlistPanel();
+        } else if (panelName === 'favorites') {
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => {
+                panel.classList.add('open');
+            });
+            showFavoritesPanel();
+        } else {
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => {
+                panel.classList.add('open');
+            });
+        }
+        
+        const backdrop = panel.querySelector('.backdrop');
+        if (backdrop) backdrop.onclick = () => closePanel(panelName);
     }
 
     function closePanel(panelName) {
