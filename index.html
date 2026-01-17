@@ -1901,6 +1901,73 @@
             </div>
         </div>
     </div>
+
+    <div id="user-profile" class="view">
+        <div class="nt">
+            <button onclick="showView('pos-t')" style="transform: rotate(180deg);">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+            </button>
+            <span class="logo" id="user-profile-title">Profile</span>
+            <button onclick="shareProfile()" style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M240-40q-33 0-56.5-23.5T160-120v-440q0-33 23.5-56.5T240-640h120v-80q0-83 58.5-141.5T560-920q83 0 141.5 58.5T760-720v80h120q33 0 56.5 23.5T960-560v440q0 33-23.5 56.5T880-40H240Zm0-80h640v-440H240v440Zm280-120q33 0 56.5-23.5T600-320q0-33-23.5-56.5T520-400q-33 0-56.5 23.5T440-320q0 33 23.5 56.5T520-240ZM360-640h320v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/></svg>
+            </button>
+        </div>
+        <div class="p-user">
+            <img class="p-img" id="viewProfileImg" src="https://i.imgflip.com/1ickup.jpg">
+            <span class="p-name" id="viewProfileName">username</span>
+            <span class="p-tag" id="viewProfileTag">@username</span>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="followBtn" style="flex: 1; padding: 10px 20px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">Follow</button>
+                <button id="messageBtn" style="flex: 1; padding: 10px 20px; background: var(--iconbox-bg); color: var(--text-primary); border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">Message</button>
+            </div>
+        </div>
+        <section class="grid" style="margin-top: 20px;">
+            <button class="card" onclick="showUserFavorites()">
+                <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
+                <div class="meta">
+                    <div class="title">Favorites</div>
+                    <div class="subtitle">Collection</div>
+                </div>
+            </button>
+            <button class="card" onclick="showUserWatchlist()">
+                <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h400v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Z"/></svg></div>
+                <div class="meta">
+                    <div class="title">Watch List</div>
+                    <div class="subtitle">Movies to watch</div>
+                </div>
+            </button>
+        </section>
+    </div>
+
+    <div id="messages" class="view">
+        <div class="nt">
+            <button onclick="showView('pos-t')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+            </button>
+            <span class="logo">Messages</span>
+            <button></button>
+        </div>
+        <div id="conversations-list" style="padding: 10px;"></div>
+    </div>
+
+    <div id="chat" class="view">
+        <div class="nt" style="cursor: pointer;" onclick="showView('messages')">
+            <button style="transform: rotate(180deg);">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+            </button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="chatUserImg" src="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                <span class="logo" id="chatUsername">User</span>
+            </div>
+            <button></button>
+        </div>
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="position: fixed; bottom: 20px; left: 0; right: 0; padding: 0 20px; display: flex; gap: 10px; align-items: center; background: var(--bg-primary);">
+            <input id="messageInput" type="text" placeholder="Message..." style="flex: 1; padding: 12px; border-radius: 20px; border: 1px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary);">
+            <button id="sendMessageBtn" style="padding: 12px 20px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 20px; font-weight: 600; cursor: pointer;">Send</button>
+        </div>
+    </div>
+
     <div id="replies" class="view">
         <div class="tp">
             <button onclick="closeReplies()" style="color: #18191ec2; font-size: 16px; align-items: center;">Back</button>
@@ -2057,6 +2124,10 @@
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     let featuredMovie = null;
+    let currentViewedUser = null;
+    let currentConversationId = null;
+    let messagePollingInterval = null;
+    let lastMessageTimestamp = 0;
     let featuredGenres = [];
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 
@@ -2256,6 +2327,263 @@
         showFavoritesPanel();
     }
     }
+
+    document.addEventListener('click', function(e) {
+        const usernameEl = e.target.closest('.usr');
+        if (!usernameEl) return;
+        
+        const username = usernameEl.textContent.trim();
+        const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        
+        if (username === currentUsername) {
+            showView('profile');
+        } else {
+            viewUserProfile(username);
+        }
+    });
+
+    async function viewUserProfile(username) {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/users/${username}`);
+            if (!res.ok) throw new Error('User not found');
+            
+            const data = await res.json();
+            currentViewedUser = data.user;
+            
+            document.getElementById('viewProfileImg').src = data.user.photoUrl;
+            document.getElementById('viewProfileName').textContent = data.user.displayName;
+            document.getElementById('viewProfileTag').textContent = '@' + data.user.username;
+            
+            const followBtn = document.getElementById('followBtn');
+            const messageBtn = document.getElementById('messageBtn');
+            
+            const statusRes = await fetchWithAuth(`${baseUrl}/api/users/${username}/follow-status`);
+            const statusData = await statusRes.json();
+            
+            followBtn.textContent = statusData.following ? 'Following' : 'Follow';
+            followBtn.style.background = statusData.following ? 'var(--iconbox-bg)' : 'var(--button-bg)';
+            followBtn.style.color = statusData.following ? 'var(--text-primary)' : 'var(--button-text)';
+            
+            followBtn.onclick = async () => {
+                const res = await fetchWithAuth(`${baseUrl}/api/users/${username}/follow`, { method: 'POST' });
+                const result = await res.json();
+                
+                followBtn.textContent = result.following ? 'Following' : 'Follow';
+                followBtn.style.background = result.following ? 'var(--iconbox-bg)' : 'var(--button-bg)';
+                followBtn.style.color = result.following ? 'var(--text-primary)' : 'var(--button-text)';
+            };
+            
+            messageBtn.onclick = () => startConversation(username);
+            
+            showView('user-profile');
+        } catch (err) {
+            console.error('Failed to load user profile:', err);
+        }
+    }
+
+    async function showUserFavorites() {
+        if (!currentViewedUser) return;
+        
+        const panel = document.getElementById('favorites-panel');
+        const sheet = panel.querySelector('.sheet');
+        
+        if (currentViewedUser.favorites.length === 0) {
+            sheet.innerHTML = `
+            <h2>Favorites</h2>
+            <p style="text-align:center; color:var(--text-subtle); padding:40px;">No favorites yet</p>
+            <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+            `;
+        } else {
+            sheet.innerHTML = `
+            <h2>Favorites (${currentViewedUser.favorites.length})</h2>
+            <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                ${currentViewedUser.favorites.map(m => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                    <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+            `;
+        }
+        
+        openPanel('favorites');
+    }
+
+    async function showUserWatchlist() {
+        if (!currentViewedUser) return;
+        
+        const panel = document.getElementById('watchlist-panel');
+        const sheet = panel.querySelector('.sheet');
+        
+        if (currentViewedUser.watchlist.length === 0) {
+            sheet.innerHTML = `
+            <h2>Watch List</h2>
+            <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies yet</p>
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+            `;
+        } else {
+            sheet.innerHTML = `
+            <h2>Watch List (${currentViewedUser.watchlist.length})</h2>
+            <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                ${currentViewedUser.watchlist.map(m => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                    <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+            `;
+        }
+        
+        openPanel('watchlist');
+    }
+
+    async function startConversation(withUsername) {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/conversations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ withUsername })
+            });
+            
+            const data = await res.json();
+            openChat(data.conversationId, withUsername);
+        } catch (err) {
+            console.error('Failed to start conversation:', err);
+        }
+    }
+
+    async function openChat(conversationId, withUsername) {
+        currentConversationId = conversationId;
+        lastMessageTimestamp = 0;
+        
+        const user = Array.from(userTags.values()).find(u => u.username === withUsername);
+        const photoUrl = user?.photoUrl || 'https://i.imgflip.com/1ickup.jpg';
+        
+        document.getElementById('chatUserImg').src = photoUrl;
+        document.getElementById('chatUsername').textContent = withUsername;
+        
+        const messagesContainer = document.getElementById('chat-messages');
+        messagesContainer.innerHTML = '';
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/conversations/${conversationId}/messages`);
+            const msgs = await res.json();
+            
+            msgs.forEach(msg => renderMessage(msg));
+            
+            if (msgs.length > 0) {
+                lastMessageTimestamp = new Date(msgs[msgs.length - 1].createdAt).getTime();
+            }
+        } catch (err) {
+            console.error('Failed to load messages:', err);
+        }
+        
+        showView('chat');
+        
+        if (messagePollingInterval) clearInterval(messagePollingInterval);
+        messagePollingInterval = setInterval(() => pollNewMessages(conversationId), 1000);
+    }
+
+    async function pollNewMessages(conversationId) {
+        if (currentConversationId !== conversationId) return;
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/conversations/${conversationId}/messages?since=${lastMessageTimestamp}`);
+            const newMessages = await res.json();
+            
+            newMessages.forEach(msg => {
+                renderMessage(msg);
+                lastMessageTimestamp = Math.max(lastMessageTimestamp, new Date(msg.createdAt).getTime());
+            });
+        } catch (err) {}
+    }
+
+    function renderMessage(msg) {
+        const currentUsername = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const isOwn = msg.from === currentUsername;
+        
+        const msgEl = document.createElement('div');
+        msgEl.style.cssText = `align-self: ${isOwn ? 'flex-end' : 'flex-start'}; max-width: 70%; padding: 10px 15px; border-radius: 20px; background: ${isOwn ? 'var(--button-bg)' : 'var(--iconbox-bg)'}; color: ${isOwn ? 'var(--button-text)' : 'var(--text-primary)'}; word-wrap: break-word;`;
+        msgEl.textContent = msg.text;
+        
+        document.getElementById('chat-messages').appendChild(msgEl);
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    }
+
+    document.getElementById('sendMessageBtn').onclick = async () => {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        
+        if (!text || !currentConversationId) return;
+        
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/conversations/${currentConversationId}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            
+            const data = await res.json();
+            renderMessage(data.message);
+            lastMessageTimestamp = new Date(data.message.createdAt).getTime();
+            
+            input.value = '';
+        } catch (err) {
+            console.error('Failed to send message:', err);
+        }
+    };
+
+    document.getElementById('messageInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('sendMessageBtn').click();
+        }
+    });
+
+    async function loadConversations() {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/conversations`);
+            const convs = await res.json();
+            
+            const container = document.getElementById('conversations-list');
+            
+            if (convs.length === 0) {
+                container.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-subtle);">No messages yet</div>';
+                return;
+            }
+            
+            container.innerHTML = convs.map(conv => `
+                <div onclick="openChat('${conv.id}', '${conv.with}')" style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); cursor:pointer; align-items:center;">
+                    <img src="${conv.photoUrl}" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                        <div style="font-weight:600; font-size:14px;">${escapeHtml(conv.displayName)}</div>
+                        <div style="font-size:12px; color:var(--text-subtle);">${escapeHtml(conv.lastMessage || 'Start a conversation')}</div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error('Failed to load conversations:', err);
+        }
+    }
+
+    const navhButtons = document.querySelectorAll('.navh button');
+    navhButtons.forEach((btn, idx) => {
+        if (idx === 2) {
+            btn.onclick = () => {
+                loadConversations();
+                showView('messages');
+            };
+        }
+    });
 
     async function loadFeaturedMovie() {
         try {
