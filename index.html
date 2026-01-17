@@ -2863,11 +2863,26 @@
             return { reviews: [], stats: { count: 0, averageRating: 0 } };
         }
     }
-    function updateSafeAreaVars() {
+    function forceSafeAreaUpdate() {
         const root = document.documentElement;
+        const navh = document.querySelector('.navh');
         root.style.setProperty('--safe-area-bottom', '0px');
         void root.offsetHeight;
+        
+        window.scrollBy(0, 1);
+        window.scrollBy(0, -1);
+
         root.style.setProperty('--safe-area-bottom', 'env(safe-area-inset-bottom)');
+
+        if (navh) {
+            navh.style.transform = 'translateX(-50%) translateY(1px)';
+            void navh.offsetHeight;
+            navh.style.transform = 'translateX(-50%)';
+        }
+    }
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', forceSafeAreaUpdate);
     }
     async function showDetails(item) {
         const isTV = item.media_type === 'tv';
@@ -2967,8 +2982,9 @@
                 updateInterval = null;
             }
             overlay.remove();
-            document.body.style.overflow = 'auto';
-            setTimeout(updateSafeAreaVars, 150);
+            forceSafeAreaUpdate();
+            setTimeout(forceSafeAreaUpdate, 100);
+            setTimeout(forceSafeAreaUpdate, 300);
         };
         overlay.querySelector('.modal-close-btn').onclick = close;
         overlay.onclick = (e) => { if (e.target === overlay) close(); };
