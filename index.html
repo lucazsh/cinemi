@@ -4794,69 +4794,70 @@
     });
 
     async function showUsernameSetup() {
-    const setup = document.getElementById('username-setup');
-    const input = document.getElementById('username-input');
-    const error = document.getElementById('username-error');
-    const btn = document.getElementById('username-submit');
-    
-    setup.style.display = 'flex';
-    setTimeout(() => input.focus(), 100);
-    
-    input.addEventListener('input', () => {
-        error.textContent = '';
-        input.style.borderColor = 'var(--border-light)';
-    });
-    
-    const submit = async () => {
-        const username = input.value.trim();
+        const setup = document.getElementById('username-setup');
+        const input = document.getElementById('username-input');
+        const error = document.getElementById('username-error');
+        const btn = document.getElementById('username-submit');
         
-        if (username.length < 3) {
-            error.textContent = 'Username must be at least 3 characters';
-            input.style.borderColor = '#ff4444';
-            return;
-        }
+        setup.style.display = 'flex';
+        setTimeout(() => input.focus(), 100);
         
-        btn.disabled = true;
-        btn.textContent = 'Checking...';
+        input.addEventListener('input', () => {
+            error.textContent = '';
+            input.style.borderColor = 'var(--border-light)';
+        });
         
-        try {
-            const res = await fetchWithAuth(`${baseUrl}/auth/set-username`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username })
-            });
+        const submit = async () => {
+            const username = input.value.trim();
             
-            const data = await res.json();
-            
-            if (!res.ok) {
-                error.textContent = data.error || 'Username taken or invalid';
+            if (username.length < 3) {
+                error.textContent = 'Username must be at least 3 characters';
                 input.style.borderColor = '#ff4444';
-                btn.disabled = false;
-                btn.textContent = 'Continue';
                 return;
             }
             
-            setup.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Checking...';
             
-            document.getElementById('addUsername').value = data.username;
-            document.querySelectorAll('.p-tag').forEach(el => {
-                el.textContent = '@' + data.username;
-            });
-            
-            checkAuthStatus();
-            
-        } catch (err) {
-            error.textContent = 'Network error. Please try again.';
-            btn.disabled = false;
-            btn.textContent = 'Continue';
-        }
-    };
-    
-    btn.addEventListener('click', submit);
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') submit();
-    });
-}
+            try {
+                const res = await fetchWithAuth(`${baseUrl}/auth/set-username`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    error.textContent = data.error || 'Username taken or invalid';
+                    input.style.borderColor = '#ff4444';
+                    btn.disabled = false;
+                    btn.textContent = 'Continue';
+                    return;
+                }
+                
+                setup.style.display = 'none';
+                
+                document.getElementById('addUsername').value = data.username;
+                document.querySelectorAll('.p-tag').forEach(el => {
+                    el.textContent = '@' + data.username;
+                });
+                
+                await checkQuizStatus();
+                
+            } catch (err) {
+                error.textContent = 'Network error. Please try again.';
+                btn.disabled = false;
+                btn.textContent = 'Continue';
+            }
+        };
+        
+        btn.addEventListener('click', submit);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submit();
+        });
+    }
+
     const googleSigninBtn = document.getElementById('google-signin-btn');
     if (googleSigninBtn) {
         googleSigninBtn.addEventListener('click', function() {
