@@ -343,6 +343,7 @@
             background: black;
             color: white;
             cursor: pointer;
+            font-size: 0.8rem;
         }
         .q-input {
             margin-top: 20px;
@@ -1450,6 +1451,105 @@
             font-size: 12px;
             min-width: 80px;
         }
+        .q-yn {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            -webkit-tap-highlight-color: transparent;
+            max-height: 60vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        .q-yn::-webkit-scrollbar {
+            width: 6px;
+            display: block !important;
+        }
+
+        .q-yn::-webkit-scrollbar-track {
+            background: var(--placeholder-bg);
+            border-radius: 10px;
+        }
+
+        .q-yn::-webkit-scrollbar-thumb {
+            background: var(--border-dark-alpha-1);
+            border-radius: 10px;
+        }
+
+        .q-yn::-webkit-scrollbar-thumb:hover {
+            background: var(--text-primary);
+        }
+
+        .q-yn input {
+            display: none;
+        }
+
+        .q-yn label {
+            padding: 14px 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border-dark-alpha-2);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.2s ease;
+            user-select: none;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .q-yn label:hover {
+            background: var(--nav-active-bg);
+            transform: translateX(4px);
+        }
+
+        .q-yn input:checked + label {
+            background: var(--button-bg);
+            color: var(--button-text);
+            border-color: var(--button-bg);
+            transform: scale(1.02);
+        }
+
+        .streaming-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: brightness(var(--emoji-br)) saturate(0.7);
+            transition: filter 0.2s ease;
+        }
+
+        .q-yn input:checked + label .streaming-logo {
+            filter: brightness(1.2) saturate(1);
+        }
+
+        .q-input {
+            width: 10ch;
+            font-size: 1.3rem;
+            width: 12ch;
+            text-align: center;
+        }
+        .q-input:focus {
+            width: 6ch;
+            transition: width 0.3s;
+        }
+        .question {
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+        .questions .question:first-child.active {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -1560,56 +1660,201 @@
         </button>
     </div>
 </div>
-    <div id="setup" class="view">
+    <div id="setup" class="view active">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
         <div class="questions">
-            <div class="question active">
-                <h1>What motivates you the most?</h1>
-                <input class="q-input" type="text" placeholder="Type your answer..." />
+            <div class="question active" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <h1>How old are you?</h1>
+                <input class="q-input" type="text" placeholder="e.g., 16" />
             </div>
             <div class="question">
-                <h1>Do you prefer working alone or in a team?</h1>
+                <h1>What's your gender?</h1>
                 <div class="q-yn">
                     <input type="radio" id="q2a" name="q2">
-                    <label for="q2a">Yes</label>
+                    <label for="q2a">Male</label>
                     <input type="radio" id="q2b" name="q2">
-                    <label for="q2b">No</label>
+                    <label for="q2b">Female</label>
                 </div>
             </div>
             <div class="question">
-                <h1>Are you more logical or creative?</h1>
-                <input class="q-input" type="text" placeholder="Logical / Creative / Both..." />
+                <h1>What's your personality type?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q3a" name="q3">
+                    <label for="q3a">Introvert</label>
+                    <input type="radio" id="q3b" name="q3">
+                    <label for="q3b">Ambivert (both introvert and extrovert)</label>
+                    <input type="radio" id="q3c" name="q3">
+                    <label for="q3c">Extrovert</label>
+                </div>
             </div>
             <div class="question">
-                <h1>Do you like taking risks?</h1>
+                <h1>What movies do you like?</h1>
                 <div class="q-yn">
                     <input type="radio" id="q4a" name="q4">
-                    <label for="q4a">Yes</label>
+                    <label for="q4a">American & British</label>
                     <input type="radio" id="q4b" name="q4">
-                    <label for="q4b">No</label>
+                    <label for="q4b">Romanian</label>
+                    <input type="radio" id="q4c" name="q4">
+                    <label for="q4c">Spanish / Italian</label>
+                    <input type="radio" id="q4d" name="q4">
+                    <label for="q4d">Asian</label>
+                    <input type="radio" id="q4e" name="q4">
+                    <label for="q4e">Other</label>
                 </div>
             </div>
             <div class="question">
-                <h1>Do you plan ahead or improvise?</h1>
+                <h1>For the next questions, rate each activity.</h1>
+                <h2 style="color: grey;">1 = Not at all, 5 = Love it!</h2>
+            </div>
+            <div class="question">
+                <h1>I enjoy working in a team.</h1>
                 <div class="q-yn">
                     <input type="radio" id="q5a" name="q5">
-                    <label for="q5a">Yes</label>
+                    <label for="q5a">1</label>
                     <input type="radio" id="q5b" name="q5">
-                    <label for="q5b">No</label>
+                    <label for="q5b">2</label>
+                    <input type="radio" id="q5c" name="q5">
+                    <label for="q5c">3</label>
+                    <input type="radio" id="q5d" name="q5">
+                    <label for="q5d">4</label>
+                    <input type="radio" id="q5e" name="q5">
+                    <label for="q5e">5</label>
                 </div>
             </div>
             <div class="question">
-                <h1>What defines success for you?</h1>
-                <input class="q-input" type="text" placeholder="Your definition..." />
+                <h1>Hanging out with friends.</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q6a" name="q6">
+                    <label for="q6a">1</label>
+                    <input type="radio" id="q6b" name="q6">
+                    <label for="q6b">2</label>
+                    <input type="radio" id="q6c" name="q6">
+                    <label for="q6c">3</label>
+                    <input type="radio" id="q6d" name="q6">
+                    <label for="q6d">4</label>
+                    <input type="radio" id="q6e" name="q6">
+                    <label for="q6e">5</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>Spending time with family.</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q7a" name="q7">
+                    <label for="q7a">1</label>
+                    <input type="radio" id="q7b" name="q7">
+                    <label for="q7b">2</label>
+                    <input type="radio" id="q7c" name="q7">
+                    <label for="q7c">3</label>
+                    <input type="radio" id="q7d" name="q7">
+                    <label for="q7d">4</label>
+                    <input type="radio" id="q7e" name="q7">
+                    <label for="q7e">5</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>Do you like adrenaline?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q8a" name="q8">
+                    <label for="q8a">1</label>
+                    <input type="radio" id="q8b" name="q8">
+                    <label for="q8b">2</label>
+                    <input type="radio" id="q8c" name="q8">
+                    <label for="q8c">3</label>
+                    <input type="radio" id="q8d" name="q8">
+                    <label for="q8d">4</label>
+                    <input type="radio" id="q8e" name="q8">
+                    <label for="q8e">5</label>
+                </div>
+            </div>
+            <div class="question">
+                <h1>What sports do you like?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q9a" name="q9">
+                    <label for="q9a">Ball sports</label>
+                    <input type="radio" id="q9b" name="q9">
+                    <label for="q9b">Contact sports</label>
+                    <input type="radio" id="q9c" name="q9">
+                    <label for="q9c">Extreme sports</label>
+                    <input type="radio" id="q9d" name="q9">
+                    <label for="q9d">Artistic sports</label>
+                    <input type="radio" id="q9e" name="q9">
+                    <label for="q9e">Other</label>
+                    <input type="radio" id="q9f" name="q9">
+                    <label for="q9f">I don't like sports</label>
+                </div>
+            </div>
+            <div class="question"> 
+                <h1>What kind of movies do you like?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q10a" name="q10" value="psychological_thriller">
+                    <label for="q10a">Psychological / Thriller</label>
+                    <input type="radio" id="q10b" name="q10" value="action">
+                    <label for="q10b">Action</label>
+                    <input type="radio" id="q10c" name="q10" value="horror">
+                    <label for="q10c">Horror</label>
+                    <input type="radio" id="q10d" name="q10" value="romantic_drama">
+                    <label for="q10d">Romantic drama</label>
+                    <input type="radio" id="q10e" name="q10" value="romantic_comedy">
+                    <label for="q10e">Romantic comedy</label>
+                    <input type="radio" id="q10f" name="q10" value="fantasy">
+                    <label for="q10f">Fantasy</label>
+                    <input type="radio" id="q10g" name="q10" value="science_fiction">
+                    <label for="q10g">Science Fiction</label>
+                    <input type="radio" id="q10h" name="q10" value="superheroes">
+                    <label for="q10h">Superheroes</label>
+                    <input type="radio" id="q10i" name="q10" value="comedy">
+                    <label for="q10i">Comedy</label>
+                    <input type="radio" id="q10j" name="q10" value="melancholic">
+                    <label for="q10j">Melancholic</label>
+                    <input type="radio" id="q10k" name="q10" value="crime_detective">
+                    <label for="q10k">Crime / Detective</label>
+                </div>
+            </div>
+            <div class="question"> 
+                <h1>Which streaming platform do you use for movies?</h1>
+                <div class="q-yn">
+                    <input type="radio" id="q11a" name="q11" value="netflix">
+                    <label for="q11a">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="streaming-logo" alt="Netflix">
+                        Netflix
+                    </label>
+                    
+                    <input type="radio" id="q11b" name="q11" value="disney_plus">
+                    <label for="q11b">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" class="streaming-logo" alt="Disney+">
+                        Disney+
+                    </label>
+                    
+                    <input type="radio" id="q11c" name="q11" value="showtime">
+                    <label for="q11c">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg" class="streaming-logo" alt="Showtime">
+                        Showtime
+                    </label>
+                    
+                    <input type="radio" id="q11d" name="q11" value="prime_video">
+                    <label for="q11d">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" class="streaming-logo" alt="Prime Video">
+                        Prime Video
+                    </label>
+                    
+                    <input type="radio" id="q11e" name="q11" value="hbo_max">
+                    <label for="q11e">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" class="streaming-logo" alt="HBO Max">
+                        HBO Max
+                    </label>
+                    
+                    <input type="radio" id="q11f" name="q11" value="other">
+                    <label for="q11f">Other</label>
+                </div>
             </div>
         </div>
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
-    <div id="home" class="view active">
+    <div id="home" class="view">
         <div class="nt">
             <span class="logo" style="display:flex; align-items: center;">
                 Home
@@ -2125,9 +2370,14 @@
     <script>
     const SERVER_URL = 'https://named-baby-each-subsidiaries.trycloudflare.com'; 
     const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
+    const inputAge = document.querySelector('.q-input[type="text"]');
     const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
     const IMG_W500 = 'https://image.tmdb.org/t/p/w500';
     let featuredMovie = null;
+    let current = 0;
+    const questions = document.querySelectorAll('.question');
+    const progress = document.getElementById('progressFill');
+    const total = questions.length;
     let featuredGenres = [];
     const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 
@@ -2180,6 +2430,167 @@
         return text.substring(0, maxLength).trim() + '...';
     }
 
+    // Note to myself: WHY?? JUST WHY?
+    if (inputAge) {
+        let active = false;
+
+        inputAge.addEventListener('input', function(e) {
+            const val = e.target.value.trim();
+            
+            if (val === '67' && !active) {
+                active = true;
+                document.body.classList.add('shake-eff');
+
+                const wrap = document.createElement('div');
+                wrap.className = 'layer-67';
+                
+                let smalls = '';
+                for(let i=0; i<20; i++) {
+                    const rx = Math.random() * 100;
+                    const delay = Math.random() * 2;
+                    const dur = 1 + Math.random() * 2;
+                    smalls += `<div class="s-67" style="left:${rx}vw; top:-10vh; animation: fall ${dur}s linear infinite; animation-delay:${delay}s">67</div>`;
+                }
+
+                wrap.innerHTML = `
+                    ${smalls}
+                    <div class="mid-67">
+                        <div class="big-67">67</div>
+                    </div>
+                    <div class="hand-row">
+                        <div class="h-anim h-l">🫴</div>
+                        <div class="h-anim h-r">🫴</div>
+                    </div>
+                `;
+
+                document.body.appendChild(wrap);
+
+                setTimeout(() => {
+                    wrap.classList.add('exit-animation');
+                    wrap.querySelectorAll('.s-67, .big-67, .h-anim').forEach(el => {
+                        el.style.animation = 'none';
+                        el.classList.add('zoom-out');
+                    });
+                    
+                    setTimeout(() => {
+                        wrap.remove();
+                        document.body.classList.remove('shake-eff');
+                        active = false;
+                    }, 500);
+                }, 4500); 
+            }
+        });
+    }
+
+    const css = document.createElement('style');
+    css.textContent = `
+        @keyframes entry-zoom {
+            0% { transform: scale(3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .zoom-out {
+            animation: zoom-out-anim 0.5s ease-in forwards !important;
+        }
+
+        @keyframes zoom-out-anim {
+            to { transform: scale(8); opacity: 0; }
+        }
+
+        .exit-animation {
+            pointer-events: none !important;
+        }
+
+        .layer-67 {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 9999999 !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            animation: entry-zoom 0.4s ease-out forwards;
+        }
+
+        .s-67 {
+            position: absolute !important;
+            font-size: 8vw !important;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.5; }
+        }
+
+        .mid-67 {
+            flex: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .big-67 {
+            font-size: 70vw !important;
+            font-weight: 900 !important;
+            color: #ff3e3e !important;
+            text-shadow: 8px 8px 0px #000 !important;
+            animation: rotate-move 0.3s infinite alternate ease-in-out;
+        }
+
+        @keyframes rotate-move {
+            from { transform: rotate(-15deg); }
+            to { transform: rotate(15deg); }
+        }
+
+        .hand-row {
+            height: 25vh !important;
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: flex-end !important;
+            width: 100% !important;
+        }
+
+        .h-anim { font-size: 35vw !important; }
+        
+        .h-l { animation: alt-y 0.5s infinite alternate ease-in-out; }
+        .h-r { 
+            transform: scaleX(-1); 
+            animation: alt-y-rev 0.5s infinite alternate ease-in-out; 
+        }
+
+        @keyframes alt-y {
+            from { transform: translateY(0); }
+            to { transform: translateY(-60px); }
+        }
+
+        @keyframes alt-y-rev {
+            from { transform: scaleX(-1) translateY(-60px); }
+            to { transform: scaleX(-1) translateY(0); }
+        }
+
+        .shake-eff {
+            animation: intense-shake 0.08s infinite !important;
+        }
+
+        @keyframes intense-shake {
+            0% { transform: translate(5px, 5px); }
+            25% { transform: translate(-5px, -4px); }
+            50% { transform: translate(-6px, 3px); }
+            75% { transform: translate(5px, -3px); }
+            100% { transform: translate(2px, 5px); }
+        }
+
+        @media (min-width: 768px) {
+            .big-67 { font-size: 400px !important; }
+            .s-67 { font-size: 40px !important; }
+            .h-anim { font-size: 180px !important; }
+        }
+    `;
+    document.head.appendChild(css);
     function showSkeletonLoaders() {
         const fMovContainer = document.querySelector('.f-mov');
         if (fMovContainer) {
@@ -4418,15 +4829,13 @@
             await initHomeFeed();
         }
     });
-    let current = 0;
-    const questions = document.querySelectorAll('.question');
-    const progress = document.getElementById('progressFill');
-    const total = questions.length;
     function nextQuestion() {
         questions[current].classList.remove('active');
+        questions[current].style.display = 'none'; // ADD THIS LINE
         current++;
         if (current < total) {
             questions[current].classList.add('active');
+            questions[current].style.display = 'block';
             updateProgress();
         } else {
             progress.style.width = '100%';
