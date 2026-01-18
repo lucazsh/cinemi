@@ -2725,7 +2725,7 @@
                 setupView.classList.remove('active');
             }
             showView('home');
-            return;
+            return true;
         }
         
         try {
@@ -2740,17 +2740,22 @@
                     setupView.classList.remove('active');
                 }
                 showView('home');
+                return true;
             }
+            return false;
         } catch (err) {
             console.error('Quiz status check error:', err);
+            return false;
         }
     }
 
     checkAuthStatus().then(async isAuth => {
         if (isAuth) {
-            await checkQuizStatus();
-            await initHomeFeed();
-            await updateMyFriendsCount();
+            const quizDone = await checkQuizStatus();
+            if (quizDone) {
+                await initHomeFeed();
+                await updateMyFriendsCount();
+            }
         }
     });
 
