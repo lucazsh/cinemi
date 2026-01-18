@@ -1660,7 +1660,7 @@
         </button>
     </div>
 </div>
-    <div id="setup" class="view active">
+    <div id="setup" class="view">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -1854,7 +1854,7 @@
         </div>
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
-    <div id="home" class="view">
+    <div id="home" class="view active">
         <div class="nt">
             <span class="logo" style="display:flex; align-items: center;">
                 Home
@@ -2720,10 +2720,6 @@
     async function checkQuizStatus() {
         const quizCompleted = localStorage.getItem('quizCompleted');
         if (quizCompleted === 'true') {
-            const setupView = document.getElementById('setup');
-            if (setupView) {
-                setupView.classList.remove('active');
-            }
             showView('home');
             return true;
         }
@@ -2734,17 +2730,15 @@
             
             if (data.completed) {
                 localStorage.setItem('quizCompleted', 'true');
-                
-                const setupView = document.getElementById('setup');
-                if (setupView) {
-                    setupView.classList.remove('active');
-                }
                 showView('home');
                 return true;
+            } else {
+                showView('setup');
+                return false;
             }
-            return false;
         } catch (err) {
             console.error('Quiz status check error:', err);
+            showView('setup');
             return false;
         }
     }
