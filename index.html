@@ -4850,6 +4850,16 @@
         const currentQuestion = questions[current];
         let answer = null;
         
+        if (current === 4) {
+            questions[current].classList.remove('active');
+            questions[current].style.display = 'none';
+            current++;
+            questions[current].classList.add('active');
+            questions[current].style.display = 'block';
+            updateProgress();
+            return;
+        }
+        
         if (current === 0) {
             answer = currentQuestion.querySelector('.q-input').value;
         } else {
