@@ -4695,60 +4695,62 @@
 
     async function checkAuthStatus() {
         const loginScreen = document.getElementById('login-screen');
-        
-        if (sessionToken && localStorage.getItem('isAuthenticated') === 'true') {
-            if (loginScreen) loginScreen.style.display = 'none';
+        const usernameSetup = document.getElementById('username-setup');
+
+        if (!sessionToken) {
+            if (loginScreen) loginScreen.style.display = 'flex';
+            showView('login-screen');
+            return false;
         }
-        
+
         try {
-            const res = await fetchWithAuth(baseUrl + '/auth/user');
-            
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
+            const res = await fetchWithAuth(`${baseUrl}/auth/user`);
+            if (!res.ok) throw new Error('auth failed');
+
             const data = await res.json();
-            
-            if (data.ok && data.user) {
-                localStorage.setItem('isAuthenticated', 'true');
-                
-                if (loginScreen) loginScreen.style.display = 'none';
-                
-                if (!data.user.username) {
-                    showUsernameSetup();
-                    return false;
-                }
-                
-                const usernameField = document.getElementById('addUsername');
-                if (usernameField) {
-                    usernameField.value = data.user.username;
-                    usernameField.disabled = true;
-                }
-                
-                if (data.user.photoUrl) {
-                    const profileImg = document.getElementById('profileImg');
-                    if (profileImg) profileImg.src = data.user.photoUrl;
-                    try {
-                        localStorage.setItem(`profilePhotoUrl_${data.user.username}`, data.user.photoUrl);
-                    } catch(e) {}
-                }
-                
-                document.querySelectorAll('.p-name').forEach(el => {
-                    el.textContent = data.user.displayName || data.user.username;
-                });
-                
-                document.querySelectorAll('.p-tag').forEach(el => {
-                    el.textContent = '@' + data.user.username;
-                });
-                
-                return true;
-            } else {
+
+            if (!data.ok || !data.user) {
                 localStorage.removeItem('sessionToken');
                 localStorage.removeItem('isAuthenticated');
                 sessionToken = null;
                 if (loginScreen) loginScreen.style.display = 'flex';
                 return false;
             }
+
+            localStorage.setItem('isAuthenticated', 'true');
+
+            if (loginScreen) loginScreen.style.display = 'none';
+
+            if (!data.user.username) {
+                if (usernameSetup) usernameSetup.style.display = 'flex';
+                showView('username-setup');
+                return false;
+            }
+
+            document.getElementById('addUsername').value = data.user.username;
+            document.querySelectorAll('.p-name').forEach(el => {
+                el.textContent = data.user.displayName || data.user.username;
+            });
+            document.querySelectorAll('.p-tag').forEach(el => {
+                el.textContent = '@' + data.user.username;
+            });
+
+            const quizRes = await fetchWithAuth(`${baseUrl}/api/quiz/status`);
+            const quizData = await quizRes.json();
+
+            if (quizData.completed || localStorage.getItem('quizCompleted') === 'true') {
+                localStorage.setItem('quizCompleted', 'true');
+                showView('home');
+                initHomeFeed();
+                updateMyFriendsCount();
+            } else {
+                showView('setup');
+            }
+
+            return true;
+
         } catch (err) {
-            console.error("Auth check failed:", err);
+            console.error("Check auth error:", err);
             localStorage.removeItem('sessionToken');
             localStorage.removeItem('isAuthenticated');
             sessionToken = null;
@@ -4886,12 +4888,16 @@
     }
 
 
-    checkAuthStatus();
-    checkAuthStatus().then(async isAuth => {
-        if (isAuth) {
-            await initHomeFeed();
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuthStatus();
     });
+
+    if (urlSessionToken) {
+        sessionToken = urlSessionToken;
+        localStorage.setItem('sessionToken', sessionToken);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        checkAuthStatus();
+    }
     async function nextQuestion() {
         const currentQuestion = questions[current];
         let answer = null;
