@@ -2718,11 +2718,23 @@
     }
 
     async function checkQuizStatus() {
+        const quizCompleted = localStorage.getItem('quizCompleted');
+        if (quizCompleted === 'true') {
+            const setupView = document.getElementById('setup');
+            if (setupView) {
+                setupView.classList.remove('active');
+            }
+            showView('home');
+            return;
+        }
+        
         try {
             const res = await fetchWithAuth(`${baseUrl}/api/quiz/status`);
             const data = await res.json();
             
             if (data.completed) {
+                localStorage.setItem('quizCompleted', 'true');
+                
                 const setupView = document.getElementById('setup');
                 if (setupView) {
                     setupView.classList.remove('active');
@@ -4906,10 +4918,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(quizAnswers)
                 });
+                localStorage.setItem('quizCompleted', 'true');
             } catch (err) {
                 console.error('Quiz submit error:', err);
             }
-            
+
             showView('home');
         }
     }
