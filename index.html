@@ -2717,8 +2717,25 @@
         }
     }
 
+    async function checkQuizStatus() {
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/quiz/status`);
+            const data = await res.json();
+            
+            if (data.completed) {
+                const setupView = document.getElementById('setup');
+                if (setupView) {
+                    setupView.classList.remove('active');
+                }
+            }
+        } catch (err) {
+            console.error('Quiz status check error:', err);
+        }
+    }
+
     checkAuthStatus().then(async isAuth => {
         if (isAuth) {
+            await checkQuizStatus();
             await initHomeFeed();
             await updateMyFriendsCount();
         }
@@ -4829,16 +4846,59 @@
             await initHomeFeed();
         }
     });
-    function nextQuestion() {
+    async function nextQuestion() {
+        const currentQuestion = questions[current];
+        let answer = null;
+        
+        if (current === 0) {
+            answer = currentQuestion.querySelector('.q-input').value;
+        } else {
+            const selected = currentQuestion.querySelector('input[type="radio"]:checked');
+            if (selected) {
+                answer = selected.value || selected.id;
+            }
+        }
+        
+        if (!answer) {
+            alert('Please answer the question');
+            return;
+        }
+        
         questions[current].classList.remove('active');
-        questions[current].style.display = 'none'; // ADD THIS LINE
+        questions[current].style.display = 'none';
         current++;
+        
         if (current < total) {
             questions[current].classList.add('active');
             questions[current].style.display = 'block';
             updateProgress();
         } else {
             progress.style.width = '100%';
+            
+            const quizAnswers = {
+                age: questions[0].querySelector('.q-input').value,
+                gender: questions[1].querySelector('input:checked')?.id,
+                personality: questions[2].querySelector('input:checked')?.id,
+                movieOrigin: questions[3].querySelector('input:checked')?.id,
+                teamwork: questions[5].querySelector('input:checked')?.id,
+                friends: questions[6].querySelector('input:checked')?.id,
+                family: questions[7].querySelector('input:checked')?.id,
+                adrenaline: questions[8].querySelector('input:checked')?.id,
+                sports: questions[9].querySelector('input:checked')?.id,
+                movieGenre: questions[10].querySelector('input:checked')?.value,
+                streamingPlatform: questions[11].querySelector('input:checked')?.value
+            };
+            
+            try {
+                await fetchWithAuth(`${baseUrl}/api/quiz/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(quizAnswers)
+                });
+            } catch (err) {
+                console.error('Quiz submit error:', err);
+            }
+            
             showView('home');
         }
     }
