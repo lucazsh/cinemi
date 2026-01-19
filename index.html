@@ -3656,23 +3656,36 @@
                 card.addEventListener('click', () => openPanel('swipify'));
             });
     });
-    async function sendAIFeedback(movie, action) {
+    function getUserProfile() {
         try {
-            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-            const profile = getUserProfile();
-            const reviews = await getReviews();
-            const favorites = await loadFavorites();
-            const watchlist = await loadWatchlist();
-            
-            await fetch('http://localhost:5000/feedback', {
+            const saved = localStorage.getItem('cinemi_userQuizProfile');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (e) {}
+        return {};
+    }
+
+    async function getReviews() {
+        return [];
+    }
+
+    async function sendAIFeedback(movie, action) {
+        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const profile = getUserProfile();
+        const favorites = await loadFavorites();
+        const watchlist = await loadWatchlist();
+        const movieId = `${movie.media_type || 'movie'}-${movie.id}`;
+
+        try {
+            await fetchWithAuth(`${baseUrl}/api/recommendations/feedback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username,
-                    movieId: `${movie.media_type}-${movie.id}`,
+                    movieId,
                     action,
                     profile,
-                    reviews,
+                    reviews: [],
                     favorites: favorites.map(f => f.movieId),
                     watchlist: watchlist.map(w => w.movieId)
                 })
@@ -5044,10 +5057,10 @@
                     body: JSON.stringify(quizAnswers)
                 });
                 localStorage.setItem('quizCompleted', 'true');
+                localStorage.setItem('cinemi_userQuizProfile', JSON.stringify(quizAnswers));
             } catch (err) {
                 console.error('Quiz submit error:', err);
             }
-
             showView('home');
         }
     }
