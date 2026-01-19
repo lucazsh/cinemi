@@ -3628,30 +3628,59 @@
     }
 
     async function swipeCard(direction, movie) {
-    const container = document.getElementById('swipify-container');
-    const card = container.querySelector('.swipify-card');
-    if (!card) return;
-    
-    if (direction === 'right') {
-        await addToFavorites(movie);
-    }
-    
-    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-    card.style.opacity = '0';
-    card.style.transform = 'scale(0.8)';
-    
-    await new Promise(resolve => setTimeout(resolve, 400));
-    
-    currentSwipifyIndex++;
-    renderSwipifyCard();
-    }
+        const container = document.getElementById('swipify-container');
+        const card = container.querySelector('.swipify-card');
+        if (!card) return;
+        
+        const action = direction === 'right' ? 'swipe_right' : 'swipe_left';
+        
+        await sendAIFeedback(movie, action);
+        
+        if (direction === 'right') {
+            await addToFavorites(movie);
+        }
+        
+        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+        
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        currentSwipifyIndex++;
+        renderSwipifyCard();
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const movieCards = document.querySelectorAll('.movie-card');
-        movieCards.forEach(card => {
-            card.addEventListener('click', () => openPanel('swipify'));
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach(card => {
+                card.addEventListener('click', () => openPanel('swipify'));
+            });
     });
+    async function sendAIFeedback(movie, action) {
+        try {
+            const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+            const profile = getUserProfile();
+            const reviews = await getReviews();
+            const favorites = await loadFavorites();
+            const watchlist = await loadWatchlist();
+            
+            await fetch('http://localhost:5000/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username,
+                    movieId: `${movie.media_type}-${movie.id}`,
+                    action,
+                    profile,
+                    reviews,
+                    favorites: favorites.map(f => f.movieId),
+                    watchlist: watchlist.map(w => w.movieId)
+                })
+            });
+        } catch (err) {
+            console.error('Feedback error:', err);
+        }
+    }
     async function fetchUsers(query, container) {
         try {
             const response = await fetch(`${baseUrl}/api/search/users?q=${encodeURIComponent(query)}`, {
