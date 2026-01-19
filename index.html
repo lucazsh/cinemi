@@ -3279,6 +3279,67 @@
             console.error('Failed to load mood movies:', err);
         }
     }
+    // Beta TESTING!!
+    async function loadAIRecommendations() {
+        try {
+            const moodLabel = document.querySelector('.m1-rec > div:nth-child(5)');
+            if (moodLabel) {
+                moodLabel.textContent = 'AI Picks for You';
+            }
+            const res = await fetchWithAuth(`${baseUrl}/api/recommendations`);
+            
+            if (!res.ok) {
+                console.log('AI recommendations not available, falling back to mood-based');
+                await loadMoodMovies();
+                return;
+            }
+            
+            const data = await res.json();
+            const recommendations = data.recommendations || [];
+            
+            if (recommendations.length === 0) {
+                await loadMoodMovies();
+                return;
+            }
+            
+            const moodContainer = document.getElementById('mood');
+            if (moodContainer) {
+                moodContainer.innerHTML = '';
+                
+                recommendations.slice(0, 6).forEach((movie, idx) => {
+                    const numericId = movie.movieId.includes('-') 
+                        ? movie.movieId.split('-').pop() 
+                        : movie.movieId;
+                    
+                    const posterUrl = movie.posterPath ? `${IMG_W500}${movie.posterPath}` : '';
+                    
+                    if (posterUrl) {
+                        const img = document.createElement('img');
+                        img.src = posterUrl;
+                        img.className = 'fade-in-content';
+                        img.style.animationDelay = `${idx * 0.1}s`;
+                        img.style.cursor = 'pointer';
+                        
+                        const movieObj = {
+                            id: parseInt(numericId),
+                            media_type: movie.mediaType || 'movie',
+                            title: movie.title,
+                            poster_path: movie.posterPath,
+                            backdrop_path: movie.backdropPath,
+                            overview: movie.overview,
+                            vote_average: movie.rating
+                        };
+                        
+                        img.onclick = () => showDetails(movieObj);
+                        moodContainer.appendChild(img);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load AI recommendations:', err);
+            await loadMoodMovies();
+        }
+    }
 
     async function loadTrendingMovies() {
         try {
@@ -3322,7 +3383,7 @@
         
         if (featuredGenres && featuredGenres.length > 0) {
             await loadGenreMovies();
-            await loadMoodMovies();
+            await loadAIRecommendations();
         }
         
         await loadTrendingMovies();
