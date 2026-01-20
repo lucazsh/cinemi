@@ -3,6 +3,9 @@
 <head>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f9faff" media="(prefers-color-scheme: light)">
     <style>
         html {
             touch-action: manipulation;
@@ -23,6 +26,9 @@
         filter: invert(1) hue-rotate(180deg);
         }
         */
+        .is-android {
+            margin-top: 20px;
+        }
         :root {
         --bg-primary: #f9faff;
         --bg-secondary: #ffffff;
@@ -2429,6 +2435,10 @@
         if (!text) return '';
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength).trim() + '...';
+    }
+        
+    if (/Android/i.test(navigator.userAgent)) {
+        document.documentElement.classList.add('is-android');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
