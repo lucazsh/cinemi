@@ -3,7 +3,7 @@
 <head>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/cinemi/manifest.json">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f9faff" media="(prefers-color-scheme: light)">
     <style>
@@ -2438,7 +2438,7 @@
     }
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js")
+        navigator.serviceWorker.register("/cinemi/sw.js")
           .then(reg => console.log("SW registered", reg))
           .catch(err => console.error("SW error", err));
       });
