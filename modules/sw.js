@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v1";
+const CACHE_NAME = "cinemi";
 const URLS_TO_CACHE = [
   "/cinemi/index.html",
   "/cinemi/icons/icon-192.png",
