@@ -2436,6 +2436,7 @@
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength).trim() + '...';
     }
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/cinemi/modules/sw.js")
