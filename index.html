@@ -3232,41 +3232,82 @@
     }
 
     async function loadGenreMovies() {
-        try {
-            if (!featuredGenres || featuredGenres.length === 0) return;
-            
-            const genreName = await getGenreName(featuredGenres[0]);
-            const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
-            if (genreLabel) {
-                genreLabel.textContent = `Because you watched ${genreName} movies`;
-            }
-            
-            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${featuredGenres[0]}`, {
-                headers: ngrokHeaders
+        const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
+        if (!quizProfile || !quizProfile.movieGenre) {
+            if (!featuredGenres?.length) return;
+            return await loadMoviesByGenre(featuredGenres[0], "Recommended for you");
+        }
+        const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(quizProfile)
+        });
+        if (!res.ok) throw new Error("quiz-recommend failed");
+        const data = await res.json();
+        const movies = data.movies || [];
+        const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
+        if (genreLabel) {
+            const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
+            genreLabel.textContent = `Because you like ${genreName} movies`;
+        }
+        const container = document.getElementById('genre');
+        if (container) {
+            container.innerHTML = '';
+            movies.slice(0, 6).forEach((movie, idx) => {
+                const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
+                if (!posterUrl) return;
+                const img = document.createElement('img');
+                img.src = posterUrl;
+                img.className = 'fade-in-content';
+                img.style.animationDelay = `${idx * 0.1}s`;
+                img.style.cursor = 'pointer';
+                img.onclick = () => showDetails(movie);
+                container.appendChild(img);
             });
-            const data = await res.json();
-            
-            const movContainer = document.getElementById('genre');
-            if (movContainer && data.results) {
-                movContainer.innerHTML = '';
-                data.results.slice(0, 6).forEach((movie, idx) => {
-                    const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
-                    if (posterUrl) {
-                        const img = document.createElement('img');
-                        img.src = posterUrl;
-                        img.className = 'fade-in-content';
-                        img.style.animationDelay = `${idx * 0.1}s`;
-                        img.style.cursor = 'pointer';
-                        img.onclick = () => showDetails(movie);
-                        movContainer.appendChild(img);
-                    }
-                });
+            if (movies.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-subtle); padding: 20px;">No recommendations yet...</div>';
             }
-        } catch (err) {
-            console.error('Failed to load genre movies:', err);
         }
     }
 
+    async function loadMoviesByGenre(genreId, titlePrefix) {
+        const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, { headers: ngrokHeaders });
+        const data = await res.json();
+        const genreName = await getGenreName(genreId);
+        const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
+        if (genreLabel) genreLabel.textContent = `${titlePrefix} ${genreName} movies`;
+        const container = document.getElementById('genre');
+        if (container && data.results) {
+            container.innerHTML = '';
+            data.results.slice(0, 6).forEach((m, i) => {
+                const url = m.poster_path ? `${IMG_W500}${m.poster_path}` : '';
+                if (!url) return;
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'fade-in-content';
+                img.style.animationDelay = `${i*0.1}s`;
+                img.onclick = () => showDetails(m);
+                container.appendChild(img);
+            });
+        }
+    }
+
+    async function getGenreNameFromValue(quizValue) {
+        const map = {
+            'psychological_thriller': 'Psychological Thrillers',
+            'action': 'Action',
+            'horror': 'Horror',
+            'romantic_drama': 'Romantic Dramas',
+            'romantic_comedy': 'Rom-Coms',
+            'fantasy': 'Fantasy',
+            'science_fiction': 'Sci-Fi',
+            'superheroes': 'Superhero Movies',
+            'comedy': 'Comedy',
+            'melancholic': 'Melancholic / Drama',
+            'crime_detective': 'Crime & Detective'
+        };
+        return map[quizValue] || 'movies';
+    }
     async function loadMoodMovies() {
         try {
             if (!featuredGenres || featuredGenres.length === 0) return;
