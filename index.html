@@ -261,9 +261,6 @@
             overflow: visible;
             top: 0;
         }
-        .nt svg {
-            fill: #ffffff;
-        }
         .logo {
             font-size: 26px;
             font-weight: bold;
@@ -313,6 +310,7 @@
             flex-direction: column;
             gap: 30px;
             background: var(--bg-primary);
+            color: var(--text-primary);
         }
         .progress-bar {
             width: 100%;
@@ -324,7 +322,7 @@
         .progress-fill {
             height: 100%;
             width: 0%;
-            background: black;
+            background: var(--text-primary);
             font-size: 12px;
             text-align: center;
             line-height: 18px;
@@ -347,8 +345,8 @@
             padding: 10px 20px;
             border-radius: 10px;
             border: none;
-            background: black;
-            color: white;
+            background: var(--text-primary);
+            color: var(--bg-primary);
             cursor: pointer;
             font-size: 0.8rem;
         }
@@ -367,6 +365,7 @@
         }
         .q-yn {
             margin-top: 20px;
+            color: var(--text-primary);
             display: flex;
             gap: 20px;
             -webkit-tap-highlight-color: transparent;
@@ -1176,7 +1175,9 @@
         #home .nt svg {
             fill: var(--text-primary) !important;
         }
-
+        #home .nt svg {
+            fill: var(--text-primary) !important;
+        }
         #search-results {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1448,7 +1449,7 @@
 
         #progress-fill {
             height: 100%;
-            background: var(--button-bg);
+            background: var(--text-primary);
             border-radius: 2px;
             width: 0%;
         }
@@ -1561,7 +1562,7 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
         <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
             <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
@@ -1667,7 +1668,7 @@
         </button>
     </div>
 </div>
-    <div id="setup" class="view">
+    <div id="setup" class="view active">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -2564,7 +2565,7 @@
             position: absolute !important;
             font-size: 8vw !important;
             font-weight: bold !important;
-            color: #000 !important;
+            color: var(--text-primary) !important;
         }
 
         @keyframes fall {
