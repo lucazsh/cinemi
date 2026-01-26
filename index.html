@@ -4714,7 +4714,7 @@
             }
             
             chatHistory.push({ role: 'assistant', content: fullResponse });
-            await renderMovieCards(aiMsg, fullResponse, currentMovieIds);
+            await renderMovieCards(aiMsg, fullResponse);
             
         } catch (error) {
             aiMsg.textContent = 'Error: Failed to connect to AI';
@@ -4742,7 +4742,7 @@
         }
     });
 
-    async function renderMovieCards(aiMsg, text, movieIds) {
+    async function renderMovieCards(aiMsg, text) {
         const titlePattern = /\*([^*]+)\*/g;
         const matches = [...text.matchAll(titlePattern)];
         
