@@ -955,7 +955,6 @@ async function loadAndDisplayReviews(movieId) {
         </div>
     `).join('');
 }
-document.addEventListener('DOMContentLoaded', initMovieSearch);
 
 async function loadWatchlist() {
 try {

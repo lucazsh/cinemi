@@ -1,5 +1,5 @@
 let searchTimer;
-
+document.addEventListener('DOMContentLoaded', initMovieSearch);
 function initMovieSearch() {
     const input = document.getElementById('fs-textarea');
     const results = document.getElementById('search-results');

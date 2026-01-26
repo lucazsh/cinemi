@@ -2,8 +2,6 @@ const SERVER_URL = 'https://named-baby-each-subsidiaries.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
-let searchTimer;
-
 function formatTimeAgo(dateString) {
     const now = new Date();
     const past = new Date(dateString);

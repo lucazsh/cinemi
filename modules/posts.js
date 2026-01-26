@@ -5,6 +5,8 @@ const postsMenuBtn = document.getElementById('posts-menu-btn');
 const feedMenu = document.getElementById('feed-menu');
 const currentFeedLabel = document.getElementById('current-feed-label');
 const feedOptions = document.querySelectorAll('.feed-option');
+const fileInput = document.getElementById('postFiles');
+const filePreview = document.getElementById('filePreview');
 let currentFeed = 'posts';
 let selectedFiles = [];
 
