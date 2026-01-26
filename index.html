@@ -4714,6 +4714,7 @@
             }
             
             chatHistory.push({ role: 'assistant', content: fullResponse });
+            await renderMovieCards(aiMsg, fullResponse, currentMovieIds);
             
         } catch (error) {
             aiMsg.textContent = 'Error: Failed to connect to AI';
@@ -4740,6 +4741,62 @@
             });
         }
     });
+
+    async function renderMovieCards(aiMsg, text, movieIds) {
+        const titlePattern = /\*([^*]+)\*/g;
+        const matches = [...text.matchAll(titlePattern)];
+        
+        if (matches.length === 0) return;
+        
+        let cleanedText = text.replace(titlePattern, '$1');
+        aiMsg.textContent = cleanedText;
+        
+        for (const match of matches) {
+            const movieTitle = match[1].trim();
+            
+            try {
+                const res = await fetch(`${baseUrl}/api/tmdb/search/multi?query=${encodeURIComponent(movieTitle)}`, {
+                    headers: ngrokHeaders
+                });
+                
+                if (!res.ok) continue;
+                
+                const data = await res.json();
+                const movie = data.results[0];
+                
+                if (!movie) continue;
+                
+                const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
+                const title = movie.title || movie.name;
+                const releaseDate = movie.release_date || movie.first_air_date;
+                
+                const movieCard = document.createElement('div');
+                movieCard.style.cssText = 'margin-top: 12px; padding: 12px; background: var(--iconbox-bg); border-radius: 12px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;';
+                
+                movieCard.innerHTML = `
+                    ${posterUrl ? `<img src="${posterUrl}" style="width: 60px; height: 90px; border-radius: 8px; object-fit: cover;">` : ''}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${escapeHtml(title)}</div>
+                        <div style="font-size: 12px; color: var(--text-subtle);">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} • ⭐ ${movie.vote_average.toFixed(1)}</div>
+                    </div>
+                `;
+                
+                movieCard.addEventListener('mouseenter', function() {
+                    this.style.background = 'var(--nav-active-bg)';
+                });
+                movieCard.addEventListener('mouseleave', function() {
+                    this.style.background = 'var(--iconbox-bg)';
+                });
+                movieCard.addEventListener('click', () => {
+                    showDetails(movie);
+                });
+                
+                aiMsg.appendChild(movieCard);
+            } catch (err) {
+                console.error('Failed to fetch movie:', movieTitle, err);
+            }
+        }
+    }
     const container = document.getElementById('login-screen');
     const tickerContainer = document.getElementById('ticker-container');
     const strips = document.querySelectorAll('.ticker-strip');
