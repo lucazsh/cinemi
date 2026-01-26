@@ -2202,11 +2202,11 @@
             </div>
         </div>
         <div class="i-chat">
-            <input type="text" inputmode="text" enterkeyhint="done" placeholder="Ask anything about movies..." rows="1"></input>
+            <input type="text" inputmode="text" enterkeyhint="done" placeholder="Ask anything about movies..."></input>
             <button id="context-btn" title="Add movie context" style="background-color: var(--iconbox-bg); min-height: 40px; padding: 4px 7px; border-radius: 10px; margin-right: 4px;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520Z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520Z"/></svg>
             </button>
-            <button id="send-btn" style="background-color: #18191efe; min-height: 40px; padding: 4px 7px;">
+            <button id="send-btn" style="background-color: #18191efe; min-height: 40px; padding: 4px 7px; border-radius: 10px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>
             </button>
         </div>
@@ -2455,8 +2455,7 @@
     if (/Android/i.test(navigator.userAgent)) {
         document.documentElement.classList.add('is-android');
     }
-    document.getElementById('context-btn').onclick = () => sendAIMessage(true);
-    document.getElementById('send-btn').onclick = () => sendAIMessage(false);
+
     document.addEventListener('DOMContentLoaded', () => {
         const resetBtn = document.querySelector('[data-action="reset-localstorage"]');
         if (!resetBtn) return;
@@ -4641,8 +4640,8 @@
         `).join('');
     }
     document.addEventListener('DOMContentLoaded', initMovieSearch);
-    let chatHistory = [];
 
+    let chatHistory = [];
     let previousMovieIds = [];
 
     async function sendAIMessage(useContext = false) {
@@ -4706,6 +4705,9 @@
                                 aiMsg.textContent = fullResponse;
                                 chatContainer.scrollTop = chatContainer.scrollHeight;
                             }
+                            if (json.movieIds) {
+                                previousMovieIds.push(...json.movieIds);
+                            }
                         } catch (e) {}
                     }
                 }
@@ -4719,11 +4721,25 @@
         }
     }
 
-    document.querySelector('.i-chat button').onclick = () => sendAIMessage(false);
-    document.querySelector('.i-chat input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') sendAIMessage(false);
+    document.addEventListener('DOMContentLoaded', () => {
+        const contextBtn = document.getElementById('context-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const inputField = document.querySelector('.i-chat input');
+        
+        if (contextBtn) {
+            contextBtn.onclick = () => sendAIMessage(true);
+        }
+        
+        if (sendBtn) {
+            sendBtn.onclick = () => sendAIMessage(false);
+        }
+        
+        if (inputField) {
+            inputField.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') sendAIMessage(false);
+            });
+        }
     });
-
     const container = document.getElementById('login-screen');
     const tickerContainer = document.getElementById('ticker-container');
     const strips = document.querySelectorAll('.ticker-strip');
