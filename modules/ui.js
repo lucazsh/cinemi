@@ -169,7 +169,6 @@ container.addEventListener('mousedown', () => isInteracting = false);
 container.addEventListener('mouseup', onEnd);
 container.addEventListener('mouseleave', onEnd);
 container.addEventListener('touchend', onEnd);
-
 function animate() {
     time += 0.01;
 
