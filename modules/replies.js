@@ -109,26 +109,35 @@ async function submitReplyHandler(e) {
     document.getElementById('noReply')?.remove();
     
     try {
-        replySubmitBtn.disabled = true; 
-        replySubmitBtn.textContent = 'Posting...';
-        const res = await fetchWithAuth(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, text })
-        });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json?.error || 'reply failed');
-        document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
-        seenReplyIds.add(json.reply.id);
-        lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
-    } catch (err) {
-        document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
-        alert('Failed to send reply. Try again.');
-    } finally {
-        replySubmitBtn.disabled = false; 
-        replySubmitBtn.textContent = 'Post';
+            replySubmitBtn.disabled = true; 
+            replySubmitBtn.textContent = 'Posting...';
+            const res = await fetchWithAuth(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, text })
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json?.error || 'reply failed');
+            
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            seenReplyIds.add(json.reply.id);
+            lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
+            
+            setTimeout(() => {
+                const existingReal = document.querySelector(`[data-reply-id="${json.reply.id}"]`);
+                if (!existingReal) {
+                    rRepliesContainer.appendChild(renderReplyElement(json.reply));
+                }
+            }, 300);
+            
+        } catch (err) {
+            document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
+            alert('Failed to send reply. Try again.');
+        } finally {
+            replySubmitBtn.disabled = false; 
+            replySubmitBtn.textContent = 'Post';
+        }
     }
-}
 
 replySubmitBtn && replySubmitBtn.addEventListener('click', submitReplyHandler);
 replyTextarea && replyTextarea.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submitReplyHandler(e); });
