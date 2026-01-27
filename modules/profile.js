@@ -216,7 +216,6 @@ async function viewUserProfile(username) {
         showView('user-profile');
     } catch (err) {
         console.error('Failed to load user profile:', err);
-        alert('Failed to load user profile');
     }
 }
 
@@ -394,8 +393,6 @@ async function reportUser(username) {
         alert('Failed to submit report.');
     }
 }
-
-document.removeEventListener && document.removeEventListener('click', arguments.callee);
 
 document.addEventListener('click', (e) => {
   const searchEl = e.target.closest('.usr-search');
