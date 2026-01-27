@@ -394,3 +394,31 @@ async function reportUser(username) {
         alert('Failed to submit report.');
     }
 }
+
+document.addEventListener('click', (e) => {
+    const el = e.target.closest('.usr-search');
+    if (!el) return;
+
+    const username = el.dataset.username;
+    if (!username) return;
+
+    viewUserProfile(username);
+});
+
+document.addEventListener('click', function(e) {
+    const usernameEl = e.target.closest('.usr');
+    if (usernameEl) {
+        const username = usernameEl.textContent.trim();
+        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
+            viewUserProfile(username);
+        }
+    }
+    
+    const profileImg = e.target.closest('.pr-img img');
+    if (profileImg && !e.target.closest('#profileImg')) {
+        const username = profileImg.closest('.pt')?.querySelector('.usr')?.textContent.trim();
+        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
+            viewUserProfile(username);
+        }
+    }
+});

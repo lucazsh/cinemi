@@ -44,9 +44,8 @@ async function fetchUsers(query, container) {
         
         container.innerHTML = users.map(user => `
             <div 
-                class="usr"
+                class="usr usr-search"
                 data-username="${user.username}"
-                onclick="viewUserProfile('${user.username}')"
                 style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg-secondary); border-radius:12px; cursor:pointer; border:1px solid var(--border-dark-alpha-2);"
             >
                 <img src="${user.photoUrl}" style="width:48px; height:48px; border-radius:50%; object-fit:cover;">
