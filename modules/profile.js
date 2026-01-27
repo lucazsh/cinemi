@@ -417,11 +417,4 @@ document.addEventListener('click', (e) => {
     if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
     return;
   }
-
-  const pt = e.target.closest('.pt[data-username]');
-  if (pt) {
-    const username = pt.dataset.username;
-    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
-    return;
-  }
 });
