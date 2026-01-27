@@ -118,8 +118,12 @@ async function submitReplyHandler(e) {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json?.error || 'reply failed');
+        
         document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
-        rRepliesContainer.appendChild(renderReplyElement(json.reply));
+        const existingReal = document.querySelector(`[data-reply-id="${json.reply.id}"]`);
+        if (!existingReal) {
+            rRepliesContainer.appendChild(renderReplyElement(json.reply));
+        }
         seenReplyIds.add(json.reply.id);
         lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
     } catch (err) {
