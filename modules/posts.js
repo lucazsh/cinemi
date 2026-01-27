@@ -108,10 +108,13 @@ function createPostWrapper(username, displayName, content, files, timeLabel, pho
     }
     
     wrapper.innerHTML = `
-        <div class="pt">
-            <div class="pr-img"><img src="${imgSrc}"></div>
-            <div style="display: block;">
-            <span class="usr">${escapeHtml(username)}</span>
+        <div class="pt" data-username="${escapeHtml(username)}">
+            <div class="pr-img" data-username="${escapeHtml(username)}">
+            <img src="${imgSrc}" alt="${escapeHtml(username)} profile image">
+            </div>
+
+            <div style="display:block;">
+            <span class="usr usr-post" data-username="${escapeHtml(username)}">${escapeHtml(username)}</span>
             <span class="time">${timeLabel}</span>
             <div class="cnt">${safeContent}</div>
             ${filesHtml}

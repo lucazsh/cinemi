@@ -395,30 +395,40 @@ async function reportUser(username) {
     }
 }
 
+document.removeEventListener && document.removeEventListener('click', arguments.callee);
+
 document.addEventListener('click', (e) => {
-    const el = e.target.closest('.usr-search');
-    if (!el) return;
-
-    const username = el.dataset.username;
-    if (!username) return;
-
-    viewUserProfile(username);
-});
-
-document.addEventListener('click', function(e) {
-    const usernameEl = e.target.closest('.usr');
-    if (usernameEl) {
-        const username = usernameEl.textContent.trim();
-        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
-            viewUserProfile(username);
-        }
+  const searchEl = e.target.closest('.usr-search');
+  if (searchEl) {
+    const username = searchEl.dataset.username;
+    if (username) {
+      viewUserProfile(username);
+      const sr = document.getElementById('search-results');
+      if (sr) sr.innerHTML = '';
+      const ta = document.getElementById('fs-textarea');
+      if (ta) ta.value = '';
     }
-    
-    const profileImg = e.target.closest('.pr-img img');
-    if (profileImg && !e.target.closest('#profileImg')) {
-        const username = profileImg.closest('.pt')?.querySelector('.usr')?.textContent.trim();
-        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) {
-            viewUserProfile(username);
-        }
-    }
+    return;
+  }
+
+  const postUsr = e.target.closest('.usr-post');
+  if (postUsr) {
+    const username = postUsr.dataset.username;
+    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+    return;
+  }
+
+  const prImg = e.target.closest('.pr-img');
+  if (prImg && prImg.dataset && prImg.dataset.username) {
+    const username = prImg.dataset.username;
+    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+    return;
+  }
+
+  const pt = e.target.closest('.pt[data-username]');
+  if (pt) {
+    const username = pt.dataset.username;
+    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+    return;
+  }
 });
