@@ -400,10 +400,6 @@ document.addEventListener('click', (e) => {
     const username = searchEl.dataset.username;
     if (username) {
       viewUserProfile(username);
-      const sr = document.getElementById('search-results');
-      if (sr) sr.innerHTML = '';
-      const ta = document.getElementById('fs-textarea');
-      if (ta) ta.value = '';
     }
     return;
   }

@@ -144,9 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
         replySocket = io(baseUrl, { transports: ['websocket','polling'] });
         replySocket.on('reply_created', function(reply) {
             if (reply.postId && currentReplyPostId && reply.postId === currentReplyPostId && !seenReplyIds.has(reply.id)) {
-                rRepliesContainer.appendChild(renderReplyElement(reply));
-                seenReplyIds.add(reply.id);
-                document.getElementById('noReply')?.remove();
+                const existingReply = document.querySelector(`[data-reply-id="${reply.id}"]`);
+                if (!existingReply) {
+                    rRepliesContainer.appendChild(renderReplyElement(reply));
+                    seenReplyIds.add(reply.id);
+                    document.getElementById('noReply')?.remove();
+                }
             }
         });
         
