@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://named-baby-each-subsidiaries.trycloudflare.com';
+const SERVER_URL = 'https://mark-sword-foo-coupon.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
@@ -73,3 +73,4 @@ function updateAllTimestamps() {
     });
 }
 setInterval(updateAllTimestamps, 30000);
+
