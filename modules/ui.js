@@ -80,7 +80,7 @@ const strips = document.querySelectorAll('.ticker-strip');
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/cinemi/modules/sw.js")
+    navigator.serviceWorker.register("/modules/sw.js")
         .then(reg => console.log("SW registered", reg))
         .catch(err => console.error("SW error", err));
     });
@@ -222,4 +222,5 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
+
 animate();
