@@ -1584,7 +1584,7 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
         <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
             <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
@@ -1690,7 +1690,7 @@
         </button>
     </div>
 </div>
-    <div id="setup" class="view">
+    <div id="setup" class="view active">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -1884,7 +1884,7 @@
         </div>
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
-    <div id="home" class="view active">
+    <div id="home" class="view">
         <div class="nt">
             <span class="logo" style="display:flex; align-items: center;">
                 Home
@@ -1916,8 +1916,8 @@
                         <button class="fmov-b">Details</button>
                     </span>
                 </div>
+                <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
             </div>
-            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
             <div style="font-size: 21px; font-weight: 600;">
                 <span style="color: var(--sub-home);">Because you watched</span>
                 <br>movie_name
