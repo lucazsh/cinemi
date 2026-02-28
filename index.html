@@ -1663,12 +1663,30 @@
                 Continue with Google
             </button>
             
-            <p style="color: var(--text-subtle); font-size: 14px; max-width: 300px; text-align: center; margin-bottom: 20px;">
-
-                Sign in to save your preferences, create posts, and connect with other movie lovers. (Demo version)
-
+            <p style="color: var(--text-subtle); font-size: 13px; margin-top: -16px;">
+                or <span id="guest-btn" style="
+                    color: var(--text-primary);
+                    text-decoration: underline;
+                    text-underline-offset: 3px;
+                    cursor: pointer;
+                    font-weight: 500;
+                ">continue without an account</span>
             </p>
         </div>
+            <p style="
+            position: absolute;
+            bottom: 24px;
+            left: 0;
+            right: 0;
+            color: var(--text-subtle);
+            font-size: 12px;
+            text-align: center;
+            margin: 0;
+            z-index: 10;
+        ">
+            By continuing you agree to our 
+            <a href="/privacy.html" target="_blank" style="color: var(--text-subtle); text-decoration: underline;">Privacy Policy</a>
+        </p>
     </div>
     <div id="username-setup" style="position: fixed; inset: 0; background: var(--bg-primary); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px;">
     <div style="max-width: 400px; width: 100%; text-align: center;">
