@@ -127,6 +127,7 @@ checkAuthStatus().then(async isAuth => {
 document.getElementById('guest-btn')?.addEventListener('click', () => {
     localStorage.setItem('guestMode', 'true');
     document.getElementById('login-screen').style.display = 'none';
+    showView('pos-t');
     loadInitialPostsFromServer();
 });
 
@@ -207,4 +208,5 @@ function logout() {
         .catch(err => console.error(err));
 
 }
+
 
