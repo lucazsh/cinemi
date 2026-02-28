@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://stockings-miniature-predictions-establishment.trycloudflare.com';
+const SERVER_URL = 'https://reservation-aluminum-see-wifi.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
@@ -73,6 +73,7 @@ function updateAllTimestamps() {
     });
 }
 setInterval(updateAllTimestamps, 30000);
+
 
 
 
