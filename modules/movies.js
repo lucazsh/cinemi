@@ -162,7 +162,7 @@ async function loadGenreMovies() {
     if (!res.ok) throw new Error("quiz-recommend failed");
     const data = await res.json();
     const movies = data.movies || [];
-    const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
+    const genreLabel = document.getElementById('genre-label');
     if (genreLabel) {
         const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
         genreLabel.textContent = `Because you like ${genreName} movies`;
@@ -191,7 +191,7 @@ async function loadMoviesByGenre(genreId, titlePrefix) {
     const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, { headers: ngrokHeaders });
     const data = await res.json();
     const genreName = await getGenreName(genreId);
-    const genreLabel = document.querySelector('.m1-rec > div:nth-child(3)');
+    const genreLabel = document.getElementById('genre-label');
     if (genreLabel) genreLabel.textContent = `${titlePrefix} ${genreName} movies`;
     const container = document.getElementById('genre');
     if (container && data.results) {
