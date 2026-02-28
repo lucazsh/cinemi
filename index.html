@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="inverted">
-<head>
+<head> 
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="manifest" href="/manifest.json">
@@ -75,6 +75,7 @@
         --card-active: white;
         --cancel: #18191ec2;
         --safe-area-bottom: env(safe-area-inset-bottom);
+        --sub-home: #00000086;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -116,6 +117,7 @@
                 --ichat-c: #303030;
                 --iconbox-bg: rgb(39, 39, 39);
                 --card-active: #373737;
+                --sub-home: #FFFFFF80;
             }
         }
 
@@ -148,6 +150,7 @@
             --fill-log: rgba(255,255,255,0.8);
             --button-log: white;
             --navh-pressed: rgba(225, 225, 231, 0.507);
+            --sub-home: #00000086;
         }
         html::-webkit-scrollbar,
         body::-webkit-scrollbar {
@@ -561,9 +564,10 @@
             max-width: 360px;
             aspect-ratio: 2/2.5;
             margin-top: 10px;
-            margin-bottom: 5px;
             border: 1px solid var(--border-h);
+            margin-bottom: 5px;
             cursor: pointer;
+            background-color: #101114;
         }
 
         .f-mov img {
@@ -572,6 +576,15 @@
             height: 100%;
             object-fit: cover;
             border-radius: 15px;
+            -webkit-mask-image:
+                linear-gradient(to bottom, black 40%, transparent 100%),
+                linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            -webkit-mask-composite: destination-in;
+
+            mask-image:
+                linear-gradient(to bottom, black 40%, transparent 100%),
+                linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+            mask-composite: intersect;
         }
         .f-mov::after {
             content: "";
@@ -580,7 +593,7 @@
             right: 0;
             bottom: 0;
             height: 80%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.65) 100%);
+            background: linear-gradient(180deg, transparent 0%, #18191e 100%);
             z-index: 1;
             pointer-events: none;
         }
@@ -610,18 +623,18 @@
 
         .fmov-title {
             bottom: 56px;
-            margin-bottom: 19%;
+            margin-bottom: 21%;
             z-index: 3;
             font-weight: 700;
             left: 17px;
-            font-size: 2rem;
+            font-size: 2.2rem;
             line-height: 1.1;
         }
 
         .fmov-desciption {
             bottom: 32px;
             margin-bottom: 9%;
-            color: rgba(255, 255, 255, 0.700);
+            color: rgba(255, 255, 255, 0.574);
             z-index: 2;
             left: 18px;
             font-size: 0.9rem;
@@ -1571,7 +1584,7 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-    <div id="login-screen" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+    <div id="login-screene" style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
         <div id="ticker-container" style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
             <div class="ticker-strip" style="background: var(--bg-q);padding:20px;font-size:80px;font-weight:900;white-space:nowrap;width:200%;transform:translateX(-10%);">
@@ -1677,7 +1690,7 @@
         </button>
     </div>
 </div>
-    <div id="setup" class="view active">
+    <div id="setup" class="view">
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -1871,7 +1884,7 @@
         </div>
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
-    <div id="home" class="view">
+    <div id="home" class="view active">
         <div class="nt">
             <span class="logo" style="display:flex; align-items: center;">
                 Home
@@ -1899,13 +1912,15 @@
                         A year later, Abby awakens haunted animatronics, unleashing long-buried secrets and horrors.
                     </span>
                     <span class="fmov-buttons">
-                        <button class="fmov-b add-to-watchlist-feat" style="color:#18191e; background-color: #fffffff9;">Add to Watchlist</button>
+                        <button class="fmov-b add-to-watchlist-feat" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
                         <button class="fmov-b">Details</button>
                     </span>
                 </div>
             </div>
+            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
             <div style="font-size: 21px; font-weight: 600;">
-                Because you watched movie_name
+                <span style="color: var(--sub-home);">Because you watched</span>
+                <br>movie_name
             </div>
             <div class="mov" id="genre" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
@@ -1913,7 +1928,7 @@
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
             <div style="font-size: 21px; font-weight: 600;">
-                You're in the mood for
+                <span style="color: var(--sub-home);">You're in the mood</span> for
             </div>
             <div class="mov" id="mood" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
@@ -1921,7 +1936,7 @@
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
             <div style="font-size: 21px; font-weight: 600;">
-                Still nothing?
+                <span style="color: var(--sub-home);">Still</span> nothing?
             </div>
             <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
                     <div class="cards-container" style="flex: 1; min-width: 280px;">
@@ -1964,7 +1979,7 @@
                     </div>
             </div>
             <div style="font-size: 21px; font-weight: 600;">
-                Trending for you
+                <span style="color: var(--sub-home);">Trending for</span> you
             </div>
             <div class="mov" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
