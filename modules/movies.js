@@ -3,7 +3,7 @@ const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
- 
+
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -162,7 +162,7 @@ async function loadGenreMovies() {
     const genreLabel = document.getElementById('genre-label');
     if (genreLabel) {
         const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
-        genreLabel.textContent = `<span style="color: var(--sub-home);">Because you like </span> <br>${genreName} movies`;
+        genreLabel.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> <br>${genreName} movies`;
     }
     const container = document.getElementById('genre');
     if (container) {
@@ -259,7 +259,7 @@ async function loadAIRecommendations() {
     try {
         const moodLabel = document.querySelector('.m1-rec > div:nth-child(5)');
         if (moodLabel) {
-            moodLabel.textContent = '<span style="color: var(--sub-home);">AI Picks for</span> You';
+            moodLabel.innerHTML = '<span style="color: var(--sub-home);">AI Picks for</span> You';
         }
         const res = await fetchWithAuth(`${baseUrl}/api/recommendations`);
         
@@ -1115,4 +1115,3 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
-
