@@ -131,6 +131,58 @@ function buildPostElement(username, displayName, content, files, photoUrl) {
     return createPostWrapper(username, displayName, content, files, timeLabelForNow(), photoUrl);
 }
 
+let adConfig = null;
+
+async function loadAdConfig() {
+    if (adConfig) return adConfig;
+    try {
+        const res = await fetch(baseUrl + '/api/ads/config');
+        adConfig = await res.json();
+        if (adConfig.publisherId) {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.publisherId}`;
+            script.crossOrigin = 'anonymous';
+            document.head.appendChild(script);
+        }
+    } catch (e) { adConfig = { publisherId: '', slot: '' }; }
+    return adConfig;
+}
+
+function createAdPost(slotId, publisherId) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'post';
+    wrapper.setAttribute('data-ad', 'true');
+    wrapper.innerHTML = `
+        <div class="pt" style="flex-direction:column; padding: 10px 12px 12px 12px;">
+            <span style="font-size:10px; color:var(--text-subtle); text-transform:uppercase;
+                letter-spacing:0.6px; margin-bottom:8px; align-self:flex-start;">Sponsored</span>
+            <ins class="adsbygoogle"
+                 style="display:block; border-radius:12px; overflow:hidden; width:100%;"
+                 data-ad-client="${publisherId}"
+                 data-ad-slot="${slotId}"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    `;
+    requestAnimationFrame(() => {
+        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+    });
+    return wrapper;
+}
+
+function injectAdsIntoPosts(posts, config) {
+    if (!config.publisherId || !config.slot) return;
+    const children = Array.from(postsContainer.children).filter(el => !el.getAttribute('data-ad'));
+    const total = children.length;
+    if (total < 3) return;
+    const pos = Math.floor(total / 2);
+    const referenceEl = children[pos];
+    if (referenceEl) {
+        postsContainer.insertBefore(createAdPost(config.slot, config.publisherId), referenceEl);
+    }
+}
+
 function addPostToUIFromServer(post) {
     if (currentFeed !== 'posts') {
         return;
@@ -181,16 +233,18 @@ const seenPostIds = new Set();
 async function loadInitialPostsFromServer() {
     if (!baseUrl) return;
     try {
-        const res = await fetchWithAuth(baseUrl + '/api/posts');
+        const [res, config] = await Promise.all([
+            fetch(baseUrl + '/api/posts'),
+            loadAdConfig()
+        ]);
         if (!res.ok) throw new Error('failed to load posts');
         const list = await res.json();
         list.slice().reverse().forEach(p => {
             seenPostIds.add(p.id);
             addPostToUIFromServer(p);
         });
-        if (list.length) {
-            lastTimestamp = new Date(list[0].createdAt).getTime();
-        }
+        if (list.length) lastTimestamp = new Date(list[0].createdAt).getTime();
+        injectAdsIntoPosts(list, config);
     } catch (err) {}
 }
 
@@ -490,5 +544,6 @@ if (baseUrl) {
         }
     });
 }
+
 
 feedOptions[0]?.classList.add('active');
