@@ -3,7 +3,7 @@ const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
-
+ 
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -1115,3 +1115,4 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
