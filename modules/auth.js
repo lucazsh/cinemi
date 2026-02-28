@@ -32,6 +32,10 @@ if (urlSessionToken) {
 }
 
 async function checkAuthStatus() {
+    if (localStorage.getItem('guestMode') === 'true') {
+        document.getElementById('login-screen').style.display = 'none';
+        return false;
+    }
     const loginScreen = document.getElementById('login-screen');
     
     if (sessionToken && localStorage.getItem('isAuthenticated') === 'true') {
@@ -203,3 +207,4 @@ function logout() {
         .catch(err => console.error(err));
 
 }
+
