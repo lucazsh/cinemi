@@ -84,14 +84,11 @@ async function loadFeaturedMovie() {
             setTimeout(() => {
                 fMovContainer.innerHTML = `
                     <img src="${posterUrl}" class="fade-in-content">
-                    <button class="add-to-watchlist-feat" id="watchlist-btn" style="position:absolute;top:16px;right:16px;z-index:4;background:rgba(255,255,255,0.13);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:50px;display:flex;align-items:center;justify-content:center;width:44px;height:44px;overflow:hidden;transition:width 0.35s cubic-bezier(0.34,1.56,0.64,1);cursor:pointer;padding:0;white-space:nowrap;">
-                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-left:11px;">add</span>
-                        <span class="wl-label" style="font-size:13px;font-weight:600;max-width:0;overflow:hidden;transition:max-width 0.35s ease, margin 0.35s ease;margin-right:0;">Add to Watchlist</span>
-                    </button>
                     <div class="fmov-over fade-in-content" style="animation-delay:0.1s;">
                         <span class="fmov-title">${escapeHtml(title)}</span>
                         <span class="fmov-desciption">${escapeHtml(overview)}</span>
                         <span class="fmov-buttons">
+                            <button class="fmov-b" onclick="event.stopPropagation();" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
                             <button class="fmov-b" onclick="event.stopPropagation(); showDetails(window._featuredMovies[${index}]);">Details</button>
                         </span>
                     </div>
@@ -165,7 +162,7 @@ async function loadGenreMovies() {
     const genreLabel = document.getElementById('genre-label');
     if (genreLabel) {
         const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
-        genreLabel.textContent = `Because you like ${genreName} movies`;
+        genreLabel.textContent = `<span style="color: var(--sub-home);">Because you like </span> <br>${genreName} movies`;
     }
     const container = document.getElementById('genre');
     if (container) {
@@ -262,7 +259,7 @@ async function loadAIRecommendations() {
     try {
         const moodLabel = document.querySelector('.m1-rec > div:nth-child(5)');
         if (moodLabel) {
-            moodLabel.textContent = 'AI Picks for You';
+            moodLabel.textContent = '<span style="color: var(--sub-home);">AI Picks for</span> You';
         }
         const res = await fetchWithAuth(`${baseUrl}/api/recommendations`);
         
