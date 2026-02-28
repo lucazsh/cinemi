@@ -120,6 +120,12 @@ checkAuthStatus().then(async isAuth => {
     }
 });
 
+document.getElementById('guest-btn')?.addEventListener('click', () => {
+    localStorage.setItem('guestMode', 'true');
+    document.getElementById('login-screen').style.display = 'none';
+    loadInitialPostsFromServer();
+});
+
 async function showUsernameSetup() {
     const setup = document.getElementById('username-setup');
     const input = document.getElementById('username-input');
@@ -195,4 +201,5 @@ function logout() {
             window.location.reload();
         })
         .catch(err => console.error(err));
+
 }
