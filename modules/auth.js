@@ -4,6 +4,15 @@ const urlSessionToken = urlParams.get('sessionToken');
 const googleSigninBtn = document.getElementById('google-signin-btn');
 const logoutBtn = document.querySelector('[data-action="logout"]');
 
+if (localStorage.getItem('guestMode') === 'true') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('username-setup').style.display = 'none';
+    document.addEventListener('DOMContentLoaded', () => {
+        showView('home');
+        loadInitialPostsFromServer();
+    });
+}
+
 if (urlSessionToken) {
     console.log('Received session token from Google login');
     sessionToken = urlSessionToken;
@@ -127,7 +136,7 @@ checkAuthStatus().then(async isAuth => {
 document.getElementById('guest-btn')?.addEventListener('click', () => {
     localStorage.setItem('guestMode', 'true');
     document.getElementById('login-screen').style.display = 'none';
-    showView('pos-t');
+    showView('home');
     loadInitialPostsFromServer();
 });
 
@@ -208,5 +217,6 @@ function logout() {
         .catch(err => console.error(err));
 
 }
+
 
 
