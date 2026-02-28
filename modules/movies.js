@@ -3,6 +3,7 @@ const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
+
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -256,7 +257,7 @@ async function loadMoodMovies() {
 // Beta TESTING!!
 async function loadAIRecommendations() {
     try {
-        const moodLabel = document.querySelector('.m1-rec > div:nth-child(5)');
+        const moodLabel = document.getElementById('mood');
         if (moodLabel) {
             moodLabel.innerHTML = '<span style="color: var(--sub-home);">AI Picks for</span> You';
         }
@@ -1114,4 +1115,3 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
-
