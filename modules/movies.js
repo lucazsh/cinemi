@@ -54,7 +54,6 @@ function showSkeletonLoaders() {
     }
 }
 
-
 async function loadFeaturedMovie() {
     try {
         const res = await fetch(`${baseUrl}/api/content/recommend`, { headers: ngrokHeaders });
@@ -1115,3 +1114,4 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
