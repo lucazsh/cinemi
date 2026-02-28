@@ -61,41 +61,88 @@ async function loadFeaturedMovie() {
         const data = await res.json();
         const validMovies = (data.content || []).filter(m => m.poster_path && m.overview);
         
-        if (validMovies.length === 0) {
-            console.log('No valid movies for featured');
-            return;
-        }
+        if (validMovies.length === 0) return;
         
-        featuredMovie = validMovies[0];
+        const movies = validMovies.slice(0, 5);
+        featuredMovie = movies[0];
         featuredGenres = featuredMovie.genre_ids || [];
         
-        const posterUrl = `${IMG_W500}${featuredMovie.poster_path}`;
-        const title = featuredMovie.title || featuredMovie.name;
-        const overview = truncateText(featuredMovie.overview, 100);
+        let currentIndex = 0;
         
-        const fMovContainer = document.querySelector('.f-mov');
-        if (fMovContainer) {
-            fMovContainer.innerHTML = `
-                <img src="${posterUrl}" class="fade-in-content">
-                <div class="fmov-over fade-in-content" style="animation-delay:0.1s;">
-                    <span class="fmov-title">${escapeHtml(title)}</span>
-                    <span class="fmov-desciption">${escapeHtml(overview)}</span>
-                    <span class="fmov-buttons">
-                        <button class="fmov-b" onclick="event.stopPropagation();" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
-                        <button class="fmov-b" onclick="event.stopPropagation(); showDetails(featuredMovie);">Details</button>
-                    </span>
-                </div>
-            `;
+        function renderSlide(index) {
+            const m = movies[index];
+            const posterUrl = `${IMG_W500}${m.poster_path}`;
+            const title = m.title || m.name;
+            const overview = truncateText(m.overview, 100);
             
-            fMovContainer.onclick = () => showDetails(featuredMovie);
-            const watchlistBtn = fMovContainer.querySelector('.add-to-watchlist-feat');
-            if (watchlistBtn) {
-            watchlistBtn.onclick = (e) => {
-                e.stopPropagation();
-                addToWatchlist(featuredMovie);
-            };
-            }
+            const fMovContainer = document.querySelector('.f-mov');
+            if (!fMovContainer) return;
+            
+            fMovContainer.style.opacity = '0';
+            fMovContainer.style.transition = 'opacity 0.4s ease';
+            
+            setTimeout(() => {
+                fMovContainer.innerHTML = `
+                    <img src="${posterUrl}" class="fade-in-content">
+                    <button class="add-to-watchlist-feat" id="watchlist-btn" style="position:absolute;top:16px;right:16px;z-index:4;background:rgba(255,255,255,0.13);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:50px;display:flex;align-items:center;justify-content:center;width:44px;height:44px;overflow:hidden;transition:width 0.35s cubic-bezier(0.34,1.56,0.64,1);cursor:pointer;padding:0;white-space:nowrap;">
+                        <span class="material-symbols-outlined" style="font-size:22px;flex-shrink:0;margin-left:11px;">add</span>
+                        <span class="wl-label" style="font-size:13px;font-weight:600;max-width:0;overflow:hidden;transition:max-width 0.35s ease, margin 0.35s ease;margin-right:0;">Add to Watchlist</span>
+                    </button>
+                    <div class="fmov-over fade-in-content" style="animation-delay:0.1s;">
+                        <span class="fmov-title">${escapeHtml(title)}</span>
+                        <span class="fmov-desciption">${escapeHtml(overview)}</span>
+                        <span class="fmov-buttons">
+                            <button class="fmov-b" onclick="event.stopPropagation(); showDetails(window._featuredMovies[${index}]);">Details</button>
+                        </span>
+                    </div>
+                `;
+                
+                fMovContainer.style.opacity = '1';
+                fMovContainer.onclick = () => showDetails(movies[index]);
+                
+                const watchlistBtn = fMovContainer.querySelector('#watchlist-btn');
+                if (watchlistBtn) {
+                    watchlistBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        watchlistBtn.classList.toggle('expanded');
+                        addToWatchlist(movies[index]);
+                    };
+                }
+                
+                updateDots(index);
+            }, 400);
         }
+        
+        function updateDots(index) {
+            const dotsContainer = document.getElementById('fmov-dots');
+            if (!dotsContainer) return;
+            dotsContainer.innerHTML = movies.map((_, i) => `
+                <div onclick="goToSlide(${i})" style="height:4px;border-radius:2px;background:${i === index ? '#fff' : 'rgba(255,255,255,0.25)'};width:${i === index ? '20px' : '4px'};transition:all 0.4s ease;cursor:pointer;"></div>
+            `).join('');
+        }
+        
+        window._featuredMovies = movies;
+        window.goToSlide = (i) => {
+            currentIndex = i;
+            featuredMovie = movies[i];
+            clearInterval(window._featuredInterval);
+            renderSlide(i);
+            window._featuredInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % movies.length;
+                featuredMovie = movies[currentIndex];
+                renderSlide(currentIndex);
+            }, 4000);
+        };
+        
+        renderSlide(0);
+        
+        clearInterval(window._featuredInterval);
+        window._featuredInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % movies.length;
+            featuredMovie = movies[currentIndex];
+            renderSlide(currentIndex);
+        }, 4000);
+        
     } catch (err) {
         console.error('Failed to load featured movie:', err);
     }
