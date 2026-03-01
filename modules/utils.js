@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://reservation-aluminum-see-wifi.trycloudflare.com';
+const SERVER_URL = 'https://rugs-refused-photographers-sam.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
@@ -33,14 +33,20 @@ function formatTimeAgo(dateString) {
     }
 }
 
-function getTimeBasedGreeting() {
+function getTimeBasedGreeting() { 
     const hour = new Date().getHours();
     const name = document.querySelector('.p-name')?.textContent || 'there';
     
-    if (hour >= 5 && hour < 12) return `Good morning, ${name}`;
-    if (hour >= 12 && hour < 17) return `Good afternoon, ${name}`;
-    if (hour >= 17 && hour < 22) return `Good evening, ${name}`;
-    return `Good night, ${name}`;
+    if (hour >= 5 && hour < 12) 
+        return `<span style="color: var(--sub-home);">Good morning</span>, ${name}`;
+    
+    if (hour >= 12 && hour < 17) 
+        return `<span style="color: var(--sub-home);">Good afternoon</span>, ${name}`;
+    
+    if (hour >= 17 && hour < 22) 
+        return `<span style="color: var(--sub-home);">Good evening</span>, ${name}`;
+    
+    return `<span style="color: var(--sub-home);">Good night</span>, ${name}`;
 }
 
 function truncateText(text, maxLength) {
@@ -73,7 +79,3 @@ function updateAllTimestamps() {
     });
 }
 setInterval(updateAllTimestamps, 30000);
-
-
-
-
