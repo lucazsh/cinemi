@@ -32,7 +32,7 @@ function formatTimeAgo(dateString) {
         return diffYears + 'y';
     }
 }
-
+/*
 function getTimeBasedGreeting() { 
     const hour = new Date().getHours();
     const name = document.querySelector('.p-name')?.textContent || 'there';
@@ -48,7 +48,7 @@ function getTimeBasedGreeting() {
     
     return `<span style="color: var(--sub-home);">Good night,</span> ${name}`;
 }
-
+*/
 function truncateText(text, maxLength) {
     if (!text) return '';
     if (text.length <= maxLength) return text;
@@ -79,5 +79,6 @@ function updateAllTimestamps() {
     });
 }
 setInterval(updateAllTimestamps, 30000);
+
 
 
