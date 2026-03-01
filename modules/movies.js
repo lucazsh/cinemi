@@ -343,12 +343,12 @@ async function loadTrendingMovies() {
 
 async function initHomeFeed() {
     if (moviesLoaded) return;
-    
+    /*
     const greetingEl = document.querySelector('.m1-rec > div:first-child');
     if (greetingEl) {
         greetingEl.innerHTML = getTimeBasedGreeting();
     }
-    
+    */
     showSkeletonLoaders();
     
     await loadFeaturedMovie();
@@ -1114,5 +1114,6 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
