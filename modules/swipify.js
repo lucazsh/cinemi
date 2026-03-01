@@ -52,7 +52,7 @@ let partyStarted = false;
             left: 0;
             width: 100%;
             color: transparent;
-            -webkit-text-stroke: 2px rgba(70,211,105,0.55); /* outline */
+            -webkit-text-stroke: 2px rgba(70,211,105,0.55);
             z-index: -1;
             pointer-events: none;
         }
@@ -442,7 +442,7 @@ function showMatchAnimation(title) {
     overlay.innerHTML = `
         <div class="match-small">It's a</div>
         <div class="match-title">MATCH</div>
-        <div class="match-subtitle">${escapeHtml(title)}</div>
+        <div class="match-subtitle" style="margin-top: 10px;">${escapeHtml(title)}</div>
     `;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2900);
@@ -496,4 +496,5 @@ async function sendAIFeedback(movie, action) {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPanel('swipify')));
 });
+
 
