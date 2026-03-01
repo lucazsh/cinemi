@@ -161,7 +161,7 @@ async function loadGenreMovies() {
     const genreLabel = document.getElementById('genre-label');
     if (genreLabel) {
         const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
-        genreLabel.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> <br>${genreName} movies`;
+        genreLabel.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> ${genreName} movies`;
     }
     const container = document.getElementById('genre');
     if (container) {
@@ -1114,4 +1114,5 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
