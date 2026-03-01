@@ -69,7 +69,7 @@ let partyStarted = false;
         .match-overlay .match-subtitle {
             font-size: 17px;
             color: rgba(255,255,255,0.9);
-            margin-top: 12px;
+            margin-top: 32px;
             padding: 0 32px;
             text-align: center;
             max-width: 720px;
@@ -496,5 +496,6 @@ async function sendAIFeedback(movie, action) {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPanel('swipify')));
 });
+
 
 
