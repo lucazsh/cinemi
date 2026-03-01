@@ -11,6 +11,7 @@ let partyStarted = false;
     s.textContent = `
         @keyframes matchPop { 0%{opacity:0;transform:scale(0.5)} 20%{opacity:1;transform:scale(1.1)} 40%{transform:scale(0.95)} 60%{transform:scale(1.05)} 80%,100%{transform:scale(1)} }
         @keyframes matchFadeOut { 0%,70%{opacity:1} 100%{opacity:0} }
+        @keyframes swCenterAppear { 0%{opacity:0;transform:translateY(18px)} 100%{opacity:1;transform:translateY(0)} }
         .match-overlay { animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; }
         .party-code-display { font-size:38px;font-weight:900;letter-spacing:10px;color:var(--text-primary);background:var(--card-bg);border:2px solid var(--border-h);border-radius:16px;padding:18px 28px;text-align:center;cursor:pointer;transition:transform 0.15s; }
         .party-code-display:active { transform:scale(0.96); }
@@ -19,13 +20,20 @@ let partyStarted = false;
         .sw-btn-secondary { width:100%;max-width:300px;padding:15px 24px;background:var(--card-bg);color:var(--text-primary);border:1.5px solid var(--border-h);border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.15s; }
         .sw-btn-secondary:active { transform:scale(0.97); }
         .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
-        .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px; }
+        .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.45s cubic-bezier(0.22,1,0.36,1) both; }
         .sw-match-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;border:1.5px solid var(--border-h); }
     `;
     document.head.appendChild(s);
 })();
 
-const BACK_ARROW = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m382-480 294 294q15 15 14.5 35T675-116q-15 15-35 15t-35-15L297-423q-12-12-18-27t-6-30q0-15 6-30t18-27l308-308q15-15 35.5-14.5T676-844q15 15 15 35t-15 35L382-480Z"/></svg>`;
+const BACK_ARROW = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m382-480 294 294q15 15 14.5 35T675-116q-15 15-35 15t-35-15L297-423q-12-12-18-27t-6-30q0-15 6-30t18-27l308-308q15-15 35.5-14.5T676-844q15 15 15 35t-15 35L382-480Z"/></svg> Back`;
+
+function setSwipeButtonsVisible(visible) {
+    const leftBtn = document.getElementById('swipe-left-btn');
+    const rightBtn = document.getElementById('swipe-right-btn');
+    if (leftBtn) leftBtn.style.display = visible ? '' : 'none';
+    if (rightBtn) rightBtn.style.display = visible ? '' : 'none';
+}
 
 function openPanel(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
@@ -57,11 +65,13 @@ function closePanel(panelName) {
 }
 
 function showPartyOptions() {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Mode</div><div style="font-size:13px;color:var(--text-secondary);text-align:center;max-width:260px;">Swipe together and find the movie everyone wants to watch.</div><button class="sw-btn-primary" onclick="createParty()">Create Party</button><button class="sw-btn-secondary" onclick="showJoinParty()">Join Party</button><button class="sw-btn-ghost" onclick="loadSwipifyMovies(false)">${BACK_ARROW}</button></div>`;
 }
 
 function showJoinParty() {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Join a Party</div><input id="party-code-input" placeholder="Enter code" maxlength="6" autocomplete="off" style="width:100%;max-width:280px;padding:14px;background:var(--card-bg);color:var(--text-primary);border:2px solid var(--border-h);border-radius:12px;font-size:26px;text-align:center;letter-spacing:8px;font-weight:800;outline:none;" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"><button class="sw-btn-primary" onclick="joinParty()">Join Party</button><button class="sw-btn-ghost" onclick="showPartyOptions()">${BACK_ARROW}</button></div>`;
     setTimeout(() => document.getElementById('party-code-input')?.focus(), 100);
@@ -101,6 +111,7 @@ function generatePartyCode() {
 }
 
 function showPartyLobby() {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     const isHost = partyRole === 'host';
     container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Lobby</div><div style="font-size:13px;color:var(--text-secondary);">Share this code with your friends</div><div class="party-code-display" onclick="copyPartyCode()" title="Click to copy">${partyCode}</div><div style="font-size:12px;color:var(--text-secondary);">Click to copy</div><div id="party-members-label" style="font-size:14px;color:var(--text-secondary);">Waiting for members...</div>${isHost ? `<button class="sw-btn-primary" id="start-party-btn" onclick="startParty()">Start Party</button>` : `<div style="font-size:14px;color:var(--text-secondary);text-align:center;">Waiting for the host to start...</div>`}<button class="sw-btn-ghost" onclick="cleanupParty();loadSwipifyMovies(false);">${BACK_ARROW}</button></div>`;
@@ -162,6 +173,7 @@ async function startParty() {
         currentSwipifyIndex = 0;
         clearInterval(partyPollInterval);
         partyPollInterval = null;
+        setSwipeButtonsVisible(false);
         renderSwipifyCard();
         startMatchPolling();
     } catch (e) {
@@ -171,6 +183,7 @@ async function startParty() {
 }
 
 async function loadPartyMovies() {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:16px;color:var(--text-secondary);">Loading movies...</div></div>`;
     try {
@@ -195,6 +208,7 @@ function cleanupParty() {
 }
 
 async function loadSwipifyMovies(isParty = false) {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     const loading = document.getElementById('swipify-loading');
     container.innerHTML = '';
@@ -210,6 +224,7 @@ async function loadSwipifyMovies(isParty = false) {
             container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No content available</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Retry</button></div>`;
             return;
         }
+        setSwipeButtonsVisible(true);
         renderSwipifyCard();
     } catch (e) {
         if (loading) loading.style.display = 'none';
@@ -362,17 +377,19 @@ function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
     overlay.style.cssText = `position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;`;
-    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">MATCH</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
+    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">It's a Match! 🎬</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2800);
 }
 
 function showPartyWaiting() {
+    setSwipeButtonsVisible(false);
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">You are done!</div><div style="font-size:14px;color:var(--text-secondary);text-align:center;">Waiting for others to finish...</div><div id="matches-count" style="font-size:14px;font-weight:600;color:#46d369;">${partyMatches.length} match${partyMatches.length !== 1 ? 'es' : ''} so far</div><button class="sw-btn-primary" onclick="showPartyResults()">View results</button></div>`;
 }
 
 function showPartyResults() {
+    setSwipeButtonsVisible(false);
     if (partyPollInterval) { clearInterval(partyPollInterval); partyPollInterval = null; }
     const container = document.getElementById('swipify-container');
     if (partyMatches.length === 0) {
@@ -380,7 +397,7 @@ function showPartyResults() {
         return;
     }
     const matchesHtml = partyMatches.map(m => `<div class="sw-match-card">${m.poster ? `<img src="${m.poster}" style="width:44px;height:66px;border-radius:7px;object-fit:cover;" onerror="this.style.display='none'">` : `<div style="width:44px;height:66px;background:var(--border-h);border-radius:7px;"></div>`}<div><div style="font-size:15px;font-weight:600;color:var(--text-primary);">${escapeHtml(m.title || m.movieId)}</div><div style="font-size:12px;color:#46d369;font-weight:600;margin-top:3px;">Everyone liked this</div></div></div>`).join('');
-    container.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:24px;overflow-y:auto;"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">Party Matches</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${partyMatches.length} movie${partyMatches.length !== 1 ? 's' : ''} everyone wants to watch</div></div><div style="display:flex;flex-direction:column;gap:10px;flex:1;">${matchesHtml}</div><button class="sw-btn-primary" style="margin-top:20px;" onclick="cleanupParty();loadSwipifyMovies(false);">Done</button></div>`;
+    container.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:24px;overflow-y:auto;animation:swCenterAppear 0.45s cubic-bezier(0.22,1,0.36,1) both;"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">Party Matches</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${partyMatches.length} movie${partyMatches.length !== 1 ? 's' : ''} everyone wants to watch</div></div><div style="display:flex;flex-direction:column;gap:10px;flex:1;">${matchesHtml}</div><button class="sw-btn-primary" style="margin-top:20px;" onclick="cleanupParty();loadSwipifyMovies(false);">Done</button></div>`;
 }
 
 function showToastMsg(msg) {
