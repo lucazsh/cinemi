@@ -18,12 +18,14 @@ let partyStarted = false;
         .sw-btn-primary:active { transform:scale(0.97);opacity:0.85; }
         .sw-btn-secondary { width:100%;max-width:300px;padding:15px 24px;background:var(--card-bg);color:var(--text-primary);border:1.5px solid var(--border-h);border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.15s; }
         .sw-btn-secondary:active { transform:scale(0.97); }
-        .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px; }
+        .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
         .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px; }
         .sw-match-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;border:1.5px solid var(--border-h); }
     `;
     document.head.appendChild(s);
 })();
+
+const BACK_ARROW = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m382-480 294 294q15 15 14.5 35T675-116q-15 15-35 15t-35-15L297-423q-12-12-18-27t-6-30q0-15 6-30t18-27l308-308q15-15 35.5-14.5T676-844q15 15 15 35t-15 35L382-480Z"/></svg>`;
 
 function openPanel(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
@@ -31,7 +33,7 @@ function openPanel(panelName) {
     panel.style.display = 'flex';
     requestAnimationFrame(() => panel.classList.add('open'));
     if (panelName === 'swipify') {
-        showSwipifyHome();
+        loadSwipifyMovies(false);
         const leftBtn = document.getElementById('swipe-left-btn');
         const rightBtn = document.getElementById('swipe-right-btn');
         if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
@@ -54,30 +56,14 @@ function closePanel(panelName) {
     }
 }
 
-function showSwipifyHome() {
-    const loading = document.getElementById('swipify-loading');
-    if (loading) loading.style.display = 'none';
-    const container = document.getElementById('swipify-container');
-    container.innerHTML = `<div class="sw-center"><div style="font-size:56px;">🎬</div><div style="font-size:22px;font-weight:700;color:var(--text-primary);">Swipify</div><div style="font-size:13px;color:var(--text-secondary);text-align:center;max-width:260px;">Swipe right to like, left to skip. Find movies everyone loves in Party mode!</div><button class="sw-btn-primary" onclick="startSoloSwipe()">Solo Swipe</button><button class="sw-btn-secondary" onclick="showPartyOptions()">🎉 Party</button></div>`;
-    updatePartyBtnLabel();
-}
-
-function updatePartyBtnLabel() {
-    const btn = document.querySelector('#swipify-panel .btn-sw:last-of-type button');
-    if (btn) {
-        btn.onclick = () => showPartyOptions();
-        btn.querySelector('span') && (btn.querySelector('span').textContent = 'Party');
-    }
-}
-
 function showPartyOptions() {
     const container = document.getElementById('swipify-container');
-    container.innerHTML = `<div class="sw-center"><div style="font-size:44px;">🎉</div><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Mode</div><div style="font-size:13px;color:var(--text-secondary);text-align:center;max-width:260px;">Swipe together and find the movie everyone wants to watch!</div><button class="sw-btn-primary" onclick="createParty()">Create Party</button><button class="sw-btn-secondary" onclick="showJoinParty()">Join Party</button><button class="sw-btn-ghost" onclick="showSwipifyHome()">← Back</button></div>`;
+    container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Mode</div><div style="font-size:13px;color:var(--text-secondary);text-align:center;max-width:260px;">Swipe together and find the movie everyone wants to watch.</div><button class="sw-btn-primary" onclick="createParty()">Create Party</button><button class="sw-btn-secondary" onclick="showJoinParty()">Join Party</button><button class="sw-btn-ghost" onclick="loadSwipifyMovies(false)">${BACK_ARROW}</button></div>`;
 }
 
 function showJoinParty() {
     const container = document.getElementById('swipify-container');
-    container.innerHTML = `<div class="sw-center"><div style="font-size:44px;">🔑</div><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Join a Party</div><input id="party-code-input" placeholder="Enter code" maxlength="6" autocomplete="off" style="width:100%;max-width:280px;padding:14px;background:var(--card-bg);color:var(--text-primary);border:2px solid var(--border-h);border-radius:12px;font-size:26px;text-align:center;letter-spacing:8px;font-weight:800;outline:none;" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"><button class="sw-btn-primary" onclick="joinParty()">Join Party</button><button class="sw-btn-ghost" onclick="showPartyOptions()">← Back</button></div>`;
+    container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Join a Party</div><input id="party-code-input" placeholder="Enter code" maxlength="6" autocomplete="off" style="width:100%;max-width:280px;padding:14px;background:var(--card-bg);color:var(--text-primary);border:2px solid var(--border-h);border-radius:12px;font-size:26px;text-align:center;letter-spacing:8px;font-weight:800;outline:none;" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"><button class="sw-btn-primary" onclick="joinParty()">Join Party</button><button class="sw-btn-ghost" onclick="showPartyOptions()">${BACK_ARROW}</button></div>`;
     setTimeout(() => document.getElementById('party-code-input')?.focus(), 100);
 }
 
@@ -95,14 +81,14 @@ async function createParty() {
 async function joinParty() {
     const input = document.getElementById('party-code-input');
     const code = input ? input.value.trim().toUpperCase() : '';
-    if (code.length !== 6) { showToastMsg('Introdu un cod valid de 6 caractere'); return; }
+    if (code.length !== 6) { showToastMsg('Enter a valid 6-character code'); return; }
     partyCode = code;
     partyRole = 'guest';
     partyStarted = false;
     partyMatches = [];
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/party/join`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
-        if (res && !res.ok) { showToastMsg('Party-ul nu a fost găsit'); return; }
+        if (res && !res.ok) { showToastMsg('Party not found'); return; }
     } catch (e) {}
     showPartyLobby();
 }
@@ -117,12 +103,12 @@ function generatePartyCode() {
 function showPartyLobby() {
     const container = document.getElementById('swipify-container');
     const isHost = partyRole === 'host';
-    container.innerHTML = `<div class="sw-center"><div style="font-size:36px;">🎉</div><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Lobby</div><div style="font-size:13px;color:var(--text-secondary);">Distribuie codul prietenilor tăi</div><div class="party-code-display" onclick="copyPartyCode()" title="Click to copy">${partyCode}</div><div style="font-size:12px;color:var(--text-secondary);">Click pe cod pentru a-l copia</div><div id="party-members-label" style="font-size:14px;color:var(--text-secondary);">Așteptare membri...</div>${isHost ? `<button class="sw-btn-primary" id="start-party-btn" onclick="startParty()">Start Party 🚀</button>` : `<div style="font-size:14px;color:var(--text-secondary);text-align:center;">Aștepți ca host-ul să înceapă party-ul...</div>`}<button class="sw-btn-ghost" onclick="cleanupParty();showSwipifyHome();">Părăsește Party</button></div>`;
+    container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Party Lobby</div><div style="font-size:13px;color:var(--text-secondary);">Share this code with your friends</div><div class="party-code-display" onclick="copyPartyCode()" title="Click to copy">${partyCode}</div><div style="font-size:12px;color:var(--text-secondary);">Click to copy</div><div id="party-members-label" style="font-size:14px;color:var(--text-secondary);">Waiting for members...</div>${isHost ? `<button class="sw-btn-primary" id="start-party-btn" onclick="startParty()">Start Party</button>` : `<div style="font-size:14px;color:var(--text-secondary);text-align:center;">Waiting for the host to start...</div>`}<button class="sw-btn-ghost" onclick="cleanupParty();loadSwipifyMovies(false);">${BACK_ARROW}</button></div>`;
     startLobbyPolling();
 }
 
 function copyPartyCode() {
-    navigator.clipboard?.writeText(partyCode).then(() => showToastMsg('Cod copiat!')).catch(() => {});
+    navigator.clipboard?.writeText(partyCode).then(() => showToastMsg('Code copied!')).catch(() => {});
 }
 
 function startLobbyPolling() {
@@ -134,12 +120,12 @@ function startLobbyPolling() {
             if (!res || !res.ok) return;
             const data = await res.json();
             const label = document.getElementById('party-members-label');
-            if (label && data.members) label.textContent = `${data.members.length} membru${data.members.length !== 1 ? 'i' : ''} în party`;
+            if (label && data.members) label.textContent = `${data.members.length} member${data.members.length !== 1 ? 's' : ''} in party`;
             if (data.started && !partyStarted) {
                 partyStarted = true;
                 clearInterval(partyPollInterval);
                 partyPollInterval = null;
-                loadSwipifyMovies(true);
+                loadPartyMovies();
             }
         } catch (e) {}
     }, 2000);
@@ -148,14 +134,56 @@ function startLobbyPolling() {
 async function startParty() {
     if (partyRole !== 'host') return;
     const btn = document.getElementById('start-party-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Pornire...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Starting...'; }
+
+    const container = document.getElementById('swipify-container');
+    container.innerHTML = `<div class="sw-center"><div style="font-size:16px;color:var(--text-secondary);">Loading movies...</div></div>`;
+
     try {
-        await fetchWithAuth(`${baseUrl}/api/party/start`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode }) });
-    } catch (e) {}
-    partyStarted = true;
-    clearInterval(partyPollInterval);
-    partyPollInterval = null;
-    loadSwipifyMovies(true);
+        const res = await fetchWithAuth(`${baseUrl}/api/content/recommend`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const movies = (data.content || []).filter(m => m.overview && (m.title || m.name));
+
+        await fetchWithAuth(`${baseUrl}/api/party/set-movies`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: partyCode, movies })
+        });
+
+        await fetchWithAuth(`${baseUrl}/api/party/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: partyCode })
+        });
+
+        partyStarted = true;
+        swipifyMovies = movies;
+        currentSwipifyIndex = 0;
+        clearInterval(partyPollInterval);
+        partyPollInterval = null;
+        renderSwipifyCard();
+        startMatchPolling();
+    } catch (e) {
+        showToastMsg('Failed to load movies. Try again.');
+        showPartyLobby();
+    }
+}
+
+async function loadPartyMovies() {
+    const container = document.getElementById('swipify-container');
+    container.innerHTML = `<div class="sw-center"><div style="font-size:16px;color:var(--text-secondary);">Loading movies...</div></div>`;
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/party/${partyCode}/movies`);
+        if (!res || !res.ok) throw new Error();
+        const data = await res.json();
+        swipifyMovies = (data.movies || []).filter(m => m.overview && (m.title || m.name));
+        currentSwipifyIndex = 0;
+        renderSwipifyCard();
+        startMatchPolling();
+    } catch (e) {
+        container.innerHTML = `<div class="sw-center"><div style="color:var(--text-primary);">Failed to load movies.</div><button class="sw-btn-primary" onclick="loadPartyMovies()">Retry</button></div>`;
+    }
 }
 
 function cleanupParty() {
@@ -164,10 +192,6 @@ function cleanupParty() {
     partyMatches = [];
     partyStarted = false;
     if (partyPollInterval) { clearInterval(partyPollInterval); partyPollInterval = null; }
-}
-
-async function startSoloSwipe() {
-    await loadSwipifyMovies(false);
 }
 
 async function loadSwipifyMovies(isParty = false) {
@@ -179,18 +203,17 @@ async function loadSwipifyMovies(isParty = false) {
         const res = await fetchWithAuth(`${baseUrl}/api/content/recommend`);
         if (!res.ok) throw new Error();
         const data = await res.json();
-        swipifyMovies = data.content || [];
+        swipifyMovies = (data.content || []).filter(m => m.overview && (m.title || m.name));
         currentSwipifyIndex = 0;
         if (loading) loading.style.display = 'none';
         if (swipifyMovies.length === 0) {
-            container.innerHTML = `<div class="sw-center"><div style="font-size:48px;">🎬</div><div style="font-size:18px;font-weight:600;color:var(--text-primary);">Nu există conținut disponibil</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(${isParty})">Reîncearcă</button></div>`;
+            container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No content available</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Retry</button></div>`;
             return;
         }
         renderSwipifyCard();
-        if (isParty) startMatchPolling();
     } catch (e) {
         if (loading) loading.style.display = 'none';
-        container.innerHTML = `<div class="sw-center"><div style="color:var(--text-primary);">Eroare la încărcare.</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(${isParty})">Reîncearcă</button></div>`;
+        container.innerHTML = `<div class="sw-center"><div style="color:var(--text-primary);">Failed to load content.</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Retry</button></div>`;
     }
 }
 
@@ -202,7 +225,14 @@ function startMatchPolling() {
             const res = await fetchWithAuth(`${baseUrl}/api/party/${partyCode}`);
             if (!res || !res.ok) return;
             const data = await res.json();
-            if (data.matches) partyMatches = data.matches;
+            if (data.matches) {
+                const prevCount = partyMatches.length;
+                partyMatches = data.matches;
+                if (data.matches.length > prevCount) {
+                    const newest = data.matches[data.matches.length - 1];
+                    showMatchAnimation(newest.title);
+                }
+            }
             if (data.ended) { clearInterval(partyPollInterval); partyPollInterval = null; showPartyResults(); }
         } catch (e) {}
     }, 3000);
@@ -212,7 +242,7 @@ function renderSwipifyCard() {
     const container = document.getElementById('swipify-container');
     if (!swipifyMovies || swipifyMovies.length === 0 || currentSwipifyIndex >= swipifyMovies.length) {
         if (partyCode && partyStarted) { showPartyWaiting(); return; }
-        container.innerHTML = `<div class="sw-center"><div style="font-size:48px;">🎬</div><div style="font-size:18px;font-weight:600;color:var(--text-primary);">Nu mai sunt filme!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Încarcă mai multe</button></div>`;
+        container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No more movies!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Load More</button></div>`;
         return;
     }
     let movie = swipifyMovies[currentSwipifyIndex];
@@ -224,7 +254,7 @@ function renderSwipifyCard() {
         attempts++;
     }
     if (!movie || !movie.overview || (!movie.title && !movie.name)) {
-        container.innerHTML = `<div class="sw-center"><div style="font-size:48px;">🎬</div><div style="font-size:18px;font-weight:600;color:var(--text-primary);">Niciun film valid!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Reîncearcă</button></div>`;
+        container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No valid movies!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Retry</button></div>`;
         return;
     }
     container.innerHTML = '';
@@ -236,8 +266,8 @@ function renderSwipifyCard() {
     const card = document.createElement('div');
     card.className = 'swipify-card';
     card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;cursor:grab;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);opacity:0;transform:scale(0.8);`;
-    const partyBadge = partyCode && partyStarted ? `<div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;">🎉 ${partyCode}</div>` : '';
-    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div style="position:absolute;bottom:24px;left:24px;right:24px;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} • ⭐ ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
+    const partyBadge = partyCode && partyStarted ? `<div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;">${partyCode}</div>` : '';
+    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div style="position:absolute;bottom:24px;left:24px;right:24px;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
     container.appendChild(card);
     requestAnimationFrame(() => {
         card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
@@ -312,36 +342,45 @@ async function sendPartySwipe(movie) {
     const movieId = `${movie.media_type || 'movie'}-${movie.id}`;
     const title = movie.title || movie.name || 'Unknown';
     const poster = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
-    const res = await fetchWithAuth(`${baseUrl}/api/party/swipe`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode, movieId, direction: 'right', title, poster }) });
-    if (res && res.ok) {
-        const data = await res.json();
-        if (data.match) { partyMatches.push({ movieId, title, poster }); showMatchAnimation(title); }
-    }
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/party/swipe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: partyCode, movieId, direction: 'right', title, poster })
+        });
+        if (res && res.ok) {
+            const data = await res.json();
+            if (data.match) {
+                partyMatches.push({ movieId, title, poster });
+                showMatchAnimation(title);
+            }
+        }
+    } catch (e) {}
 }
 
 function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
     overlay.style.cssText = `position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;`;
-    overlay.innerHTML = `<div style="font-size:80px;line-height:1;">💚</div><div style="font-size:34px;font-weight:900;color:#46d369;margin-top:12px;text-shadow:0 0 30px rgba(70,211,105,0.6);">It's a Match!</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:8px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
+    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">MATCH</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2800);
 }
 
 function showPartyWaiting() {
     const container = document.getElementById('swipify-container');
-    container.innerHTML = `<div class="sw-center"><div style="font-size:48px;">⏳</div><div style="font-size:18px;font-weight:600;color:var(--text-primary);">Ai terminat!</div><div style="font-size:14px;color:var(--text-secondary);text-align:center;">Aștepți ca ceilalți să termine de ales...</div><div id="matches-count" style="font-size:14px;font-weight:600;color:#46d369;">${partyMatches.length} match${partyMatches.length !== 1 ? 'uri' : ''} până acum</div><button class="sw-btn-primary" onclick="showPartyResults()">Vezi rezultatele</button></div>`;
+    container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">You are done!</div><div style="font-size:14px;color:var(--text-secondary);text-align:center;">Waiting for others to finish...</div><div id="matches-count" style="font-size:14px;font-weight:600;color:#46d369;">${partyMatches.length} match${partyMatches.length !== 1 ? 'es' : ''} so far</div><button class="sw-btn-primary" onclick="showPartyResults()">View results</button></div>`;
 }
 
 function showPartyResults() {
     if (partyPollInterval) { clearInterval(partyPollInterval); partyPollInterval = null; }
     const container = document.getElementById('swipify-container');
     if (partyMatches.length === 0) {
-        container.innerHTML = `<div class="sw-center"><div style="font-size:48px;">😢</div><div style="font-size:20px;font-weight:700;color:var(--text-primary);">Niciun match</div><div style="font-size:14px;color:var(--text-secondary);text-align:center;">Nu ați găsit niciun film în comun. Încercați din nou!</div><button class="sw-btn-primary" onclick="cleanupParty();showSwipifyHome();">Înapoi</button></div>`;
+        container.innerHTML = `<div class="sw-center"><div style="font-size:20px;font-weight:700;color:var(--text-primary);">No matches</div><div style="font-size:14px;color:var(--text-secondary);text-align:center;">You did not agree on any movie. Try again!</div><button class="sw-btn-primary" onclick="cleanupParty();loadSwipifyMovies(false);">Back</button></div>`;
         return;
     }
-    const matchesHtml = partyMatches.map(m => `<div class="sw-match-card">${m.poster ? `<img src="${m.poster}" style="width:44px;height:66px;border-radius:7px;object-fit:cover;" onerror="this.style.display='none'">` : `<div style="width:44px;height:66px;background:var(--border-h);border-radius:7px;"></div>`}<div><div style="font-size:15px;font-weight:600;color:var(--text-primary);">${escapeHtml(m.title || m.movieId)}</div><div style="font-size:12px;color:#46d369;font-weight:600;margin-top:3px;">✓ Match</div></div></div>`).join('');
-    container.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:24px;overflow-y:auto;"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:44px;">🎉</div><div style="font-size:22px;font-weight:700;color:var(--text-primary);margin-top:8px;">Party Matches!</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${partyMatches.length} film${partyMatches.length !== 1 ? 'e' : ''} pe care le vreți toți</div></div><div style="display:flex;flex-direction:column;gap:10px;flex:1;">${matchesHtml}</div><button class="sw-btn-primary" style="margin-top:20px;" onclick="cleanupParty();showSwipifyHome();">Gata 🎬</button></div>`;
+    const matchesHtml = partyMatches.map(m => `<div class="sw-match-card">${m.poster ? `<img src="${m.poster}" style="width:44px;height:66px;border-radius:7px;object-fit:cover;" onerror="this.style.display='none'">` : `<div style="width:44px;height:66px;background:var(--border-h);border-radius:7px;"></div>`}<div><div style="font-size:15px;font-weight:600;color:var(--text-primary);">${escapeHtml(m.title || m.movieId)}</div><div style="font-size:12px;color:#46d369;font-weight:600;margin-top:3px;">Everyone liked this</div></div></div>`).join('');
+    container.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:24px;overflow-y:auto;"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:22px;font-weight:700;color:var(--text-primary);">Party Matches</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${partyMatches.length} movie${partyMatches.length !== 1 ? 's' : ''} everyone wants to watch</div></div><div style="display:flex;flex-direction:column;gap:10px;flex:1;">${matchesHtml}</div><button class="sw-btn-primary" style="margin-top:20px;" onclick="cleanupParty();loadSwipifyMovies(false);">Done</button></div>`;
 }
 
 function showToastMsg(msg) {
@@ -363,7 +402,11 @@ async function sendAIFeedback(movie, action) {
     const movieId = `${movie.media_type || 'movie'}-${movie.id}`;
     try {
         const [favorites, watchlist] = await Promise.all([loadFavorites(), loadWatchlist()]);
-        await fetchWithAuth(`${baseUrl}/api/recommendations/feedback`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ movieId, action, profile, reviews: [], favorites: favorites.map(f => f.movieId), watchlist: watchlist.map(w => w.movieId) }) });
+        await fetchWithAuth(`${baseUrl}/api/recommendations/feedback`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ movieId, action, profile, reviews: [], favorites: favorites.map(f => f.movieId), watchlist: watchlist.map(w => w.movieId) })
+        });
     } catch (e) {}
 }
 
