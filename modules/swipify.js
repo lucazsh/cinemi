@@ -10,17 +10,71 @@ let partyStarted = false;
     const s = document.createElement('style');
     s.textContent = `
         @keyframes matchPop { 
-        0%{opacity:0;transform:translateY(-60px)} 
-        60%{opacity:1;transform:translateY(10px)} 
-        80%{transform:translateY(-4px)} 
-        100%{transform:translateY(0)} 
+            0%{opacity:0;transform:translateY(-60px)} 
+            60%{opacity:1;transform:translateY(10px)} 
+            80%{transform:translateY(-4px)} 
+            100%{transform:translateY(0)} 
         }
         @keyframes matchFadeOut { 
-        0%,70%{opacity:1} 
-        100%{opacity:0} 
+            0%,70%{opacity:1} 
+            100%{opacity:0} 
         }
-        @keyframes swCenterAppear { 0%{opacity:0;transform:translateY(18px)} 100%{opacity:1;transform:translateY(0)} }
-        .match-overlay { animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; }
+        @keyframes swCenterAppear { 
+            0%{opacity:0;transform:translateY(18px)} 
+            100%{opacity:1;transform:translateY(0)} 
+        }
+        .match-overlay { 
+            animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; 
+        }
+        .match-small{
+            font-size:28px;
+            font-weight:600;
+            color: #46d369;
+            letter-spacing:2px;
+            margin-bottom:-10px;
+        }
+        .match-overlay .match-title {
+            position: relative;
+            font-size: 72px;
+            font-weight: 900;
+            font-style: italic;
+            color: #46d369;
+            letter-spacing: 3px;
+            line-height: 1;
+            text-transform: uppercase;
+            -webkit-font-smoothing:antialiased;
+            font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .match-overlay .match-title::before,
+        .match-overlay .match-title::after {
+            content: "MATCH";
+            position: absolute;
+            left: 0;
+            width: 100%;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(70,211,105,0.55); /* outline */
+            z-index: -1;
+            pointer-events: none;
+        }
+        .match-overlay .match-title::before {
+            top: 10px;
+            -webkit-text-stroke-width: 2px;
+            -webkit-text-stroke-color: rgba(70,211,105,0.55);
+        }
+        .match-overlay .match-title::after {
+            top: 22px;
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: rgba(70,211,105,0.30);
+        }
+        .match-overlay .match-subtitle {
+            font-size: 17px;
+            color: rgba(255,255,255,0.9);
+            margin-top: 12px;
+            padding: 0 32px;
+            text-align: center;
+            max-width: 720px;
+            line-height: 1.3;
+        }
         .party-code-display { font-size:38px;font-weight:900;letter-spacing:10px;color:var(--text-primary);background:var(--card-bg);border:2px solid var(--border-h);border-radius:16px;padding:18px 28px;text-align:center;cursor:pointer;transition:transform 0.15s; }
         .party-code-display:active { transform:scale(0.96); }
         .sw-btn-primary { width:100%;max-width:300px;padding:15px 24px;background:var(--button-bg);color:var(--button-text);border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s; }
@@ -384,10 +438,14 @@ async function sendPartySwipe(movie) {
 function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
-    overlay.style.cssText = `position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;`;
-    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">MATCH</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;';
+    overlay.innerHTML = `
+        <div class="match-small">It's a</div>
+        <div class="match-title">MATCH</div>
+        <div class="match-subtitle">${escapeHtml(title)}</div>
+    `;
     document.body.appendChild(overlay);
-    setTimeout(() => overlay.remove(), 2800);
+    setTimeout(() => overlay.remove(), 2900);
 }
 
 function showPartyWaiting() {
@@ -438,3 +496,4 @@ async function sendAIFeedback(movie, action) {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPanel('swipify')));
 });
+
