@@ -377,7 +377,7 @@ function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
     overlay.style.cssText = `position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;`;
-    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">It's a Match! 🎬</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
+    overlay.innerHTML = `<div style="font-size:56px;font-weight:900;color:#46d369;letter-spacing:2px;">MATCH</div><div style="font-size:17px;color:rgba(255,255,255,0.85);margin-top:10px;padding:0 32px;text-align:center;">${escapeHtml(title)}</div>`;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2800);
 }
