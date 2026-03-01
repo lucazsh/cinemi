@@ -438,11 +438,11 @@ async function sendPartySwipe(movie) {
 function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);pointer-events:none;';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-primary);pointer-events:none;';
     overlay.innerHTML = `
         <div class="match-small">It's a</div>
         <div class="match-title">MATCH</div>
-        <div class="match-subtitle" style="margin-top: 10px;">${escapeHtml(title)}</div>
+        <div class="match-subtitle" style="margin-top: 30px;">${escapeHtml(title)}</div>
     `;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2900);
@@ -496,6 +496,7 @@ async function sendAIFeedback(movie, action) {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPanel('swipify')));
 });
+
 
 
 
