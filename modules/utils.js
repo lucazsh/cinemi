@@ -38,15 +38,15 @@ function getTimeBasedGreeting() {
     const name = document.querySelector('.p-name')?.textContent || 'there';
     
     if (hour >= 5 && hour < 12) 
-        return `<span style="color: var(--sub-home);">Good morning</span>, ${name}`;
+        return `<span style="color: var(--sub-home);">Good morning,</span> ${name}`;
     
     if (hour >= 12 && hour < 17) 
-        return `<span style="color: var(--sub-home);">Good afternoon</span>, ${name}`;
+        return `<span style="color: var(--sub-home);">Good afternoon,</span> ${name}`;
     
     if (hour >= 17 && hour < 22) 
-        return `<span style="color: var(--sub-home);">Good evening</span>, ${name}`;
+        return `<span style="color: var(--sub-home);">Good evening,</span> ${name}`;
     
-    return `<span style="color: var(--sub-home);">Good night</span>, ${name}`;
+    return `<span style="color: var(--sub-home);">Good night,</span> ${name}`;
 }
 
 function truncateText(text, maxLength) {
@@ -79,4 +79,5 @@ function updateAllTimestamps() {
     });
 }
 setInterval(updateAllTimestamps, 30000);
+
 
