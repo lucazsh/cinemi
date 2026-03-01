@@ -1366,7 +1366,7 @@
             transform: scale(0.9);
         }
         .btn-sw svg {
-            fill: var(--text-primary);
+            fill: white;
         }
         .feed-option:hover {
             background: var(--nav-active-bg);
@@ -1915,8 +1915,8 @@
             </span>
         </div>
         <div class="m1-rec">
-            <div style="font-size: 22px; font-weight: 600; margin-bottom:14px;">Good evening, <span class="p-name" style="font-size: 21px; font-weight: 600;"></span></div>
-            <div style="display:flex; gap:2px; margin-bottom:16px;">
+            <!-- <div style="font-size: 22px; font-weight: 600; margin-bottom:14px;">Good evening, <span class="p-name" style="font-size: 21px; font-weight: 600;"></span></div> -->
+            <div style="display:flex; gap:2px; margin-bottom:10px;">
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:#fff; color:#060608; border:none;">All</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
@@ -2131,6 +2131,14 @@
             <div class="meta">
                 <div class="title">Swipify</div>
                 <div class="subtitle">Discover movies by swiping</div>
+            </div>
+            </button>
+
+            <button class="card wide" onclick="openPanel('chat')">
+            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m240-240-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Zm120-80h240q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480H280q-17 0-28.5 11.5T240-440q0 17 11.5 28.5T280-400Zm0-120h400q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H280q-17 0-28.5 11.5T240-560q0 17 11.5 28.5T280-520Zm0-120h400q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H280q-17 0-28.5 11.5T240-680q0 17 11.5 28.5T280-640Z"/></svg></div>
+            <div class="meta">
+                <div class="title">Messages</div>
+                <div class="subtitle">Chat with your friends</div>
             </div>
             </button>
         </section>
