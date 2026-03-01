@@ -9,8 +9,16 @@ let partyStarted = false;
 (function injectStyles() {
     const s = document.createElement('style');
     s.textContent = `
-        @keyframes matchPop { 0%{opacity:0;transform:scale(0.5)} 20%{opacity:1;transform:scale(1.1)} 40%{transform:scale(0.95)} 60%{transform:scale(1.05)} 80%,100%{transform:scale(1)} }
-        @keyframes matchFadeOut { 0%,70%{opacity:1} 100%{opacity:0} }
+        @keyframes matchPop { 
+        0%{opacity:0;transform:translateY(-60px)} 
+        60%{opacity:1;transform:translateY(10px)} 
+        80%{transform:translateY(-4px)} 
+        100%{transform:translateY(0)} 
+        }
+        @keyframes matchFadeOut { 
+        0%,70%{opacity:1} 
+        100%{opacity:0} 
+        }
         @keyframes swCenterAppear { 0%{opacity:0;transform:translateY(18px)} 100%{opacity:1;transform:translateY(0)} }
         .match-overlay { animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; }
         .party-code-display { font-size:38px;font-weight:900;letter-spacing:10px;color:var(--text-primary);background:var(--card-bg);border:2px solid var(--border-h);border-radius:16px;padding:18px 28px;text-align:center;cursor:pointer;transition:transform 0.15s; }
