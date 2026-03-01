@@ -2,8 +2,6 @@
 <html class="inverted">
 <head>
     <title>Cinemi</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9789477123000434"
-     crossorigin="anonymous"></script>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="manifest" href="/manifest.json">
@@ -534,7 +532,6 @@
             color:var(--text-color-with1);
             border-radius: 20px;
             font-size: 13px;
-            margin-left: 8px;
             font-weight: 600;
             padding: 5px 11px;
             transition: background-color 0.2s;
@@ -544,7 +541,7 @@
             color: #f2f2f6;
         }
         .m1-rec {
-            padding: 15px 2.4%;
+            padding: 10px 2.4%;
         }
         .mov {
             display: flex;
@@ -1907,21 +1904,22 @@
     </div>
     <div id="home" class="view">
         <div class="nt">
-            <span class="logo" style="display:flex; align-items: center;">
-                Home
-                <button class="nt-rounded" style="margin-left: 20px;">All</button>
-                <button class="nt-rounded">Wrapped</button>
-                <button class="nt-rounded">Liked</button>
-            </span>
-            <span>                
-                <button onclick="showView('finder')" style="fill: var(--text-primary)">
+            <span class="logo">Cinemi</span>
+            <span style="display:flex; align-items:center; gap:8px;">
+                <button style="fill:var(--text-primary); display:flex; align-items:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+                </button>
+                <button onclick="showView('finder')" style="fill:var(--text-primary); display:flex; align-items:center;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                 </button>
             </span>
         </div>
         <div class="m1-rec">
-            <div style="font-size: 21px; font-weight: 600;">
-                Good evening, <span class="p-name" style="font-size: 21px; font-weight: 600;"></span>
+            <div style="font-size: 22px; font-weight: 600; margin-bottom:14px;">Good evening, <span class="p-name" style="font-size: 21px; font-weight: 600;"></span></div>
+            <div style="display:flex; gap:2px; margin-bottom:16px;">
+                <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:#fff; color:#060608; border:none;">All</button>
+                <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
+                <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
             <div class="f-mov">
                 <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
