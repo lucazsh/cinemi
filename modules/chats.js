@@ -7,6 +7,7 @@
       border-radius: 16px; cursor: pointer; transition: background .18s;
       border-bottom: 1px solid var(--border-dark-alpha-2);
     }
+    
     .conv-item:active { background: var(--nav-active-bg); }
     .conv-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
     .conv-meta { flex: 1; min-width: 0; }
