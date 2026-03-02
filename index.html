@@ -2416,6 +2416,49 @@
             <button class="btn-close" onclick="closePanel('user-friends')">Close</button>
         </div>
     </div>
+    <div id="chats" class="view">
+      <div class="nt">
+        <span class="logo">Chats</span>
+        <button id="chats-compose-btn" style="background:#18191ef0;padding:3px 5.5px;border-radius:10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-160v-441q0-33 24-56t57-23h439q33 0 56.5 23.5T880-600v320L680-80H360q-33 0-56.5-23.5T280-160ZM81-710q-6-33 13-59.5t52-32.5l434-77q33-6 59.5 13t32.5 52l10 54h-82l-7-40-433 77 40 226v279q-16-9-27.5-24T158-276L81-710Zm279 110v440h280l160-160v-280H360Zm220 220Zm-40 160h80v-120h120v-80H620v-120h-80v120H420v80h120v120Z"/></svg>
+        </button>
+      </div>
+      <div id="chats-list" style="padding:0 4px;"></div>
+    </div>
+    
+    <div id="chat-window" style="position:fixed;inset:0;background:var(--bg-primary);z-index:1300;opacity:0;pointer-events:none;transition:opacity .25s ease;display:flex;flex-direction:column;box-sizing:border-box;">
+      <div class="nt">
+        <button id="chat-win-back">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img id="chat-win-avatar" src="https://i.imgflip.com/1ickup.jpg" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+          <span id="chat-win-name" style="font-weight:700;font-size:16px;color:var(--text-primary);"></span>
+        </div>
+        <div style="width:36px;"></div>
+      </div>
+      <div id="chat-win-messages" style="flex:1;overflow-y:auto;padding:0 16px 10px;display:flex;flex-direction:column;gap:8px;padding-top:8px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 20px;padding-bottom:max(12px, env(safe-area-inset-bottom));box-sizing:border-box;border-top:1px solid var(--border-dark-alpha-2);">
+        <input id="chat-win-input" type="text" inputmode="text" enterkeyhint="send" placeholder="Message..." style="flex:1;padding:12px;font-size:16px;border-radius:12px;border:1px solid var(--border-dark-alpha-2);outline:none;background:var(--ichat-c);color:var(--text-primary);box-sizing:border-box;">
+        <button id="chat-win-send" style="background:#18191efe;min-height:40px;padding:4px 7px;border-radius:10px;flex-shrink:0;">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div id="chat-search-overlay" style="position:fixed;inset:0;background:var(--bg-primary);z-index:1400;opacity:0;pointer-events:none;transition:opacity .25s ease;display:flex;flex-direction:column;box-sizing:border-box;">
+      <div class="nt">
+        <button id="chat-search-back">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+        </button>
+        <span class="logo" style="font-size:20px;">New Chat</span>
+        <div style="width:36px;"></div>
+      </div>
+      <div style="padding:0 20px 12px;">
+        <input id="chat-search-input" type="text" placeholder="Search users..." style="width:100%;padding:12px;font-size:16px;border-radius:12px;border:1px solid var(--border-dark-alpha-2);outline:none;background:var(--ichat-c);color:var(--text-primary);box-sizing:border-box;">
+      </div>
+      <div id="chat-search-results" style="flex:1;overflow-y:auto;padding:0 20px;"></div>
+    </div>
     <script src="/modules/utils.js"></script>
     <script src="/modules/auth.js"></script>
     <script src="/modules/ui.js"></script>
@@ -2427,6 +2470,7 @@
     <script src="/modules/replies.js"></script>
     <script src="/modules/profile.js"></script>
     <script src="/modules/swipify.js"></script>
+    <script src="/modules/chats.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </body>
 </html>
