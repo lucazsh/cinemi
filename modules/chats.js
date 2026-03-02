@@ -22,7 +22,16 @@
     .conv-preview.conv-unread { color: var(--text-primary); font-weight: 600; }
     .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-primary); flex-shrink: 0; }
     #chat-win-messages::-webkit-scrollbar { display: none; }
-    .dm-msg { display: flex; flex-direction: column; max-width: 75%; }
+    @keyframes dmAppear {
+      from { opacity: 0; transform: translateY(10px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .dm-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 75%;
+      animation: dmAppear .22s ease forwards;
+    }
     .dm-msg-me { align-self: flex-end; align-items: flex-end; }
     .dm-msg-them { align-self: flex-start; align-items: flex-start; }
     .dm-bubble {
@@ -33,8 +42,8 @@
       word-break: break-word;
       color: var(--text-primary);
     }
-    .dm-msg-me .dm-bubble { background: var(--button-bg); color: var(--button-text); border-bottom-right-radius: 4px; }
-    .dm-msg-them .dm-bubble { background: var(--ichat-c); border: 1px solid var(--border-dark-alpha-2); border-bottom-left-radius: 4px; }
+    .dm-msg-me .dm-bubble { background: var(--button-bg); color: var(--button-text); }
+    .dm-msg-them .dm-bubble { background: var(--ichat-c); border: 1px solid var(--border-dark-alpha-2); }
     .dm-time { font-size: 11px; color: var(--text-subtle); margin-top: 3px; padding: 0 4px; }
     .chat-search-user-row {
       display: flex; align-items: center; gap: 12px; padding: 12px;
@@ -49,6 +58,14 @@
       z-index: 9999; font-size: 14px; pointer-events: none;
       opacity: 0; transition: opacity .3s; white-space: nowrap;
     }
+    #chat-win-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+    }
   `;
   document.head.appendChild(style);
 
@@ -60,8 +77,8 @@
   let currentConvUser = null;
   let pollInterval = null;
   let lastMsgTs = 0;
+  const renderedMsgIds = new Set();
 
-  const chatsView = document.getElementById('chats');
   const chatsList = document.getElementById('chats-list');
   const chatWindow = document.getElementById('chat-window');
   const chatWinMessages = document.getElementById('chat-win-messages');
@@ -71,6 +88,9 @@
   const chatSearchOverlay = document.getElementById('chat-search-overlay');
   const chatSearchInput = document.getElementById('chat-search-input');
   const chatSearchResults = document.getElementById('chat-search-results');
+
+  const inputBar = document.getElementById('chat-win-input-bar');
+  if (inputBar) inputBar.style.border = 'none';
 
   function showEl(el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
   function hideEl(el) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }
@@ -85,12 +105,18 @@
     return (document.getElementById('addUsername')?.value || '').trim();
   }
 
+  function seenKey(convId) { return `chat_seen_${convId}`; }
+  function markSeen(convId) {
+    try { localStorage.setItem(seenKey(convId), Date.now().toString()); } catch {}
+  }
+  function getSeenTs(convId) {
+    try { return parseInt(localStorage.getItem(seenKey(convId)) || '0'); } catch { return 0; }
+  }
+
   function openChatsView(targetUser, targetPhoto) {
     showView('chats');
     loadConversations();
-    if (targetUser) {
-      setTimeout(() => startChatWith(targetUser, targetPhoto), 300);
-    }
+    if (targetUser) setTimeout(() => startChatWith(targetUser, targetPhoto), 300);
   }
 
   async function loadConversations() {
@@ -106,7 +132,9 @@
       data.forEach(conv => {
         const el = document.createElement('div');
         el.className = 'conv-item';
-        const recent = conv.lastMessageAt && (Date.now() - new Date(conv.lastMessageAt).getTime()) < 5 * 60 * 1000;
+        const lastTs = conv.lastMessageAt ? new Date(conv.lastMessageAt).getTime() : 0;
+        const seen = getSeenTs(conv.id);
+        const hasUnread = lastTs > seen && !!conv.lastMessage;
         el.innerHTML = `
           <img class="conv-avatar" src="${escapeHtml(conv.otherPhotoUrl)}">
           <div class="conv-meta">
@@ -114,8 +142,8 @@
               <span class="conv-name">@${escapeHtml(conv.otherUsername)}</span>
               <span class="conv-time">${conv.lastMessageAt ? formatTimeAgo(conv.lastMessageAt) : ''}</span>
             </div>
-            <div class="conv-preview ${recent ? 'conv-unread' : ''}">
-              ${recent ? '<span class="unread-dot"></span>' : ''}
+            <div class="conv-preview ${hasUnread ? 'conv-unread' : ''}">
+              ${hasUnread ? '<span class="unread-dot"></span>' : ''}
               ${escapeHtml(truncateText(conv.lastMessage || 'No messages yet', 42))}
             </div>
           </div>
@@ -132,19 +160,22 @@
     currentConvId = convId;
     currentConvUser = otherUser;
     lastMsgTs = 0;
+    renderedMsgIds.clear();
     chatWinName.textContent = '@' + otherUser;
     chatWinAvatar.src = otherPhoto || 'https://i.imgflip.com/1ickup.jpg';
     chatWinMessages.innerHTML = '<div style="padding:20px;color:var(--text-subtle);text-align:center;">Loading...</div>';
     showEl(chatWindow);
     await loadMessages();
+    markSeen(convId);
     clearInterval(pollInterval);
-    pollInterval = setInterval(pollNewMessages, 3000);
+    pollInterval = setInterval(pollNewMessages, 1500);
   }
 
   function closeChatWindow() {
     hideEl(chatWindow);
     clearInterval(pollInterval);
     pollInterval = null;
+    if (currentConvId) markSeen(currentConvId);
     currentConvId = null;
     loadConversations();
   }
@@ -154,11 +185,16 @@
       const res = await fetchWithAuth(`${baseUrl}/api/conversations/${currentConvId}/messages`);
       const msgs = await res.json();
       chatWinMessages.innerHTML = '';
+      renderedMsgIds.clear();
       if (!msgs.length) {
-        chatWinMessages.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-subtle);">Say hello! 👋</div>';
+        const el = document.createElement('div');
+        el.setAttribute('data-empty', '1');
+        el.style.cssText = 'padding:40px 20px;text-align:center;color:var(--text-subtle);';
+        el.textContent = 'Say hello! 👋';
+        chatWinMessages.appendChild(el);
         return;
       }
-      msgs.forEach(m => appendMessage(m));
+      renderMessageBatch(msgs, false);
       scrollToBottom();
       lastMsgTs = new Date(msgs[msgs.length - 1].createdAt).getTime();
     } catch {}
@@ -170,20 +206,54 @@
       const res = await fetchWithAuth(`${baseUrl}/api/conversations/${currentConvId}/messages?since=${lastMsgTs}`);
       const msgs = await res.json();
       if (!msgs.length) return;
+      const newMsgs = msgs.filter(m => !renderedMsgIds.has(m.id));
+      if (!newMsgs.length) return;
       const emptyNotice = chatWinMessages.querySelector('[data-empty]');
       if (emptyNotice) chatWinMessages.innerHTML = '';
-      msgs.forEach(m => appendMessage(m));
-      scrollToBottom();
-      lastMsgTs = new Date(msgs[msgs.length - 1].createdAt).getTime();
+      const wasAtBottom = chatWinMessages.scrollHeight - chatWinMessages.scrollTop - chatWinMessages.clientHeight < 60;
+      renderMessageBatch(newMsgs, true);
+      if (wasAtBottom) scrollToBottom();
+      lastMsgTs = new Date(newMsgs[newMsgs.length - 1].createdAt).getTime();
+      markSeen(currentConvId);
     } catch {}
   }
 
-  function appendMessage(msg) {
+  function renderMessageBatch(msgs, animate) {
+    for (let i = 0; i < msgs.length; i++) {
+      const m = msgs[i];
+      const next = msgs[i + 1];
+      const showTime = !next || next.sender !== m.sender || (new Date(next.createdAt) - new Date(m.createdAt)) > 60000;
+      appendMessage(m, animate, showTime);
+    }
+    recheckLastTimestamps();
+  }
+
+  function recheckLastTimestamps() {
+    const allMsgs = chatWinMessages.querySelectorAll('.dm-msg');
+    for (let i = 0; i < allMsgs.length; i++) {
+      const cur = allMsgs[i];
+      const next = allMsgs[i + 1];
+      const timeEl = cur.querySelector('.dm-time');
+      if (!timeEl) continue;
+      if (!next) { timeEl.style.display = ''; continue; }
+      const sameS = cur.dataset.sender === next.dataset.sender;
+      const diff = Math.abs(new Date(next.dataset.ts) - new Date(cur.dataset.ts));
+      timeEl.style.display = (sameS && diff < 60000) ? 'none' : '';
+    }
+  }
+
+  function appendMessage(msg, animate, showTime) {
+    if (renderedMsgIds.has(msg.id)) return;
+    renderedMsgIds.add(msg.id);
     const me = getMyUsername();
     const isMe = msg.sender === me;
     const el = document.createElement('div');
     el.className = 'dm-msg ' + (isMe ? 'dm-msg-me' : 'dm-msg-them');
-    el.innerHTML = `<div class="dm-bubble">${escapeHtml(msg.content)}</div><span class="dm-time">${formatTimeAgo(msg.createdAt)}</span>`;
+    el.dataset.sender = msg.sender;
+    el.dataset.ts = msg.createdAt;
+    el.dataset.id = msg.id;
+    if (!animate) el.style.animation = 'none';
+    el.innerHTML = `<div class="dm-bubble">${escapeHtml(msg.content)}</div><span class="dm-time" style="display:${showTime ? '' : 'none'}">${formatTimeAgo(msg.createdAt)}</span>`;
     chatWinMessages.appendChild(el);
   }
 
@@ -195,6 +265,12 @@
     const text = chatWinInput.value.trim();
     if (!text || !currentConvId) return;
     chatWinInput.value = '';
+    const tempId = 'tmp_' + Date.now();
+    const tempMsg = { id: tempId, sender: getMyUsername(), content: text, createdAt: new Date().toISOString() };
+    const emptyNotice = chatWinMessages.querySelector('[data-empty]');
+    if (emptyNotice) chatWinMessages.innerHTML = '';
+    appendMessage(tempMsg, true, true);
+    scrollToBottom();
     try {
       const res = await fetchWithAuth(`${baseUrl}/api/conversations/${currentConvId}/messages`, {
         method: 'POST',
@@ -203,11 +279,16 @@
       });
       const data = await res.json();
       if (data.ok) {
-        const emptyNotice = chatWinMessages.querySelector('[data-empty]');
-        if (emptyNotice) chatWinMessages.innerHTML = '';
-        appendMessage(data.message);
-        scrollToBottom();
-        lastMsgTs = new Date(data.message.createdAt).getTime();
+        renderedMsgIds.delete(tempId);
+        const tempEl = chatWinMessages.querySelector(`[data-id="${tempId}"]`);
+        if (tempEl) {
+          tempEl.dataset.id = data.message.id;
+          tempEl.dataset.ts = data.message.createdAt;
+          renderedMsgIds.add(data.message.id);
+        }
+        if (data.message.createdAt) lastMsgTs = new Date(data.message.createdAt).getTime();
+        recheckLastTimestamps();
+        markSeen(currentConvId);
       }
     } catch {}
   }
@@ -260,10 +341,7 @@
         body: JSON.stringify({ otherUsername: username })
       });
       const data = await res.json();
-      if (!data.ok) {
-        showToast(data.error || 'Cannot start conversation.');
-        return;
-      }
+      if (!data.ok) { showToast(data.error || 'Cannot start conversation.'); return; }
       openConversation(data.conversation.id, username, photoUrl || 'https://i.imgflip.com/1ickup.jpg');
     } catch {
       showToast('Failed to open conversation.');
@@ -284,7 +362,6 @@
       const img = el.querySelector('img');
       openChatsView(username, img?.src);
     };
-    el.style.position = 'relative';
     el.appendChild(btn);
   }
 
@@ -334,11 +411,16 @@
 
     const socket = io(baseUrl, { transports: ['websocket', 'polling'] });
     socket.on('dm_message', msg => {
-      if (msg.conversationId === currentConvId) {
-        appendMessage(msg);
-        scrollToBottom();
-        lastMsgTs = new Date(msg.createdAt).getTime();
-      }
+      if (msg.conversationId !== currentConvId) return;
+      if (renderedMsgIds.has(msg.id)) return;
+      const emptyNotice = chatWinMessages.querySelector('[data-empty]');
+      if (emptyNotice) chatWinMessages.innerHTML = '';
+      const wasAtBottom = chatWinMessages.scrollHeight - chatWinMessages.scrollTop - chatWinMessages.clientHeight < 60;
+      appendMessage(msg, true, true);
+      recheckLastTimestamps();
+      if (wasAtBottom) scrollToBottom();
+      lastMsgTs = new Date(msg.createdAt).getTime();
+      markSeen(currentConvId);
     });
   }
 
