@@ -73,11 +73,19 @@ async function loadFeaturedMovie() {
             const next = _ambientActive === 'a' ? 'b' : 'a';
             const elNext = document.getElementById('fmov-ambient-' + next);
             const elPrev = document.getElementById('fmov-ambient-' + _ambientActive);
-            if (elNext) {
-                elNext.style.backgroundImage = `url('${imgUrl}')`;
-                requestAnimationFrame(() => { elNext.style.opacity = '0.6'; });
-            }
+        
             if (elPrev) elPrev.style.opacity = '0';
+        
+            if (elNext) {
+                elNext.style.opacity = '0';
+                elNext.style.backgroundImage = `url('${imgUrl}')`;
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        elNext.style.opacity = '0.6';
+                    });
+                });
+            }
+        
             _ambientActive = next;
         }
         function renderSlide(index) {
@@ -1127,6 +1135,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
