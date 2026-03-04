@@ -1614,17 +1614,6 @@
             justify-content: center;
             flex-direction: column;
         }
-        @supports (padding: env(safe-area-inset-top)) {
-            @media all and (display-mode: standalone) {
-                .nt {
-                    padding-top: calc(20px + env(safe-area-inset-top));
-                }
-                .view {
-                    padding-top: env(safe-area-inset-top);
-                    height: calc(100% - 85px - env(safe-area-inset-top));
-                }
-            }
-        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
