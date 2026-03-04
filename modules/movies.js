@@ -141,7 +141,7 @@ async function loadFeaturedMovie() {
                 renderSlide(currentIndex);
             }, 4000);
         };
-        
+        updateAmbient(`${IMG_W500}${movies[0].poster_path}`);
         renderSlide(0);
         
         clearInterval(window._featuredInterval);
@@ -1126,6 +1126,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
