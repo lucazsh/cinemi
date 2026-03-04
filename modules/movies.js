@@ -95,9 +95,17 @@ async function loadFeaturedMovie() {
                 fMovContainer.style.opacity = '1';
                 fMovContainer.onclick = () => showDetails(movies[index]);
                 
-                const ambient = document.getElementById('fmov-ambient');
-                if (ambient) {
-                    ambient.style.backgroundImage = `url(${posterUrl})`;
+                const ambientA = document.getElementById('fmov-ambient-a');
+                const ambientB = document.getElementById('fmov-ambient-b');
+                if (ambientA && ambientB) {
+                    const activeIsA = parseFloat(ambientA.style.opacity || 0.4) > 0.1;
+                    const next = activeIsA ? ambientB : ambientA;
+                    const prev = activeIsA ? ambientA : ambientB;
+                    next.style.backgroundImage = `url(${posterUrl})`;
+                    requestAnimationFrame(() => {
+                        next.style.opacity = '0.4';
+                        prev.style.opacity = '0';
+                    });
                 }
                 
                 updateDots(index);
@@ -1108,6 +1116,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
