@@ -1591,20 +1591,26 @@
         
         .fmov-ambient-canvas {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(1.05);
-            width: 100%;
-            max-width: 360px;
+            width: 100%; max-width: 360px;
             aspect-ratio: 2/2.5;
             border-radius: 20px;
             filter: blur(55px) saturate(1.2) brightness(0.5);
-            opacity: 0;
             pointer-events: none;
             z-index: 0;
-            transition: opacity 0.5s ease;
             background-size: cover;
             background-position: center;
+            transition: opacity 0.6s ease;
+            opacity: 0;
+        }
+        
+        #home-ambient-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition: background 1.5s ease;
         }
         
         .f-mov {
@@ -1938,6 +1944,7 @@
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
     <div id="home" class="view">
+        <div id="home-ambient-overlay"></div>
         <div class="nt">
             <span class="logo">Cinemi</span>
             <span style="display:flex; align-items:center; gap:8px;">
@@ -1957,7 +1964,8 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
             <div class="f-mov-ambient-wrap">
-                <div id="fmov-ambient-canvas" class="fmov-ambient-canvas"></div>
+                <div id="fmov-ambient-a" class="fmov-ambient-canvas"></div>
+                <div id="fmov-ambient-b" class="fmov-ambient-canvas"></div>
                 <div class="f-mov">
                     <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
                     <div class="fmov-over">
