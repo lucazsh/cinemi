@@ -67,7 +67,13 @@ async function loadFeaturedMovie() {
         featuredGenres = featuredMovie.genre_ids || [];
         
         let currentIndex = 0;
-        
+        function updateAmbient(imgUrl) {
+            const canvas = document.getElementById('fmov-ambient-canvas');
+            if (!canvas) return;
+            canvas.style.backgroundImage = `url('${imgUrl}')`;
+            canvas.style.opacity = '0';
+            setTimeout(() => { canvas.style.opacity = '0.85'; }, 200);
+        }
         function renderSlide(index) {
             const m = movies[index];
             const posterUrl = `${IMG_W500}${m.poster_path}`;
@@ -94,6 +100,7 @@ async function loadFeaturedMovie() {
                 `;
                 
                 fMovContainer.style.opacity = '1';
+                updateAmbient(posterUrl);
                 fMovContainer.onclick = () => showDetails(movies[index]);
                 
                 const watchlistBtn = fMovContainer.querySelector('#watchlist-btn');
@@ -1114,6 +1121,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
