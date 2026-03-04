@@ -4,6 +4,11 @@ let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
 
+const _amb = document.createElement('div');
+_amb.id = 'fmov-ambient';
+_amb.className = 'fmov-ambient-canvas';
+document.body.appendChild(_amb);
+
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -1121,6 +1126,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
