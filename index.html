@@ -581,14 +581,16 @@
             width: 88%;
             height: 480px;
             border-radius: 30px;
-            filter: blur(72px);
-            -webkit-filter: blur(72px);
+            filter: blur(60px);
+            -webkit-filter: blur(60px);
             opacity: 0.4;
-            background: transparent;
-            transition: background 1.1s ease;
+            background-size: cover;
+            background-position: center;
+            background-color: transparent;
+            transition: background-image 0s, opacity 0.8s ease;
             pointer-events: none;
             z-index: 0;
-            will-change: background;
+            will-change: transform;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
         }
