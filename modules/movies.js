@@ -4,11 +4,6 @@ let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
 
-const _amb = document.createElement('div');
-_amb.id = 'fmov-ambient';
-_amb.className = 'fmov-ambient-canvas';
-document.body.appendChild(_amb);
-
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -72,13 +67,6 @@ async function loadFeaturedMovie() {
         featuredGenres = featuredMovie.genre_ids || [];
         
         let currentIndex = 0;
-        function updateAmbient(imgUrl) {
-            const el = document.getElementById('fmov-ambient');
-            if (!el) return;
-            el.style.backgroundImage = `url('${imgUrl}')`;
-            el.offsetHeight;
-            el.style.opacity = '0.6';
-        }
         function renderSlide(index) {
             const m = movies[index];
             const posterUrl = `${IMG_W500}${m.poster_path}`;
@@ -105,7 +93,6 @@ async function loadFeaturedMovie() {
                 `;
                 
                 fMovContainer.style.opacity = '1';
-                updateAmbient(posterUrl);
                 fMovContainer.onclick = () => showDetails(movies[index]);
                 
                 const watchlistBtn = fMovContainer.querySelector('#watchlist-btn');
@@ -141,7 +128,6 @@ async function loadFeaturedMovie() {
                 renderSlide(currentIndex);
             }, 4000);
         };
-        updateAmbient(`${IMG_W500}${movies[0].poster_path}`);
         renderSlide(0);
         
         clearInterval(window._featuredInterval);
@@ -1126,6 +1112,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
