@@ -67,6 +67,25 @@ async function loadFeaturedMovie() {
         featuredGenres = featuredMovie.genre_ids || [];
         
         let currentIndex = 0;
+        function extColor(src, cb) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 8;
+                canvas.height = 12;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 8, 12);
+                const d = ctx.getImageData(0, 0, 8, 12).data;
+                let r = 0, g = 0, b = 0;
+                const total = d.length / 4;
+                for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; }
+                cb(`rgb(${Math.round(r/total)},${Math.round(g/total)},${Math.round(b/total)})`);
+            };
+            img.onerror = () => {};
+            img.src = src;
+        }
+        
         function renderSlide(index) {
             const m = movies[index];
             const posterUrl = `${IMG_W500}${m.poster_path}`;
@@ -95,14 +114,10 @@ async function loadFeaturedMovie() {
                 fMovContainer.style.opacity = '1';
                 fMovContainer.onclick = () => showDetails(movies[index]);
                 
-                const watchlistBtn = fMovContainer.querySelector('#watchlist-btn');
-                if (watchlistBtn) {
-                    watchlistBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        watchlistBtn.classList.toggle('expanded');
-                        addToWatchlist(movies[index]);
-                    };
-                }
+                extColor(posterUrl, (color) => {
+                    const ambient = document.getElementById('fmov-ambient');
+                    if (ambient) ambient.style.background = color;
+                });
                 
                 updateDots(index);
             }, 400);
@@ -1112,6 +1127,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
