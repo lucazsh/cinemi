@@ -573,26 +573,25 @@
             position: relative;
         }
         #fmov-ambient-a, #fmov-ambient-b {
-            position: absolute;
-            top: 10px;
+            position: fixed;
+            top: -30px;
             left: 50%;
             -webkit-transform: translateX(-50%) translateZ(0);
             transform: translateX(-50%) translateZ(0);
-            width: 88%;
-            height: 480px;
-            border-radius: 30px;
-            -webkit-filter: blur(60px);
-            filter: blur(60px);
+            width: 90%;
+            height: 620px;
+            border-radius: 40px;
+            -webkit-filter: blur(70px);
+            filter: blur(70px);
             background-size: cover;
             background-position: center;
             pointer-events: none;
-            z-index: 0;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             transition: opacity 1s ease;
         }
-        #fmov-ambient-a { opacity: 0.4; }
-        #fmov-ambient-b { opacity: 0; }
+        #fmov-ambient-a { opacity: 0.4; z-index: 0; }
+        #fmov-ambient-b { opacity: 0; z-index: 0; }
         .f-mov {
             position: relative;
             z-index: 1;
@@ -1611,6 +1610,8 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
+    <div id="fmov-ambient-a"></div>
+    <div id="fmov-ambient-b"></div>
     <div id="logo-sp" class="view active" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--bg-primary); padding:0; margin:0; position:fixed; inset:0; z-index:2000;">
         <img id="sp-logo" src="" style="width:300px; height:auto;">
         <!-- <span style="position:fixed; bottom:42px; font-size:13px; color:var(--text-primary); letter-spacing:0.12em; font-weight:500; opacity:0.45; text-transform:lowercase;">from lucazsh</span> -->
@@ -1934,8 +1935,6 @@
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
     <div id="home" class="view">
-        <div id="fmov-ambient-a"></div>
-        <div id="fmov-ambient-b"></div>
         <div class="nt">
             <span class="logo">Cinemi</span>
             <span style="display:flex; align-items:center; gap:8px;">
