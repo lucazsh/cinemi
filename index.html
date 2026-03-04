@@ -1580,6 +1580,37 @@
             justify-content: center;
             flex-direction: column;
         }
+
+        .f-mov-ambient-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 30px 0 20px;
+        }
+        
+        .fmov-ambient-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.15);
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 2/2.5;
+            border-radius: 30px;
+            filter: blur(38px) saturate(1.6) brightness(0.75);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .f-mov {
+            z-index: 1;
+            margin-top: 0; 
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -1925,19 +1956,22 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
-            <div class="f-mov">
-                <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
-                <div class="fmov-over">
-                    <span class="fmov-title">
-                        Five Nights at Freddy's 2
-                    </span>
-                    <span class="fmov-desciption">
-                        A year later, Abby awakens haunted animatronics, unleashing long-buried secrets and horrors.
-                    </span>
-                    <span class="fmov-buttons">
-                        <button class="fmov-b add-to-watchlist-feat" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
-                        <button class="fmov-b">Details</button>
-                    </span>
+            <div class="f-mov-ambient-wrap">
+                <canvas id="fmov-ambient-canvas" class="fmov-ambient-canvas"></canvas>
+                <div class="f-mov">
+                    <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
+                    <div class="fmov-over">
+                        <span class="fmov-title">
+                            Five Nights at Freddy's 2
+                        </span>
+                        <span class="fmov-desciption">
+                            A year later, Abby awakens haunted animatronics, unleashing long-buried secrets and horrors.
+                        </span>
+                        <span class="fmov-buttons">
+                            <button class="fmov-b add-to-watchlist-feat" style="color:#18191e; background-color: #fffffff9;">Add to list</button>
+                            <button class="fmov-b">Details</button>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
