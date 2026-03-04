@@ -569,7 +569,28 @@
             cursor: pointer;
             background-color: #101114;
         }
-
+        .m1-rec {
+            position: relative;
+        }
+        #fmov-ambient {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            height: 480px;
+            border-radius: 30px;
+            filter: blur(72px);
+            opacity: 0.4;
+            background: transparent;
+            transition: background 1.1s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .f-mov {
+            position: relative;
+            z-index: 1;
+        }
         .f-mov img {
             display: block;
             width: 100%;
@@ -1925,6 +1946,7 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
+            <div id="fmov-ambient"></div>
             <div class="f-mov">
                 <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
                 <div class="fmov-over">
