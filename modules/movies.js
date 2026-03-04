@@ -79,11 +79,8 @@ async function loadFeaturedMovie() {
             if (elNext) {
                 elNext.style.opacity = '0';
                 elNext.style.backgroundImage = `url('${imgUrl}')`;
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        elNext.style.opacity = '0.6';
-                    });
-                });
+                elNext.offsetHeight;
+                elNext.style.opacity = '0.6';
             }
         
             _ambientActive = next;
@@ -1135,6 +1132,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
