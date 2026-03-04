@@ -1582,15 +1582,15 @@
         }
 
         .fmov-ambient-canvas {
-            position: absolute;
-            top: 50%;
+            position: fixed;
+            top: 80px;
             left: 50%;
-            transform: translate(-50%, -50%) scale(2.5);
+            transform: translateX(-50%) scale(1.05);
             width: 100%;
             max-width: 360px;
             aspect-ratio: 2/2.5;
             border-radius: 20px;
-            filter: blur(80px) saturate(1.4) brightness(0.55);
+            filter: blur(55px) saturate(1.2) brightness(0.5);
             pointer-events: none;
             z-index: 0;
             background-size: cover;
@@ -1957,9 +1957,9 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
+            <div id="fmov-ambient-a" class="fmov-ambient-canvas"></div>
+            <div id="fmov-ambient-b" class="fmov-ambient-canvas"></div>
             <div class="f-mov-ambient-wrap">
-                <div id="fmov-ambient-a" class="fmov-ambient-canvas"></div>
-                <div id="fmov-ambient-b" class="fmov-ambient-canvas"></div>
                 <div class="f-mov">
                     <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
                     <div class="fmov-over">
