@@ -1618,7 +1618,10 @@
             @media all and (display-mode: standalone) {
                 .nt {
                     padding-top: calc(20px + env(safe-area-inset-top));
-                    margin-top: calc(-1 * env(safe-area-inset-top));
+                }
+                .view {
+                    padding-top: env(safe-area-inset-top);
+                    height: calc(100% - 85px - env(safe-area-inset-top));
                 }
             }
         }
