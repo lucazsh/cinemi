@@ -5,7 +5,7 @@
     const isDark = !document.documentElement.classList.contains('light-mode') &&
         window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    logo.src = isDark ? '/icons/sp_light.png' : '/icons/sp_dark.png';
+    logo.src = isDark ? '/icons/sp_dark.png' : '/icons/sp_light.png';
 
     const setupDone = localStorage.getItem('quizCompleted') === 'true' ||
         localStorage.getItem('isAuthenticated') === 'true' ||
