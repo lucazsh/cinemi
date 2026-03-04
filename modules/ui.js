@@ -30,6 +30,18 @@ function showView(id) {
     
     updateNavActive(id);
 }
+const homeEl = document.getElementById('home');
+if (homeEl) {
+    homeEl.addEventListener('scroll', () => {
+        const nt = homeEl.querySelector('.nt');
+        if (!nt) return;
+        if (homeEl.scrollTop > 10) {
+            nt.classList.add('scrolled');
+        } else {
+            nt.classList.remove('scrolled');
+        }
+    }, { passive: true });
+}
 function updateNavActive(id) {
     const buttons = document.querySelectorAll('.navh button');
     buttons.forEach(btn => btn.classList.remove('active'));
@@ -224,3 +236,4 @@ function animate() {
 }
 
 animate();
+
