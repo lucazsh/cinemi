@@ -4,6 +4,8 @@
     <title>Cinemi</title>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f9faff" media="(prefers-color-scheme: light)">
@@ -1611,6 +1613,27 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+        }
+        @supports (padding: env(safe-area-inset-top)) {
+            @media all and (display-mode: standalone) {
+                body::before {
+                    content: '';
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: env(safe-area-inset-top);
+                    -webkit-backdrop-filter: blur(10px);
+                    backdrop-filter: blur(10px);
+                    z-index: 9999;
+                    pointer-events: none;
+                    -webkit-mask: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.7) 75%, transparent 100%);
+                    mask: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.7) 75%, transparent 100%);
+                }
+                .nt {
+                    padding-top: calc(20px + env(safe-area-inset-top));
+                }
+            }
         }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
