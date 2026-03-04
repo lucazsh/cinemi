@@ -261,9 +261,7 @@
             align-items: center;
             padding: 20px 3.4%;
             z-index: 2000;
-            background: rgba(24, 25, 30, 0.75);
-            -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
+            background-color: var(--bg-primary);
             position: sticky;
             overflow: visible;
             top: 0;
@@ -1936,6 +1934,8 @@
         <button class="next" onclick="nextQuestion()">Next</button>
     </div>
     <div id="home" class="view">
+        <div id="fmov-ambient-a"></div>
+        <div id="fmov-ambient-b"></div>
         <div class="nt">
             <span class="logo">Cinemi</span>
             <span style="display:flex; align-items:center; gap:8px;">
@@ -1954,8 +1954,6 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
-            <div id="fmov-ambient-a"></div>
-            <div id="fmov-ambient-b"></div>
             <div class="f-mov">
                 <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
                 <div class="fmov-over">
