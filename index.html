@@ -572,28 +572,27 @@
         .m1-rec {
             position: relative;
         }
-        #fmov-ambient {
+        #fmov-ambient-a, #fmov-ambient-b {
             position: absolute;
             top: 10px;
             left: 50%;
-            transform: translateX(-50%) translateZ(0);
             -webkit-transform: translateX(-50%) translateZ(0);
+            transform: translateX(-50%) translateZ(0);
             width: 88%;
             height: 480px;
             border-radius: 30px;
-            filter: blur(60px);
             -webkit-filter: blur(60px);
-            opacity: 0.4;
+            filter: blur(60px);
             background-size: cover;
             background-position: center;
-            background-color: transparent;
-            transition: background-image 0s, opacity 0.8s ease;
             pointer-events: none;
             z-index: 0;
-            will-change: transform;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
+            transition: opacity 1s ease;
         }
+        #fmov-ambient-a { opacity: 0.4; }
+        #fmov-ambient-b { opacity: 0; }
         .f-mov {
             position: relative;
             z-index: 1;
@@ -1953,7 +1952,8 @@
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Wrapped</button>
                 <button class="nt-rounded" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius:100px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1.5px solid rgba(255,255,255,0.08); margin-left: 8px;">Liked</button>
             </div>
-            <div id="fmov-ambient"></div>
+            <div id="fmov-ambient-a"></div>
+            <div id="fmov-ambient-b"></div>
             <div class="f-mov">
                 <img src="https://static.wikia.nocookie.net/11feca38-9b32-4728-897b-29434cb3b98d">
                 <div class="fmov-over">
