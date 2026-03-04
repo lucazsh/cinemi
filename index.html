@@ -1616,22 +1616,9 @@
         }
         @supports (padding: env(safe-area-inset-top)) {
             @media all and (display-mode: standalone) {
-                body::before {
-                    content: '';
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: env(safe-area-inset-top);
-                    -webkit-backdrop-filter: blur(10px);
-                    backdrop-filter: blur(10px);
-                    z-index: 9999;
-                    pointer-events: none;
-                    -webkit-mask: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.7) 75%, transparent 100%);
-                    mask: linear-gradient(to bottom, black 50%, rgba(0,0,0,0.7) 75%, transparent 100%);
-                }
                 .nt {
                     padding-top: calc(20px + env(safe-area-inset-top));
+                    margin-top: calc(-1 * env(safe-area-inset-top));
                 }
             }
         }
