@@ -68,38 +68,17 @@ async function loadFeaturedMovie() {
         
         let currentIndex = 0;
         let _ambientActive = 'a';
+        
         function updateAmbient(imgUrl) {
             const next = _ambientActive === 'a' ? 'b' : 'a';
-            const elNext = document.getElementById(`fmov-ambient-${next}`);
-            const elPrev = document.getElementById(`fmov-ambient-${_ambientActive}`);
+            const elNext = document.getElementById('fmov-ambient-' + next);
+            const elPrev = document.getElementById('fmov-ambient-' + _ambientActive);
             if (elNext) {
                 elNext.style.backgroundImage = `url('${imgUrl}')`;
-                elNext.style.opacity = '0.4';
+                requestAnimationFrame(() => { elNext.style.opacity = '0.6'; });
             }
-            if (elPrev) {
-                elPrev.style.opacity = '0';
-            }
+            if (elPrev) elPrev.style.opacity = '0';
             _ambientActive = next;
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                try {
-                    const c = document.createElement('canvas');
-                    c.width = 8; c.height = 8;
-                    const ctx = c.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 8, 8);
-                    const d = ctx.getImageData(0, 0, 8, 8).data;
-                    let r = 0, g = 0, b = 0;
-                    for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; }
-                    const n = d.length / 4;
-                    r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
-                    const overlay = document.getElementById('home-ambient-overlay');
-                    if (overlay) {
-                        overlay.style.background = `radial-gradient(ellipse at 50% 20%, rgba(${r},${g},${b},0.13) 0%, transparent 65%)`;
-                    }
-                } catch(e) {}
-            };
-            img.src = imgUrl;
         }
         function renderSlide(index) {
             const m = movies[index];
@@ -1148,6 +1127,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
