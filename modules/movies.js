@@ -72,7 +72,7 @@ async function loadFeaturedMovie() {
             if (!canvas) return;
             canvas.style.backgroundImage = `url('${imgUrl}')`;
             canvas.style.opacity = '0';
-            setTimeout(() => { canvas.style.opacity = '0.85'; }, 200);
+            setTimeout(() => { canvas.style.opacity = '0.4'; }, 200);
         }
         function renderSlide(index) {
             const m = movies[index];
@@ -1121,6 +1121,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
