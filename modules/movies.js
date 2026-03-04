@@ -83,7 +83,7 @@ async function loadFeaturedMovie() {
                 cb(`rgb(${Math.round(r/total)},${Math.round(g/total)},${Math.round(b/total)})`);
             };
             img.onerror = () => {};
-            img.src = src;
+            img.src = `https://corsproxy.io/?url=${encodeURIComponent(src)}`;
         }
         
         function renderSlide(index) {
@@ -1127,6 +1127,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
