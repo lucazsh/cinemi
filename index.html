@@ -259,12 +259,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 3.4%;
+            padding: 20px calc(3.4% + 20px);
+            margin: 0 -20px;
             z-index: 2000;
-            background-color: var(--bg-primary);
+            background-color: transparent;
             position: sticky;
             overflow: visible;
             top: 0;
+            transition: background-color 0.35s ease;
+        }
+        .nt.scrolled {
+            background-color: var(--bg-primary);
         }
         .logo {
             font-size: 26px;
