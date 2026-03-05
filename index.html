@@ -2522,7 +2522,14 @@
     <script src="/modules/swipify.js"></script>
     <script src="/modules/chats.js"></script>
     <script src="/modules/logo-sp.js"></script>
-    <script src="modules/notifications.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="modules/notifications.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/modules/sw.js', { scope: '/' })
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.error('SW register failed:', err));
+      }
+    </script>
 </body>
 </html>
