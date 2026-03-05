@@ -635,7 +635,6 @@ async function showDetails(item) {
         const navh = document.querySelector('.navh');
         if (navh) {
             navh.style.transition = 'none';
-            navh.style.bottom = 'calc(20px + env(safe-area-inset-bottom, 0px))';
             
             void navh.offsetHeight;
             
@@ -1134,6 +1133,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
