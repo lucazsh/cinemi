@@ -1,8 +1,8 @@
 const CACHE_NAME = "cinemi";
 const URLS_TO_CACHE = [
-  "/cinemi/index.html",
-  "/cinemi/icons/icon-192.png",
-  "/cinemi/icons/icon-512.png"
+  "/index.html",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
@@ -10,11 +10,16 @@ self.addEventListener("install", event => {
     const cache = await caches.open(CACHE_NAME);
     for (const url of URLS_TO_CACHE) {
       try {
-        const res = await fetch(url, {cache: "no-store"});
+        const res = await fetch(url, { cache: "no-store" });
         if (res.ok) await cache.put(url, res.clone());
       } catch (err) {}
     }
   })());
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", event => {
