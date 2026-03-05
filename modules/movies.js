@@ -631,31 +631,7 @@ async function showDetails(item) {
         }
         
         overlay.remove();
-
-        const navh = document.querySelector('.navh');
-        if (navh) {
-            navh.style.transition = 'none';
-            
-            void navh.offsetHeight;
-            
-            setTimeout(() => {
-                navh.style.transition = '';
-            }, 50);
-        }
-
-        window.visualViewport?.addEventListener('resize', function handler() {
-            const navh = document.querySelector('.navh');
-            if (navh) {
-                navh.style.bottom = 'calc(20px + env(safe-area-inset-bottom, 0px))';
-            }
-            window.visualViewport.removeEventListener('resize', handler);
-        }, { once: true });
-        const metaViewport = document.querySelector('meta[name="viewport"]');
-        const currentContent = metaViewport.content;
-        metaViewport.content = 'width=device-width, initial-scale=1.0001';
-        setTimeout(() => {
-            metaViewport.content = currentContent;
-        }, 10);
+        document.body.style.overflow = '';
     };
     overlay.querySelector('.modal-close-btn').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
@@ -1133,6 +1109,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
