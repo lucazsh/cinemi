@@ -5,17 +5,8 @@ const notifStyles = document.createElement('style');
 notifStyles.textContent = `
 #notif-bell-btn {
   position: relative;
-  background: none;
-  border: none;
   cursor: pointer;
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background 0.15s;
 }
-#notif-bell-btn:active { background: var(--iconbox-bg); }
 #notif-badge {
   position: absolute;
   top: 2px;
@@ -100,8 +91,6 @@ notifStyles.textContent = `
   cursor: pointer;
   transition: background 0.12s;
   border-left: 3px solid transparent;
-  text-decoration: none;
-  color: inherit;
 }
 .notif-item:active { background: var(--iconbox-bg); }
 .notif-item.unseen {
@@ -116,7 +105,8 @@ notifStyles.textContent = `
   flex-shrink: 0;
 }
 .notif-content { flex: 1; min-width: 0; }
-.notif-content strong { font-weight: 700; color: var(--text-primary); }
+.notif-content span { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+.notif-content strong { font-weight: 700; }
 .notif-content p {
   margin: 2px 0 0;
   font-size: 13px;
@@ -182,37 +172,7 @@ notifPanel.innerHTML = `
 `;
 document.body.appendChild(notifPanel);
 
-const bellBtn = document.createElement('button');
-bellBtn.id = 'notif-bell-btn';
-bellBtn.setAttribute('aria-label', 'Notifications');
-bellBtn.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px" fill="currentColor">
-    <path d="M160-200v-80h80v-280q0-83 50-149.5T420-790v-30q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v30q80 20 130 86.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/>
-  </svg>
-  <span id="notif-badge" style="display:none">0</span>
-`;
-
-function injectBellIntoHeader() {
-  const nts = document.querySelectorAll('.nt');
-  if (nts.length > 0) {
-    const nt = nts[0];
-    if (!nt.querySelector('#notif-bell-btn')) {
-      nt.style.position = 'relative';
-      bellBtn.style.position = 'absolute';
-      bellBtn.style.right = '14px';
-      bellBtn.style.top = '50%';
-      bellBtn.style.transform = 'translateY(-50%)';
-      bellBtn.style.color = 'var(--text-primary)';
-      nt.appendChild(bellBtn);
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(injectBellIntoHeader, 300);
-});
-
-bellBtn.addEventListener('click', openNotifPanel);
+document.getElementById('notif-bell-btn').addEventListener('click', openNotifPanel);
 notifPanelBackdrop.addEventListener('click', closeNotifPanel);
 document.getElementById('notif-close-btn').addEventListener('click', closeNotifPanel);
 
@@ -257,25 +217,24 @@ function notifTypeIcon(type) {
 
 async function loadNotifications() {
   const list = document.getElementById('notif-list');
-  list.innerHTML = `<div class="notif-empty"><svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="currentColor" style="opacity:.3"><path d="M160-200v-80h80v-280q0-83 50-149.5T420-790v-30q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v30q80 20 130 86.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>Loading...</div>`;
+  list.innerHTML = `<div class="notif-empty"><span>Loading...</span></div>`;
 
   try {
     const res = await fetchWithAuth(`${baseUrl}/api/notifications`);
     const notifs = await res.json();
 
     if (!notifs.length) {
-      list.innerHTML = `<div class="notif-empty"><svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="currentColor" style="opacity:.25"><path d="M160-200v-80h80v-280q0-83 50-149.5T420-790v-30q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v30q80 20 130 86.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg><span>No notifications yet</span></div>`;
+      list.innerHTML = `<div class="notif-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="currentColor" style="opacity:.25"><path d="M160-200v-80h80v-280q0-83 50-149.5T420-790v-30q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v30q80 20 130 86.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>
+        <span>No notifications yet</span>
+      </div>`;
       return;
     }
 
-    const today = [];
-    const earlier = [];
-    const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-
-    notifs.forEach(n => {
-      if (new Date(n.createdAt) >= todayStart) today.push(n);
-      else earlier.push(n);
-    });
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const today = notifs.filter(n => new Date(n.createdAt) >= todayStart);
+    const earlier = notifs.filter(n => new Date(n.createdAt) < todayStart);
 
     let html = '';
     if (today.length) {
@@ -289,7 +248,7 @@ async function loadNotifications() {
 
     list.innerHTML = html;
 
-    list.querySelectorAll('.notif-item[data-type]').forEach(el => {
+    list.querySelectorAll('.notif-item').forEach(el => {
       el.addEventListener('click', () => handleNotifClick(el.dataset.type, el.dataset.ref));
     });
   } catch (e) {
@@ -316,9 +275,9 @@ function renderNotif(n) {
 
 function handleNotifClick(type, refId) {
   closeNotifPanel();
-  if (type === 'follow') { showView('profile'); }
-  else if (type === 'reply') { showView('pos-t'); }
-  else if (type === 'message') { showView('chats'); }
+  if (type === 'follow') showView('profile');
+  else if (type === 'reply') showView('pos-t');
+  else if (type === 'message') showView('chats');
 }
 
 async function markAllSeen() {
@@ -395,8 +354,6 @@ navigator.serviceWorker?.addEventListener('message', event => {
 window.addEventListener('load', async () => {
   const isAuth = localStorage.getItem('isAuthenticated') === 'true';
   if (!isAuth) return;
-
-  setTimeout(injectBellIntoHeader, 500);
   await fetchUnseenCount();
   setInterval(fetchUnseenCount, 30000);
   setTimeout(initPushNotifications, 2000);
