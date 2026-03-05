@@ -331,8 +331,9 @@ async function initPushNotifications() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subscription: sub })
     });
+    console.log('Push subscribed OK');
   } catch (e) {
-    console.log('Push init error:', e);
+    console.error('Push init error:', e);
   }
 }
 
