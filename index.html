@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html class="inverted">
 <head>
@@ -81,7 +82,9 @@
         --safe-area-top: env(safe-area-inset-top);
         --sub-home: #00000086;
         }
-
+        html {
+            height: calc(100vh);
+        }
         @media (prefers-color-scheme: dark) {
             :root:not(.light-mode) {
                 --bg-primary: #0a0a0b;
@@ -176,7 +179,7 @@
         }
         .navh {
             position: fixed;
-            bottom: calc(20px + var(--safe-area-bottom));
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             border-radius: 20px;
