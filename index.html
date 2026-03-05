@@ -264,13 +264,17 @@
             padding: 20px calc(3.4% + 20px);
             margin: 0 -20px;
             z-index: 2000;
-            background-color: transparent;
+            background-color: var(--bg-primary);
             position: sticky;
             overflow: visible;
-            top: 0;
+            top: 0;;
+        }
+        #home .nt {
+            background-color: transparent;
             transition: background-color 0.35s ease;
         }
-        .nt.scrolled {
+        
+        #home .nt.scrolled {
             background-color: var(--bg-primary);
         }
         .logo {
@@ -581,7 +585,7 @@
         }
         #fmov-ambient-a, #fmov-ambient-b {
             position: absolute;
-            top: 16px;
+            top: 26px;
             left: 50%;
             -webkit-transform: translateX(-50%) translateZ(0);
             transform: translateX(-50%) translateZ(0);
@@ -598,7 +602,7 @@
             backface-visibility: hidden;
             transition: opacity 1s ease;
         }
-        #fmov-ambient-a { opacity: 0.25; }
+        #fmov-ambient-a { opacity: 0.2; }
         #fmov-ambient-b { opacity: 0; }
         .f-mov {
             position: relative;
