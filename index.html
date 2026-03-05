@@ -3,7 +3,7 @@
 <head>
     <title>Cinemi</title>
     <meta charset='utf-8'>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -78,6 +78,7 @@
         --card-active: white;
         --cancel: #18191ec2;
         --safe-area-bottom: env(safe-area-inset-bottom);
+        --safe-area-top: env(safe-area-inset-top);
         --sub-home: #00000086;
         }
 
@@ -262,6 +263,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px calc(3.4% + 20px);
+            padding-top: calc(20px + env(safe-area-inset-top));
             margin: 0 -20px;
             z-index: 2000;
             background-color: var(--bg-primary);
