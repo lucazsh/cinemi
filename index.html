@@ -10,6 +10,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" id="theme-color-dark">
     <meta name="theme-color" content="#f9faff" media="(prefers-color-scheme: light)" id="theme-color-light">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .catch(err => console.error('SW failed:', err));
+      }
+    </script>
     <style>
         html {
             touch-action: manipulation;
@@ -2524,12 +2530,5 @@
     <script src="/modules/logo-sp.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="modules/notifications.js"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/modules/sw.js', { scope: '/' })
-          .then(reg => console.log('SW registered:', reg.scope))
-          .catch(err => console.error('SW register failed:', err));
-      }
-    </script>
 </body>
 </html>
