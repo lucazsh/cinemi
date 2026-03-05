@@ -67,6 +67,23 @@ async function loadFeaturedMovie() {
         featuredGenres = featuredMovie.genre_ids || [];
         
         let currentIndex = 0;
+        function uptheme(imageUrl) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = imageUrl;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 10;
+                canvas.height = 10;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 10, 10);
+                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                const darken = (v) => Math.floor(v * 0.4);
+                const color = `rgb(${darken(r)}, ${darken(g)}, ${darken(b)})`;
+                document.getElementById('theme-color-dark')?.setAttribute('content', color);
+                document.getElementById('theme-color-light')?.setAttribute('content', color);
+            };
+        }
         function renderSlide(index) {
             const m = movies[index];
             const posterUrl = `${IMG_W500}${m.poster_path}`;
@@ -102,6 +119,7 @@ async function loadFeaturedMovie() {
                     const next = activeIsA ? ambientB : ambientA;
                     const prev = activeIsA ? ambientA : ambientB;
                     next.style.backgroundImage = `url(${posterUrl})`;
+                    uptheme(posterUrl);
                     requestAnimationFrame(() => {
                         next.style.opacity = '0.4';
                         prev.style.opacity = '0';
@@ -1116,6 +1134,7 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
 
 
