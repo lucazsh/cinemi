@@ -6,6 +6,7 @@
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Orbitron:wght@700&family=Cormorant:ital,wght@1,700&family=Special+Elite&display=swap" rel="stylesheet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" id="theme-color-dark">
@@ -1629,6 +1630,196 @@
             justify-content: center;
             flex-direction: column;
         }
+        .profile-tabs {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-toggle {
+            display: flex;
+            background: var(--iconbox-bg);
+            border-radius: 50px;
+            padding: 4px;
+            margin: 20px auto 0;
+            width: fit-content;
+            border: 1px solid var(--border-dark-alpha-2);
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            border-radius: 50px;
+            padding: 8px 28px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 2px 10px rgba(0,0,0,.3);
+        }
+
+        .sp-tab-panel {
+            padding: 0 0 30px;
+        }
+
+        .sp-section {
+            margin-top: 28px;
+        }
+
+        .sp-title-wrap {
+            padding: 0 20px;
+            margin-bottom: -4px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .sp-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -2px;
+            color: var(--text-primary);
+            display: block;
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 38%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 38%, transparent 100%);
+            padding-bottom: 10px;
+        }
+
+        .sp-mov-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 0 20px 4px;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sp-mov-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sp-mov-row img {
+            width: 36%;
+            flex-shrink: 0;
+            border-radius: 13px;
+            aspect-ratio: 2/2.5;
+            object-fit: cover;
+            border: 1px solid var(--border-dark-alpha-2);
+            cursor: pointer;
+        }
+
+        .sp-genres-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 0 20px;
+        }
+
+        .sp-genre-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-dark-alpha-2);
+        }
+
+        .sp-genre-row:last-child {
+            border-bottom: none;
+        }
+
+        .sp-genre-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            min-width: 76px;
+            flex-shrink: 0;
+        }
+
+        .sp-genre-name.scifi {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sp-genre-name.drama {
+            font-family: 'Cormorant', serif;
+            font-size: 24px;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        .sp-genre-name.thriller {
+            font-family: 'Special Elite', cursive;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: .5px;
+        }
+
+        .sp-genre-row .sp-mov-row {
+            padding: 0;
+            flex: 1;
+        }
+
+        .sp-genre-row .sp-mov-row img {
+            width: 52px;
+            border-radius: 8px;
+        }
+
+        .sp-quote-wrap {
+            margin: 0 20px;
+            background: var(--iconbox-bg);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid var(--border-dark-alpha-2);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .sp-quote-wrap::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 120px;
+            font-weight: 900;
+            color: rgba(255,255,255,.04);
+            line-height: 1;
+        }
+
+        .sp-quote-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .sp-quote-source {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            display: block;
+            font-style: italic;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -2149,55 +2340,62 @@
             <span class="p-tag">@user_tag</span>
             <input type="file" id="img_input" accept="image/*" style="display: none;">
         </div>
-        <section class="grid">
-            <button class="card" onclick="openPanel('friends')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Friends</div>
-                <div class="subtitle" id="friendsCount">0 friends</div>
-            </div>
-            </button>
+    <div class="profile-tabs">
+                <div class="tab-toggle">
+                    <button class="tab-btn active" onclick="switchProfileTab('space', this)">SPACE</button>
+                    <button class="tab-btn" onclick="switchProfileTab('other', this)">OTHER</button>
+                </div>
 
-            <button class="card" onclick="openPanel('favorites')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Favorites</div>
-                <div class="subtitle">Collection</div>
-            </div>
-            </button>
+                <div class="sp-tab-panel" id="profile-tab-space">
+                    <div class="sp-section">
+                        <div class="sp-title-wrap"><span class="sp-title">My Favs</span></div>
+                        <div class="sp-mov-row" id="space-favs-row">
+                            <div style="padding:20px; color:var(--text-secondary); font-size:13px;">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="sp-section">
+                        <div class="sp-title-wrap"><span class="sp-title">My Genres</span></div>
+                        <div class="sp-genres-list" id="space-genres-list"></div>
+                    </div>
+                    <div class="sp-section">
+                        <div class="sp-title-wrap"><span class="sp-title">Quote</span></div>
+                        <div class="sp-quote-wrap">
+                            <p class="sp-quote-text" id="space-quote-text">"Get busy living, or get busy dying."</p>
+                            <span class="sp-quote-source" id="space-quote-source">— The Shawshank Redemption, 1994</span>
+                        </div>
+                    </div>
+                </div>
 
-            <button class="card" onclick="openPanel('stats')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M101-88q-22 0-37.5-15.5T48-141v-438q0-22 15.5-37.5T101-632h140q22 0 37.5 15.5T294-579v438q0 22-15.5 37.5T241-88H101Zm309 0q-22 0-37.5-15.5T357-141v-678q0-22 15.5-37.5T410-872h140q22 0 37.5 15.5T603-819v678q0 22-15.5 37.5T550-88H410Zm309 0q-22 0-37.5-15.5T666-141v-358q0-22 15.5-37.5T719-552h140q22 0 37.5 15.5T912-499v358q0 22-15.5 37.5T859-88H719Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Stats</div>
-                <div class="subtitle">Activity</div>
+                <div class="sp-tab-panel" id="profile-tab-other" style="display:none;">
+                    <section class="grid">
+                        <button class="card" onclick="openPanel('friends')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
+                        <div class="meta"><div class="title">Friends</div><div class="subtitle" id="friendsCount">0 friends</div></div>
+                        </button>
+                        <button class="card" onclick="openPanel('favorites')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
+                        <div class="meta"><div class="title">Favorites</div><div class="subtitle">Collection</div></div>
+                        </button>
+                        <button class="card" onclick="openPanel('stats')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M101-88q-22 0-37.5-15.5T48-141v-438q0-22 15.5-37.5T101-632h140q22 0 37.5 15.5T294-579v438q0 22-15.5 37.5T241-88H101Zm309 0q-22 0-37.5-15.5T357-141v-678q0-22 15.5-37.5T410-872h140q22 0 37.5 15.5T603-819v678q0 22-15.5 37.5T550-88H410Zm309 0q-22 0-37.5-15.5T666-141v-358q0-22 15.5-37.5T719-552h140q22 0 37.5 15.5T912-499v358q0 22-15.5 37.5T859-88H719Z"/></svg></div>
+                        <div class="meta"><div class="title">Stats</div><div class="subtitle">Activity</div></div>
+                        </button>
+                        <button class="card" onclick="openPanel('watchlist')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h400v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Z"/></svg></div>
+                        <div class="meta"><div class="title">Watch List</div><div class="subtitle">Movies to watch</div></div>
+                        </button>
+                        <button class="card wide" onclick="openPanel('swipe')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M468-603h246q22 0 37.5-15.5T767-656q0-22-15.5-37.5T714-709H467q-22 0-37 15.5T415-656q0 22 15 37.5t38 15.5Zm0 146h124q22 0 37.5-15.5T645-510q0-22-15.5-37.5T592-563H467q-22 0-37 15.5T415-510q0 22 15 37.5t38 15.5ZM219-88q-44 5-78-21t-40-70L52-548q-6-43 20-77t69-39v237q0 88 62 150t150 62h439q-2 23-18.5 42T731-151L219-88Zm109-207q-44 0-75-31t-31-75v-365q0-44 31-75t75-31h526q44 0 75 31t31 75v365q0 44-31 75t-75 31H328Z"/></svg></div>
+                        <div class="meta"><div class="title">Swipify</div><div class="subtitle">Discover movies by swiping</div></div>
+                        </button>
+                        <button class="card wide" onclick="openPanel('chat')">
+                        <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m240-240-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Zm120-80h240q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480H280q-17 0-28.5 11.5T240-440q0 17 11.5 28.5T280-400Zm0-120h400q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H280q-17 0-28.5 11.5T240-560q0 17 11.5 28.5T280-520Zm0-120h400q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H280q-17 0-28.5 11.5T240-680q0 17 11.5 28.5T280-640Z"/></svg></div>
+                        <div class="meta"><div class="title">Messages</div><div class="subtitle">Chat with your friends</div></div>
+                        </button>
+                    </section>
+                </div>
             </div>
-            </button>
-
-            <button class="card" onclick="openPanel('watchlist')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h400v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Watch List</div>
-                <div class="subtitle">Movies to watch</div>
-            </div>
-            </button>
-
-            <button class="card wide" onclick="openPanel('swipe')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M468-603h246q22 0 37.5-15.5T767-656q0-22-15.5-37.5T714-709H467q-22 0-37 15.5T415-656q0 22 15 37.5t38 15.5Zm0 146h124q22 0 37.5-15.5T645-510q0-22-15.5-37.5T592-563H467q-22 0-37 15.5T415-510q0 22 15 37.5t38 15.5ZM219-88q-44 5-78-21t-40-70L52-548q-6-43 20-77t69-39v237q0 88 62 150t150 62h439q-2 23-18.5 42T731-151L219-88Zm109-207q-44 0-75-31t-31-75v-365q0-44 31-75t75-31h526q44 0 75 31t31 75v365q0 44-31 75t-75 31H328Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Swipify</div>
-                <div class="subtitle">Discover movies by swiping</div>
-            </div>
-            </button>
-
-            <button class="card wide" onclick="openPanel('chat')">
-            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m240-240-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Zm120-80h240q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480H280q-17 0-28.5 11.5T240-440q0 17 11.5 28.5T280-400Zm0-120h400q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H280q-17 0-28.5 11.5T240-560q0 17 11.5 28.5T280-520Zm0-120h400q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H280q-17 0-28.5 11.5T240-680q0 17 11.5 28.5T280-640Z"/></svg></div>
-            <div class="meta">
-                <div class="title">Messages</div>
-                <div class="subtitle">Chat with your friends</div>
-            </div>
-            </button>
-        </section>
+</div>
 </div>
     </div>
     <div id="settings" class="view">
