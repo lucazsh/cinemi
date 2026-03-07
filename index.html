@@ -4033,28 +4033,21 @@
             const titleHTML = `<div class="sp-title-wrap" style="text-align:${align}"><span class="sp-title" style="color:${titleColor};transform-origin:${originMap[align]}">${sec.label}</span></div>`;
 
             if (sec.id === "favs") {
-                const cached = window._spaceImgCache.favs || '';
-                const inner = cached || '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Loading...</div>';
-                if (state.layout === "grid") return titleHTML + `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;" id="space-favs-row">${inner}</div>`;
-                if (state.layout === "large") return titleHTML + `<div style="padding:0 14px 10px;" id="space-favs-row">${inner}</div>`;
-                return titleHTML + `<div class="sp-mov-row" id="space-favs-row">${inner}</div>`;
+                if (state.layout === "grid") return titleHTML + `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;" id="space-favs-row"></div>`;
+                if (state.layout === "large") return titleHTML + `<div style="padding:0 14px 10px;" id="space-favs-row"></div>`;
+                return titleHTML + `<div class="sp-mov-row" id="space-favs-row"></div>`;
             }
 
             if (sec.id === "genres") {
-                const g878 = window._spaceImgCache['genre-878'] || '';
-                const g18 = window._spaceImgCache['genre-18'] || '';
-                const g53 = window._spaceImgCache['genre-53'] || '';
                 return titleHTML + `<div class="sp-genres-list" id="space-genres-list">
-            <div class="sp-genre-row"><span class="sp-genre-name scifi">Sci-Fi</span><div class="sp-mov-row" id="space-genre-878">${g878}</div></div>
-            <div class="sp-genre-row"><span class="sp-genre-name drama">Drama</span><div class="sp-mov-row" id="space-genre-18">${g18}</div></div>
-            <div class="sp-genre-row"><span class="sp-genre-name thriller">Thriller</span><div class="sp-mov-row" id="space-genre-53">${g53}</div></div>
-        </div>`;
+                    <div class="sp-genre-row"><span class="sp-genre-name scifi">Sci-Fi</span><div class="sp-mov-row" id="space-genre-878"></div></div>
+                    <div class="sp-genre-row"><span class="sp-genre-name drama">Drama</span><div class="sp-mov-row" id="space-genre-18"></div></div>
+                    <div class="sp-genre-row"><span class="sp-genre-name thriller">Thriller</span><div class="sp-mov-row" id="space-genre-53"></div></div>
+                </div>`;
             }
 
             if (sec.id === "watchlistprev") {
-                const cached = window._spaceImgCache.watchlist || '';
-                const inner = cached || '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Loading...</div>';
-                return titleHTML + `<div class="sp-mov-row" id="space-watchlist-row">${inner}</div>`;
+                return titleHTML + `<div class="sp-mov-row" id="space-watchlist-row"></div>`;
             }
 
             if (sec.id === "quote") {
