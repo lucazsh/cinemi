@@ -429,70 +429,74 @@ function switchProfileTab(tab, btn) {
 async function loadSpaceTab() {
     const IMG = 'https://image.tmdb.org/t/p/w300';
 
-    const savedQuote = localStorage.getItem('space_quote') || '"Get busy living, or get busy dying."';
-    const savedSource = localStorage.getItem('space_quote_source') || '— The Shawshank Redemption, 1994';
-    document.getElementById('space-quote-text').textContent = savedQuote;
-    document.getElementById('space-quote-source').textContent = savedSource;
+    const savedQuote = localStorage.getItem('space_quote') || 'Get busy living, or get busy dying.';
+    const savedSource = localStorage.getItem('space_quote_source') || 'The Shawshank Redemption, 1994';
+    state.quoteText = savedQuote;
+    state.quoteSource = savedSource;
+    renderSpace();
 
-    document.querySelector('.sp-quote-wrap').onclick = () => {
-        const q = prompt('Quote:', localStorage.getItem('space_quote') || '');
-        const s = prompt('Source:', localStorage.getItem('space_quote_source') || '');
-        if (q) { localStorage.setItem('space_quote', q); document.getElementById('space-quote-text').textContent = q; }
-        if (s) { localStorage.setItem('space_quote_source', s); document.getElementById('space-quote-source').textContent = s; }
-    };
-
-    try {
-        const favs = await loadFavorites();
-        const row = document.getElementById('space-favs-row');
-        if (!favs || favs.length === 0) {
-            row.innerHTML = '<div style="padding:20px; color:var(--text-secondary); font-size:13px;">No favorites yet.</div>';
-        } else {
-            row.innerHTML = favs.map(m => `<img src="${IMG}${m.posterPath}" title="${escapeHtml(m.title)}">`).join('');
+    const favsRow = document.getElementById('space-favs-row');
+    if (favsRow) {
+        try {
+            const favs = await loadFavorites();
+            if (!favs || favs.length === 0) {
+                favsRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">No favorites yet.</div>';
+            } else {
+                if (state.layout === 'grid') {
+                    favsRow.innerHTML = favs.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" style="width:100%;border-radius:14px;aspect-ratio:2/2.8;object-fit:cover;border:1px solid var(--border-dark-alpha-2);" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
+                } else if (state.layout === 'large') {
+                    favsRow.innerHTML = favs.slice(0, 1).map(m => `<img src="${IMG}${m.posterPath}" style="width:100%;border-radius:18px;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--border-dark-alpha-2);" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
+                } else {
+                    favsRow.innerHTML = favs.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
+                }
+            }
+        } catch(e) {
+            favsRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Could not load.</div>';
         }
-    } catch(e) {}
+    }
 
-    const genres = [
-        {
-            name: 'Sci-Fi',
-            cls: 'scifi',
-            movies: [
-                '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-                '/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg',
-                '/qom1SZSENdmHFNZBXbtLAGselSB.jpg'
-            ]
-        },
-        {
-            name: 'Drama',
-            cls: 'drama',
-            movies: [
-                '/3bhkrj58Vtu7enYsLe1rjPU8iSA.jpg',
-                '/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg',
-                '/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg'
-            ]
-        },
-        {
-            name: 'Thriller',
-            cls: 'thriller',
-            movies: [
-                '/iLIFqHqWiSqFki6OqMdiyQZiiTk.jpg',
-                '/6yoghtyTpznpBik8EngEmJskVUO.jpg',
-                '/ynMR3j5hfZQrPqNYHAXSoEkHFuY.jpg'
-            ]
+    const watchlistRow = document.getElementById('space-watchlist-row');
+    if (watchlistRow) {
+        try {
+            const wl = await loadWatchlist();
+            if (!wl || wl.length === 0) {
+                watchlistRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Watchlist is empty.</div>';
+            } else {
+                watchlistRow.innerHTML = wl.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
+            }
+        } catch(e) {
+            watchlistRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Could not load.</div>';
         }
+    }
+
+    const genreDefs = [
+        { id: 878, cls: 'scifi' },
+        { id: 18, cls: 'drama' },
+        { id: 53, cls: 'thriller' }
     ];
 
-    document.getElementById('space-genres-list').innerHTML = genres.map(g => `
-        <div class="sp-genre-row">
-            <span class="sp-genre-name ${g.cls}">${g.name}</span>
-            <div class="sp-mov-row">
-                ${g.movies.map(p => `<img src="${IMG}${p}">`).join('')}
-            </div>
-        </div>
-    `).join('');
+    genreDefs.forEach(async (g) => {
+        const row = document.getElementById(`space-genre-${g.id}`);
+        if (!row) return;
+        try {
+            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${g.id}`, { headers: ngrokHeaders });
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+                row.innerHTML = data.results.slice(0, 5).map(m =>
+                    `<img src="${IMG}${m.poster_path}" onclick="showMovieDetails('${m.id}')" onerror="this.style.display='none'">`
+                ).join('');
+            }
+        } catch(e) {}
+    });
 }
 
 const _origShowView = window.showView;
 window.showView = function(view) {
     if (_origShowView) _origShowView(view);
+    const fab = document.getElementById('sp-fab');
+    if (fab) {
+        if (view === 'profile') fab.classList.remove('hidden');
+        else fab.classList.add('hidden');
+    }
     if (view === 'profile') loadSpaceTab();
 };
