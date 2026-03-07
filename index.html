@@ -3245,7 +3245,7 @@
             </div>
         </div>
     </div>
-    <div id="profile" class="view active">
+    <div id="profile" class="view">
         <div class="nt">
             <button>
                 <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px">
@@ -4003,7 +4003,7 @@
                 { id: "quote", label: "Quote", visible: true, core: true, titleColor: "auto", customColor: "#ff3b30", titleAlign: "left" },
             ]
         };
-
+        window._mv = { favs:[], watchlist:[], 'genre-878':[], 'genre-18':[], 'genre-53':[] };
         window._spaceImgCache = {};
 
         function getColor(c, custom) {
@@ -4011,7 +4011,6 @@
             if (c === "custom") return custom;
             return c;
         }
-
         function renderSpace() {
             const container = document.getElementById("space-sections-container");
             container.innerHTML = "";
@@ -4025,8 +4024,32 @@
                 el.innerHTML = getSectionHTML(sec, titleC);
                 container.appendChild(el);
             });
+            _restoreMv();
         }
 
+        function _restoreMv() {
+            const IMG = 'https://image.tmdb.org/t/p/w300';
+            const map = {
+                'space-favs-row': window._mv.favs,
+                'space-watchlist-row': window._mv.watchlist,
+                'space-genre-878': window._mv['genre-878'],
+                'space-genre-18': window._mv['genre-18'],
+                'space-genre-53': window._mv['genre-53']
+            };
+            Object.entries(map).forEach(([rowId, items]) => {
+                if (!items || !items.length) return;
+                const row = document.getElementById(rowId);
+                if (!row) return;
+                row.innerHTML = '';
+                items.forEach(m => {
+                    const img = document.createElement('img');
+                    img.src = `${IMG}${m.posterPath}`;
+                    img.onclick = () => showMovieDetails(String(m.id));
+                    img.onerror = function() { this.style.display = 'none'; };
+                    row.appendChild(img);
+                });
+            });
+        }
         function getSectionHTML(sec, titleColor) {
             const align = sec.titleAlign || "left";
             const originMap = { left: "top left", center: "top center", right: "top right" };
