@@ -435,58 +435,98 @@ async function loadSpaceTab() {
     state.quoteSource = savedSource;
     renderSpace();
 
-    const favsRow = document.getElementById('space-favs-row');
-    if (favsRow) {
-        try {
-            const favs = await loadFavorites();
-            if (!favs || favs.length === 0) {
-                favsRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">No favorites yet.</div>';
-            } else {
-                if (state.layout === 'grid') {
-                    favsRow.innerHTML = favs.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" style="width:100%;border-radius:14px;aspect-ratio:2/2.8;object-fit:cover;border:1px solid var(--border-dark-alpha-2);" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
-                } else if (state.layout === 'large') {
-                    favsRow.innerHTML = favs.slice(0, 1).map(m => `<img src="${IMG}${m.posterPath}" style="width:100%;border-radius:18px;aspect-ratio:16/9;object-fit:cover;border:1px solid var(--border-dark-alpha-2);" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
-                } else {
-                    favsRow.innerHTML = favs.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
-                }
-            }
-        } catch(e) {
-            favsRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Could not load.</div>';
-        }
+    function animateImgs(container, imgs, isNew) {
+        if (!container) return;
+        imgs.forEach((img, i) => {
+            img.style.opacity = '0';
+            img.style.transform = isNew ? 'translateY(10px) scale(0.96)' : 'translateY(0) scale(1)';
+            img.style.transition = `opacity 0.35s ease ${i * 0.06}s, transform 0.35s ease ${i * 0.06}s`;
+            container.appendChild(img);
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                img.style.opacity = '1';
+                img.style.transform = 'translateY(0) scale(1)';
+            }));
+        });
     }
 
-    const watchlistRow = document.getElementById('space-watchlist-row');
-    if (watchlistRow) {
-        try {
-            const wl = await loadWatchlist();
-            if (!wl || wl.length === 0) {
-                watchlistRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Watchlist is empty.</div>';
-            } else {
-                watchlistRow.innerHTML = wl.slice(0, 6).map(m => `<img src="${IMG}${m.posterPath}" onclick="showMovieDetails('${m.movieId}')" onerror="this.style.display='none'">`).join('');
-            }
-        } catch(e) {
-            watchlistRow.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Could not load.</div>';
+    async function loadSection(key, fetchFn, rowId, buildImg) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+
+        const cacheKey = 'space_ids_' + key;
+        const cachedIds = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+
+        let items = [];
+        try { items = await fetchFn(); } catch(e) { return; }
+        if (!items || items.length === 0) {
+            row.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Nothing here yet.</div>';
+            window._spaceImgCache[key] = '';
+            localStorage.setItem(cacheKey, '[]');
+            return;
         }
+
+        const newIds = items.map(m => m.movieId || m.id);
+        const freshIds = newIds.filter(id => !cachedIds.includes(String(id)));
+
+        if (cachedIds.length === 0 || (row.children.length <= 1 && !row.querySelector('img'))) {
+            row.innerHTML = '';
+            const imgs = items.slice(0, 6).map(m => buildImg(m, true));
+            animateImgs(row, imgs, true);
+        } else {
+            items.slice(0, 6).forEach((m, i) => {
+                const existing = row.querySelectorAll('img')[i];
+                if (!existing) {
+                    const img = buildImg(m, false);
+                    img.style.opacity = '0';
+                    img.style.transform = 'scale(0.9)';
+                    img.style.transition = `opacity 0.4s ease ${i * 0.05}s, transform 0.4s ease ${i * 0.05}s`;
+                    row.appendChild(img);
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        img.style.opacity = '1';
+                        img.style.transform = 'scale(1)';
+                    }));
+                } else if (freshIds.includes(String(m.movieId || m.id))) {
+                    const img = buildImg(m, false);
+                    img.style.opacity = '0';
+                    img.style.transition = 'opacity 0.5s ease';
+                    existing.replaceWith(img);
+                    requestAnimationFrame(() => requestAnimationFrame(() => { img.style.opacity = '1'; }));
+                }
+            });
+        }
+
+        window._spaceImgCache[key] = row.innerHTML;
+        localStorage.setItem(cacheKey, JSON.stringify(newIds.map(String)));
     }
+
+    function makeMovieImg(m, posterPath, id, isNew) {
+        const img = document.createElement('img');
+        img.src = `${IMG}${posterPath}`;
+        img.onclick = () => showMovieDetails(String(id));
+        img.onerror = function() { this.style.display = 'none'; };
+        return img;
+    }
+
+    loadSection('favs', loadFavorites, 'space-favs-row', (m) => makeMovieImg(m, m.posterPath, m.movieId));
+    loadSection('watchlist', loadWatchlist, 'space-watchlist-row', (m) => makeMovieImg(m, m.posterPath, m.movieId));
 
     const genreDefs = [
-        { id: 878, cls: 'scifi' },
-        { id: 18, cls: 'drama' },
-        { id: 53, cls: 'thriller' }
+        { id: 878, cacheKey: 'genre-878' },
+        { id: 18,  cacheKey: 'genre-18'  },
+        { id: 53,  cacheKey: 'genre-53'  }
     ];
 
-    genreDefs.forEach(async (g) => {
-        const row = document.getElementById(`space-genre-${g.id}`);
-        if (!row) return;
-        try {
-            const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${g.id}`, { headers: ngrokHeaders });
-            const data = await res.json();
-            if (data.results && data.results.length > 0) {
-                row.innerHTML = data.results.slice(0, 5).map(m =>
-                    `<img src="${IMG}${m.poster_path}" onclick="showMovieDetails('${m.id}')" onerror="this.style.display='none'">`
-                ).join('');
-            }
-        } catch(e) {}
+    genreDefs.forEach(g => {
+        loadSection(
+            g.cacheKey,
+            async () => {
+                const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${g.id}`, { headers: ngrokHeaders });
+                const data = await res.json();
+                return (data.results || []).slice(0, 6).map(m => ({ movieId: m.id, posterPath: m.poster_path, id: m.id }));
+            },
+            `space-genre-${g.id}`,
+            (m) => makeMovieImg(m, m.posterPath, m.id || m.movieId)
+        );
     });
 }
 
