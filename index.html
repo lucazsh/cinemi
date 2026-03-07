@@ -2676,6 +2676,24 @@
             opacity: 0;
             pointer-events: none;
         }
+        #profile-gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 320px;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%);
+        }
+        #profile .nt {
+            background: transparent;
+            z-index: 2;
+        }
+        #profile .p-user {
+            position: relative;
+            z-index: 1;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -2683,7 +2701,7 @@
 <body>
     <div id="logo-sp" class="view active"
         style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--bg-primary); padding:0; margin:0; position:fixed; inset:0; z-index:2000;">
-        <img id="sp-logo" src="" style="width:300px; height:auto;">
+        <img class="p-img" id="profileImg" crossorigin="anonymous" src="https://i.imgflip.com/1ickup.jpg">
         <!-- <span style="position:fixed; bottom:42px; font-size:13px; color:var(--text-primary); letter-spacing:0.12em; font-weight:500; opacity:0.45; text-transform:lowercase;">from lucazsh</span> -->
     </div>
     <div id="login-screen"
@@ -3246,6 +3264,7 @@
         </div>
     </div>
     <div id="profile" class="view">
+        <div id="profile-gradient-bg"></div>
         <div class="nt">
             <button>
                 <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px">
