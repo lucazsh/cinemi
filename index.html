@@ -4034,7 +4034,7 @@
                 const isMainRow = rowId === 'space-favs-row' || rowId === 'space-watchlist-row';
                 if (!isMainRow) return '';
                 if (state.layout === 'grid') return 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;';
-                if (state.layout === 'large') return 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:12px;display:block;margin-bottom:10px;';
+                if (state.layout === 'large') return 'width:100%;height:160px;object-fit:cover;border-radius:16px;display:block;margin-bottom:10px;';
                 return '';
             }
 
@@ -4094,7 +4094,7 @@
 
             if (sec.id === "favs") {
                 if (state.layout === "grid") return titleHTML + `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;" id="space-favs-row"></div>`;
-                if (state.layout === "large") return titleHTML + `<div style="padding:0 14px 10px;" id="space-favs-row"></div>`;
+                if (state.layout === 'large') return titleHTML + `<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:10px;" id="space-favs-row"></div>`;
                 return titleHTML + `<div class="sp-mov-row" id="space-favs-row"></div>`;
             }
 
