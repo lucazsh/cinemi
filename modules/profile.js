@@ -428,128 +428,64 @@ function switchProfileTab(tab, btn) {
 
 async function loadSpaceTab() {
     const IMG = 'https://image.tmdb.org/t/p/w300';
-
     const savedQuote = localStorage.getItem('space_quote') || 'Get busy living, or get busy dying.';
     const savedSource = localStorage.getItem('space_quote_source') || 'The Shawshank Redemption, 1994';
     state.quoteText = savedQuote;
     state.quoteSource = savedSource;
-
-    function buildImg(posterPath, id) {
-        const img = document.createElement('img');
-        img.src = `${IMG}${posterPath}`;
-        img.style.opacity = '1';
-        img.onclick = () => showMovieDetails(String(id));
-        img.onerror = function() { this.style.display = 'none'; };
-        return img;
-    }
-
-    function injectCached(rowId, items, layoutOverride) {
-        if (!items || !items.length) return;
-        window._spaceImgCache[rowId] = items;
-        const row = document.getElementById(rowId);
-        if (!row) return;
-        row.innerHTML = '';
-        items.forEach(m => row.appendChild(buildImg(m.posterPath, m.id)));
-    }
-
-    function restoreFromCache() {
-        Object.keys(window._spaceImgCache).forEach(key => {
-            const items = window._spaceImgCache[key];
-            if (!Array.isArray(items)) return;
-            const row = document.getElementById('space-' + key);
-            if (!row) return;
-            row.innerHTML = '';
-            items.forEach(m => row.appendChild(buildImg(m.posterPath, m.id)));
-        });
-        ['genre-878','genre-18','genre-53'].forEach(gKey => {
-            const items = window._spaceImgCache[gKey];
-            if (!Array.isArray(items)) return;
-            const row = document.getElementById('space-' + gKey);
-            if (!row) return;
-            row.innerHTML = '';
-            items.forEach(m => row.appendChild(buildImg(m.posterPath, m.id)));
-        });
-    }
-
     renderSpace();
-    restoreFromCache();
 
-    async function loadAndAnimate(rowId, fetchFn, cacheKey, toItems) {
-        let items;
-        try { items = await fetchFn(); } catch(e) { return; }
-        if (!items) return;
+    async function syncSection(rowId, mvKey, fetchFn, toItems) {
+        let raw;
+        try { raw = await fetchFn(); } catch(e) { return; }
+        const fresh = toItems(raw || []);
+        const prev = window._mv[mvKey] || [];
+        const prevIds = prev.map(m => String(m.id));
+        const newOnes = fresh.filter(m => !prevIds.includes(String(m.id)));
 
-        const mapped = toItems(items);
+        window._mv[mvKey] = fresh;
+
         const row = document.getElementById(rowId);
         if (!row) return;
 
-        const prev = window._spaceImgCache[cacheKey] || [];
-        const prevIds = prev.map(m => String(m.id));
-        const newIds = mapped.map(m => String(m.id));
-        const isFirstLoad = prev.length === 0;
-
-        window._spaceImgCache[cacheKey] = mapped;
-        try {
-            localStorage.setItem('space_data_' + cacheKey, JSON.stringify(mapped));
-        } catch(e) {}
-
-        if (mapped.length === 0) {
-            row.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px;">Nothing here yet.</div>';
-            return;
-        }
-
-        if (isFirstLoad) {
+        if (prev.length === 0) {
             row.innerHTML = '';
-            mapped.forEach((m, i) => {
-                const img = buildImg(m.posterPath, m.id);
+            fresh.forEach((m, i) => {
+                const img = document.createElement('img');
+                img.src = `${IMG}${m.posterPath}`;
+                img.onclick = () => showMovieDetails(String(m.id));
+                img.onerror = function() { this.style.display = 'none'; };
                 img.style.opacity = '0';
                 img.style.transform = 'translateY(8px)';
-                img.style.transition = `opacity 0.3s ease ${i * 0.06}s, transform 0.3s ease ${i * 0.06}s`;
+                img.style.transition = `opacity 0.3s ease ${i*0.07}s, transform 0.3s ease ${i*0.07}s`;
                 row.appendChild(img);
                 requestAnimationFrame(() => requestAnimationFrame(() => {
                     img.style.opacity = '1';
                     img.style.transform = 'translateY(0)';
-                    setTimeout(() => { img.style.transition = ''; img.style.transform = ''; }, 400 + i * 60);
                 }));
             });
-        } else {
-            const freshIds = newIds.filter(id => !prevIds.includes(id));
-            const existingImgs = row.querySelectorAll('img');
-
-            mapped.forEach((m, i) => {
-                if (freshIds.includes(String(m.id))) {
-                    const img = buildImg(m.posterPath, m.id);
-                    img.style.opacity = '0';
-                    img.style.transition = 'opacity 0.4s ease';
-                    if (existingImgs[i]) {
-                        existingImgs[i].replaceWith(img);
-                    } else {
-                        row.appendChild(img);
-                    }
+        } else if (newOnes.length > 0) {
+            _restoreMv();
+            newOnes.forEach(m => {
+                const existing = [...row.querySelectorAll('img')].find(
+                    el => el.src.includes(m.posterPath)
+                );
+                if (existing) {
+                    existing.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    existing.style.opacity = '0';
+                    existing.style.transform = 'scale(1.05)';
                     requestAnimationFrame(() => requestAnimationFrame(() => {
-                        img.style.opacity = '1';
-                        setTimeout(() => { img.style.transition = ''; }, 450);
+                        existing.style.opacity = '1';
+                        existing.style.transform = 'scale(1)';
                     }));
                 }
             });
         }
     }
 
-    ['genre-878','genre-18','genre-53','favs','watchlist'].forEach(key => {
-        try {
-            const saved = localStorage.getItem('space_data_' + key);
-            if (saved && !window._spaceImgCache[key]) {
-                window._spaceImgCache[key] = JSON.parse(saved);
-            }
-        } catch(e) {}
-    });
-
-    restoreFromCache();
-
-    loadAndAnimate('space-favs-row', loadFavorites, 'favs',
+    syncSection('space-favs-row', 'favs', loadFavorites,
         items => items.map(m => ({ id: m.movieId, posterPath: m.posterPath })));
 
-    loadAndAnimate('space-watchlist-row', loadWatchlist, 'watchlist',
+    syncSection('space-watchlist-row', 'watchlist', loadWatchlist,
         items => items.map(m => ({ id: m.movieId, posterPath: m.posterPath })));
 
     [
@@ -557,14 +493,13 @@ async function loadSpaceTab() {
         { genreId: 18,  key: 'genre-18'  },
         { genreId: 53,  key: 'genre-53'  }
     ].forEach(g => {
-        loadAndAnimate(
-            `space-genre-${g.genreId}`,
+        syncSection(
+            `space-genre-${g.genreId}`, g.key,
             async () => {
                 const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${g.genreId}`, { headers: ngrokHeaders });
                 const data = await res.json();
                 return data.results || [];
             },
-            g.key,
             items => items.slice(0, 6).map(m => ({ id: m.id, posterPath: m.poster_path }))
         );
     });
