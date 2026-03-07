@@ -4029,6 +4029,21 @@
 
         function _restoreMv(animated) {
             const IMG = 'https://image.tmdb.org/t/p/w300';
+
+            function getImgStyle(rowId) {
+                const isMainRow = rowId === 'space-favs-row' || rowId === 'space-watchlist-row';
+                if (!isMainRow) return '';
+                if (state.layout === 'grid') return 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;';
+                if (state.layout === 'large') return 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:12px;display:block;margin-bottom:10px;';
+                return '';
+            }
+
+            function getLimit(rowId) {
+                const isMainRow = rowId === 'space-favs-row' || rowId === 'space-watchlist-row';
+                if (isMainRow && state.layout === 'large') return 1;
+                return Infinity;
+            }
+
             const map = {
                 'space-favs-row': window._mv.favs,
                 'space-watchlist-row': window._mv.watchlist,
@@ -4036,14 +4051,18 @@
                 'space-genre-18': window._mv['genre-18'],
                 'space-genre-53': window._mv['genre-53']
             };
+
             Object.entries(map).forEach(([rowId, items]) => {
                 if (!items || !items.length) return;
                 const row = document.getElementById(rowId);
                 if (!row) return;
                 row.innerHTML = '';
-                items.forEach((m, i) => {
+                const limit = getLimit(rowId);
+                const imgStyle = getImgStyle(rowId);
+                items.slice(0, limit === Infinity ? items.length : limit).forEach((m, i) => {
                     const img = document.createElement('img');
                     img.src = `${IMG}${m.posterPath}`;
+                    if (imgStyle) img.style.cssText = imgStyle;
                     img.onclick = () => showMovieDetails(String(m.id));
                     img.onerror = function() { this.style.display = 'none'; };
                     if (animated) {
@@ -4058,6 +4077,7 @@
                                 img.style.transition = '';
                                 img.style.transform = '';
                                 img.style.opacity = '';
+                                if (imgStyle) img.style.cssText = imgStyle;
                             }, 300 + i * 50);
                         }));
                     } else {
@@ -4066,6 +4086,7 @@
                 });
             });
         }
+
         function getSectionHTML(sec, titleColor) {
             const align = sec.titleAlign || "left";
             const originMap = { left: "top left", center: "top center", right: "top right" };
