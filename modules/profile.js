@@ -515,38 +515,3 @@ window.showView = function(view) {
     }
     if (view === 'profile') loadSpaceTab();
 };
-
-function applyProfileGradient(imgEl) {
-    try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 60;
-        canvas.height = 60;
-        ctx.drawImage(imgEl, 0, 0, 60, 60);
-        const data = ctx.getImageData(0, 0, 60, 60).data;
-        let r = 0, g = 0, b = 0, count = 0;
-        for (let i = 0; i < data.length; i += 4) {
-            r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
-        }
-        r = Math.round(r / count);
-        g = Math.round(g / count);
-        b = Math.round(b / count);
-        const el = document.getElementById('profile-gradient-bg');
-        if (el) el.style.background = `linear-gradient(to bottom, rgba(${r},${g},${b}) 0%, transparent 100%)`;
-    } catch (e) {}
-}
-
-const _pImg = document.getElementById('profileImg');
-if (_pImg) {
-    if (_pImg.complete && _pImg.naturalWidth > 0) {
-        applyProfileGradient(_pImg);
-    } else {
-        _pImg.addEventListener('load', function () { applyProfileGradient(this); });
-    }
-    const _orig = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
-    const _obs = new MutationObserver(() => {
-        if (_pImg.complete && _pImg.naturalWidth > 0) applyProfileGradient(_pImg);
-        else _pImg.addEventListener('load', function h() { applyProfileGradient(_pImg); _pImg.removeEventListener('load', h); });
-    });
-    _obs.observe(_pImg, { attributes: true, attributeFilter: ['src'] });
-}
