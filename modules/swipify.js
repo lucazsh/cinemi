@@ -97,7 +97,7 @@ function setSwipeButtonsVisible(visible) {
     if (rightBtn) rightBtn.style.display = visible ? '' : 'none';
 }
 
-function openPanel(panelName) {
+function openPan(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
     if (!panel) return;
     panel.style.display = 'flex';
@@ -114,10 +114,10 @@ function openPanel(panelName) {
         showFavoritesPanel();
     }
     const backdrop = panel.querySelector('.backdrop');
-    if (backdrop) backdrop.onclick = () => closePanel(panelName);
+    if (backdrop) backdrop.onclick = () => closePan(panelName);
 }
 
-function closePanel(panelName) {
+function closePan(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
     if (panel) {
         panel.classList.remove('open');
@@ -494,7 +494,7 @@ async function sendAIFeedback(movie, action) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPanel('swipify')));
+    document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPan('swipify')));
 });
 
 
