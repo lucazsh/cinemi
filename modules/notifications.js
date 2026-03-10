@@ -27,6 +27,7 @@ notifStyles.textContent = `
 #notif-panel {
   position: fixed;
   top: 0;
+  padding-top: env(safe-area-inset-top);
   right: 0;
   width: min(380px, 100vw);
   height: 100dvh;
