@@ -164,12 +164,11 @@ async function loadFeaturedMovie() {
     }
 }
 
-
 async function loadGenreMovies() {
     const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
     if (!quizProfile || !quizProfile.movieGenre) {
         if (!featuredGenres?.length) return;
-        return await loadMoviesByGenre(featuredGenres[0], "Recommended for you");
+        return await loadMoviesByGenre(featuredGenres[0]);
     }
 
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
@@ -195,33 +194,36 @@ async function loadGenreMovies() {
     const container = document.getElementById('genre');
     if (container) {
         container.innerHTML = '';
-
         movies.slice(0, 6).forEach((movie, idx) => {
             const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
             if (!posterUrl) return;
-
             const img = document.createElement('img');
             img.src = posterUrl;
             img.className = 'fade-in-content';
             img.style.animationDelay = `${idx * 0.1}s`;
             img.style.cursor = 'pointer';
             img.onclick = () => showDetails(movie);
-
             container.appendChild(img);
         });
-
         if (movies.length === 0) {
             container.innerHTML = '<div style="color: var(--text-subtle); padding: 20px;">No recommendations yet...</div>';
         }
     }
 }
 
-async function loadMoviesByGenre(genreId, titlePrefix) {
+async function loadMoviesByGenre(genreId) {
     const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, { headers: ngrokHeaders });
     const data = await res.json();
     const genreName = await getGenreName(genreId);
+
     const genreLabel = document.getElementById('genre-label');
-    if (genreLabel) genreLabel.textContent = `${titlePrefix} ${genreName} movies`;
+    if (genreLabel) {
+        genreLabel.innerHTML = `
+            <span class="sec-sub">Recommended for you</span>
+            <span class="sec-title">${genreName} movies</span>
+        `;
+    }
+
     const container = document.getElementById('genre');
     if (container && data.results) {
         container.innerHTML = '';
@@ -231,7 +233,8 @@ async function loadMoviesByGenre(genreId, titlePrefix) {
             const img = document.createElement('img');
             img.src = url;
             img.className = 'fade-in-content';
-            img.style.animationDelay = `${i*0.1}s`;
+            img.style.animationDelay = `${i * 0.1}s`;
+            img.style.cursor = 'pointer';
             img.onclick = () => showDetails(m);
             container.appendChild(img);
         });
@@ -254,6 +257,7 @@ async function getGenreNameFromValue(quizValue) {
     };
     return map[quizValue] || 'movies';
 }
+
 async function loadMoodMovies() {
     try {
         if (!featuredGenres || featuredGenres.length === 0) return;
@@ -286,7 +290,7 @@ async function loadMoodMovies() {
         console.error('Failed to load mood movies:', err);
     }
 }
-// Beta TESTING!!
+
 async function loadAIRecommendations() {
     try {
         const moodLabel = document.getElementById('mood');
@@ -296,7 +300,6 @@ async function loadAIRecommendations() {
         const res = await fetchWithAuth(`${baseUrl}/api/recommendations`);
         
         if (!res.ok) {
-            console.log('AI recommendations not available, falling back to mood-based');
             await loadMoodMovies();
             return;
         }
@@ -376,23 +379,13 @@ async function loadTrendingMovies() {
 
 async function initHomeFeed() {
     if (moviesLoaded) return;
-    /*
-    const greetingEl = document.querySelector('.m1-rec > div:first-child');
-    if (greetingEl) {
-        greetingEl.innerHTML = getTimeBasedGreeting();
-    }
-    */
     showSkeletonLoaders();
-    
     await loadFeaturedMovie();
-    
     if (featuredGenres && featuredGenres.length > 0) {
         await loadGenreMovies();
         await loadAIRecommendations();
     }
-    
     await loadTrendingMovies();
-    
     moviesLoaded = true;
 }
 
@@ -408,131 +401,106 @@ async function getGenreName(genreId) {
 }
 
 async function getWatchProviders(id) {
-        try {
-            const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
-                headers: ngrokHeaders
-            });
-            const data = await res.json();
-
-            const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
-            for (const region of regions) {
-                if (data.results?.[region]) {
-                    console.log(`Found providers for region: ${region}`, data.results[region]);
-                    return data.results[region];
-                }
+    try {
+        const res = await fetch(`${baseUrl}/api/tmdb/movie/${id}/watch/providers`, {
+            headers: ngrokHeaders
+        });
+        const data = await res.json();
+        const regions = ['US', 'GB', 'RO', 'CA', 'DE', 'FR'];
+        for (const region of regions) {
+            if (data.results?.[region]) {
+                return data.results[region];
             }
-            
-            console.log('No providers found in any region');
-            return null;
-        } catch (err) {
-            console.error('Provider fetch error:', err);
-            return null;
         }
+        return null;
+    } catch (err) {
+        console.error('Provider fetch error:', err);
+        return null;
     }
+}
 
 async function loadReviews(movieId) {
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/reviews`);
         if (!res.ok) throw new Error('Failed to load reviews');
         const reviews = await res.json();
-        
         const statsRes = await fetchWithAuth(`${baseUrl}/api/movies/${movieId}/stats`);
         const stats = statsRes.ok ? await statsRes.json() : { count: 0, averageRating: 0 };
-        
         return { reviews, stats };
     } catch (err) {
         console.error('Review load error:', err);
         return { reviews: [], stats: { count: 0, averageRating: 0 } };
     }
 }
+
 async function addToWatchlist(movie) {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/watchlist`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        movieId: `${movie.media_type}-${movie.id}`,
-        title: movie.title || movie.name,
-        posterPath: movie.poster_path,
-        mediaType: movie.media_type || 'movie',
-        overview: movie.overview,
-        rating: movie.vote_average
-    })
-    });
-    
-    const data = await res.json();
-    
-    if (res.ok) {
-    return true;
-    } else {
-    return false;
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                movieId: `${movie.media_type}-${movie.id}`,
+                title: movie.title || movie.name,
+                posterPath: movie.poster_path,
+                mediaType: movie.media_type || 'movie',
+                overview: movie.overview,
+                rating: movie.vote_average
+            })
+        });
+        const data = await res.json();
+        if (res.ok) return true;
+        return false;
+    } catch (err) {
+        console.error('Watchlist error:', err);
+        alert('Network error');
+        return false;
     }
-} catch (err) {
-    console.error('Watchlist error:', err);
-    alert('Network error');
-    return false;
-}
 }
 
 async function addToFavorites(movie) {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/favorites`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        movieId: `${movie.media_type}-${movie.id}`,
-        title: movie.title || movie.name,
-        posterPath: movie.poster_path,
-        mediaType: movie.media_type || 'movie',
-        overview: movie.overview,
-        rating: movie.vote_average
-    })
-    });
-    
-    const data = await res.json();
-    
-    if (res.ok) {
-    return true;
-    } else {
-    return false;
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                movieId: `${movie.media_type}-${movie.id}`,
+                title: movie.title || movie.name,
+                posterPath: movie.poster_path,
+                mediaType: movie.media_type || 'movie',
+                overview: movie.overview,
+                rating: movie.vote_average
+            })
+        });
+        const data = await res.json();
+        if (res.ok) return true;
+        return false;
+    } catch (err) {
+        console.error('Favorites error:', err);
+        alert('Network error');
+        return false;
     }
-} catch (err) {
-    console.error('Favorites error:', err);
-    alert('Network error');
-    return false;
-}
 }
 
 async function removeFromWatchlist(movieId) {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/watchlist/${movieId}`, {
-    method: 'DELETE'
-    });
-    
-    if (res.ok) {
-    return true;
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist/${movieId}`, { method: 'DELETE' });
+        if (res.ok) return true;
+        return false;
+    } catch (err) {
+        console.error('Remove error:', err);
+        return false;
     }
-    return false;
-} catch (err) {
-    console.error('Remove error:', err);
-    return false;
-}
 }
 
 async function removeFromFavorites(movieId) {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/favorites/${movieId}`, {
-    method: 'DELETE'
-    });
-    
-    if (res.ok) {
-    return true;
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites/${movieId}`, { method: 'DELETE' });
+        if (res.ok) return true;
+        return false;
+    } catch (err) {
+        console.error('Remove error:', err);
+        return false;
     }
-    return false;
-} catch (err) {
-    console.error('Remove error:', err);
-    return false;
-}
 }
 
 async function showDetails(item) {
@@ -579,19 +547,14 @@ async function showDetails(item) {
                 <p class="modal-overview">${escapeHtml(item.overview)}</p>
                 <div id="modal-providers-list" style="margin-top:20px;"></div>
                 <div style="display:flex; gap:10px; margin-top:15px;">
-                <button id="add-to-watchlist-btn" style="flex:1; padding:10px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">
-                    Add to Watchlist
-                </button>
-                <button id="add-to-favorites-btn" style="flex:1; padding:10px; background:#ff4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
-                    Add to Favorites
-                </button>
+                    <button id="add-to-watchlist-btn" style="flex:1; padding:10px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">Add to Watchlist</button>
+                    <button id="add-to-favorites-btn" style="flex:1; padding:10px; background:#ff4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Add to Favorites</button>
                 </div>
                 <div id="reviews-section" style="margin-top:30px; border-top: 1px solid var(--border-dark-alpha-2); padding-top:20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <h3 style="margin:0; font-size:18px;">Reviews</h3>
                         <div id="review-stats" style="font-size:14px; color:var(--text-subtle);"></div>
                     </div>
-                    
                     <div id="add-review-form" style="margin-bottom:20px; padding:15px; background:var(--iconbox-bg); border-radius:12px;">
                         <div style="margin-bottom:10px;">
                             <label style="font-size:14px; font-weight:600; display:block; margin-bottom:8px;">Your Rating</label>
@@ -602,7 +565,6 @@ async function showDetails(item) {
                         <textarea id="review-text" placeholder="Write your review... (optional)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-light); background:var(--bg-secondary); color:var(--text-primary); resize:none; font-family:inherit; box-sizing:border-box;" rows="3"></textarea>
                         <button id="submit-review" style="margin-top:10px; padding:8px 16px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">Submit Review</button>
                     </div>
-                    
                     <div id="reviews-list"></div>
                 </div>
             </div>
@@ -632,27 +594,26 @@ async function showDetails(item) {
     const fullscreenBtn = overlay.querySelector('#fullscreen-btn');
     const metaContainer = overlay.querySelector('#modal-meta-container');
     const youtubeBlocker = overlay.querySelector('#youtube-blocker');
+
     const close = () => {
         if (updateInterval) {
             clearInterval(updateInterval);
             updateInterval = null;
         }
-        
         if (player) {
             player.pauseVideo();
             trailerContainer.style.display = 'none';
         }
-        
         overlay.remove();
         document.body.style.overflow = '';
     };
+
     overlay.querySelector('.modal-close-btn').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
 
     function handleFullscreenChange() {
         const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
                                 document.mozFullScreenElement || document.msFullscreenElement);
-        
         const navh = document.querySelector('.navh');
         if (isFullscreen) {
             fullscreenBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white"><path d="M240-120v-120H120v-80h200v200h-80Zm400 0v-200h200v80H720v120h-80ZM120-640v-80h120v-120h80v200H120Zm520 0v-200h80v120h120v80H640Z"/></svg>';
@@ -668,17 +629,12 @@ async function showDetails(item) {
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
-    overlay.querySelector('.modal-close-btn').onclick = close;
-    overlay.onclick = (e) => { if (e.target === overlay) close(); };
-
     const endpoint = isTV ? 'tv' : 'movie';
     
     fetch(`${baseUrl}/api/tmdb/${endpoint}/${item.id}/videos`, { headers: ngrokHeaders })
         .then(res => res.json())
         .then(data => {
-            const trailer = data.results.find(v => 
-                v.type === 'Trailer' && v.site === 'YouTube'
-            );
+            const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
             
             if (trailer) {
                 const trailerBtn = document.createElement('button');
@@ -705,23 +661,14 @@ async function showDetails(item) {
                             const tag = document.createElement('script');
                             tag.src = 'https://www.youtube.com/iframe_api';
                             document.head.appendChild(tag);
-                            
-                            await new Promise(resolve => {
-                                window.onYouTubeIframeAPIReady = resolve;
-                            });
+                            await new Promise(resolve => { window.onYouTubeIframeAPIReady = resolve; });
                         }
                         
                         player = new YT.Player('youtube-player', {
                             height: '280',
                             width: '100%',
                             videoId: trailer.key,
-                            playerVars: {
-                                'controls': 0,
-                                'modestbranding': 1,
-                                'rel': 0,
-                                'playsinline': 1,
-                                'fs': 1
-                            },
+                            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'playsinline': 1, 'fs': 1 },
                             events: {
                                 'onReady': () => {
                                     updateTimeDisplay();
@@ -733,80 +680,54 @@ async function showDetails(item) {
                         playPauseBtn.onclick = (e) => {
                             e.stopPropagation();
                             const state = player.getPlayerState();
-                            if (state === YT.PlayerState.PLAYING) {
-                                player.pauseVideo();
-                            } else {
-                                player.playVideo();
-                            }
+                            if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+                            else player.playVideo();
                         };
                         
                         progressBar.onclick = (e) => {
                             e.stopPropagation();
                             const rect = progressBar.getBoundingClientRect();
                             const percent = (e.clientX - rect.left) / rect.width;
-                            const duration = player.getDuration();
-                            player.seekTo(duration * percent);
+                            player.seekTo(player.getDuration() * percent);
                         };
                         
                         muteBtn.onclick = (e) => {
                             e.stopPropagation();
-                            if (player.isMuted()) {
-                                player.unMute();
-                            } else {
-                                player.mute();
-                            }
+                            if (player.isMuted()) player.unMute();
+                            else player.mute();
                         };
                         
                         fullscreenBtn.onclick = (e) => {
                             e.stopPropagation();
                             const iframe = document.querySelector('#youtube-player');
-                            
-                            if (document.fullscreenElement || document.webkitFullscreenElement || 
-                                document.mozFullScreenElement || document.msFullscreenElement) {
-                                if (document.exitFullscreen) {
-                                    document.exitFullscreen();
-                                } else if (document.webkitExitFullscreen) {
-                                    document.webkitExitFullscreen();
-                                } else if (document.mozCancelFullScreen) {
-                                    document.mozCancelFullScreen();
-                                } else if (document.msExitFullscreen) {
-                                    document.msExitFullscreen();
-                                }
+                            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                                if (document.exitFullscreen) document.exitFullscreen();
+                                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                                else if (document.msExitFullscreen) document.msExitFullscreen();
                             } else {
-                                if (iframe.requestFullscreen) {
-                                    iframe.requestFullscreen();
-                                } else if (iframe.webkitRequestFullscreen) {
-                                    iframe.webkitRequestFullscreen();
-                                } else if (iframe.webkitEnterFullscreen) {
-                                    iframe.webkitEnterFullscreen();
-                                } else if (iframe.mozRequestFullScreen) {
-                                    iframe.mozRequestFullScreen();
-                                } else if (iframe.msRequestFullscreen) {
-                                    iframe.msRequestFullscreen();
-                                }
+                                if (iframe.requestFullscreen) iframe.requestFullscreen();
+                                else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+                                else if (iframe.webkitEnterFullscreen) iframe.webkitEnterFullscreen();
+                                else if (iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
+                                else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
                             }
                         };
                         
                         youtubeBlocker.onclick = (e) => {
                             e.stopPropagation();
                             const state = player.getPlayerState();
-                            if (state === YT.PlayerState.PLAYING) {
-                                player.pauseVideo();
-                            } else {
-                                player.playVideo();
-                            }
+                            if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+                            else player.playVideo();
                         };
                         
                         function updateTimeDisplay() {
                             if (!player || !player.getDuration) return;
-                            
                             const current = player.getCurrentTime();
                             const duration = player.getDuration();
                             const percent = (current / duration) * 100;
-                            
                             progressFill.style.width = `${percent}%`;
                             timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-                            
                             const state = player.getPlayerState();
                             if (state === YT.PlayerState.PLAYING) {
                                 playIcon.style.display = 'none';
@@ -815,7 +736,6 @@ async function showDetails(item) {
                                 playIcon.style.display = 'block';
                                 pauseIcon.style.display = 'none';
                             }
-                            
                             if (player.isMuted()) {
                                 volumeIcon.style.display = 'none';
                                 muteIcon.style.display = 'block';
@@ -830,29 +750,11 @@ async function showDetails(item) {
                             const secs = Math.floor(seconds % 60);
                             return `${mins}:${secs.toString().padStart(2, '0')}`;
                         }
-                        
-                        function handleFullscreenChange() {
-                            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
-                                                    document.mozFullScreenElement || document.msFullscreenElement);
-                            
-                            if (isFullscreen) {
-                                fullscreenBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white"><path d="M240-120v-120H120v-80h200v200h-80Zm400 0v-200h200v80H720v120h-80ZM120-640v-80h120v-120h80v200H120Zm520 0v-200h80v120h120v80H640Z"/></svg>';
-                            } else {
-                                fullscreenBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>';
-                            }
-                        }
-                        
-                        document.addEventListener('fullscreenchange', handleFullscreenChange);
-                        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-                        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-                        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
                     }
                 };
                 
                 closeTrailerBtn.onclick = () => {
-                    if (player) {
-                        player.pauseVideo();
-                    }
+                    if (player) player.pauseVideo();
                     trailerContainer.style.display = 'none';
                     backdropImg.style.display = 'block';
                     trailerBtn.style.display = 'inline-block';
@@ -906,7 +808,6 @@ async function showDetails(item) {
         const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
         const displayName = document.querySelector('.p-name')?.textContent || username;
         const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
-        
         const contentId = `${item.media_type}-${item.id}`;
         
         const optimisticReview = {
@@ -923,10 +824,7 @@ async function showDetails(item) {
         if (currentFeed === 'reviews') {
             const postsContainer = document.getElementById('posts');
             const noReviewsMsg = postsContainer.querySelector('div[style*="No reviews yet"]');
-            if (noReviewsMsg) {
-                postsContainer.innerHTML = '';
-            }
-            
+            if (noReviewsMsg) postsContainer.innerHTML = '';
             const reviewPost = await createReviewPost(optimisticReview);
             reviewPost.setAttribute('data-temp-review-id', optimisticReview.id);
             postsContainer.insertBefore(reviewPost, postsContainer.firstChild);
@@ -940,7 +838,6 @@ async function showDetails(item) {
             });
             
             if (!res.ok) throw new Error('Failed to submit review');
-            
             const result = await res.json();
             
             if (currentFeed === 'reviews') {
@@ -970,7 +867,6 @@ async function showDetails(item) {
 
     loadAndDisplayReviews(`${item.media_type}-${item.id}`);
 }
-
 
 async function loadAndDisplayReviews(movieId) {
     const { reviews, stats } = await loadReviews(movieId);
@@ -1008,111 +904,102 @@ async function loadAndDisplayReviews(movieId) {
 }
 
 async function loadWatchlist() {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/watchlist`);
-    if (!res.ok) throw new Error('Failed to load watchlist');
-    return await res.json();
-} catch (err) {
-    console.error('Watchlist load error:', err);
-    return [];
-}
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/watchlist`);
+        if (!res.ok) throw new Error('Failed to load watchlist');
+        return await res.json();
+    } catch (err) {
+        console.error('Watchlist load error:', err);
+        return [];
+    }
 }
 
 async function loadFavorites() {
-try {
-    const res = await fetchWithAuth(`${baseUrl}/api/favorites`);
-    if (!res.ok) throw new Error('Failed to load favorites');
-    return await res.json();
-} catch (err) {
-    console.error('Favorites load error:', err);
-    return [];
-}
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/favorites`);
+        if (!res.ok) throw new Error('Failed to load favorites');
+        return await res.json();
+    } catch (err) {
+        console.error('Favorites load error:', err);
+        return [];
+    }
 }
 
 async function showWatchlistPanel() {
-const movies = await loadWatchlist();
-const panel = document.getElementById('watchlist-panel');
-const sheet = panel.querySelector('.sheet');
-
-if (movies.length === 0) {
-    sheet.innerHTML = `
-    <h2>Watch List</h2>
-    <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies in your watchlist yet!</p>
-    <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
-    `;
-} else {
-    sheet.innerHTML = `
-    <h2>Watch List (${movies.length})</h2>
-    <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
-        ${movies.map(m => `
-        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
-            <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
-            <div style="flex:1;">
-            <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
-            <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+    const movies = await loadWatchlist();
+    const panel = document.getElementById('watchlist-panel');
+    const sheet = panel.querySelector('.sheet');
+    if (movies.length === 0) {
+        sheet.innerHTML = `
+            <h2>Watch List</h2>
+            <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies in your watchlist yet!</p>
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        `;
+    } else {
+        sheet.innerHTML = `
+            <h2>Watch List (${movies.length})</h2>
+            <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                ${movies.map(m => `
+                    <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                        <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                            <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                        </div>
+                        <button onclick="removeFromWatchlistUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
+                    </div>
+                `).join('')}
             </div>
-            <button onclick="removeFromWatchlistUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
-        </div>
-        `).join('')}
-    </div>
-    <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
-    `;
-}
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        `;
+    }
 }
 
 async function showFavoritesPanel() {
-const movies = await loadFavorites();
-const panel = document.getElementById('favorites-panel');
-const sheet = panel.querySelector('.sheet');
-
-if (movies.length === 0) {
-    sheet.innerHTML = `
-    <h2>Favorites</h2>
-    <p style="text-align:center; color:var(--text-subtle); padding:40px;">No favorite movies yet!</p>
-    <button class="btn-close" onclick="closePanel('favorites')">Close</button>
-    `;
-} else {
-    sheet.innerHTML = `
-    <h2>Favorites (${movies.length})</h2>
-    <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
-        ${movies.map(m => `
-        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
-            <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
-            <div style="flex:1;">
-            <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
-            <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+    const movies = await loadFavorites();
+    const panel = document.getElementById('favorites-panel');
+    const sheet = panel.querySelector('.sheet');
+    if (movies.length === 0) {
+        sheet.innerHTML = `
+            <h2>Favorites</h2>
+            <p style="text-align:center; color:var(--text-subtle); padding:40px;">No favorite movies yet!</p>
+            <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+        `;
+    } else {
+        sheet.innerHTML = `
+            <h2>Favorites (${movies.length})</h2>
+            <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                ${movies.map(m => `
+                    <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center;">
+                        <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                            <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                        </div>
+                        <button onclick="removeFromFavoritesUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
+                    </div>
+                `).join('')}
             </div>
-            <button onclick="removeFromFavoritesUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
-        </div>
-        `).join('')}
-    </div>
-    <button class="btn-close" onclick="closePanel('favorites')">Close</button>
-    `;
-}
+            <button class="btn-close" onclick="closePanel('favorites')">Close</button>
+        `;
+    }
 }
 
 async function removeFromWatchlistUI(movieId) {
-const success = await removeFromWatchlist(movieId);
-if (success) {
-    showWatchlistPanel();
-}
+    const success = await removeFromWatchlist(movieId);
+    if (success) showWatchlistPanel();
 }
 
 async function removeFromFavoritesUI(movieId) {
-const success = await removeFromFavorites(movieId);
-if (success) {
-    showFavoritesPanel();
-}
+    const success = await removeFromFavorites(movieId);
+    if (success) showFavoritesPanel();
 }
 
 async function showMovieDetails(movieId) {
     const numericId = movieId.includes('-') ? movieId.split('-').pop() : movieId;
     const mediaType = movieId.startsWith('tv-') ? 'tv' : 'movie';
-    
     try {
-        const res = await fetch(`${baseUrl}/api/tmdb/${mediaType === 'tv' ? 'tv' : 'movie'}/${numericId}`, {
-            headers: ngrokHeaders
-        });
+        const res = await fetch(`${baseUrl}/api/tmdb/${mediaType === 'tv' ? 'tv' : 'movie'}/${numericId}`, { headers: ngrokHeaders });
         if (res.ok) {
             const movie = await res.json();
             movie.media_type = mediaType;
@@ -1122,5 +1009,3 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
-
-
