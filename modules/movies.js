@@ -167,26 +167,9 @@ async function loadFeaturedMovie() {
 
 async function loadGenreMovies() {
     const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
-    const ntgenre = document.getElementById('genre-label');
-    let genreName = 'movies';
-    const defaultGenreIds = [28, 12, 16, 35, 80, 18, 14, 27, 878, 53];
-
     if (!quizProfile || !quizProfile.movieGenre) {
-        let genreId = null;
-        if (featuredGenres?.length) {
-            genreId = featuredGenres[0];
-        } else {
-            genreId = defaultGenreIds[Math.floor(Math.random() * defaultGenreIds.length)];
-        }
-        genreName = await getGenreName(genreId) || genreName;
-        if (ntgenre) {
-            const sub = ntgenre.querySelector('.sec-sub') || ntgenre;
-            const title = ntgenre.querySelector('.sec-title') || ntgenre;
-            sub.textContent = 'Because you like';
-            title.textContent = `${genreName} movies`;
-        }
-        await loadMoviesByGenre(genreId);
-        return;
+        if (!featuredGenres?.length) return;
+        return await loadMoviesByGenre(featuredGenres[0], "Recommended for you");
     }
 
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
@@ -194,41 +177,39 @@ async function loadGenreMovies() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quizProfile)
     });
+
     if (!res.ok) throw new Error("quiz-recommend failed");
+
     const data = await res.json();
     const movies = data.movies || [];
 
-    try {
-        genreName = (await getGenreNameFromValue(quizProfile.movieGenre)) || genreName;
-    } catch (e) {
-        genreName = genreName;
-    }
-
-    if (genreName === 'movies' && featuredGenres?.length) {
-        genreName = await getGenreName(featuredGenres[0]) || genreName;
-    }
-
-    if (ntgenre) {
-        const sub = ntgenre.querySelector('.sec-sub') || ntgenre;
-        const title = ntgenre.querySelector('.sec-title') || ntgenre;
-        sub.textContent = 'Because you like';
-        title.textContent = `${genreName} movies`;
+    const genreLabel = document.getElementById('genre-label');
+    if (genreLabel) {
+        const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
+        genreLabel.innerHTML = `
+            <span class="sec-sub">Because you like</span>
+            <span class="sec-title">${genreName} movies</span>
+        `;
     }
 
     const container = document.getElementById('genre');
     if (container) {
         container.innerHTML = '';
+
         movies.slice(0, 6).forEach((movie, idx) => {
             const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
             if (!posterUrl) return;
+
             const img = document.createElement('img');
             img.src = posterUrl;
             img.className = 'fade-in-content';
             img.style.animationDelay = `${idx * 0.1}s`;
             img.style.cursor = 'pointer';
             img.onclick = () => showDetails(movie);
+
             container.appendChild(img);
         });
+
         if (movies.length === 0) {
             container.innerHTML = '<div style="color: var(--text-subtle); padding: 20px;">No recommendations yet...</div>';
         }
@@ -1141,4 +1122,5 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
 
