@@ -169,9 +169,9 @@ async function loadGenreMovies() {
     const ntgenre = document.getElementById('genre-label');
     if (!quizProfile || !quizProfile.movieGenre) {
         if (!featuredGenres?.length) return;
-        ntgenre.innerHTML = `<span class="sec-sub">Because you like</span> 
-        <span class="sec-title">${await getGenreName(featuredGenres[0])} movies</span>`;
-        return await loadMoviesByGenre(featuredGenres[0],);
+        const name = await getGenreName(featuredGenres[0]) || 'movies';
+        if (ntgenre) ntgenre.innerHTML = `<span class="sec-sub">Because you like</span> <span class="sec-title">${escapeHtml(name)} movies</span>`;
+        return await loadMoviesByGenre(featuredGenres[0]);
     }
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
         method: 'POST',
@@ -181,10 +181,9 @@ async function loadGenreMovies() {
     if (!res.ok) throw new Error("quiz-recommend failed");
     const data = await res.json();
     const movies = data.movies || [];
-    const genreLabel = document.getElementById('genre-label');
-    if (genreLabel) {
-        const genreName = await getGenreNameFromValue(quizProfile.movieGenre);
-        genreLabel.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> ${genreName} movies`;
+    if (ntgenre) {
+        const genreName = await getGenreNameFromValue(quizProfile.movieGenre) || 'movies';
+        ntgenre.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> <span class="sec-title">${escapeHtml(genreName)} movies</span>`;
     }
     const container = document.getElementById('genre');
     if (container) {
