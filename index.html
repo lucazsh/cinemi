@@ -2697,6 +2697,36 @@
             position: relative;
             z-index: 1;
         }
+        .sec-wrap {
+            margin: 36px 0 12px;
+            overflow: hidden;
+            animation: fadeUp 0.4s ease both;
+        }
+        .sec-sub {
+            font-family: "Nunito", sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--sub-home);
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 1px;
+        }
+        .sec-title {
+            font-family: "Nunito", sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -0.8px;
+            color: var(--title-color);
+            display: block;
+            transform: scaleY(0.92);
+            transform-origin: top left;
+            padding-bottom: 16px;
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 32%, transparent 82%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 32%, transparent 82%);
+        }
+        .sec-title.light { font-weight: 800; }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -3099,25 +3129,25 @@
                 </div>
             </div>
             <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
-            <div id="genre-label" style="font-size: 21px; font-weight: 600;">
-                <span style="color: var(--sub-home);">Because you watched</span>
-                <br>movie_name
+            <div id="genre-label" class="sec-wrap">
+                <span class="sec-sub"></span>
+                <span class="sec-title"></span>
             </div>
             <div class="mov" id="genre" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
-            <div style="font-size: 21px; font-weight: 600;">
-                <span style="color: var(--sub-home);">You're in the mood</span> for
+            <div>
+                <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
             </div>
             <div class="mov" id="mood" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
-            <div style="font-size: 21px; font-weight: 600;">
-                <span style="color: var(--sub-home);">Still</span> nothing?
+            <div>
+                <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
                 <div class="cards-container" style="flex: 1; min-width: 280px;">
@@ -3160,7 +3190,7 @@
                 </div>
             </div>
             <div style="font-size: 21px; font-weight: 600;">
-                <span style="color: var(--sub-home);">Trending for</span> you
+                <span class="sec-sub">Trending</span> <span class="sec-title">for you</span>
             </div>
             <div class="mov" style="margin: 10px 0px;">
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
