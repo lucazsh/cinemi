@@ -168,7 +168,8 @@ async function loadGenreMovies() {
     const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
     if (!quizProfile || !quizProfile.movieGenre) {
         if (!featuredGenres?.length) return;
-        return await loadMoviesByGenre(featuredGenres[0], "Recommended for you");
+        ntgenre.innerHTML = '<span class="sec-sub">Because you like</span> <span class="sec-title"> ${await getGenreNameFromValue(featuredGenres[0])} movies</span>'
+        return await loadMoviesByGenre(featuredGenres[0],);
     }
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
         method: 'POST',
@@ -1109,23 +1110,3 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
