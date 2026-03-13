@@ -164,21 +164,28 @@ async function loadFeaturedMovie() {
     }
 }
 
+
 async function loadGenreMovies() {
     const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
     const ntgenre = document.getElementById('genre-label');
     let genreName = 'movies';
+    const defaultGenreIds = [28, 12, 16, 35, 80, 18, 14, 27, 878, 53];
 
     if (!quizProfile || !quizProfile.movieGenre) {
-        if (!featuredGenres?.length) return;
-        genreName = await getGenreName(featuredGenres[0]) || genreName;
+        let genreId = null;
+        if (featuredGenres?.length) {
+            genreId = featuredGenres[0];
+        } else {
+            genreId = defaultGenreIds[Math.floor(Math.random() * defaultGenreIds.length)];
+        }
+        genreName = await getGenreName(genreId) || genreName;
         if (ntgenre) {
             const sub = ntgenre.querySelector('.sec-sub') || ntgenre;
             const title = ntgenre.querySelector('.sec-title') || ntgenre;
             sub.textContent = 'Because you like';
             title.textContent = `${genreName} movies`;
         }
-        await loadMoviesByGenre(featuredGenres[0]);
+        await loadMoviesByGenre(genreId);
         return;
     }
 
@@ -1134,3 +1141,4 @@ async function showMovieDetails(movieId) {
         console.error('Failed to load movie:', err);
     }
 }
+
