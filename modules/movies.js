@@ -167,12 +167,21 @@ async function loadFeaturedMovie() {
 async function loadGenreMovies() {
     const quizProfile = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
     const ntgenre = document.getElementById('genre-label');
+    let genreName = 'movies';
+
     if (!quizProfile || !quizProfile.movieGenre) {
         if (!featuredGenres?.length) return;
-        const name = await getGenreName(featuredGenres[0]) || 'movies';
-        if (ntgenre) ntgenre.innerHTML = `<span class="sec-sub">Because you like</span> <span class="sec-title">${escapeHtml(name)} movies</span>`;
-        return await loadMoviesByGenre(featuredGenres[0]);
+        genreName = await getGenreName(featuredGenres[0]) || genreName;
+        if (ntgenre) {
+            const sub = ntgenre.querySelector('.sec-sub') || ntgenre;
+            const title = ntgenre.querySelector('.sec-title') || ntgenre;
+            sub.textContent = 'Because you like';
+            title.textContent = `${genreName} movies`;
+        }
+        await loadMoviesByGenre(featuredGenres[0]);
+        return;
     }
+
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -181,10 +190,24 @@ async function loadGenreMovies() {
     if (!res.ok) throw new Error("quiz-recommend failed");
     const data = await res.json();
     const movies = data.movies || [];
-    if (ntgenre) {
-        const genreName = await getGenreNameFromValue(quizProfile.movieGenre) || 'movies';
-        ntgenre.innerHTML = `<span style="color: var(--sub-home);">Because you like </span> <span class="sec-title">${escapeHtml(genreName)} movies</span>`;
+
+    try {
+        genreName = (await getGenreNameFromValue(quizProfile.movieGenre)) || genreName;
+    } catch (e) {
+        genreName = genreName;
     }
+
+    if (genreName === 'movies' && featuredGenres?.length) {
+        genreName = await getGenreName(featuredGenres[0]) || genreName;
+    }
+
+    if (ntgenre) {
+        const sub = ntgenre.querySelector('.sec-sub') || ntgenre;
+        const title = ntgenre.querySelector('.sec-title') || ntgenre;
+        sub.textContent = 'Because you like';
+        title.textContent = `${genreName} movies`;
+    }
+
     const container = document.getElementById('genre');
     if (container) {
         container.innerHTML = '';
