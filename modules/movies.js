@@ -170,7 +170,7 @@ async function loadGenreMovies() {
     if (!quizProfile || !quizProfile.movieGenre) {
         if (!featuredGenres?.length) return;
         ntgenre.innerHTML = `<span class="sec-sub">Because you like</span> 
-        <span class="sec-title">${await getGenreNameFromValue(featuredGenres[0])} movies</span>`;
+        <span class="sec-title">${await getGenreName(featuredGenres[0])} movies</span>`;
         return await loadMoviesByGenre(featuredGenres[0],);
     }
     const res = await fetchWithAuth(`${baseUrl}/api/content/quiz-recommend`, {
