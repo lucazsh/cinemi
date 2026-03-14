@@ -1,8 +1,6 @@
 let worker=null;let ready=false;const pending=new Map();let reqId=0;
 
 function getBaseUrl(){
-    // used chatgpt for this :(
-    // utils.js sets window.server — check that first
     return window.server || window.BASE_URL || window.baseUrl || localStorage.getItem('cinemi_baseUrl') || '';
 }
 
@@ -22,8 +20,6 @@ function getSessionToken(){
 export async function initNemo(){
     if(worker)return;
     console.log('[NEMO] Initializing worker...');
-
-    // Worker file lives on the frontend (cinemi.space), use window.location.origin for it
     const workerUrl = `${window.location.origin}/modules/nemo-worker.js`;
     worker = new Worker(workerUrl);
 
@@ -53,8 +49,6 @@ export async function initNemo(){
     const un = getUsername();
 
     console.log('[NEMO] baseUrl:', bu, '| username:', un, '| token:', st ? 'present' : 'MISSING');
-
-    // Send init ONCE only — duplicate was causing double-init race condition
     worker.postMessage({type:'init', baseUrl: bu, sessionToken: st, username: un});
 
     console.log('[NEMO] Worker created, waiting for ready...');
