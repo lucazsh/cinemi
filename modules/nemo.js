@@ -1,5 +1,4 @@
 let worker=null;let ready=false;const pending=new Map();let reqId=0;
-
 function getBaseUrl(){return window.baseUrl||'';}
 function getSessionToken(){return localStorage.getItem('sessionToken')||sessionStorage.getItem('sessionToken')||'';}
 function getUsername(){try{return JSON.parse(localStorage.getItem('cinemi_user')||'{}').username||'';}catch{return '';}}
