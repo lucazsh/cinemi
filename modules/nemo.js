@@ -1,7 +1,17 @@
 let worker=null;let ready=false;const pending=new Map();let reqId=0;
-function getBaseUrl(){return window.baseUrl||'';}
+function getBaseUrl(){
+    return window.baseUrl || window.BASE_URL || localStorage.getItem('cinemi_baseUrl') || '';
+}
+function getUsername(){
+    try{
+        const u=JSON.parse(localStorage.getItem('cinemi_user')||'{}');
+        if(u.username)return u.username;
+        const s=localStorage.getItem('sessionToken')||'';
+        const cached=JSON.parse(localStorage.getItem('cinemi_userProfile')||'{}');
+        return cached.username||'';
+    }catch{return '';}
+}
 function getSessionToken(){return localStorage.getItem('sessionToken')||sessionStorage.getItem('sessionToken')||'';}
-function getUsername(){try{return JSON.parse(localStorage.getItem('cinemi_user')||'{}').username||'';}catch{return '';}}
 
 export async function initNemo(){
     if(worker)return;
@@ -26,6 +36,11 @@ export async function initNemo(){
     worker.onerror=(e)=>{
         console.error('[NEMO] Worker error:', e.message, 'file:', e.filename, 'line:', e.lineno);
     };
+    const bu = getBaseUrl();
+    const st = getSessionToken();
+    const un = getUsername();
+    console.log('[NEMO] baseUrl:', bu, '| username:', un, '| token:', st?'present':'missing');
+    worker.postMessage({type:'init', baseUrl: bu, sessionToken: st, username: un});
     worker.postMessage({type:'init',baseUrl:getBaseUrl(),sessionToken:getSessionToken(),username:getUsername()});
     console.log('[NEMO] Worker created, waiting for ready...');
     await new Promise(res=>{
