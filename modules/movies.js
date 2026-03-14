@@ -69,7 +69,6 @@ async function loadFeaturedMovie() {
         let currentIndex = 0;
         function uptheme(imageUrl) {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
             img.src = imageUrl;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
