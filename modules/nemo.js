@@ -6,30 +6,62 @@ function getUsername(){try{return JSON.parse(localStorage.getItem('cinemi_user')
 
 export async function initNemo(){
     if(worker)return;
+    console.log('[NEMO] Initializing worker...');
     worker=new Worker(`${getBaseUrl()}/modules/nemo-worker.js`);
     worker.onmessage=(e)=>{
         const msg=e.data;
-        if(msg.type==='ready'){ready=true;return;}
-        if(msg.type==='scored'&&pending.has(msg.requestId)){pending.get(msg.requestId).resolve(msg.results);pending.delete(msg.requestId);}
-        if(msg.type==='feedbackDone'){const cb=pending.get('feedback');if(cb){cb.resolve();pending.delete('feedback');}}
+        console.log('[NEMO] Message from worker:', msg.type, msg);
+        if(msg.type==='ready'){ready=true;console.log('[NEMO] Ready!');return;}
+        if(msg.type==='error'){console.error('[NEMO] Worker reported error:', msg.message);}
+        if(msg.type==='scored'&&pending.has(msg.requestId)){
+            console.log('[NEMO] Scored', msg.results?.length, 'movies');
+            pending.get(msg.requestId).resolve(msg.results);
+            pending.delete(msg.requestId);
+        }
+        if(msg.type==='feedbackDone'){
+            console.log('[NEMO] Feedback done');
+            const cb=pending.get('feedback');
+            if(cb){cb.resolve();pending.delete('feedback');}
+        }
     };
-    worker.onerror=(e)=>console.error('[NEMO]',e);
+    worker.onerror=(e)=>{
+        console.error('[NEMO] Worker error:', e.message, 'file:', e.filename, 'line:', e.lineno);
+    };
     worker.postMessage({type:'init',baseUrl:getBaseUrl(),sessionToken:getSessionToken(),username:getUsername()});
-    await new Promise(res=>{const iv=setInterval(()=>{if(ready){clearInterval(iv);res();}},100);setTimeout(()=>{clearInterval(iv);res();},10000);});
+    console.log('[NEMO] Worker created, waiting for ready...');
+    await new Promise(res=>{
+        const iv=setInterval(()=>{if(ready){clearInterval(iv);res();}},100);
+        setTimeout(()=>{clearInterval(iv);console.warn('[NEMO] Timeout waiting for ready');res();},10000);
+    });
+    console.log('[NEMO] Init complete, ready:', ready);
 }
 
 export async function scoreMovies(candidates){
-    if(!worker||!ready)return null;
+    if(!worker||!ready){
+        console.warn('[NEMO] scoreMovies called but not ready');
+        return null;
+    }
+    console.log('[NEMO] Scoring', candidates.length, 'candidates...');
     const id=reqId++;
     return new Promise((resolve,reject)=>{
         pending.set(id,{resolve,reject});
-        setTimeout(()=>{if(pending.has(id)){pending.delete(id);reject(new Error('timeout'));}},30000);
+        setTimeout(()=>{
+            if(pending.has(id)){
+                pending.delete(id);
+                console.error('[NEMO] Score timeout for request', id);
+                reject(new Error('timeout'));
+            }
+        },30000);
         worker.postMessage({type:'score',candidates,requestId:id});
     });
 }
 
 export async function sendFeedback(movieData,action){
-    if(!worker||!ready)return;
+    if(!worker||!ready){
+        console.warn('[NEMO] sendFeedback called but not ready');
+        return;
+    }
+    console.log('[NEMO] Sending feedback:', action, movieData?.title||movieData?.id);
     return new Promise(resolve=>{
         pending.set('feedback',{resolve});
         worker.postMessage({type:'feedback',movieData,action});
@@ -37,4 +69,9 @@ export async function sendFeedback(movieData,action){
     });
 }
 
-export function syncNemo(){if(worker&&ready)worker.postMessage({type:'sync'});}
+export function syncNemo(){
+    if(worker&&ready){
+        console.log('[NEMO] Triggering sync...');
+        worker.postMessage({type:'sync'});
+    }
+}
