@@ -122,7 +122,6 @@ logoutBtn.addEventListener('keydown', e => {
     }
 });
 
-checkAuthStatus();
 checkAuthStatus().then(async isAuth => {
     if (isAuth) {
         const quizDone = await checkQuizStatus();
