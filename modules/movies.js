@@ -294,52 +294,41 @@ async function loadMoodMovies() {
 async function loadAIRecommendations() {
     try {
         const moodLabel = document.getElementById('mood');
-        if (moodLabel) {
-            moodLabel.innerHTML = '<span style="color: var(--sub-home);">AI Picks for</span> You';
+        if (moodLabel) moodLabel.innerHTML = '<span style="color: var(--sub-home);">AI Picks for</span> You';
+
+        const { initNemo, scoreMovies } = await import('./nemo.js');
+        await initNemo();
+
+        const candRes = await fetchWithAuth(`${baseUrl}/api/nemo/candidates`);
+        if (!candRes.ok) { await loadMoodMovies(); return; }
+        const { candidates } = await candRes.json();
+        if (!candidates || candidates.length === 0) { await loadMoodMovies(); return; }
+
+        let recommendations = await scoreMovies(candidates);
+
+        if (!recommendations || recommendations.length === 0) {
+            const fallback = await fetchWithAuth(`${baseUrl}/api/recommendations`);
+            if (fallback.ok) {
+                const d = await fallback.json();
+                recommendations = d.recommendations || [];
+            }
         }
-        const res = await fetchWithAuth(`${baseUrl}/api/recommendations`);
-        
-        if (!res.ok) {
-            await loadMoodMovies();
-            return;
-        }
-        
-        const data = await res.json();
-        const recommendations = data.recommendations || [];
-        
-        if (recommendations.length === 0) {
-            await loadMoodMovies();
-            return;
-        }
-        
+
+        if (!recommendations || recommendations.length === 0) { await loadMoodMovies(); return; }
+
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
             moodContainer.innerHTML = '';
-            
             recommendations.slice(0, 6).forEach((movie, idx) => {
-                const numericId = movie.movieId.includes('-') 
-                    ? movie.movieId.split('-').pop() 
-                    : movie.movieId;
-                
+                const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
                 const posterUrl = movie.posterPath ? `${IMG_W500}${movie.posterPath}` : '';
-                
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
-                    
-                    const movieObj = {
-                        id: parseInt(numericId),
-                        media_type: movie.mediaType || 'movie',
-                        title: movie.title,
-                        poster_path: movie.posterPath,
-                        backdrop_path: movie.backdropPath,
-                        overview: movie.overview,
-                        vote_average: movie.rating
-                    };
-                    
+                    const movieObj = { id: parseInt(numericId), media_type: movie.mediaType || 'movie', title: movie.title, poster_path: movie.posterPath, backdrop_path: movie.backdropPath, overview: movie.overview, vote_average: movie.rating };
                     img.onclick = () => showDetails(movieObj);
                     moodContainer.appendChild(img);
                 }
@@ -350,7 +339,6 @@ async function loadAIRecommendations() {
         await loadMoodMovies();
     }
 }
-
 async function loadTrendingMovies() {
     try {
         const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
