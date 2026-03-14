@@ -97,7 +97,7 @@ async function updateMyFriendsCount() {
         ...following.map(f => f.username)
         ]).size;
         
-        document.getElementById('friendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
+        const fc=document.getElementById('friendsCount');if(fc)fc.textContent=`${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
     } catch (err) {
         console.error('Failed to update friends count:', err);
     }
