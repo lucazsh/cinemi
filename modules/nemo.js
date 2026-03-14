@@ -1,22 +1,31 @@
 let worker=null;let ready=false;const pending=new Map();let reqId=0;
+
 function getBaseUrl(){
-    return window.baseUrl || window.BASE_URL || localStorage.getItem('cinemi_baseUrl') || '';
+    // utils.js sets window.server — check that first
+    return window.server || window.BASE_URL || window.baseUrl || localStorage.getItem('cinemi_baseUrl') || '';
 }
+
 function getUsername(){
     try{
         const u=JSON.parse(localStorage.getItem('cinemi_user')||'{}');
         if(u.username)return u.username;
-        const s=localStorage.getItem('sessionToken')||'';
         const cached=JSON.parse(localStorage.getItem('cinemi_userProfile')||'{}');
         return cached.username||'';
     }catch{return '';}
 }
-function getSessionToken(){return localStorage.getItem('sessionToken')||sessionStorage.getItem('sessionToken')||'';}
+
+function getSessionToken(){
+    return localStorage.getItem('sessionToken')||sessionStorage.getItem('sessionToken')||'';
+}
 
 export async function initNemo(){
     if(worker)return;
     console.log('[NEMO] Initializing worker...');
-    worker=new Worker(`${getBaseUrl()}/modules/nemo-worker.js`);
+
+    // Worker file lives on the frontend (cinemi.space), use window.location.origin for it
+    const workerUrl = `${window.location.origin}/modules/nemo-worker.js`;
+    worker = new Worker(workerUrl);
+
     worker.onmessage=(e)=>{
         const msg=e.data;
         console.log('[NEMO] Message from worker:', msg.type, msg);
@@ -33,20 +42,27 @@ export async function initNemo(){
             if(cb){cb.resolve();pending.delete('feedback');}
         }
     };
+
     worker.onerror=(e)=>{
         console.error('[NEMO] Worker error:', e.message, 'file:', e.filename, 'line:', e.lineno);
     };
+
     const bu = getBaseUrl();
     const st = getSessionToken();
     const un = getUsername();
-    console.log('[NEMO] baseUrl:', bu, '| username:', un, '| token:', st?'present':'missing');
+
+    console.log('[NEMO] baseUrl:', bu, '| username:', un, '| token:', st ? 'present' : 'MISSING');
+
+    // Send init ONCE only — duplicate was causing double-init race condition
     worker.postMessage({type:'init', baseUrl: bu, sessionToken: st, username: un});
-    worker.postMessage({type:'init',baseUrl:getBaseUrl(),sessionToken:getSessionToken(),username:getUsername()});
+
     console.log('[NEMO] Worker created, waiting for ready...');
+
     await new Promise(res=>{
         const iv=setInterval(()=>{if(ready){clearInterval(iv);res();}},100);
-        setTimeout(()=>{clearInterval(iv);console.warn('[NEMO] Timeout waiting for ready');res();},10000);
+        setTimeout(()=>{clearInterval(iv);console.warn('[NEMO] Timeout waiting for ready');res();},15000);
     });
+
     console.log('[NEMO] Init complete, ready:', ready);
 }
 
