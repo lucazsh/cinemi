@@ -76,7 +76,7 @@ async function loadFeaturedMovie() {
                 canvas.height = 10;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, 10, 10);
-                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                let r=80,g=80,b=80;try{[r,g,b]=ctx.getImageData(0,0,1,1).data;}catch(e){}
                 const darken = (v) => Math.floor(v * 0.4);
                 const color = `rgb(${darken(r)}, ${darken(g)}, ${darken(b)})`;
                 document.getElementById('theme-color-dark')?.setAttribute('content', color);
