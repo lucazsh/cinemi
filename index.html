@@ -3005,72 +3005,32 @@
                 </div>
             </div>
             <div class="question">
-                <h1>What kind of movies do you like?</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q10a" name="q10" value="psychological_thriller">
-                    <label for="q10a">Psychological / Thriller</label>
-                    <input type="radio" id="q10b" name="q10" value="action">
-                    <label for="q10b">Action</label>
-                    <input type="radio" id="q10c" name="q10" value="horror">
-                    <label for="q10c">Horror</label>
-                    <input type="radio" id="q10d" name="q10" value="romantic_drama">
-                    <label for="q10d">Romantic drama</label>
-                    <input type="radio" id="q10e" name="q10" value="romantic_comedy">
-                    <label for="q10e">Romantic comedy</label>
-                    <input type="radio" id="q10f" name="q10" value="fantasy">
-                    <label for="q10f">Fantasy</label>
-                    <input type="radio" id="q10g" name="q10" value="science_fiction">
-                    <label for="q10g">Science Fiction</label>
-                    <input type="radio" id="q10h" name="q10" value="superheroes">
-                    <label for="q10h">Superheroes</label>
-                    <input type="radio" id="q10i" name="q10" value="comedy">
-                    <label for="q10i">Comedy</label>
-                    <input type="radio" id="q10j" name="q10" value="melancholic">
-                    <label for="q10j">Melancholic</label>
-                    <input type="radio" id="q10k" name="q10" value="crime_detective">
-                    <label for="q10k">Crime / Detective</label>
+                <h1>What kind of movies do you like? <span style="font-size:14px;color:var(--text-secondary)">(pick up to 3)</span></h1>
+                <div class="q-yn" id="genreQ">
+                    <input type="checkbox" id="q10a" name="q10" value="psychological_thriller"><label for="q10a">Psychological / Thriller</label>
+                    <input type="checkbox" id="q10b" name="q10" value="action"><label for="q10b">Action</label>
+                    <input type="checkbox" id="q10c" name="q10" value="horror"><label for="q10c">Horror</label>
+                    <input type="checkbox" id="q10d" name="q10" value="romantic_drama"><label for="q10d">Romantic Drama</label>
+                    <input type="checkbox" id="q10e" name="q10" value="romantic_comedy"><label for="q10e">Romantic Comedy</label>
+                    <input type="checkbox" id="q10f" name="q10" value="fantasy"><label for="q10f">Fantasy</label>
+                    <input type="checkbox" id="q10g" name="q10" value="science_fiction"><label for="q10g">Science Fiction</label>
+                    <input type="checkbox" id="q10h" name="q10" value="superheroes"><label for="q10h">Superheroes</label>
+                    <input type="checkbox" id="q10i" name="q10" value="comedy"><label for="q10i">Comedy</label>
+                    <input type="checkbox" id="q10j" name="q10" value="melancholic"><label for="q10j">Melancholic</label>
+                    <input type="checkbox" id="q10k" name="q10" value="crime_detective"><label for="q10k">Crime / Detective</label>
                 </div>
             </div>
             <div class="question">
-                <h1>Which streaming platform do you use for movies?</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q11a" name="q11" value="netflix">
-                    <label for="q11a">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-                            class="streaming-logo" alt="Netflix">
-                        Netflix
-                    </label>
-
-                    <input type="radio" id="q11b" name="q11" value="disney_plus">
-                    <label for="q11b">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
-                            class="streaming-logo" alt="Disney+">
-                        Disney+
-                    </label>
-
-                    <input type="radio" id="q11c" name="q11" value="showtime">
-                    <label for="q11c">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg"
-                            class="streaming-logo" alt="Showtime">
-                        Showtime
-                    </label>
-
-                    <input type="radio" id="q11d" name="q11" value="prime_video">
-                    <label for="q11d">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png"
-                            class="streaming-logo" alt="Prime Video">
-                        Prime Video
-                    </label>
-
-                    <input type="radio" id="q11e" name="q11" value="hbo_max">
-                    <label for="q11e">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg"
-                            class="streaming-logo" alt="HBO Max">
-                        HBO Max
-                    </label>
-
-                    <input type="radio" id="q11f" name="q11" value="other">
-                    <label for="q11f">Other</label>
+                <h1>Which streaming platforms do you use? <span style="font-size:14px;color:var(--text-secondary)">(pick all that apply)</span></h1>
+                <div class="q-yn" id="platformQ">
+                    <input type="checkbox" id="q11a" name="q11" value="netflix"><label for="q11a"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="streaming-logo" alt="Netflix">Netflix</label>
+                    <input type="checkbox" id="q11b" name="q11" value="disney_plus"><label for="q11b"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" class="streaming-logo" alt="Disney+">Disney+</label>
+                    <input type="checkbox" id="q11c" name="q11" value="showtime"><label for="q11c"><img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg" class="streaming-logo" alt="Showtime">Showtime</label>
+                    <input type="checkbox" id="q11d" name="q11" value="prime_video"><label for="q11d"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" class="streaming-logo" alt="Prime Video">Prime Video</label>
+                    <input type="checkbox" id="q11e" name="q11" value="hbo_max"><label for="q11e"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" class="streaming-logo" alt="HBO Max">HBO Max</label>
+                    <input type="checkbox" id="q11f" name="q11" value="apple_tv"><label for="q11f">Apple TV+</label>
+                    <input type="checkbox" id="q11g" name="q11" value="paramount_plus"><label for="q11g">Paramount+</label>
+                    <input type="checkbox" id="q11h" name="q11" value="other"><label for="q11h">Other</label>
                 </div>
             </div>
         </div>
