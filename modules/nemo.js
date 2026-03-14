@@ -21,7 +21,7 @@ export async function initNemo(){
     if(worker)return;
     console.log('[NEMO] Initializing worker...');
     const workerUrl = `${window.location.origin}/modules/nemo-worker.js`;
-    worker = new Worker(workerUrl);
+    worker = new Worker(workerUrl, {type: 'module'});
 
     worker.onmessage=(e)=>{
         const msg=e.data;
