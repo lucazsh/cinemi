@@ -2,7 +2,7 @@ const SERVER_URL = 'https://miss-thin-sat-engaging.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
-window.BASE_URL = baseUrl;
+window.server = baseUrl;
 
 function formatTimeAgo(dateString) {
     const now = new Date();
