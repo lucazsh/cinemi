@@ -23,8 +23,9 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  if (!event.request.url.startsWith(self.location.origin)) return;
   event.respondWith(
-    caches.match(event.request).then(resp => resp || fetch(event.request))
+    caches.match(event.request).then(resp => resp || fetch(event.request)).catch(() => new Response('', {status: 408}))
   );
 });
 
