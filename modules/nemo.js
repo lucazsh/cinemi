@@ -1,6 +1,7 @@
 let worker=null;let ready=false;const pending=new Map();let reqId=0;
 
 function getBaseUrl(){
+    // used chatgpt for this :(
     // utils.js sets window.server — check that first
     return window.server || window.BASE_URL || window.baseUrl || localStorage.getItem('cinemi_baseUrl') || '';
 }
