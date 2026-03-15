@@ -21,6 +21,9 @@ function showView(id) {
     document.querySelectorAll('.view').forEach(v => {
         if (v.id !== 'add') v.classList.remove('active');
     });
+    const safeBar = document.getElementById('safe-area-bar');
+    if (safeBar) safeBar.style.opacity = '0';
+    
     document.getElementById('replies')?.classList.remove('active')
     document.getElementById(id).classList.add('active');
     
