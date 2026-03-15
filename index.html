@@ -2841,6 +2841,27 @@
             mask-image: linear-gradient(to bottom, #000 0%, #000 41%, transparent 106%);
         }
         .sec-title.light { font-weight: 800; }
+        .sec-wrap {
+            margin: 54px 0 2px;
+        }
+        .sec-sub {
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        .mov {
+            padding: 10px 20px;
+            scroll-padding-left: 20px;
+        }
+        .fmov-title,
+        .fmov-desciption,
+        .fmov-buttons {
+            left: 20px;
+            width: calc(100% - 40px);
+        }
+
+        .fmov-desciption {
+            margin-bottom: 13%;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -3212,7 +3233,7 @@
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
-            <div>
+            <div class="sec-wrap">
                 <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
             </div>
             <div class="mov" id="mood" style="margin: 10px 0px;">
@@ -3220,7 +3241,7 @@
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
-            <div>
+            <div class="sec-wrap">
                 <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
@@ -3263,7 +3284,7 @@
                     </div>
                 </div>
             </div>
-            <div style="font-size: 21px; font-weight: 600;">
+            <div style="font-size: 21px; font-weight: 600;" class="sec-wrap">
                 <span class="sec-sub">Trending</span> <span class="sec-title">for you</span>
             </div>
             <div class="mov" style="margin: 10px 0px;">
