@@ -223,7 +223,7 @@
 
         .navh-inner {
             display: flex;
-            gap: calc((100vw - 220px) / 4);
+            gap: calc((100vw - 200px) / 4);
             justify-content: center;
             align-items: center;
             pointer-events: auto;
@@ -239,7 +239,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 3px;
             border: none;
             background: none;
             padding: 6px 10px;
@@ -251,24 +251,24 @@
         .navh button.active {
             background: var(--navh-pressed);
         }
-
+        .navh button.active svg {
+            fill: var(--icon-fill-primary);
+        }
         .navh button span {
             opacity: 1;
             font-size: 12px;
         }
-
         .navh button svg {
-            width: 24px;
-            height: 24px;
+            fill: #999999;
+            transition: fill 0.25s ease;
         }
-
         .view {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: calc(100% - 85px);
-            margin-bottom: 85px;
+            height: calc(100% - 73px);
+            margin-bottom: 73px;
             padding: 0 20px;
             opacity: 0;
             pointer-events: none;
@@ -278,6 +278,15 @@
             box-sizing: border-box;
         }
 
+        @supports (-webkit-touch-callout: none) {
+            .navh {
+                bottom: 30px;
+            }
+            .view {
+                height: calc(100% - 83px);
+                margin-bottom: 83px;
+            }
+        }
         .view.active {
             opacity: 1;
             pointer-events: auto;
@@ -3093,7 +3102,7 @@
                     </span>
                 </div>
             </div>
-            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
+            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:flex-start;margin:8px 0 14px;padding-left:4px;-webkit-mask-image:linear-gradient(to right, black 60%, transparent 100%);mask-image:linear-gradient(to right, black 60%, transparent 100%);"></div>
             <div id="genre-label" class="sec-wrap">
                 <span class="sec-sub"></span>
                 <span class="sec-title"></span>
@@ -3685,32 +3694,16 @@
     <div class="navh">
         <div class="navh-inner">
             <button class="active" onclick="showView('home')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
-                    fill="#000000">
-                    <path
-                        d="M160-186.67v-380q0-15.83 7.08-30 7.09-14.16 19.59-23.33L440-810q17.45-13.33 39.89-13.33T520-810l253.33 190q12.5 9.17 19.59 23.33 7.08 14.17 7.08 30v380q0 27.5-19.58 47.09Q760.83-120 733.33-120h-140q-14.16 0-23.75-9.58-9.58-9.59-9.58-23.75v-213.34q0-14.16-9.58-23.75-9.59-9.58-23.75-9.58h-93.34q-14.16 0-23.75 9.58-9.58 9.59-9.58 23.75v213.34q0 14.16-9.58 23.75-9.59 9.58-23.75 9.58h-140q-27.5 0-47.09-19.58Q160-159.17 160-186.67Z" />
-                </svg>
-                <span>Home</span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M131-196.67v-365q0-25.83 10.58-47.83 10.59-22 31.42-37.17l243-183.66q27.45-20.34 63.89-20.34t64.78 20.34l243 183.66q20.16 15.17 31.08 37.17 10.92 22 10.92 47.83v365q0 44.17-31.25 75.09Q767.17-90.67 723-90.67H620.67q-23.5 0-38.42-15.41-14.92-15.42-14.92-37.92v-210q0-21.83-15.41-37.25-15.42-15.42-37.25-15.42H446q-22.5 0-37.92 15.42-15.41 15.42-15.41 37.25v210q0 22.5-14.92 37.92Q362.83-90.67 340-90.67H237q-44.17 0-75.08-30.91Q131-152.5 131-196.67Z"/></svg>
             </button>
             <button onclick="showView('finder')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="#000000">
-                    <path
-                        d="M360-480q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480Zm240 0q33 0 56.5-23.5T680-560q0-33-23.5-56.5T600-640q-33 0-56.5 23.5T520-560q0 33 23.5 56.5T600-480ZM360-120v-160h80v160h-80Zm160 0v-160h80v160h-80Zm-320 0q-33 0-56.5-23.5T120-200v-400q0-100 70-170t170-70h240q100 0 170 70t70 170v400q0 33-23.5 56.5T760-120h-80v-160q0-33-23.5-56.5T600-360H360q-33 0-56.5 23.5T280-280v160h-80Z" />
-                </svg>
-                <span>Finder</span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>
             </button>
             <button onclick="showView('pos-t')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="#000000">
-                    <path
-                        d="m560-200 200-200H600q-17 0-28.5 11.5T560-360v160Zm-360 80q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v367q0 16-6 30.5T817-337L623-143q-11 11-25.5 17t-30.5 6H200Zm120-280h120q17 0 28.5-11.5T480-440q0-17-11.5-28.5T440-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Z" />
-                </svg>
-                <span>Posts</span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="m550-210 200-200H618q-27.6 0-47.8 20.2Q550-369.6 550-342v132ZM210-74q-57.37 0-96.69-39.31Q74-152.63 74-210v-540q0-57.38 39.31-96.69Q152.63-886 210-886h540q57.38 0 96.69 39.31Q886-807.38 886-750v348q0 27.04-10 52.02Q866-325 846-306L654-114q-19 20-43.98 30Q585.04-74 558-74H210Zm132-299h91q21.58 0 36.79-15.5T485-425.98q0-21.98-15.21-37T433-478h-90q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-373 342-373Zm0-185h276q21.57 0 36.79-15.5Q670-589 670-610.98q0-21.98-15.21-37Q639.57-663 618-663H343q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-558 342-558Z"/></svg>
             </button>
             <button onclick="showView('profile')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999"><path d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z"/></svg>
-                <span>Profile</span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z"/></svg>
             </button>
         </div>
     </div>
