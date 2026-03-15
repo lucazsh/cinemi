@@ -129,19 +129,31 @@ async function loadFeaturedMovie() {
             }, 400);
         }
         
+        let dotEls = [];
+
+        function buildDots(movies) {
+            const container = document.getElementById('fmov-dots');
+            if (!container) return;
+            container.innerHTML = '';
+            dotEls = movies.map((_, i) => {
+                const d = document.createElement('div');
+                d.style.cssText = `
+                    height:6px; border-radius:3px; cursor:pointer; flex-shrink:0;
+                    width:${i === 0 ? '28px' : '6px'};
+                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'};
+                    transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1),
+                                background 0.4s ease;
+                `;
+                d.onclick = () => goToSlide(i);
+                container.appendChild(d);
+                return d;
+            });
+        }
+
         function updateDots(index) {
-            const dotsContainer = document.getElementById('fmov-dots');
-            if (!dotsContainer) return;
-            dotsContainer.innerHTML = movies.map((_, i) => `
-                <div onclick="goToSlide(${i})" style="height:6px;border-radius:3px;background:${i === index ? '#ffffff' : 'rgba(255,255,255,0.35)'};width:${i === index ? '28px' : '6px'};transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.1);cursor:pointer;opacity:0;transform:translateY(6px);"></div>
-            `).join('');
-            
-            dotsContainer.querySelectorAll('div').forEach((dot, i) => {
-                setTimeout(() => {
-                    dot.style.transition = `all 0.4s cubic-bezier(0.175,0.885,0.32,1.1), opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`;
-                    dot.style.opacity = '1';
-                    dot.style.transform = 'translateY(0)';
-                }, 10);
+            dotEls.forEach((d, i) => {
+                d.style.width = i === index ? '28px' : '6px';
+                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.35)';
             });
         }
         
