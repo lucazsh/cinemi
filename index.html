@@ -124,7 +124,7 @@
                 --border-log: #999999;
                 --button-log: #18191e;
                 --border-h: #f9faff50;
-                --navh-pressed: rgba(30, 30, 24, 0.493);
+                --navh-pressed: #1a1a1a;
                 --svg-settings: #787878;
                 --ichat-c: #303030;
                 --iconbox-bg: rgb(39, 39, 39);
@@ -266,9 +266,10 @@
             transform: translateY(calc(-100% + env(safe-area-inset-top)));
             opacity: 0;
             pointer-events: none;
-}
+        }
         .navh button.active {
             background: var(--navh-pressed);
+            transform: scale(1.02);
         }
         .navh button.active svg {
             fill: var(--icon-fill-primary);
@@ -579,15 +580,13 @@
             position: fixed;
             left: 0;
             right: 0;
-            top: 1.4vh;
+            top: calc(40vh + env(safe-area-inset-top));
             bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
             transform: translateY(100%);
-            background-color: var(--bg-primary);
+            background: var(--card);
             z-index: 1200;
             height: 100%;
-            border-top: 1px solid var(--border-dark-alpha-1);
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            border-radius: 32px 32px 0 0;
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
@@ -751,17 +750,29 @@
         .mov {
             display: flex;
             overflow-x: auto;
-            gap: 10px;
+            gap: 14px;
             scroll-behavior: smooth;
+            scroll-snap-type: x mandatory; 
+            padding: 10px;
         }
 
         .mov img {
-            max-width: 40%;
-            border-radius: 15px;
-            margin-top: 9px;
-            border: 1px solid var(--border-h);
+            scroll-snap-align: start;
         }
-
+        .mov img {
+            max-width: 40%;
+            border-radius: clamp(16px, 6vw, 32px); 
+            margin-top: 9px;
+            border: 1.5px solid rgba(255, 255, 255, 0.1); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        .mov img:active {
+            transform: scale(0.95);
+        }
+        .mov img:hover {
+            transform: scale(0.95);
+        }
         .f-mov {
             position: relative;
             display: inline-block;
@@ -950,12 +961,10 @@
             top: 35vh;
             bottom: calc(var(--navh-gap) + env(safe-area-inset-bottom) + var(--navh-height));
             transform: translateY(100%);
-            background-color: var(--bg-primary);
+            background-color: var(--card);
             z-index: 1200;
             height: 100%;
-            border-top: 1px solid var(--border-dark-alpha-1);
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            border-radius: 32px 32px 0 0;
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             pointer-events: none;
@@ -1920,7 +1929,38 @@
             overflow-y: auto;
             animation: slideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
-
+        .sheet::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--border-dark-alpha-1);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .sheet {
+            padding-top: 32px;
+        }
+        .sheet.sheet-fs {
+            max-height: 96vh !important;
+        }
+        .drag-pill {
+            width: 36px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--border-dark-alpha-1);
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        #replies, #add {
+            padding-top: 20px;
+        }
         .sheet {
             z-index: 2000 !important;
         }
@@ -2692,23 +2732,64 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
             z-index: 999;
             white-space: nowrap;
             touch-action: none;
+            transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.1), opacity 0.3s;
+            position: fixed;
+        }
+        .sp-fab span {
+            color: var(--bg-primary);
+        }
+        .sp-fab::before{
+            content:"";
+            position:absolute;
+            inset:-1px;
+            border-radius:32px;
+            background:repeating-linear-gradient(
+                90deg,
+                var(--border-light) 0px,
+                var(--border-light) 6px,
+                transparent 6px,
+                transparent 12px
+            );
+            background-size:12px 100%;
+            animation:dashSlide .6s linear infinite;
+            z-index:0;
+            pointer-events:none;
         }
 
-        .sp-fab svg {
-            fill: var(--bg-primary);
-            width: 16px;
-            height: 16px;
+        .sp-fab::after{
+            content:"";
+            position:absolute;
+            inset:2px;
+            border-radius:28px;
+            background:var(--text-primary);
+            z-index:1;
+            pointer-events:none;
         }
 
-        .sp-fab.hidden {
-            transform: translateX(-50%) translateY(80px);
-            opacity: 0;
-            pointer-events: none;
+        .sp-fab * {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .sp-fab svg{
+            fill:var(--bg-primary);
+            width:16px;
+            height:16px;
+        }
+
+        .sp-fab.hidden{
+            transform:translateX(-50%) translateY(80px);
+            opacity:0;
+            pointer-events:none;
+        }
+
+        @keyframes dashSlide{
+            from{background-position:0 0;}
+            to{background-position:12px 0;}
         }
         #profile-gradient-bg {
             position: absolute;
@@ -3253,6 +3334,7 @@
         </div>
     </div>
     <div id="add" class="view">
+        <div class="drag-pill"></div>
         <div class="tp">
             <button onclick="closeAdd()"
                 style="color: var(--cancel); font-size: 16px; align-items: center;  ">Cancel</button>
@@ -3509,11 +3591,8 @@
         </div>
     </div>
     <div class="sp-fab hidden" id="sp-fab" onclick="openPanel('spaceedit')">
-        <svg viewBox="0 -960 960 960">
-            <path
-                d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-        </svg>
-        Edit Space
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999"><path d="M209-210h58l315-315-56-57-317 318v54ZM142-74q-29 0-48.5-19.5T74-142v-123q0-26.86 10.2-52.01Q94.39-342.16 114-362l497.32-497.32Q624-873 641.47-879.5 658.93-886 677-886q17.74 0 34.87 6.5T744-860l117 115q14 14 20 31.48 6 17.49 6 36.47 0 18.05-6.5 35.55Q874-624 860-611L364-114q-19.84 19.61-44.99 29.8Q293.86-74 267-74H142Zm594-603-58-58 58 58ZM554-554l-28-28 56 57-28-29Z"/></svg>
+        <span>Edit Space</span>
     </div>
     <div id="settings" class="view">
         <div class="nt">
@@ -3623,6 +3702,7 @@
         </div>
     </div>
     <div id="replies" class="view">
+        <div class="drag-pill"></div>
         <div class="tp">
             <button onclick="closeReplies()"
                 style="color: var(--cancel); font-size: 16px; align-items: center;">Back</button>
@@ -4752,6 +4832,143 @@
                 setTimeout(() => fab.style.transition = '', 300);
             }
         });
+        (function () {
+            function mkSheetDragger(sheet, onDismiss) {
+                var sy = 0, initH = 0, active = false;
+                sheet.addEventListener('touchstart', function (e) {
+                    if (e.touches[0].clientY - sheet.getBoundingClientRect().top > 55) return;
+                    sy = e.touches[0].clientY;
+                    initH = sheet.offsetHeight;
+                    active = true;
+                    sheet.style.transition = 'none';
+                }, { passive: true });
+                sheet.addEventListener('touchmove', function (e) {
+                    if (!active) return;
+                    e.preventDefault();
+                    var dy = e.touches[0].clientY - sy;
+                    if (dy > 0) {
+                        sheet.style.transform = 'translateY(' + dy + 'px)';
+                    } else {
+                        sheet.style.transform = '';
+                        sheet.style.opacity = '';
+                        sheet.style.maxHeight = Math.min(window.innerHeight - 6, initH - dy) + 'px';
+                    }
+                }, { passive: false });
+                sheet.addEventListener('touchend', function (e) {
+                    if (!active) return;
+                    active = false;
+                    var dy = e.changedTouches[0].clientY - sy;
+                    sheet.style.opacity = '';
+                    sheet.style.transition = '';
+                    if (dy > 90) {
+                        sheet.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+                        sheet.style.transform = 'translateY(110%)';
+                        setTimeout(function () {
+                            sheet.style.transform = '';
+                            sheet.style.transition = '';
+                            sheet.style.maxHeight = '';
+                            sheet.classList.remove('sheet-fs');
+                            var panel = sheet.closest('.panel');
+                            panel.classList.remove('open', 'closing-panel');
+                            sheet.classList.remove('closing');
+                        }, 280);
+                    } else if (dy < -55) {
+                        sheet.style.transition = 'max-height 0.32s cubic-bezier(0.175,0.885,0.32,1.1)';
+                        sheet.style.maxHeight = (window.innerHeight - 6) + 'px';
+                        sheet.style.transform = '';
+                        sheet.classList.add('sheet-fs');
+                        setTimeout(function () { sheet.style.transition = ''; }, 340);
+                    } else {
+                        sheet.style.transition = 'transform 0.32s cubic-bezier(0.175,0.885,0.32,1.1)';
+                        sheet.style.transform = '';
+                        sheet.style.maxHeight = '';
+                        sheet.classList.remove('sheet-fs');
+                        setTimeout(function () { sheet.style.transition = ''; }, 340);
+                    }
+                });
+            }
+
+            function mkDragger(el, onDismiss) {
+                var sy = 0, active = false, isFull = false, fullOffset = 0;
+
+                el.addEventListener('touchstart', function (e) {
+                    if (e.touches[0].clientY - el.getBoundingClientRect().top > 65) return;
+                    sy = e.touches[0].clientY;
+                    active = true;
+                    el.style.transition = 'none';
+                }, { passive: true });
+
+                el.addEventListener('touchmove', function (e) {
+                    if (!active) return;
+                    e.preventDefault();
+                    var dy = e.touches[0].clientY - sy;
+                    if (!isFull && dy < 0) return;
+                    if (isFull && dy < 0) return;
+                    el.style.transform = 'translateY(' + (isFull ? fullOffset + dy : dy) + 'px)';
+                }, { passive: false });
+
+                el.addEventListener('touchend', function (e) {
+                    if (!active) return;
+                    active = false;
+                    var dy = e.changedTouches[0].clientY - sy;
+
+                    if (isFull) {
+                        if (dy > 60) {
+                            isFull = false;
+                            el.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                            el.style.transform = 'translateY(0)';
+                            fullOffset = 0;
+                            setTimeout(function () { el.style.transition = ''; }, 360);
+                        } else {
+                            el.style.transition = 'transform 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                            el.style.transform = 'translateY(' + fullOffset + 'px)';
+                            setTimeout(function () { el.style.transition = ''; }, 340);
+                        }
+                    } else {
+                        if (dy > 90) {
+                            el.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+                            el.style.transform = 'translateY(110%)';
+                            setTimeout(function () {
+                                el.style.transform = '';
+                                el.style.transition = '';
+                                el.classList.remove('active');
+                            }, 280);
+                        } else if (dy < -55) {
+                            isFull = true;
+                            var rect = el.getBoundingClientRect();
+                            var safeTop = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-top')) || 0;
+                            fullOffset = -(rect.top - safeTop);
+                            el.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                            el.style.transform = 'translateY(' + fullOffset + 'px)';
+                            setTimeout(function () { el.style.transition = ''; }, 360);
+                        } else {
+                            el.style.transition = 'transform 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                            el.style.transform = 'translateY(0)';
+                            setTimeout(function () { el.style.transition = ''; }, 340);
+                        }
+                    }
+                });
+            }
+
+            document.querySelectorAll('.panel').forEach(function (panel) {
+                if (panel.id === 'swipify-panel') return;
+                var sheet = panel.querySelector('.sheet');
+                if (!sheet) return;
+                var pName = panel.id.replace('-panel', '');
+                mkSheetDragger(sheet, function () { closePanel(pName); });
+            });
+
+            var replies = document.getElementById('replies');
+            if (replies) mkDragger(replies, function () { closeReplies(); });
+
+            var addEl = document.getElementById('add');
+            if (addEl) {
+                mkDragger(addEl, function () {
+                    if (typeof closeAdd === 'function') closeAdd();
+                    else addEl.classList.remove('active');
+                });
+            }
+        })();
     </script>
 </body>
 </html>
