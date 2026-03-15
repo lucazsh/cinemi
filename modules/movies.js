@@ -21,11 +21,15 @@ function showSkeletonLoaders() {
     
     const moodContainer = document.getElementById('mood');
     if (moodContainer) {
-        moodContainer.innerHTML = Array(3).fill(0).map(() => `
-            <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
-        `).join('');
+        moodContainer.querySelectorAll('.skeleton-loader').forEach(s => s.remove());
+        moodContainer.querySelectorAll('img').forEach(i => i.remove());
+        Array(3).fill(0).forEach(() => {
+            const div = document.createElement('div');
+            div.className = 'skeleton-loader';
+            div.style.cssText = 'width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;';
+            moodContainer.appendChild(div);
+        });
     }
-    
     const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
     if (trendingContainer) {
         trendingContainer.innerHTML = Array(3).fill(0).map(() => `
@@ -291,7 +295,7 @@ async function loadMoodMovies() {
         
         const moodContainer = document.getElementById('mood');
         if (moodContainer && data.results) {
-            moodContainer.querySelectorAll('img').forEach(i => i.remove());
+            moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
@@ -338,7 +342,7 @@ async function loadAIRecommendations() {
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
             const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
-            moodContainer.querySelectorAll('img').forEach(i => i.remove());
+            moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
             if (refreshBtn) moodContainer.appendChild(refreshBtn);
             recommendations.slice(0, 6).forEach((movie, idx) => {
                 const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
