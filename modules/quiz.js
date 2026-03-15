@@ -95,7 +95,8 @@ function updateProgress() {
 
 async function checkQuizStatus() {
     const quizCompleted = localStorage.getItem('quizCompleted');
-    if (quizCompleted === 'true') { showView('home'); return true; }
+    const hasProfile = localStorage.getItem('cinemi_userQuizProfile');
+    if (quizCompleted === 'true' && hasProfile) { showView('home'); return true; }
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/quiz/status`);
         const data = await res.json();
