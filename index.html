@@ -247,7 +247,26 @@
             cursor: pointer;
             transition: background 0.4s;
         }
+        #home .nt {
+            background-color: transparent;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.35s ease,
+                        background-color 0.35s ease !important;
+            will-change: transform;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+        }
 
+        #home .nt.scrolled {
+            background-color: var(--bg-primary);
+        }
+
+        #home .nt.hidden {
+            transform: translateY(calc(-100% + env(safe-area-inset-top)));
+            opacity: 0;
+            pointer-events: none;
+}
         .navh button.active {
             background: var(--navh-pressed);
         }
@@ -3958,6 +3977,18 @@
         </div>
         <div id="chat-search-results" style="flex:1;overflow-y:auto;padding:0 20px;"></div>
     </div>
+    <div id="safe-area-bar" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: env(safe-area-inset-top);
+        background: var(--bg-primary);
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    "></div>
     <script src="/modules/utils.js"></script>
     <script src="/modules/auth.js"></script>
     <script src="/modules/ui.js"></script>
