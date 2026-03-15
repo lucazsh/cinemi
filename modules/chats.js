@@ -429,6 +429,27 @@
     } catch { showToast('Failed to open conversation.'); }
   }
 
+  function addMsgBtnToUserRow(el) {
+    if (el.dataset.chatBtnAdded) return;
+    el.dataset.chatBtnAdded = '1';
+    const username = el.dataset.username;
+    if (!username) return;
+    const btn = document.createElement('button');
+    btn.title = 'Message';
+    btn.style.cssText = 'margin-left:auto;background:var(--iconbox-bg);border:1px solid var(--border-dark-alpha-2);border-radius:10px;padding:7px 10px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;';
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="var(--text-primary)"><path d="M240-240 92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Z"/></svg>`;
+    btn.onclick = e => { e.stopPropagation(); openChatsView(username, el.querySelector('img')?.src); };
+    el.appendChild(btn);
+  }
+
+  const observer = new MutationObserver(muts => {
+    muts.forEach(m => m.addedNodes.forEach(node => {
+      if (node.nodeType !== 1) return;
+      if (node.classList?.contains('usr-search')) addMsgBtnToUserRow(node);
+      node.querySelectorAll?.('.usr-search').forEach(addMsgBtnToUserRow);
+    }));
+  });
+
   function init() {
     const sr = document.getElementById('search-results');
     if (sr) observer.observe(sr, { childList: true, subtree: true });
