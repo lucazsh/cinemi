@@ -317,8 +317,6 @@ async function loadMoodMovies() {
 
 async function loadAIRecommendations() {
     try {
-        const moodLabel = document.getElementById('mood');
-
         const { initNemo, scoreMovies } = await import('./nemo.js');
         await initNemo();
 
@@ -341,9 +339,7 @@ async function loadAIRecommendations() {
 
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
-            const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
             moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
-            if (refreshBtn) moodContainer.appendChild(refreshBtn);
             recommendations.slice(0, 6).forEach((movie, idx) => {
                 const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
                 const posterUrl = movie.posterPath ? `${IMG_W500}${movie.posterPath}` : '';
