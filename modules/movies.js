@@ -1036,7 +1036,9 @@ function initMoodSwipe() {
     }, { passive: true });
 
     moodEl.addEventListener('touchend', e => {
-        if (e.changedTouches[0].clientX - startX < -55) {
+        const deltaX = e.changedTouches[0].clientX - startX;
+        const nearEnd = moodEl.scrollLeft + moodEl.clientWidth >= moodEl.scrollWidth - 40;
+        if (deltaX < -55 && nearEnd) {
             btn.classList.add('visible');
             moodEl.scrollTo({ left: 0, behavior: 'smooth' });
         }
