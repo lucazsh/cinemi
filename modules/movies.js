@@ -4,6 +4,66 @@ let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
 
+(function() {
+    function magicRotate(row) {
+        const imgs = row.querySelectorAll('img');
+        let lastAngle = 0;
+        imgs.forEach((img, i) => {
+            let angle, attempts = 0;
+            do {
+                const mag = 3 + Math.random() * 3.7;
+                const sign = (i % 2 === 0 ? 1 : -1) * (Math.random() > 0.15 ? 1 : -1);
+                angle = sign * mag;
+                attempts++;
+            } while (Math.abs(angle - lastAngle) < 2 && attempts < 10);
+            lastAngle = angle;
+            img._baseAngle = angle;
+            img.style.transform = `rotate(${angle.toFixed(1)}deg)`;
+            img.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+        });
+    }
+
+    window._moodRotateInit = false;
+
+    window.applyMoodRotation = function(row) {
+        if (!row) return;
+        magicRotate(row);
+
+        if (window._moodRotateInit) return;
+        window._moodRotateInit = true;
+
+        const scrollEl = document.getElementById('home');
+        if (!scrollEl) return;
+        let lastScrollY = 0;
+        let ticking = false;
+
+        scrollEl.addEventListener('scroll', function() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const scrollY = scrollEl.scrollTop;
+                const delta = scrollY - lastScrollY;
+                lastScrollY = scrollY;
+                const currentRow = document.getElementById('mood');
+                if (!currentRow) { ticking = false; return; }
+                currentRow.querySelectorAll('img').forEach((img, i) => {
+                    const base = img._baseAngle || 0;
+                    const wobble = delta * 0.08 * (i % 2 === 0 ? 1 : -1);
+                    const clamped = Math.max(-5, Math.min(6.7, base + wobble));
+                    img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
+                });
+                clearTimeout(currentRow._resetTimer);
+                currentRow._resetTimer = setTimeout(() => {
+                    currentRow.querySelectorAll('img').forEach(img => {
+                        img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
+                    });
+                }, 400);
+                ticking = false;
+            });
+        }, { passive: true });
+    };
+})();
+
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -304,6 +364,7 @@ async function loadMoodMovies() {
                     moodContainer.appendChild(img);
                 }
             });
+            applyMoodRotation(moodContainer);
         }
     } catch (err) {
         console.error('Failed to load mood movies:', err);
@@ -352,6 +413,7 @@ async function loadAIRecommendations() {
                     moodContainer.appendChild(img);
                 }
             });
+            applyMoodRotation(moodContainer);
         }
     } catch (err) {
         console.error('Failed to load AI recommendations:', err);
