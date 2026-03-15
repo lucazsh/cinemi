@@ -114,13 +114,13 @@ async function loadFeaturedMovie() {
                 const ambientA = document.getElementById('fmov-ambient-a');
                 const ambientB = document.getElementById('fmov-ambient-b');
                 if (ambientA && ambientB) {
-                    const activeIsA = parseFloat(ambientA.style.opacity || 0.26) > 0.1;
+                    const activeIsA = parseFloat(ambientA.style.opacity || 0.4) > 0.1;
                     const next = activeIsA ? ambientB : ambientA;
                     const prev = activeIsA ? ambientA : ambientB;
                     next.style.backgroundImage = `url(${posterUrl})`;
                     uptheme(posterUrl);
                     requestAnimationFrame(() => {
-                        next.style.opacity = '0.26';
+                        next.style.opacity = '0.4';
                         prev.style.opacity = '0';
                     });
                 }
@@ -138,25 +138,24 @@ async function loadFeaturedMovie() {
             dotEls = movies.map((_, i) => {
                 const d = document.createElement('div');
                 d.style.cssText = `
-                    height:6px; border-radius:3px; cursor:pointer; flex-shrink:0;
-                    width:${i === 0 ? '28px' : '6px'};
-                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'};
-                    transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1),
-                                background 0.4s ease;
+                    height:10px; border-radius:3.5px; cursor:pointer; flex-shrink:0;
+                    width:${i === 0 ? '54px' : '10px'};
+                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.3)'};
+                    transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1), background 0.4s ease;
                 `;
                 d.onclick = () => goToSlide(i);
                 container.appendChild(d);
                 return d;
             });
         }
-
+        
         function updateDots(index) {
             dotEls.forEach((d, i) => {
-                d.style.width = i === index ? '28px' : '6px';
-                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.35)';
+                d.style.width = i === index ? '54px' : '10px';
+                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.3)';
             });
         }
-
+        
         window._featuredMovies = movies;
         window.goToSlide = (i) => {
             currentIndex = i;
