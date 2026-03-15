@@ -291,7 +291,9 @@ async function loadMoodMovies() {
         
         const moodContainer = document.getElementById('mood');
         if (moodContainer && data.results) {
+            const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
             moodContainer.innerHTML = '';
+            if (refreshBtn) moodContainer.appendChild(refreshBtn);
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
@@ -338,7 +340,9 @@ async function loadAIRecommendations() {
 
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
+            const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
             moodContainer.innerHTML = '';
+            if (refreshBtn) moodContainer.appendChild(refreshBtn);
             recommendations.slice(0, 6).forEach((movie, idx) => {
                 const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
                 const posterUrl = movie.posterPath ? `${IMG_W500}${movie.posterPath}` : '';
@@ -1021,7 +1025,11 @@ async function showMovieDetails(movieId) {
 function initMoodSwipe() {
     const moodEl = document.getElementById('mood');
     const btn = document.getElementById('mood-refresh-btn');
-    if (!moodEl || !btn || moodEl._swipeInited) return;
+    if (!moodEl || !btn) return;
+    if (moodEl._swipeInited) {
+        btn.onclick = () => { btn.classList.remove('visible'); loadAIRecommendations(); };
+        return;
+    }
     moodEl._swipeInited = true;
 
     let startX = 0;
