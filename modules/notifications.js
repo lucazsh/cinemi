@@ -29,7 +29,7 @@ notifStyles.textContent = `
   top: 0;
   padding-top: env(safe-area-inset-top);
   right: 0;
-  width: min(380px, 100vw);
+  width: 100%;
   height: 100dvh;
   background: var(--bg-primary);
   z-index: 9998;
@@ -69,7 +69,7 @@ notifStyles.textContent = `
   border: none;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -101,7 +101,7 @@ notifStyles.textContent = `
 .notif-avatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 16px;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -123,9 +123,9 @@ notifStyles.textContent = `
   margin-top: 2px;
 }
 .notif-icon-badge {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,7 +166,7 @@ notifPanel.innerHTML = `
   <div class="notif-header">
     <h2>Notifications</h2>
     <button class="notif-close-btn" id="notif-close-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999"><path d="M480-385 302-207q-20 20-48 20t-47-20q-20-20-20-47.5t20-47.5l178-178-178-179q-20-20-20-47.5t20-47.5q19-20 47-20t48 20l178 178 178-178q20-20 48-20t47 20q20 20 20 47.5T753-659L575-480l178 178q20 20 20 47.5T753-207q-19 20-47 20t-48-20L480-385Z"/></svg>
     </button>
   </div>
   <div class="notif-list" id="notif-list"></div>
@@ -210,9 +210,9 @@ function notifTypeLabel(type, fromUsername) {
 }
 
 function notifTypeIcon(type) {
-  if (type === 'follow') return { bg: '#3a86ff', svg: `<svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="white"><path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm220 322v-120q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v120h-80Zm80-320v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Zm-480-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM0-160v-112q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v112H0Zm320-320q33 0 56.5-23.5T400-560q0-33-23.5-56.5T320-640q-33 0-56.5 23.5T240-560q0 33 23.5 56.5T320-480ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-320Zm0 320Z"/></svg>` };
-  if (type === 'reply') return { bg: '#2ec4b6', svg: `<svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="white"><path d="M880-80 720-240H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v560ZM160-473l47-47H680v-280H80v280h80v120l47-47-47 47Z"/></svg>` };
-  if (type === 'message') return { bg: '#e63946', svg: `<svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="white"><path d="M80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm134-240h586v-480H160v525l54-45Zm-54 0v-480 480Z"/></svg>` };
+  if (type === 'follow') return { bg: 'var(--card)', svg: `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#999999"><path d="M726-549h-28q-19.9 0-34.45-13.79Q649-576.58 649-597.29t13.85-35.21Q676.7-647 698-647h28v-27q0-19.9 13.79-34.45Q753.58-723 774.29-723t35.21 13.85Q824-695.3 824-674v27h27q19.9 0 34.45 14.29 14.55 14.29 14.55 35T886.15-563Q872.3-549 851-549h-27v28q0 19.9-14.29 34.45-14.29 14.55-35 14.55T740-486.55Q726-501.1 726-521v-28Zm-471.5-7Q201-610 201-688.5T254.34-820q53.34-53 132.5-53t132.66 53Q573-767 573-688.5T519.66-556q-53.34 54-132.5 54T254.5-556ZM53-246v-11q0-38.25 18.41-69.4Q89.81-357.56 123-375q59-35 126.31-53.5t137.5-18.5Q459-447 526-428.5T651-376q33.19 17.44 51.59 48.1Q721-297.25 721-257v11q0 55.1-37.16 91.55Q646.68-118 592.96-118H180.72Q127-118 90-154.45T53-246Z"/></svg>` };
+  if (type === 'reply') return { bg: 'var(--card)', svg: `<svg xmlns="<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#999999"><path d="m341-446 52 52q18 18 18.5 45T394-303.52Q375-284 348.5-285T304-304L143-465q-19-18.64-19-45.32T143-556l161-161q20-19 45.67-19 25.66 0 44.33 19 18 18.67 18.5 44.83Q413-646 394-628l-53 54h300q91.68 0 156.34 64.66T862-353v125q0 27.3-18.29 45.65-18.29 18.35-45 18.35T753-182.35Q734-200.7 734-228v-125q0-40-27-66.5T641-446H341Z"/></svg>` };
+  if (type === 'message') return { bg: 'var(--card)', svg: `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#999999"><path d="M172-117q-57.4 0-96.7-39.3Q36-195.6 36-253v-454q0-57.4 39.3-96.7Q114.6-843 172-843h616q57.4 0 96.7 39.3Q924-764.4 924-707v454q0 57.4-39.3 96.7Q845.4-117 788-117H172Zm85-175h446q18.6 0 31.8-13.28t13.2-32Q748-356 734.8-369T703-382H257q-18.6 0-31.8 13.08t-13.2 31.5q0 18.42 13.2 31.92T257-292Zm0-143h446q18.6 0 31.8-13t13.2-32q0-19-13.2-32T703-525H257q-18.6 0-31.8 13T212-480q0 19 13.2 32t31.8 13Zm0-143h283q18.6 0 31.8-13.08t13.2-31.5q0-18.42-13.2-31.92T540-668H257q-18.6 0-31.8 13.28t-13.2 32Q212-604 225.2-591t31.8 13Z"/></svg>` };
   return { bg: '#888', svg: '' };
 }
 
