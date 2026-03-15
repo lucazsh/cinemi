@@ -1023,31 +1023,9 @@ function initMoodSwipe() {
     const moodEl = document.getElementById('mood');
     const btn = document.getElementById('mood-refresh-btn');
     if (!moodEl || !btn) return;
-    if (moodEl._swipeInited) {
-        btn.onclick = () => { btn.classList.remove('visible'); loadAIRecommendations(); };
-        return;
-    }
-    moodEl._swipeInited = true;
+    moodEl.scrollLeft = btn.offsetWidth + 18;
 
-    let startX = 0;
-    let startScrollLeft = 0;
-    
-    moodEl.addEventListener('touchstart', e => {
-        startX = e.touches[0].clientX;
-        startScrollLeft = moodEl.scrollLeft;
-    }, { passive: true });
-    
-    moodEl.addEventListener('touchend', e => {
-        const deltaX = e.changedTouches[0].clientX - startX;
-        const scrolledAmount = moodEl.scrollLeft - startScrollLeft;
-        if (deltaX < -30 && Math.abs(scrolledAmount) < 10) {
-            btn.classList.add('visible');
-            moodEl.scrollTo({ left: 0, behavior: 'smooth' });
-        }
-    }, { passive: true });
-
-    btn.addEventListener('click', () => {
-        btn.classList.remove('visible');
+    btn.onclick = () => {
         loadAIRecommendations();
-    });
+    };
 }
