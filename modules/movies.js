@@ -114,13 +114,13 @@ async function loadFeaturedMovie() {
                 const ambientA = document.getElementById('fmov-ambient-a');
                 const ambientB = document.getElementById('fmov-ambient-b');
                 if (ambientA && ambientB) {
-                    const activeIsA = parseFloat(ambientA.style.opacity || 0.4) > 0.1;
+                    const activeIsA = parseFloat(ambientA.style.opacity || 0.23) > 0.1;
                     const next = activeIsA ? ambientB : ambientA;
                     const prev = activeIsA ? ambientA : ambientB;
                     next.style.backgroundImage = `url(${posterUrl})`;
                     uptheme(posterUrl);
                     requestAnimationFrame(() => {
-                        next.style.opacity = '0.4';
+                        next.style.opacity = '0.23';
                         prev.style.opacity = '0';
                     });
                 }
