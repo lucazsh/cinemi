@@ -304,6 +304,7 @@ async function loadMoodMovies() {
                     moodContainer.appendChild(img);
                 }
             });
+            initMoodSwipe();
         }
     } catch (err) {
         console.error('Failed to load mood movies:', err);
@@ -352,6 +353,7 @@ async function loadAIRecommendations() {
                     moodContainer.appendChild(img);
                 }
             });
+            initMoodSwipe();
         }
     } catch (err) {
         console.error('Failed to load AI recommendations:', err);
@@ -953,7 +955,7 @@ async function showWatchlistPanel() {
                             <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
                             <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
                         </div>
-                        <button onclick="removeFromWatchlistUI('${m.movieId}')" style="padding:8px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer;">Remove</button>
+                        <button onclick="removeFromWatchlistUI('${m.movieId}')" style="display:flex; align-items:center; justify-content:center; padding:8px 8px; color:white; border:none;border-radius:6px;cursor:pointer;background-color:var(--placeholder-bg);"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg></button>
                     </div>
                 `).join('')}
             </div>
@@ -1015,4 +1017,34 @@ async function showMovieDetails(movieId) {
     } catch (err) {
         console.error('Failed to load movie:', err);
     }
+}
+function initMoodSwipe() {
+    const moodEl = document.getElementById('mood');
+    const overlay = document.getElementById('mood-refresh-overlay');
+    const btn = document.getElementById('mood-refresh-btn');
+    if (!moodEl || !overlay || !btn) return;
+
+    let touchStartX = 0;
+
+    moodEl.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    moodEl.addEventListener('touchend', (e) => {
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        if (deltaX < -55) {
+            overlay.classList.remove('visible');
+            void overlay.offsetWidth;
+            const newBtn = btn.cloneNode(true);
+            overlay.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', () => {
+                overlay.classList.remove('visible');
+                loadAIRecommendations();
+            });
+            overlay.classList.add('visible');
+        }
+    }, { passive: true });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('visible');
+    });
 }
