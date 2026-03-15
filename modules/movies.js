@@ -138,24 +138,39 @@ async function loadFeaturedMovie() {
             dotEls = movies.map((_, i) => {
                 const d = document.createElement('div');
                 d.style.cssText = `
-                    height:10px; border-radius:3.5px; cursor:pointer; flex-shrink:0;
-                    width:${i === 0 ? '54px' : '10px'};
-                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.3)'};
-                    transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1), background 0.4s ease;
+                    height:6px; border-radius:3px; cursor:pointer; flex-shrink:0;
+                    width:${i === 0 ? '28px' : '6px'};
+                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'};
+                    transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1),
+                                background 0.4s ease;
                 `;
                 d.onclick = () => goToSlide(i);
                 container.appendChild(d);
                 return d;
             });
         }
-        
+
         function updateDots(index) {
             dotEls.forEach((d, i) => {
-                d.style.width = i === index ? '54px' : '10px';
-                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.3)';
+                d.style.width = i === index ? '28px' : '6px';
+                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.35)';
             });
         }
-        
+        function PosterShadow(imgEl, url) {
+            const tmp = new Image();
+            tmp.crossOrigin = 'anonymous';
+            tmp.src = url + '?_=1';
+            tmp.onload = () => {
+                try {
+                    const c = document.createElement('canvas');
+                    c.width = 6; c.height = 8;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(tmp, 0, 0, 6, 8);
+                    const d = ctx.getImageData(2, 5, 1, 1).data;
+                    imgEl.style.boxShadow = `0 6px 22px rgba(${d[0]},${d[1]},${d[2]},0.22), 0 2px 8px rgba(0,0,0,0.45)`;
+                } catch(e) {}
+            };
+        }
         window._featuredMovies = movies;
         window.goToSlide = (i) => {
             currentIndex = i;
@@ -168,7 +183,6 @@ async function loadFeaturedMovie() {
                 renderSlide(currentIndex);
             }, 4000);
         };
-        buildDots(movies);
         renderSlide(0);
         
         clearInterval(window._featuredInterval);
@@ -218,6 +232,7 @@ async function loadGenreMovies() {
             if (!posterUrl) return;
             const img = document.createElement('img');
             img.src = posterUrl;
+            PosterShadow(img, posterUrl);
             img.className = 'fade-in-content';
             img.style.animationDelay = `${idx * 0.1}s`;
             img.style.cursor = 'pointer';
@@ -297,6 +312,7 @@ async function loadMoodMovies() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
+                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
@@ -344,6 +360,7 @@ async function loadAIRecommendations() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
+                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
@@ -371,6 +388,7 @@ async function loadTrendingMovies() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
+                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
