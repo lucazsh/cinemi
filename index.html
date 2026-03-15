@@ -3288,7 +3288,7 @@
                         lastScrollY = scrollY;
                         row.querySelectorAll('img').forEach((img, i) => {
                             const base = img._baseAngle || 0;
-                            const wobble = delta * 0.08 * (i % 2 === 0 ? 1 : -1);
+                            const wobble = delta * 0.22 * (i % 2 === 0 ? 1 : -1);
                             const clamped = Math.max(-5, Math.min(6.7, base + wobble));
                             img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
                         });
