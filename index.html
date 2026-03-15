@@ -3244,6 +3244,61 @@
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
             </div>
+            <script>
+            (function() {
+                function magicRotate(row) {
+                    const imgs = row.querySelectorAll('img');
+                    let lastAngle = 0;
+                    imgs.forEach((img, i) => {
+                        let angle, attempts = 0;
+                        do {
+                            const mag = 3 + Math.random() * 3.7;
+                            const sign = (i % 2 === 0 ? 1 : -1) * (Math.random() > 0.15 ? 1 : -1);
+                            angle = sign * mag;
+                            attempts++;
+                        } while (Math.abs(angle - lastAngle) < 2 && attempts < 10);
+                        lastAngle = angle;
+                        img._baseAngle = angle;
+                        img.style.transform = `rotate(${angle.toFixed(1)}deg)`;
+                        img.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                    });
+                }
+            
+                const row = document.getElementById('mood');
+                if (!row) return;
+                magicRotate(row);
+            
+                const observer = new MutationObserver(() => {
+                    magicRotate(row);
+                });
+                observer.observe(row, { childList: true });
+
+                let lastScrollY = 0;
+                let ticking = false;
+                row.closest('.view, #home') && row.closest('.view, #home').addEventListener('scroll', function() {
+                    if (ticking) return;
+                    ticking = true;
+                    requestAnimationFrame(() => {
+                        const scrollY = this.scrollTop;
+                        const delta = scrollY - lastScrollY;
+                        lastScrollY = scrollY;
+                        row.querySelectorAll('img').forEach((img, i) => {
+                            const base = img._baseAngle || 0;
+                            const wobble = delta * 0.08 * (i % 2 === 0 ? 1 : -1);
+                            const clamped = Math.max(-5, Math.min(6.7, base + wobble));
+                            img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
+                        });
+                        clearTimeout(row._resetTimer);
+                        row._resetTimer = setTimeout(() => {
+                            row.querySelectorAll('img').forEach(img => {
+                                img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
+                            });
+                        }, 400);
+                        ticking = false;
+                    });
+                }, { passive: true });
+            })();
+            </script>
             <div class="sec-wrap">
                 <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
