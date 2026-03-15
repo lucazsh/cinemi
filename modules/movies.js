@@ -138,9 +138,12 @@ async function loadFeaturedMovie() {
             dotEls = movies.map((_, i) => {
                 const d = document.createElement('div');
                 d.style.cssText = `
-                    height:6px; border-radius:3px; cursor:pointer; flex-shrink:0;
-                    width:${i === 0 ? '28px' : '6px'};
-                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.35)'};
+                    height:10px;
+                    border-radius:3px;
+                    cursor:pointer;
+                    flex-shrink:0;
+                    width:${i === 0 ? '32px' : '10px'};
+                    background:${i === 0 ? '#ffffff' : 'rgba(255,255,255,0.3)'};
                     transition: width 0.4s cubic-bezier(0.175,0.885,0.32,1.1),
                                 background 0.4s ease;
                 `;
@@ -149,11 +152,11 @@ async function loadFeaturedMovie() {
                 return d;
             });
         }
-
+        
         function updateDots(index) {
             dotEls.forEach((d, i) => {
-                d.style.width = i === index ? '28px' : '6px';
-                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.35)';
+                d.style.width = i === index ? '32px' : '10px';
+                d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.3)';
             });
         }
         
