@@ -314,7 +314,6 @@ async function loadMoodMovies() {
 async function loadAIRecommendations() {
     try {
         const moodLabel = document.getElementById('mood');
-        if (moodLabel) moodLabel.innerHTML = '<span style="color: var(--sub-home);">AI Picks for</span> You';
 
         const { initNemo, scoreMovies } = await import('./nemo.js');
         await initNemo();
