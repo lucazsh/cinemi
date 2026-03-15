@@ -1030,15 +1030,17 @@ function initMoodSwipe() {
     moodEl._swipeInited = true;
 
     let startX = 0;
-
+    let startScrollLeft = 0;
+    
     moodEl.addEventListener('touchstart', e => {
         startX = e.touches[0].clientX;
+        startScrollLeft = moodEl.scrollLeft;
     }, { passive: true });
-
+    
     moodEl.addEventListener('touchend', e => {
         const deltaX = e.changedTouches[0].clientX - startX;
-        const nearEnd = moodEl.scrollLeft + moodEl.clientWidth >= moodEl.scrollWidth - 40;
-        if (deltaX < -55 && nearEnd) {
+        const scrolledAmount = moodEl.scrollLeft - startScrollLeft;
+        if (deltaX < -30 && Math.abs(scrolledAmount) < 10) {
             btn.classList.add('visible');
             moodEl.scrollTo({ left: 0, behavior: 'smooth' });
         }
