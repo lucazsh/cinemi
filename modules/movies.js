@@ -169,6 +169,7 @@ async function loadFeaturedMovie() {
                 renderSlide(currentIndex);
             }, 4000);
         };
+        buildDots(movies);
         renderSlide(0);
         
         clearInterval(window._featuredInterval);
