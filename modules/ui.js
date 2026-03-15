@@ -106,36 +106,49 @@ function closeReplies() {
         });
     }
 
-    const row = document.getElementById('mood');
-    if (!row) return;
-    magicRotate(row);
-    let lastScrollY = 0;
-    let ticking = false;
+    function initMood() {
+        const row = document.getElementById('mood');
+        if (!row) return;
+        magicRotate(row);
 
-    row.closest('.view, #home') && row.closest('.view, #home').addEventListener('scroll', function() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-            const scrollY = this.scrollTop;
-            const delta = scrollY - lastScrollY;
-            lastScrollY = scrollY;
+        const scrollEl = document.getElementById('home');
+        if (!scrollEl) return;
 
-            row.querySelectorAll('img').forEach((img, i) => {
-                const base = img._baseAngle || 0;
-                const wobble = delta * 0.08 * (i % 2 === 0 ? 1 : -1);
-                const clamped = Math.max(-5, Math.min(6.7, base + wobble));
-                img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
-            });
-            clearTimeout(row._resetTimer);
-            row._resetTimer = setTimeout(() => {
-                row.querySelectorAll('img').forEach(img => {
-                    img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
+        let lastScrollY = 0;
+        let ticking = false;
+
+        scrollEl.addEventListener('scroll', function() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const scrollY = scrollEl.scrollTop;
+                const delta = scrollY - lastScrollY;
+                lastScrollY = scrollY;
+
+                row.querySelectorAll('img').forEach((img, i) => {
+                    const base = img._baseAngle || 0;
+                    const wobble = delta * 0.08 * (i % 2 === 0 ? 1 : -1);
+                    const clamped = Math.max(-5, Math.min(6.7, base + wobble));
+                    img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
                 });
-            }, 400);
 
-            ticking = false;
-        });
-    }, { passive: true });
+                clearTimeout(row._resetTimer);
+                row._resetTimer = setTimeout(() => {
+                    row.querySelectorAll('img').forEach(img => {
+                        img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
+                    });
+                }, 400);
+
+                ticking = false;
+            });
+        }, { passive: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMood);
+    } else {
+        initMood();
+    }
 })();
 
 function forceSafeAreaUpdate() {
