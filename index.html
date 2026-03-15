@@ -2865,6 +2865,38 @@
         .fmov-desciption {
             margin-bottom: 13%;
         }
+        .mood-refresh-area { position: relative; }
+
+        @keyframes slideInFromLeft {
+            from { opacity: 0; transform: translateX(-48px) scale(0.88); }
+            to   { opacity: 1; transform: translateX(0)     scale(1); }
+        }
+        .mood-refresh-wrap {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            background: rgba(0,0,0,0.22);
+            border-radius: 12px;
+        }
+        .mood-refresh-wrap.visible {
+            display: flex;
+        }
+        .mood-refresh-btn {
+            width: 76px;
+            height: 76px;
+            background: #ffffff;
+            border-radius: 20px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            animation: slideInFromLeft 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.22);
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -3239,10 +3271,17 @@
             <div class="sec-wrap">
                 <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
             </div>
-            <div class="mov" id="mood">
+            <div class="mood-refresh-area">
+                <div class="mood-refresh-wrap" id="mood-refresh-overlay">
+                    <button class="mood-refresh-btn" id="mood-refresh-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#111111"><path d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z"/></svg>
+                    </button>
+                </div>
+                <div class="mov" id="mood">            
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            </div>
             </div>
             <script>
             (function() {
