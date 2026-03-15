@@ -291,9 +291,7 @@ async function loadMoodMovies() {
         
         const moodContainer = document.getElementById('mood');
         if (moodContainer && data.results) {
-            const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
-            moodContainer.innerHTML = '';
-            if (refreshBtn) moodContainer.appendChild(refreshBtn);
+            moodContainer.querySelectorAll('img').forEach(i => i.remove());
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
@@ -341,7 +339,7 @@ async function loadAIRecommendations() {
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
             const refreshBtn = moodContainer.querySelector('#mood-refresh-btn');
-            moodContainer.innerHTML = '';
+            moodContainer.querySelectorAll('img').forEach(i => i.remove());
             if (refreshBtn) moodContainer.appendChild(refreshBtn);
             recommendations.slice(0, 6).forEach((movie, idx) => {
                 const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
