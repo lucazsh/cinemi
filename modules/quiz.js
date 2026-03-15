@@ -4,6 +4,7 @@ const progress = document.getElementById('progressFill');
 const inputAge = document.querySelector('.q-input[type="text"]');
 const total = questions.length;
 
+
 document.querySelectorAll('#genreQ input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => {
         const checked = document.querySelectorAll('#genreQ input:checked');
