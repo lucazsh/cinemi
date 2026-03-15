@@ -132,7 +132,7 @@ notifStyles.textContent = `
   position: absolute;
   bottom: -2px;
   right: -2px;
-  border: 2px solid var(--bg-primary);
+  border: 2px solid var(--card);
 }
 .notif-avatar-wrap { position: relative; flex-shrink: 0; }
 .notif-empty {
