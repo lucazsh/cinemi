@@ -100,6 +100,9 @@ async function checkQuizStatus() {
         const data = await res.json();
         if (data.completed) {
             localStorage.setItem('quizCompleted', 'true');
+            if (data.data) {
+                localStorage.setItem('cinemi_userQuizProfile', JSON.stringify(data.data));
+            }
             showView('home');
             return true;
         } else {
