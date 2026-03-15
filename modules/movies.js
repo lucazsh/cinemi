@@ -1020,36 +1020,25 @@ async function showMovieDetails(movieId) {
 }
 function initMoodSwipe() {
     const moodEl = document.getElementById('mood');
-    const overlay = document.getElementById('mood-refresh-overlay');
-    if (!moodEl || !overlay) return;
-    const newMood = moodEl.cloneNode(true);
-    moodEl.parentNode.replaceChild(newMood, moodEl);
+    const btn = document.getElementById('mood-refresh-btn');
+    if (!moodEl || !btn || moodEl._swipeInited) return;
+    moodEl._swipeInited = true;
 
-    let touchStartX = 0;
+    let startX = 0;
 
-    newMood.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
+    moodEl.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
     }, { passive: true });
 
-    newMood.addEventListener('touchend', (e) => {
-        const deltaX = e.changedTouches[0].clientX - touchStartX;
-        if (deltaX < -55) {
-            overlay.classList.remove('visible');
-            void overlay.offsetWidth;
-            overlay.classList.add('visible');
-            const currentBtn = document.getElementById('mood-refresh-btn');
-            if (currentBtn) {
-                const freshBtn = currentBtn.cloneNode(true);
-                currentBtn.parentNode.replaceChild(freshBtn, currentBtn);
-                freshBtn.addEventListener('click', () => {
-                    overlay.classList.remove('visible');
-                    loadAIRecommendations();
-                });
-            }
+    moodEl.addEventListener('touchend', e => {
+        if (e.changedTouches[0].clientX - startX < -55) {
+            btn.classList.add('visible');
+            moodEl.scrollTo({ left: 0, behavior: 'smooth' });
         }
     }, { passive: true });
 
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) overlay.classList.remove('visible');
+    btn.addEventListener('click', () => {
+        btn.classList.remove('visible');
+        loadAIRecommendations();
     });
 }
