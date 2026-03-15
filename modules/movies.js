@@ -4,21 +4,6 @@ let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
 
-function PosterShadow(imgEl, url) {
-    const tmp = new Image();
-    tmp.crossOrigin = 'anonymous';
-    tmp.src = url + '?_=1';
-    tmp.onload = () => {
-        try {
-            const c = document.createElement('canvas');
-            c.width = 6; c.height = 8;
-            const ctx = c.getContext('2d');
-            ctx.drawImage(tmp, 0, 0, 6, 8);
-            const d = ctx.getImageData(2, 5, 1, 1).data;
-            imgEl.style.boxShadow = `0 6px 22px rgba(${d[0]},${d[1]},${d[2]},0.22), 0 2px 8px rgba(0,0,0,0.45)`;
-        } catch(e) {}
-    };
-}
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
     if (fMovContainer) {
@@ -171,6 +156,7 @@ async function loadFeaturedMovie() {
                 d.style.background = i === index ? '#ffffff' : 'rgba(255,255,255,0.35)';
             });
         }
+
         window._featuredMovies = movies;
         window.goToSlide = (i) => {
             currentIndex = i;
@@ -232,7 +218,6 @@ async function loadGenreMovies() {
             if (!posterUrl) return;
             const img = document.createElement('img');
             img.src = posterUrl;
-            PosterShadow(img, posterUrl);
             img.className = 'fade-in-content';
             img.style.animationDelay = `${idx * 0.1}s`;
             img.style.cursor = 'pointer';
@@ -312,7 +297,6 @@ async function loadMoodMovies() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
-                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
@@ -360,7 +344,6 @@ async function loadAIRecommendations() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
-                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
@@ -388,7 +371,6 @@ async function loadTrendingMovies() {
                 if (posterUrl) {
                     const img = document.createElement('img');
                     img.src = posterUrl;
-                    PosterShadow(img, posterUrl);
                     img.className = 'fade-in-content';
                     img.style.animationDelay = `${idx * 0.1}s`;
                     img.style.cursor = 'pointer';
