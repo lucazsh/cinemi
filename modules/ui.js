@@ -32,14 +32,34 @@ function showView(id) {
 }
 const homeEl = document.getElementById('home');
 if (homeEl) {
+    const nt = homeEl.querySelector('.nt');
+    const safeBar = document.getElementById('safe-area-bar');
+    nt.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, background-color 0.35s ease';
+    safeBar.style.transition = 'opacity 0.35s ease';
+
+    let lastScrollY = 0;
+    let ticking = false;
+
     homeEl.addEventListener('scroll', () => {
-        const nt = homeEl.querySelector('.nt');
-        if (!nt) return;
-        if (homeEl.scrollTop > 10) {
-            nt.classList.add('scrolled');
-        } else {
-            nt.classList.remove('scrolled');
-        }
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const current = homeEl.scrollTop;
+            nt.classList.toggle('scrolled', current > 10);
+            if (current > lastScrollY && current > 80) {
+                nt.style.transform = 'translateY(-100%)';
+                nt.style.opacity = '0';
+                nt.style.pointerEvents = 'none';
+                safeBar.style.opacity = '1';
+            } else {
+                nt.style.transform = 'translateY(0)';
+                nt.style.opacity = '1';
+                nt.style.pointerEvents = 'auto';
+                safeBar.style.opacity = '0';
+            }
+            lastScrollY = current;
+            ticking = false;
+        });
     }, { passive: true });
 }
 function updateNavActive(id) {
@@ -236,4 +256,3 @@ function animate() {
 }
 
 animate();
-
