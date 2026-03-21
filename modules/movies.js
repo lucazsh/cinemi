@@ -23,20 +23,28 @@ function showSkeletonLoaders() {
     
     const moodContainer = document.getElementById('mood');
     if (moodContainer) {
+        const seeMore = moodContainer.querySelector('.mov-see-more');
         moodContainer.querySelectorAll('.skeleton-loader').forEach(s => s.remove());
         moodContainer.querySelectorAll('img').forEach(i => i.remove());
         Array(3).fill(0).forEach(() => {
             const div = document.createElement('div');
             div.className = 'skeleton-loader';
-            div.style.cssText = 'width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;';
-            moodContainer.appendChild(div);
+            div.style.cssText = 'width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;flex-shrink:0;';
+            if (seeMore) moodContainer.insertBefore(div, seeMore);
+            else moodContainer.appendChild(div);
         });
     }
-    const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
+    const trendingContainer = document.getElementById('trending');
     if (trendingContainer) {
-        trendingContainer.innerHTML = Array(3).fill(0).map(() => `
-            <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
-        `).join('');
+        const seeMore = trendingContainer.querySelector('.mov-see-more');
+        trendingContainer.querySelectorAll('.tr-poster-wrap').forEach(el => el.remove());
+        Array(3).fill(0).forEach(() => {
+            const div = document.createElement('div');
+            div.className = 'tr-poster-wrap skeleton-loader';
+            div.style.cssText = 'background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;';
+            trendingContainer.appendChild(div);
+        });
+        if (seeMore) trendingContainer.appendChild(seeMore);
     }
     
     if (!document.getElementById('shimmer-style')) {
@@ -375,22 +383,28 @@ async function loadTrendingMovies() {
     try {
         const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
         const data = await res.json();
-        
-        const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
+        const trendingContainer = document.getElementById('trending');
         if (trendingContainer && data.results) {
-            trendingContainer.innerHTML = '';
+            const seeMore = trendingContainer.querySelector('.mov-see-more');
+            trendingContainer.querySelectorAll('.tr-poster-wrap, .skeleton-loader').forEach(el => el.remove());
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
-                if (posterUrl) {
-                    const img = document.createElement('img');
-                    img.src = posterUrl;
-                    img.className = 'fade-in-content';
-                    img.style.animationDelay = `${idx * 0.1}s`;
-                    img.style.cursor = 'pointer';
-                    img.onclick = () => showDetails(movie);
-                    trendingContainer.appendChild(img);
-                }
+                if (!posterUrl) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'tr-poster-wrap fade-in-content';
+                wrap.style.animationDelay = `${idx * 0.1}s`;
+                wrap.style.cursor = 'pointer';
+                wrap.onclick = () => showDetails(movie);
+                const img = document.createElement('img');
+                img.src = posterUrl;
+                const pill = document.createElement('span');
+                pill.className = 'tr-rank-pill';
+                pill.textContent = idx + 1;
+                wrap.appendChild(img);
+                wrap.appendChild(pill);
+                trendingContainer.appendChild(wrap);
             });
+            if (seeMore) trendingContainer.appendChild(seeMore);
         }
     } catch (err) {
         console.error('Failed to load trending:', err);
@@ -404,6 +418,8 @@ async function initHomeFeed() {
     if (featuredGenres && featuredGenres.length > 0) {
         await loadGenreMovies();
         await loadAIRecommendations();
+    } else {
+        await loadMoodMovies();
     }
     await loadTrendingMovies();
     moviesLoaded = true;
