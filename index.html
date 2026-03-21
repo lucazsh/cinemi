@@ -5775,7 +5775,7 @@
     </div>
     <div id="coll-tab-user" style="display:none;">
         <div class="coll-search-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 129-46.5T480-440q66 0 133 15.5T742-378q29 15 46.5 43.5T806-272v112H160Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
             <input id="coll-user-input" placeholder="Search users..." oninput="searchCollUsers(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary,#fff);">
         </div>
         <div id="coll-user-results"></div>
@@ -5807,8 +5807,11 @@
     let selectedUser = null;
     let editMode = false;
     let longPressTimer = null;
+    let filmSearchTimer = null;
+    let userSearchTimer = null;
 
     const grid = document.getElementById('fsg-grid');
+
     function startLongPress(e) {
         const cell = e.target.closest('.fsg-cell');
         if (!cell) return;
@@ -5828,25 +5831,22 @@
     grid.addEventListener('mousedown', startLongPress);
     grid.addEventListener('mouseup', cancelLongPress);
     grid.addEventListener('mouseleave', cancelLongPress);
-    grid.addEventListener('click', function(e) {
-        if (longPressTimer !== null) { cancelLongPress(); return; } 
-        const cell = e.target.closest('.fsg-cell');
-        if (!cell) return;
-        const idx = parseInt(cell.dataset.idx);
-        const data = CELL_DATA[idx];
 
-        if (editMode) {
-            openPanel(idx);
-            return;
-        }
-        if (data) {
-            if (data.type === 'film' && data.movie) {
-                if (typeof showDetails === 'function') showDetails(data.movie);
-            } else if (data.type === 'user' && data.username) {
-                if (typeof viewUserProfile === 'function') viewUserProfile(data.username);
+    grid.addEventListener('click', function(e) {
+        if (longPressTimer === null && editMode === false) {
+            const cell = e.target.closest('.fsg-cell');
+            if (!cell) return;
+            const idx = parseInt(cell.dataset.idx);
+            const data = CELL_DATA[idx];
+            if (data) {
+                if (data.type === 'film' && data.movie) showDetails(data.movie);
+                else if (data.type === 'user' && data.username) viewUserProfile(data.username);
+            } else {
+                openPanel(idx);
             }
-        } else {
-            openPanel(idx);
+        } else if (editMode) {
+            const cell = e.target.closest('.fsg-cell');
+            if (cell) openPanel(parseInt(cell.dataset.idx));
         }
     });
 
@@ -5856,7 +5856,7 @@
         grid.querySelectorAll('.fsg-cell').forEach((c, i) => {
             c.style.animation = 'none';
             c.offsetHeight;
-            c.style.animation = `fsgWiggle 0.5s ease ${(i % 3) * 0.04}s infinite`;
+            c.style.animation = 'fsgWiggle 0.5s ease ' + (i % 3) * 0.04 + 's infinite';
         });
         openPanel(focusIdx);
     }
@@ -5875,9 +5875,10 @@
         document.getElementById('coll-search-input').value = '';
         document.getElementById('coll-search-results').innerHTML = '';
         document.getElementById('coll-user-input').value = '';
+        document.getElementById('coll-user-results').innerHTML = '';
         document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
-        const filmTab = document.querySelector('.coll-tab[data-tab="film"]');
         document.querySelectorAll('.coll-tab').forEach(t => t.classList.remove('active'));
+        const filmTab = document.querySelector('.coll-tab[data-tab="film"]');
         filmTab.classList.add('active');
         switchCollTab('film', filmTab);
         document.getElementById('coll-panel-title').textContent = 'Edit slot ' + (idx + 1);
@@ -5900,70 +5901,91 @@
         if (btn) btn.classList.add('active');
     };
 
-    let searchTimer;
     window.searchCollMovies = function(q) {
-        clearTimeout(searchTimer);
+        clearTimeout(filmSearchTimer);
         const res = document.getElementById('coll-search-results');
         if (!q || q.length < 2) { res.innerHTML = ''; return; }
-        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
-        searchTimer = setTimeout(() => {
-            fetch(`${window.baseUrl || ''}/api/tmdb/search/multi?query=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
-                .then(r => r.json())
-                .then(data => {
-                    const valid = (data.results || []).filter(m => m.poster_path);
-                    if (!valid.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No results.</span>'; return; }
+        res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Searching...</div>';
+        filmSearchTimer = setTimeout(function() {
+            fetch(baseUrl + '/api/tmdb/search/multi?query=' + encodeURIComponent(q), { headers: ngrokHeaders })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    const valid = (data.results || []).filter(function(m) {
+                        return m.poster_path && m.overview && m.overview.length > 5;
+                    });
+                    if (!valid.length) {
+                        res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">No results found.</div>';
+                        return;
+                    }
                     res.innerHTML = '';
-                    valid.slice(0, 8).forEach(m => {
-                        const item = document.createElement('div');
-                        item.className = 'coll-res-item';
-                        item.innerHTML = `<img src="https://image.tmdb.org/t/p/w200${m.poster_path}" loading="lazy"><span>${m.title || m.name || ''}</span>`;
-                        item.onclick = () => {
-                            document.querySelectorAll('.coll-res-item').forEach(i => i.classList.remove('selected'));
-                            item.classList.add('selected');
+                    res.style.display = 'grid';
+                    res.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                    res.style.gap = '10px';
+                    valid.slice(0, 9).forEach(function(m) {
+                        const card = document.createElement('div');
+                        card.className = 'search-result-card';
+                        card.style.border = '2px solid transparent';
+                        card.style.transition = 'border-color 0.15s';
+                        const title = m.title || m.name || '';
+                        const year = (m.release_date || m.first_air_date || '').split('-')[0];
+                        card.innerHTML = '<img src="' + IMG_W500 + m.poster_path + '" class="search-poster" alt="' + escapeHtml(title) + '"><div class="search-info"><div class="search-card-title">' + escapeHtml(title) + '</div><div style="font-size:11px;opacity:0.6;">' + year + '</div></div>';
+                        card.onclick = function() {
+                            res.querySelectorAll('.search-result-card').forEach(function(c) { c.style.borderColor = 'transparent'; });
+                            card.style.borderColor = '#fff';
                             selectedMovie = m;
                         };
-                        res.appendChild(item);
+                        res.appendChild(card);
                     });
-                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
+                })
+                .catch(function() {
+                    res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Error loading results.</div>';
+                });
         }, 400);
     };
 
-    let userTimer;
     window.searchCollUsers = function(q) {
-        clearTimeout(userTimer);
+        clearTimeout(userSearchTimer);
         const res = document.getElementById('coll-user-results');
         if (!q || q.length < 1) { res.innerHTML = ''; return; }
-        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
-        userTimer = setTimeout(() => {
-            fetch(`${window.baseUrl || ''}/api/search/users?q=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
-                .then(r => r.json())
-                .then(users => {
-                    if (!users || !users.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No users found.</span>'; return; }
+        res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Searching...</div>';
+        userSearchTimer = setTimeout(function() {
+            fetch(baseUrl + '/api/search/users?q=' + encodeURIComponent(q), { headers: ngrokHeaders })
+                .then(function(r) { return r.json(); })
+                .then(function(users) {
+                    if (!users || !users.length) {
+                        res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">No users found.</div>';
+                        return;
+                    }
                     res.innerHTML = '';
-                    users.slice(0, 6).forEach(u => {
+                    users.slice(0, 6).forEach(function(u) {
                         const item = document.createElement('div');
-                        item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,0.05);cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;margin-bottom:8px;';
-                        item.innerHTML = `<img src="${u.photoUrl || ''}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:14px;font-weight:700;color:var(--text-primary);">@${u.username}</span>`;
-                        item.onclick = () => {
-                            res.querySelectorAll('div').forEach(i => i.style.borderColor = 'transparent');
+                        item.className = 'usr usr-coll';
+                        item.setAttribute('data-username', u.username);
+                        item.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-secondary);border-radius:12px;cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;margin-bottom:8px;';
+                        item.innerHTML = '<img src="' + (u.photoUrl || '') + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);flex-shrink:0;"><div><div style="font-weight:600;color:var(--text-primary);">@' + escapeHtml(u.username) + '</div></div>';
+                        item.onclick = function() {
+                            res.querySelectorAll('.usr-coll').forEach(function(i) { i.style.borderColor = 'transparent'; });
                             item.style.borderColor = '#fff';
                             selectedUser = u;
                         };
                         res.appendChild(item);
                     });
-                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
-        }, 400);
+                })
+                .catch(function() {
+                    res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Error loading users.</div>';
+                });
+        }, 300);
     };
 
     window.selectCollColor = function(el) {
-        document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
+        document.querySelectorAll('.coll-color-swatch').forEach(function(s) { s.classList.remove('selected'); });
         el.classList.add('selected');
         selectedColor = el.dataset.color;
     };
 
     window.applyCollPanel = function() {
         if (activeIdx === null) return;
-        const cell = document.querySelector(`#fsg-grid .fsg-cell[data-idx="${activeIdx}"]`);
+        const cell = document.querySelector('#fsg-grid .fsg-cell[data-idx="' + activeIdx + '"]');
         if (!cell) return;
         cell.innerHTML = '';
         cell.style.background = '';
@@ -5977,8 +5999,8 @@
             CELL_DATA[activeIdx] = { type: 'film', movie: selectedMovie };
         } else if (activeTab === 'user' && selectedUser) {
             cell.style.background = 'rgba(255,255,255,0.06)';
-            cell.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;"><img src="${selectedUser.photoUrl||''}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.1;">@${selectedUser.username}</span></div>`;
-            CELL_DATA[activeIdx] = { type: 'user', username: selectedUser.username };
+            cell.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;"><img src="' + (selectedUser.photoUrl || '') + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);"><span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.1;">@' + escapeHtml(selectedUser.username) + '</span></div>';
+            CELL_DATA[activeIdx] = { type: 'user', username: selectedUser.username, user: selectedUser };
         } else if (activeTab === 'color' && selectedColor) {
             cell.style.background = selectedColor;
             CELL_DATA[activeIdx] = { type: 'color', color: selectedColor };
@@ -5989,15 +6011,7 @@
     };
 
     const ks = document.createElement('style');
-    ks.textContent = `
-        @keyframes fsgWiggle {
-            0%,100%{transform:rotate(0deg) scale(1);}
-            20%{transform:rotate(-2.5deg) scale(0.97);}
-            60%{transform:rotate(2.5deg) scale(0.97);}
-        }
-        .fsg-edit-mode .fsg-cell { cursor:pointer; }
-        .fsg-edit-mode .fsg-cell:active { transform:scale(0.92); }
-    `;
+    ks.textContent = '@keyframes fsgWiggle{0%,100%{transform:rotate(0deg) scale(1);}20%{transform:rotate(-2.5deg) scale(0.97);}60%{transform:rotate(2.5deg) scale(0.97);}}.fsg-edit-mode .fsg-cell{cursor:pointer;}.fsg-edit-mode .fsg-cell:active{transform:scale(0.92);}';
     document.head.appendChild(ks);
 })();
 </script>
