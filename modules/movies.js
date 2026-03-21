@@ -30,7 +30,7 @@ function showSkeletonLoaders() {
             moodContainer.appendChild(div);
         });
     }
-    const trendingContainer = document.getElementById('trending');
+    const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
     if (trendingContainer) {
         trendingContainer.innerHTML = Array(3).fill(0).map(() => `
             <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
@@ -296,6 +296,7 @@ async function loadMoodMovies() {
         const moodContainer = document.getElementById('mood');
         if (moodContainer && data.results) {
             moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
+            const seeMore = moodContainer.querySelector('.mov-see-more');
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
@@ -308,6 +309,7 @@ async function loadMoodMovies() {
                     moodContainer.appendChild(img);
                 }
             });
+            if (seeMore) moodContainer.appendChild(seeMore);
             initMoodSwipe();
         }
     } catch (err) {
@@ -340,6 +342,7 @@ async function loadAIRecommendations() {
         const moodContainer = document.getElementById('mood');
         if (moodContainer) {
             moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
+            const seeMore = moodContainer.querySelector('.mov-see-more');
             recommendations.slice(0, 6).forEach((movie, idx) => {
                 const numericId = movie.movieId.includes('-') ? movie.movieId.split('-').pop() : movie.movieId;
                 const posterUrl = movie.posterPath ? `${IMG_W500}${movie.posterPath}` : '';
@@ -354,6 +357,7 @@ async function loadAIRecommendations() {
                     moodContainer.appendChild(img);
                 }
             });
+            if (seeMore) moodContainer.appendChild(seeMore);
             initMoodSwipe();
         }
     } catch (err) {
@@ -365,27 +369,20 @@ async function loadTrendingMovies() {
     try {
         const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
         const data = await res.json();
-        const trendingContainer = document.getElementById('trending');
+        
+        const trendingContainer = document.querySelector('.m1-rec .mov:last-of-type');
         if (trendingContainer && data.results) {
-            const seeMore = trendingContainer.querySelector('.mov-see-more');
             trendingContainer.innerHTML = '';
-            if (seeMore) trendingContainer.appendChild(seeMore);
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
-                    const wrap = document.createElement('div');
-                    wrap.className = 'tr-poster-wrap fade-in-content';
-                    wrap.style.animationDelay = `${idx * 0.1}s`;
-                    wrap.style.cursor = 'pointer';
-                    wrap.onclick = () => showDetails(movie);
                     const img = document.createElement('img');
                     img.src = posterUrl;
-                    const pill = document.createElement('span');
-                    pill.className = 'tr-rank-pill';
-                    pill.textContent = idx + 1;
-                    wrap.appendChild(img);
-                    wrap.appendChild(pill);
-                    trendingContainer.insertBefore(wrap, seeMore || null);
+                    img.className = 'fade-in-content';
+                    img.style.animationDelay = `${idx * 0.1}s`;
+                    img.style.cursor = 'pointer';
+                    img.onclick = () => showDetails(movie);
+                    trendingContainer.appendChild(img);
                 }
             });
         }
@@ -393,6 +390,7 @@ async function loadTrendingMovies() {
         console.error('Failed to load trending:', err);
     }
 }
+
 async function initHomeFeed() {
     if (moviesLoaded) return;
     showSkeletonLoaders();
