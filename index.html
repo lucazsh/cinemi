@@ -2839,7 +2839,7 @@
         }
         .sec-title.light { font-weight: 800; }
         .sec-wrap {
-            margin: 54px 0 2px;
+            margin: 42px 0 2px;
         }
         .sec-sub {
             margin-bottom: 1px;
@@ -2884,6 +2884,505 @@
             display: flex;
             animation: slideInFromLeft 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
+
+        .home-section {
+            position: relative;
+            margin: 20px -20px;
+            padding: 0 20px 18px;
+            border-radius: 36px;
+            overflow: hidden;
+        }
+        .home-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 65%);
+            border-radius: 36px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .home-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 36px;
+            border: 1px solid rgba(255,255,255,0.13);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .home-section > * {
+            position: relative;
+            z-index: 2;
+        }
+        .home-section .sec-wrap {
+            padding: 0;
+            margin-top: 44px;
+            margin-bottom: 4px;
+        }
+        .home-section .mood-shuffle-pill {
+            top: 14px;
+            right: 14px;
+        }
+        .home-section .mov {
+            padding: 10px 0 14px;
+        }
+        .mood-shuffle-pill {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px 9px 12px;
+            border-radius: 100px;
+            background: var(--iconbox-bg);
+            border: 1px solid var(--border-dark-alpha-2);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s, background 0.15s;
+            min-height: 38px;
+        }
+        @media (max-width: 430px) {
+            .mood-shuffle-pill {
+                padding: 11px 18px 11px 14px;
+                font-size: 13px;
+                min-height: 44px;
+                gap: 7px;
+            }
+            .mood-shuffle-pill svg {
+                width: 15px !important;
+                height: 15px !important;
+            }
+        }
+        .mood-shuffle-pill:active {
+            transform: scale(0.92);
+            opacity: 0.7;
+        }
+        .mood-shuffle-pill svg {
+            fill: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        .see-all-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 12px;
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 14px;
+            background: var(--iconbox-bg);
+            border: 1px solid var(--border-dark-alpha-2);
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.45);
+            cursor: pointer;
+            justify-content: center;
+            transition: opacity 0.15s, transform 0.15s;
+            letter-spacing: 0.1px;
+        }
+        .see-all-btn:active { transform: scale(0.97); opacity: 0.7; }
+        .see-all-btn svg { fill: rgba(255,255,255,0.35); }
+        #home::after { display: none; }
+        #home .m1-rec > div:first-child { gap: 6px; margin-bottom: 12px; }
+        #fmov-ambient-a { opacity: 0.24 !important; }
+        .mov {
+            overflow-x: auto;
+        }
+        .mov img {
+            border-radius: clamp(16px, 6vw, 32px) !important;
+            border: 1.67px solid var(--border-light) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+        }
+        .fmov-title {
+            font-family: 'Nunito', sans-serif !important;
+            font-size: 2.6rem !important;
+            font-weight: 900 !important;
+            letter-spacing: -1.4px !important;
+            line-height: 1.0 !important;
+        }
+        .fmov-desciption {
+            font-size: 0.8rem !important;
+            color: rgba(255,255,255,0.42) !important;
+            line-height: 1.35 !important;
+        }
+        .fmov-b {
+            border-radius: 100px !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            letter-spacing: 1.2px !important;
+            text-transform: uppercase !important;
+            padding: 9px 20px !important;
+        }
+        .home-section::after {
+            display: none;
+        }
+        .sec-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .sec-sub {
+            display: block !important;
+        }
+        .mov img:nth-child(1) { position: relative; z-index: 3; }
+        .mov img:nth-child(2) { position: relative; z-index: 2; filter: brightness(0.88); }
+        .mov img:nth-child(3) { position: relative; z-index: 1; filter: brightness(0.76); }
+        .mov img:nth-child(n+4) { filter: brightness(0.65); }
+        @keyframes movSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .mov img:nth-child(1) { animation: movSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+        .mov img:nth-child(2) { animation: movSlideIn 0.4s 0.06s cubic-bezier(0.22,1,0.36,1) both; }
+        .mov img:nth-child(3) { animation: movSlideIn 0.4s 0.12s cubic-bezier(0.22,1,0.36,1) both; }
+        .mov-see-more {
+            flex-shrink: 0;
+            width: 40%;
+            aspect-ratio: 2 / 2.8;
+            border-radius: clamp(16px, 6vw, 32px);
+            border: 1.67px solid var(--border-light);
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            cursor: pointer;
+            scroll-snap-align: start;
+            transition: opacity 0.18s, transform 0.18s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mov-see-more:active { opacity: 0.5; transform: scale(0.96); }
+        .mov-see-more-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mov-see-more-icon svg { fill: #e3e3e3; }
+        .mov-see-more-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.3px;
+        }
+        .film-shelf-wrap {
+            margin-top: 8px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            background: #0d0d0f;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .film-shelf-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5px;
+            background: rgba(255,255,255,0.05);
+        }
+        .fsg-cell {
+            aspect-ratio: 1;
+            background: #0d0d0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 200;
+            color: rgba(255,255,255,0.13);
+            cursor: pointer;
+            transition: background 0.12s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .fsg-cell:active { background: rgba(255,255,255,0.05); }
+        .film-shelf-overlay {
+            position: absolute;
+            inset: 0;
+            bottom: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .film-shelf-pill {
+            background: #f0f0f0;
+            color: #0d0d0f;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+            padding: 13px 26px;
+            border-radius: 100px;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .film-shelf-pill:active { transform: scale(0.95); opacity: 0.85; }
+        .film-shelf-browse {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 16px;
+            background: #0a0a0c;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            cursor: pointer;
+            transition: background 0.12s;
+            -webkit-tap-highlight-color: transparent;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .film-shelf-browse:active { background: rgba(255,255,255,0.04); }
+        .film-shelf-browse-icon {
+            width: 30px;
+            height: 30px;
+            background: #1c1c1e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+        .film-shelf-browse-icon svg { fill: rgba(255,255,255,0.4); }
+        .sec-action-row {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding: 10px 0 4px;
+            scrollbar-width: none;
+        }
+        .sec-action-row::-webkit-scrollbar { display: none; }
+        .sec-chip {
+            flex-shrink: 0;
+            padding: 7px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.45);
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sec-chip:active { transform: scale(0.93); opacity: 0.7; }
+        .sec-chip.sec-chip-active {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.22);
+            color: rgba(255,255,255,0.85);
+        }
+        :root.light-mode .sec-chip {
+            background: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.4);
+        }
+        :root.light-mode .sec-chip.sec-chip-active {
+            background: rgba(0,0,0,0.09);
+            border-color: rgba(0,0,0,0.18);
+            color: rgba(0,0,0,0.8);
+        }
+        .sec-btn-full {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 13px 16px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.75);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sec-btn-full svg { fill: rgba(255,255,255,0.6); flex-shrink: 0; }
+        .sec-btn-full:active { transform: scale(0.96); opacity: 0.7; }
+        .sec-btn-ghost {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 13px 16px;
+            border-radius: 16px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.45);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sec-btn-ghost svg { fill: rgba(255,255,255,0.35); flex-shrink: 0; }
+        .sec-btn-ghost:active { transform: scale(0.96); opacity: 0.7; }
+        :root.light-mode .sec-btn-full {
+            background: rgba(0,0,0,0.06);
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.7);
+        }
+        :root.light-mode .sec-btn-full svg { fill: rgba(0,0,0,0.5); }
+        :root.light-mode .sec-btn-ghost {
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.4);
+        }
+        :root.light-mode .sec-btn-ghost svg { fill: rgba(0,0,0,0.3); }
+        .tr-poster-wrap {
+            position: relative;
+            flex-shrink: 0;
+            width: 40%;
+            aspect-ratio: 2 / 2.8;
+            scroll-snap-align: start;
+        }
+        .tr-poster-wrap img {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            object-fit: cover !important;
+            border-radius: clamp(16px, 6vw, 32px) !important;
+            border: 1.67px solid var(--border-light) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+            transform: none !important;
+            filter: none !important;
+            margin: 0 !important;
+        }
+        .tr-rank-pill {
+            position: absolute;
+            bottom: -6px;
+            right: -6px;
+            width: 28px;
+            height: 38px;
+            border-radius: 100px;
+            background: #f0f0f0;
+            border: 4px solid var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--bg-primary);
+            pointer-events: none;
+            z-index: 10;
+            box-sizing: content-box;
+        }
+        .sec-wrap {
+            position: relative;
+        }
+        .sec-meta {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.2);
+        }
+        :root.light-mode .sec-meta { color: rgba(0,0,0,0.2); }
+        .swipe-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+        .swipe-hint-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.2);
+        }
+        .swipe-hint-pill svg { fill: rgba(255,255,255,0.18); }
+        :root.light-mode .swipe-hint-pill { color: rgba(0,0,0,0.2); }
+        :root.light-mode .swipe-hint-pill svg { fill: rgba(0,0,0,0.18); }
+        .coll-stats {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .coll-stat {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .coll-stat-num {
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        .coll-stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+        }
+        :root.light-mode .coll-stat { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.07); }
+        :root.light-mode .coll-stat-num { color: rgba(0,0,0,0.45); }
+        :root.light-mode .coll-stat-label { color: rgba(0,0,0,0.22); }
+        .genre-see-all {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding: 0 2px;
+        }
+        .genre-see-all-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+        }
+        .genre-see-all-btn {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.35);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .genre-see-all-btn svg { fill: rgba(255,255,255,0.3); }
+        :root.light-mode .genre-see-all-label { color: rgba(0,0,0,0.2); }
+        :root.light-mode .genre-see-all-btn { color: rgba(0,0,0,0.38); }
+        :root.light-mode .genre-see-all-btn svg { fill: rgba(0,0,0,0.3); }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -3245,7 +3744,7 @@
                     </span>
                 </div>
             </div>
-            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:8px 0 14px;"></div>
+            <div id="fmov-dots" style="display:flex;gap:6px;justify-content:center;margin:6px 0 6px;"></div>
             <div id="genre-label" class="sec-wrap">
                 <span class="sec-sub"></span>
                 <span class="sec-title"></span>
@@ -3254,7 +3753,18 @@
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+                <div class="mov-see-more">
+                    <div class="mov-see-more-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
+                    </div>
+                    <span class="mov-see-more-label">see more</span>
+                </div>
             </div>
+            <div class="home-section">
+                <button class="mood-shuffle-pill" onclick="document.getElementById('mood-refresh-btn').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px"><path d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z"/></svg>
+                    Regenerate
+                </button>
             <div class="sec-wrap">
                 <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
             </div>
@@ -3265,6 +3775,12 @@
                 <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+                <div class="mov-see-more">
+                    <div class="mov-see-more-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
+                    </div>
+                    <span class="mov-see-more-label">see more</span>
+                </div>
             </div>
             <script>
             (function() {
@@ -3325,6 +3841,57 @@
                 }, { passive: true });
             })();
             </script>
+            <button class="see-all-btn">
+                See all picks
+                <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+            </button>
+            </div>
+            <div class="sec-wrap">
+                <span class="sec-sub">Your</span> <span class="sec-title">collection</span>
+                <span class="sec-meta">0 films</span>
+            </div>
+            <div class="film-shelf-wrap">
+                <div class="film-shelf-grid">
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                    <div class="fsg-cell">+</div>
+                </div>
+                <div class="film-shelf-overlay">
+                    <button class="film-shelf-pill">Add your first film</button>
+                </div>
+                <button class="film-shelf-browse">
+                    Browse films
+                    <div class="film-shelf-browse-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M170.87-87.87q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-522.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h143.56q17.46 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.02 12.17-29.48 12.17H170.87v522.26h522.26v-187.74q0-17.45 11.96-29.47 11.97-12.03 29.33-12.03t29.54 12.03q12.17 12.02 12.17 29.47v187.74q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H170.87Zm574.2-516.93 75.43 78.43q11.72 11.72 11.72 26.44 0 14.71-11.72 26.43-11.72 11.72-26.93 11.72-15.22 0-26.94-11.72l-75.43-77.43q-20 14-43 20.26-23 6.26-48.2 6.26-71.49 0-121.54-50.04-50.05-50.03-50.05-121.51 0-71.47 50.04-121.55 50.03-50.08 121.51-50.08 71.47 0 121.55 50.05T771.59-696q0 24-6.26 47.6t-20.26 43.6ZM668-627.77q28-27.78 28-68Q696-736 668.23-764q-27.78-28-68-28Q560-792 532-764.23q-28 27.78-28 68Q504-656 531.77-628q27.78 28 68 28Q640-600 668-627.77ZM170.87-445.4v274.53-522.26V-452.41v-12 19.01Z"/></svg>
+                    </div>
+                </button>
+            </div>
+            <div class="coll-stats">
+                <div class="coll-stat">
+                    <span class="coll-stat-num">0</span>
+                    <span class="coll-stat-label">Saved</span>
+                </div>
+                <div class="coll-stat">
+                    <span class="coll-stat-num">0</span>
+                    <span class="coll-stat-label">Watched</span>
+                </div>
+                <div class="coll-stat">
+                    <span class="coll-stat-num">0h</span>
+                    <span class="coll-stat-label">Runtime</span>
+                </div>
+            </div>
             <div class="sec-wrap">
                 <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
@@ -3371,10 +3938,33 @@
             <div style="font-size: 21px; font-weight: 600;" class="sec-wrap">
                 <span class="sec-sub">Trending</span> <span class="sec-title">for you</span>
             </div>
-            <div class="mov">
-                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
-                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
-                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+            <div class="mov" style="padding: 10px 0 14px;">
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                    <span class="tr-rank-pill">1</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                    <span class="tr-rank-pill">2</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+                    <span class="tr-rank-pill">3</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                    <span class="tr-rank-pill">4</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                    <span class="tr-rank-pill">5</span>
+                </div>
+                <div class="mov-see-more">
+                    <div class="mov-see-more-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
+                    </div>
+                    <span class="mov-see-more-label">see more</span>
+                </div>
             </div>
         </div>
     </div>
