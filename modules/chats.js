@@ -451,7 +451,7 @@
   });
 
   function init() {
-    const sr = document.getElementById('search-results');
+    const sr = document.getElementById('chat-search-results')
     if (sr) observer.observe(sr, { childList: true, subtree: true });
 
     const messageBtn = document.getElementById('messageBtn');
