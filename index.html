@@ -5774,7 +5774,11 @@
         <div class="coll-search-results" id="coll-search-results"></div>
     </div>
     <div id="coll-tab-user" style="display:none;">
-        <input class="coll-user-input" id="coll-user-input" placeholder="@username">
+        <div class="coll-search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 129-46.5T480-440q66 0 133 15.5T742-378q29 15 46.5 43.5T806-272v112H160Z"/></svg>
+            <input id="coll-user-input" placeholder="Search users..." oninput="searchCollUsers(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary,#fff);">
+        </div>
+        <div id="coll-user-results"></div>
     </div>
     <div id="coll-tab-color" style="display:none;">
         <div class="coll-colors">
@@ -5795,33 +5799,96 @@
 </div>
 <script>
 (function(){
+    const CELL_DATA = {};
     let activeIdx = null;
     let activeTab = 'film';
     let selectedMovie = null;
     let selectedColor = null;
+    let selectedUser = null;
+    let editMode = false;
+    let longPressTimer = null;
 
-    document.addEventListener('click', function(e){
-        const cell = e.target.closest('#fsg-grid .fsg-cell');
+    const grid = document.getElementById('fsg-grid');
+    function startLongPress(e) {
+        const cell = e.target.closest('.fsg-cell');
         if (!cell) return;
-        activeIdx = parseInt(cell.dataset.idx);
+        longPressTimer = setTimeout(() => {
+            longPressTimer = null;
+            enterEditMode(parseInt(cell.dataset.idx));
+        }, 500);
+    }
+    function cancelLongPress() {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+
+    grid.addEventListener('touchstart', startLongPress, { passive: true });
+    grid.addEventListener('touchend', cancelLongPress);
+    grid.addEventListener('touchmove', cancelLongPress);
+    grid.addEventListener('mousedown', startLongPress);
+    grid.addEventListener('mouseup', cancelLongPress);
+    grid.addEventListener('mouseleave', cancelLongPress);
+    grid.addEventListener('click', function(e) {
+        if (longPressTimer !== null) { cancelLongPress(); return; } 
+        const cell = e.target.closest('.fsg-cell');
+        if (!cell) return;
+        const idx = parseInt(cell.dataset.idx);
+        const data = CELL_DATA[idx];
+
+        if (editMode) {
+            openPanel(idx);
+            return;
+        }
+        if (data) {
+            if (data.type === 'film' && data.movie) {
+                if (typeof showDetails === 'function') showDetails(data.movie);
+            } else if (data.type === 'user' && data.username) {
+                if (typeof viewUserProfile === 'function') viewUserProfile(data.username);
+            }
+        } else {
+            openPanel(idx);
+        }
+    });
+
+    function enterEditMode(focusIdx) {
+        editMode = true;
+        grid.classList.add('fsg-edit-mode');
+        grid.querySelectorAll('.fsg-cell').forEach((c, i) => {
+            c.style.animation = 'none';
+            c.offsetHeight;
+            c.style.animation = `fsgWiggle 0.5s ease ${(i % 3) * 0.04}s infinite`;
+        });
+        openPanel(focusIdx);
+    }
+
+    function exitEditMode() {
+        editMode = false;
+        grid.classList.remove('fsg-edit-mode');
+        grid.querySelectorAll('.fsg-cell').forEach(c => { c.style.animation = ''; });
+    }
+
+    function openPanel(idx) {
+        activeIdx = idx;
         selectedMovie = null;
         selectedColor = null;
+        selectedUser = null;
         document.getElementById('coll-search-input').value = '';
         document.getElementById('coll-search-results').innerHTML = '';
         document.getElementById('coll-user-input').value = '';
         document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
-        document.querySelectorAll('.coll-tab').forEach(t => t.classList.remove('active'));
         const filmTab = document.querySelector('.coll-tab[data-tab="film"]');
+        document.querySelectorAll('.coll-tab').forEach(t => t.classList.remove('active'));
         filmTab.classList.add('active');
         switchCollTab('film', filmTab);
-        document.getElementById('coll-panel-title').textContent = 'Edit slot ' + (activeIdx + 1);
+        document.getElementById('coll-panel-title').textContent = 'Edit slot ' + (idx + 1);
         document.getElementById('coll-panel').classList.add('open');
         document.getElementById('coll-panel-backdrop').classList.add('open');
-    });
+    }
 
     window.closeCollPanel = function() {
         document.getElementById('coll-panel').classList.remove('open');
         document.getElementById('coll-panel-backdrop').classList.remove('open');
+        exitEditMode();
     };
 
     window.switchCollTab = function(tab, btn) {
@@ -5833,36 +5900,59 @@
         if (btn) btn.classList.add('active');
     };
 
+    let searchTimer;
     window.searchCollMovies = function(q) {
+        clearTimeout(searchTimer);
         const res = document.getElementById('coll-search-results');
         if (!q || q.length < 2) { res.innerHTML = ''; return; }
         res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
-        const bUrl = window.baseUrl || '';
-        const hdrs = window.ngrokHeaders || {};
-        fetch(`${bUrl}/api/tmdb/search?q=${encodeURIComponent(q)}`, { headers: hdrs })
-            .then(r => r.json())
-            .then(data => {
-                if (!data.results || !data.results.length) {
-                    res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No results.</span>';
-                    return;
-                }
-                res.innerHTML = '';
-                data.results.slice(0, 8).forEach(m => {
-                    const poster = m.poster_path ? 'https://image.tmdb.org/t/p/w200' + m.poster_path : '';
-                    if (!poster) return;
-                    const item = document.createElement('div');
-                    item.className = 'coll-res-item';
-                    item.innerHTML = `<img src="${poster}" loading="lazy"><span>${m.title || m.name || ''}</span>`;
-                    item.onclick = () => {
-                        document.querySelectorAll('.coll-res-item').forEach(i => i.classList.remove('selected'));
-                        item.classList.add('selected');
-                        selectedMovie = m;
-                    };
-                    res.appendChild(item);
-                });
-            }).catch(() => {
-                res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>';
-            });
+        searchTimer = setTimeout(() => {
+            fetch(`${window.baseUrl || ''}/api/tmdb/search/multi?query=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
+                .then(r => r.json())
+                .then(data => {
+                    const valid = (data.results || []).filter(m => m.poster_path);
+                    if (!valid.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No results.</span>'; return; }
+                    res.innerHTML = '';
+                    valid.slice(0, 8).forEach(m => {
+                        const item = document.createElement('div');
+                        item.className = 'coll-res-item';
+                        item.innerHTML = `<img src="https://image.tmdb.org/t/p/w200${m.poster_path}" loading="lazy"><span>${m.title || m.name || ''}</span>`;
+                        item.onclick = () => {
+                            document.querySelectorAll('.coll-res-item').forEach(i => i.classList.remove('selected'));
+                            item.classList.add('selected');
+                            selectedMovie = m;
+                        };
+                        res.appendChild(item);
+                    });
+                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
+        }, 400);
+    };
+
+    let userTimer;
+    window.searchCollUsers = function(q) {
+        clearTimeout(userTimer);
+        const res = document.getElementById('coll-user-results');
+        if (!q || q.length < 1) { res.innerHTML = ''; return; }
+        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
+        userTimer = setTimeout(() => {
+            fetch(`${window.baseUrl || ''}/api/search/users?q=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
+                .then(r => r.json())
+                .then(users => {
+                    if (!users || !users.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No users found.</span>'; return; }
+                    res.innerHTML = '';
+                    users.slice(0, 6).forEach(u => {
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,0.05);cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;margin-bottom:8px;';
+                        item.innerHTML = `<img src="${u.photoUrl || ''}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:14px;font-weight:700;color:var(--text-primary);">@${u.username}</span>`;
+                        item.onclick = () => {
+                            res.querySelectorAll('div').forEach(i => i.style.borderColor = 'transparent');
+                            item.style.borderColor = '#fff';
+                            selectedUser = u;
+                        };
+                        res.appendChild(item);
+                    });
+                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
+        }, 400);
     };
 
     window.selectCollColor = function(el) {
@@ -5884,15 +5974,31 @@
                 img.src = poster;
                 cell.appendChild(img);
             } else { cell.textContent = '+'; }
-        } else if (activeTab === 'user') {
-            const u = document.getElementById('coll-user-input').value.trim();
-            cell.style.background = 'rgba(255,255,255,0.07)';
-            cell.innerHTML = `<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);text-align:center;padding:4px;">${u || '@user'}</span>`;
+            CELL_DATA[activeIdx] = { type: 'film', movie: selectedMovie };
+        } else if (activeTab === 'user' && selectedUser) {
+            cell.style.background = 'rgba(255,255,255,0.06)';
+            cell.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;"><img src="${selectedUser.photoUrl||''}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.1;">@${selectedUser.username}</span></div>`;
+            CELL_DATA[activeIdx] = { type: 'user', username: selectedUser.username };
         } else if (activeTab === 'color' && selectedColor) {
             cell.style.background = selectedColor;
+            CELL_DATA[activeIdx] = { type: 'color', color: selectedColor };
+        } else {
+            return;
         }
         closeCollPanel();
     };
+
+    const ks = document.createElement('style');
+    ks.textContent = `
+        @keyframes fsgWiggle {
+            0%,100%{transform:rotate(0deg) scale(1);}
+            20%{transform:rotate(-2.5deg) scale(0.97);}
+            60%{transform:rotate(2.5deg) scale(0.97);}
+        }
+        .fsg-edit-mode .fsg-cell { cursor:pointer; }
+        .fsg-edit-mode .fsg-cell:active { transform:scale(0.92); }
+    `;
+    document.head.appendChild(ks);
 })();
 </script>
 </body>
