@@ -3838,10 +3838,179 @@
             opacity: 0.85;
         }
     </style>
+    <style>
+    #pwa-install-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: var(--bg-primary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 24px;
+        padding-top: calc(32px + env(safe-area-inset-top));
+        padding-bottom: calc(32px + env(safe-area-inset-bottom));
+        animation: fadeInOverlay 0.3s ease;
+    }
+    @keyframes fadeInOverlay {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    #pwa-install-overlay .pwa-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        margin-bottom: 28px;
+    }
+    #pwa-install-overlay h1 {
+        font-family: 'Nunito', system-ui, sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--text-primary);
+        margin: 0 0 8px;
+        text-align: center;
+    }
+    #pwa-install-overlay p.pwa-sub {
+        font-size: 14px;
+        color: var(--text-subtle);
+        text-align: center;
+        margin: 0 0 36px;
+        line-height: 1.5;
+        max-width: 280px;
+    }
+    #pwa-install-overlay .pwa-steps {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 36px;
+    }
+    #pwa-install-overlay .pwa-step {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--placeholder-bg);
+        border-radius: var(--inner-radius);
+        padding: 14px 16px;
+    }
+    #pwa-install-overlay .pwa-step-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--button-bg);
+        color: var(--button-text);
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Nunito', system-ui, sans-serif;
+    }
+    #pwa-install-overlay .pwa-step-text {
+        font-size: 14px;
+        color: var(--text-primary);
+        font-weight: 600;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    #pwa-install-overlay .pwa-step-text svg {
+        flex-shrink: 0;
+        vertical-align: middle;
+    }
+    #pwa-install-overlay .pwa-ignore-btn {
+        background: none;
+        border: none;
+        color: var(--text-subtle);
+        font-size: 13px;
+        font-family: 'Nunito', system-ui, sans-serif;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 99px;
+        transition: background 0.15s;
+    }
+    #pwa-install-overlay .pwa-ignore-btn:active {
+        background: var(--placeholder-bg);
+    }
+    </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
-
 <body>
+    <div id="pwa-install-overlay" style="display:none">
+    <img src="/icons/icon-192.png" class="pwa-icon" alt="Cinemi">
+    <h1>Install Cinemi</h1>
+    <p class="pwa-sub">Add Cinemi to your home screen for the best experience.</p>
+    <div class="pwa-steps" id="pwa-steps-ios" style="display:none">
+        <div class="pwa-step">
+        <div class="pwa-step-num">1</div>
+        <div class="pwa-step-text">
+            Tap the
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h120v80H240v400h480v-400H600v-80h120q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm200-240v-447l-64 64-56-57 160-160 160 160-56 57-64-64v447h-80Z"/></svg>
+            <strong>Share</strong> button at the bottom of your browser
+        </div>
+        </div>
+        <div class="pwa-step">
+        <div class="pwa-step-num">2</div>
+        <div class="pwa-step-text">Scroll down and tap <strong>Add to Home Screen</strong></div>
+        </div>
+        <div class="pwa-step">
+        <div class="pwa-step-num">3</div>
+        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
+        </div>
+    </div>
+    <div class="pwa-steps" id="pwa-steps-android" style="display:none">
+        <div class="pwa-step">
+        <div class="pwa-step-num">1</div>
+        <div class="pwa-step-text">Tap the <strong>⋮</strong> menu in the top-right of Chrome</div>
+        </div>
+        <div class="pwa-step">
+        <div class="pwa-step-num">2</div>
+        <div class="pwa-step-text">Tap <strong>Add to Home screen</strong></div>
+        </div>
+        <div class="pwa-step">
+        <div class="pwa-step-num">3</div>
+        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
+        </div>
+    </div>
+    <button class="pwa-ignore-btn" id="pwa-ignore-btn">Ignore for now (beta)</button>
+    </div>
+
+    <script>
+    (function() {
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+
+        if (isStandalone) return;
+
+        var dismissed = sessionStorage.getItem('pwa-overlay-dismissed');
+        if (dismissed) return;
+
+        var ua = navigator.userAgent;
+        var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        var isAndroid = /Android/.test(ua);
+
+        if (!isIOS && !isAndroid) return;
+
+        var overlay = document.getElementById('pwa-install-overlay');
+        overlay.style.display = 'flex';
+
+        if (isIOS) {
+        document.getElementById('pwa-steps-ios').style.display = 'flex';
+        } else {
+        document.getElementById('pwa-steps-android').style.display = 'flex';
+        }
+
+        document.getElementById('pwa-ignore-btn').addEventListener('click', function() {
+        sessionStorage.setItem('pwa-overlay-dismissed', '1');
+        overlay.style.display = 'none';
+        });
+    })();
+    </script>
     <div id="logo-sp" class="view active"
         style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--bg-primary); padding:0; margin:0; position:fixed; inset:0; z-index:2000;">
         <img id="sp-logo" src="" style="width:300px; height:auto;">
