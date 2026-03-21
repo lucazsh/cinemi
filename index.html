@@ -3383,6 +3383,106 @@
         :root.light-mode .genre-see-all-label { color: rgba(0,0,0,0.2); }
         :root.light-mode .genre-see-all-btn { color: rgba(0,0,0,0.38); }
         :root.light-mode .genre-see-all-btn svg { fill: rgba(0,0,0,0.3); }
+        #mood {
+            padding-left: 14px !important;
+            padding-top: 16px !important;
+            overflow: visible !important;
+        }
+        .home-section .mov#mood {
+            overflow: visible !important;
+        }
+        .fsg-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            display: block;
+        }
+        #coll-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: var(--bg-secondary, #18191e);
+            border-radius: 26px 26px 0 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 20px 36px;
+            transform: translateY(100%);
+            transition: transform 0.36s cubic-bezier(0.22,1,0.36,1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        #coll-panel.open { transform: translateY(0); }
+        #coll-panel-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9998;
+        }
+        #coll-panel-backdrop.open { display: block; }
+        .coll-panel-drag { width: 40px; height: 4px; background: rgba(255,255,255,0.18); border-radius: 100px; margin: 0 auto 18px; }
+        .coll-panel-title { font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+        .coll-panel-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .coll-tab {
+            flex: 1; padding: 10px; border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.4);
+            cursor: pointer; transition: all 0.15s; text-align: center;
+        }
+        .coll-tab.active {
+            background: rgba(255,255,255,0.14);
+            border-color: rgba(255,255,255,0.22);
+            color: rgba(255,255,255,0.9);
+        }
+        .coll-search-wrap {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 10px 14px; margin-bottom: 12px;
+        }
+        .coll-search-wrap input {
+            flex: 1; background: none; border: none; outline: none;
+            font-size: 15px; color: var(--text-primary, #fff);
+        }
+        .coll-search-results {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; min-height: 80px;
+        }
+        .coll-res-item {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            cursor: pointer; width: 72px;
+        }
+        .coll-res-item img {
+            width: 72px; height: 100px; object-fit: cover;
+            border-radius: 10px; border: 2px solid transparent;
+            transition: border-color 0.15s;
+        }
+        .coll-res-item.selected img { border-color: #fff; }
+        .coll-res-item span { font-size: 10px; font-weight: 700; text-align: center; color: rgba(255,255,255,0.6); line-height: 1.2; }
+        .coll-colors { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .coll-color-swatch {
+            width: 36px; height: 36px; border-radius: 12px;
+            cursor: pointer; border: 3px solid transparent;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+        .coll-color-swatch.selected { border-color: #fff; transform: scale(1.15); }
+        .coll-user-input {
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 10px 14px; margin-bottom: 12px;
+            width: 100%; font-size: 15px; color: var(--text-primary, #fff); outline: none;
+            box-sizing: border-box;
+        }
+        .coll-apply-btn {
+            width: 100%; padding: 14px; border-radius: 16px;
+            background: #f0f0f0; color: #0d0d0f;
+            font-size: 13px; font-weight: 800; letter-spacing: 1.5px;
+            text-transform: uppercase; cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .coll-apply-btn:active { transform: scale(0.97); opacity: 0.85; }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -3851,32 +3951,23 @@
                 <span class="sec-meta">0 films</span>
             </div>
             <div class="film-shelf-wrap">
-                <div class="film-shelf-grid">
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
-                    <div class="fsg-cell">+</div>
+                <div class="film-shelf-grid" id="fsg-grid">
+                    <div class="fsg-cell" data-idx="0">+</div>
+                    <div class="fsg-cell" data-idx="1">+</div>
+                    <div class="fsg-cell" data-idx="2">+</div>
+                    <div class="fsg-cell" data-idx="3">+</div>
+                    <div class="fsg-cell" data-idx="4">+</div>
+                    <div class="fsg-cell" data-idx="5">+</div>
+                    <div class="fsg-cell" data-idx="6">+</div>
+                    <div class="fsg-cell" data-idx="7">+</div>
+                    <div class="fsg-cell" data-idx="8">+</div>
+                    <div class="fsg-cell" data-idx="9">+</div>
+                    <div class="fsg-cell" data-idx="10">+</div>
+                    <div class="fsg-cell" data-idx="11">+</div>
+                    <div class="fsg-cell" data-idx="12">+</div>
+                    <div class="fsg-cell" data-idx="13">+</div>
+                    <div class="fsg-cell" data-idx="14">+</div>
                 </div>
-                <div class="film-shelf-overlay">
-                    <button class="film-shelf-pill">Add your first film</button>
-                </div>
-                <button class="film-shelf-browse">
-                    Browse films
-                    <div class="film-shelf-browse-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M170.87-87.87q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-522.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h143.56q17.46 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.02 12.17-29.48 12.17H170.87v522.26h522.26v-187.74q0-17.45 11.96-29.47 11.97-12.03 29.33-12.03t29.54 12.03q12.17 12.02 12.17 29.47v187.74q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H170.87Zm574.2-516.93 75.43 78.43q11.72 11.72 11.72 26.44 0 14.71-11.72 26.43-11.72 11.72-26.93 11.72-15.22 0-26.94-11.72l-75.43-77.43q-20 14-43 20.26-23 6.26-48.2 6.26-71.49 0-121.54-50.04-50.05-50.03-50.05-121.51 0-71.47 50.04-121.55 50.03-50.08 121.51-50.08 71.47 0 121.55 50.05T771.59-696q0 24-6.26 47.6t-20.26 43.6ZM668-627.77q28-27.78 28-68Q696-736 668.23-764q-27.78-28-68-28Q560-792 532-764.23q-28 27.78-28 68Q504-656 531.77-628q27.78 28 68 28Q640-600 668-627.77ZM170.87-445.4v274.53-522.26V-452.41v-12 19.01Z"/></svg>
-                    </div>
-                </button>
             </div>
             <div class="coll-stats">
                 <div class="coll-stat">
@@ -3892,6 +3983,7 @@
                     <span class="coll-stat-label">Runtime</span>
                 </div>
             </div>
+
             <div class="sec-wrap">
                 <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
@@ -3938,7 +4030,7 @@
             <div style="font-size: 21px; font-weight: 600;" class="sec-wrap">
                 <span class="sec-sub">Trending</span> <span class="sec-title">for you</span>
             </div>
-            <div class="mov" style="padding: 10px 0 14px;">
+            <div class="mov" id="trending" style="padding: 10px 0 14px;">
                 <div class="tr-poster-wrap">
                     <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
                     <span class="tr-rank-pill">1</span>
@@ -5665,5 +5757,143 @@
             }
         })();
     </script>
+<div id="coll-panel-backdrop" onclick="closeCollPanel()"></div>
+<div id="coll-panel">
+    <div class="coll-panel-drag"></div>
+    <div class="coll-panel-title" id="coll-panel-title">Edit slot</div>
+    <div class="coll-panel-tabs">
+        <button class="coll-tab active" data-tab="film" onclick="switchCollTab('film',this)">Film</button>
+        <button class="coll-tab" data-tab="user" onclick="switchCollTab('user',this)">User</button>
+        <button class="coll-tab" data-tab="color" onclick="switchCollTab('color',this)">Color</button>
+    </div>
+    <div id="coll-tab-film">
+        <div class="coll-search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            <input id="coll-search-input" placeholder="Search films..." oninput="searchCollMovies(this.value)" autocomplete="off">
+        </div>
+        <div class="coll-search-results" id="coll-search-results"></div>
+    </div>
+    <div id="coll-tab-user" style="display:none;">
+        <input class="coll-user-input" id="coll-user-input" placeholder="@username">
+    </div>
+    <div id="coll-tab-color" style="display:none;">
+        <div class="coll-colors">
+            <div class="coll-color-swatch" style="background:#e74c3c" data-color="#e74c3c" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#e67e22" data-color="#e67e22" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#f1c40f" data-color="#f1c40f" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#2ecc71" data-color="#2ecc71" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#1abc9c" data-color="#1abc9c" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#3498db" data-color="#3498db" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#9b59b6" data-color="#9b59b6" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#ff69b4" data-color="#ff69b4" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#ffffff" data-color="#ffffff" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#888888" data-color="#888888" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#222222" data-color="#222222" onclick="selectCollColor(this)"></div>
+        </div>
+    </div>
+    <button class="coll-apply-btn" onclick="applyCollPanel()">Apply</button>
+</div>
+<script>
+(function(){
+    let activeIdx = null;
+    let activeTab = 'film';
+    let selectedMovie = null;
+    let selectedColor = null;
+
+    document.addEventListener('click', function(e){
+        const cell = e.target.closest('#fsg-grid .fsg-cell');
+        if (!cell) return;
+        activeIdx = parseInt(cell.dataset.idx);
+        selectedMovie = null;
+        selectedColor = null;
+        document.getElementById('coll-search-input').value = '';
+        document.getElementById('coll-search-results').innerHTML = '';
+        document.getElementById('coll-user-input').value = '';
+        document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
+        document.querySelectorAll('.coll-tab').forEach(t => t.classList.remove('active'));
+        const filmTab = document.querySelector('.coll-tab[data-tab="film"]');
+        filmTab.classList.add('active');
+        switchCollTab('film', filmTab);
+        document.getElementById('coll-panel-title').textContent = 'Edit slot ' + (activeIdx + 1);
+        document.getElementById('coll-panel').classList.add('open');
+        document.getElementById('coll-panel-backdrop').classList.add('open');
+    });
+
+    window.closeCollPanel = function() {
+        document.getElementById('coll-panel').classList.remove('open');
+        document.getElementById('coll-panel-backdrop').classList.remove('open');
+    };
+
+    window.switchCollTab = function(tab, btn) {
+        activeTab = tab;
+        ['film','user','color'].forEach(t => {
+            document.getElementById('coll-tab-' + t).style.display = t === tab ? '' : 'none';
+        });
+        document.querySelectorAll('.coll-tab').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+    };
+
+    window.searchCollMovies = function(q) {
+        const res = document.getElementById('coll-search-results');
+        if (!q || q.length < 2) { res.innerHTML = ''; return; }
+        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
+        const bUrl = window.baseUrl || '';
+        const hdrs = window.ngrokHeaders || {};
+        fetch(`${bUrl}/api/tmdb/search?q=${encodeURIComponent(q)}`, { headers: hdrs })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.results || !data.results.length) {
+                    res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No results.</span>';
+                    return;
+                }
+                res.innerHTML = '';
+                data.results.slice(0, 8).forEach(m => {
+                    const poster = m.poster_path ? 'https://image.tmdb.org/t/p/w200' + m.poster_path : '';
+                    if (!poster) return;
+                    const item = document.createElement('div');
+                    item.className = 'coll-res-item';
+                    item.innerHTML = `<img src="${poster}" loading="lazy"><span>${m.title || m.name || ''}</span>`;
+                    item.onclick = () => {
+                        document.querySelectorAll('.coll-res-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                        selectedMovie = m;
+                    };
+                    res.appendChild(item);
+                });
+            }).catch(() => {
+                res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>';
+            });
+    };
+
+    window.selectCollColor = function(el) {
+        document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedColor = el.dataset.color;
+    };
+
+    window.applyCollPanel = function() {
+        if (activeIdx === null) return;
+        const cell = document.querySelector(`#fsg-grid .fsg-cell[data-idx="${activeIdx}"]`);
+        if (!cell) return;
+        cell.innerHTML = '';
+        cell.style.background = '';
+        if (activeTab === 'film' && selectedMovie) {
+            const poster = selectedMovie.poster_path ? 'https://image.tmdb.org/t/p/w200' + selectedMovie.poster_path : '';
+            if (poster) {
+                const img = document.createElement('img');
+                img.src = poster;
+                cell.appendChild(img);
+            } else { cell.textContent = '+'; }
+        } else if (activeTab === 'user') {
+            const u = document.getElementById('coll-user-input').value.trim();
+            cell.style.background = 'rgba(255,255,255,0.07)';
+            cell.innerHTML = `<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);text-align:center;padding:4px;">${u || '@user'}</span>`;
+        } else if (activeTab === 'color' && selectedColor) {
+            cell.style.background = selectedColor;
+        }
+        closeCollPanel();
+    };
+})();
+</script>
 </body>
 </html>
