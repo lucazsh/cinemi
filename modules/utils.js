@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://miss-thin-sat-engaging.trycloudflare.com';
+const SERVER_URL = 'https://seniors-spies-furnishings-newer.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
