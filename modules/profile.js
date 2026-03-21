@@ -257,9 +257,7 @@ async function openUserPanel(panelType) {
     if (panelType === 'friends') {
         const panel = document.getElementById('user-friends-panel');
         const sheet = panel.querySelector('.sheet');
-        
-        panel.style.display = 'flex';
-        requestAnimationFrame(() => panel.classList.add('open'));
+        openPanel('user-friends');
         
         try {
             const [followersRes, followingRes] = await Promise.all([
@@ -326,9 +324,7 @@ async function openUserPanel(panelType) {
     const panelId = `user-${panelType}-panel`;
     const panel = document.getElementById(panelId);
     const sheet = panel.querySelector('.sheet');
-    
-    panel.style.display = 'flex';
-    requestAnimationFrame(() => panel.classList.add('open'));
+    openPanel('user-favorites');
     
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/${panelType}`);
