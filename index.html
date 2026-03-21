@@ -2893,6 +2893,7 @@
             margin: 20px -20px;
             padding: 0 20px 18px;
             border-radius: 36px;
+            overflow: hidden;
         }
         .home-section::before {
             content: '';
@@ -3388,6 +3389,14 @@
         #mood {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin-left: -20px;
+            margin-right: -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            width: calc(100% + 40px);
+            box-sizing: border-box;
         }
         #mood::-webkit-scrollbar { display: none; }
         .fsg-cell img {
