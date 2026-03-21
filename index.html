@@ -754,7 +754,10 @@
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory; 
             padding: 10px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .mov::-webkit-scrollbar { display: none; }
 
         .mov img {
             scroll-snap-align: start;
@@ -2890,7 +2893,7 @@
             margin: 20px -20px;
             padding: 0 20px 18px;
             border-radius: 36px;
-            overflow: hidden;
+            overflow: clip;
         }
         .home-section::before {
             content: '';
@@ -3386,10 +3389,15 @@
         #mood {
             padding-left: 14px !important;
             padding-top: 16px !important;
-            overflow: visible !important;
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        #mood::-webkit-scrollbar { display: none; }
         .home-section .mov#mood {
-            overflow: visible !important;
+            overflow-x: auto !important;
+            overflow-y: visible !important;
         }
         .fsg-cell img {
             width: 100%;
