@@ -3962,7 +3962,7 @@
             </div>
             <div class="sec-wrap">
                 <span class="sec-sub">Your</span> <span class="sec-title">collection</span>
-                <span class="sec-meta">0 films</span>
+                <span class="sec-meta" id="coll-films-count">0 films</span>
             </div>
             <div class="film-shelf-wrap">
                 <div class="film-shelf-grid" id="fsg-grid">
@@ -3985,15 +3985,15 @@
             </div>
             <div class="coll-stats">
                 <div class="coll-stat">
-                    <span class="coll-stat-num">0</span>
+                    <span class="coll-stat-num" id="coll-saved-num">0</span>
                     <span class="coll-stat-label">Saved</span>
                 </div>
                 <div class="coll-stat">
-                    <span class="coll-stat-num">0</span>
+                    <span class="coll-stat-num" id="coll-watched-num">0</span>
                     <span class="coll-stat-label">Watched</span>
                 </div>
                 <div class="coll-stat">
-                    <span class="coll-stat-num">0h</span>
+                    <span class="coll-stat-num" id="coll-runtime-num">0h</span>
                     <span class="coll-stat-label">Runtime</span>
                 </div>
             </div>
@@ -6017,6 +6017,37 @@
         }
         closeCollPanel();
     };
+
+    function updateGridCount() {
+        var filled = document.querySelectorAll('#fsg-grid .fsg-cell img').length;
+        var el = document.getElementById('coll-films-count');
+        if (el) el.textContent = filled + (filled === 1 ? ' film' : ' films');
+    }
+
+    var gridObserver = new MutationObserver(updateGridCount);
+    gridObserver.observe(grid, { childList: true, subtree: true });
+    updateGridCount();
+
+    async function updateCollStats() {
+        try {
+            var favRes = await fetchWithAuth(baseUrl + '/api/favorites');
+            if (favRes.ok) {
+                var favs = await favRes.json();
+                var savedEl = document.getElementById('coll-saved-num');
+                if (savedEl) savedEl.textContent = favs.length || 0;
+            }
+        } catch(e) {}
+        try {
+            var wlRes = await fetchWithAuth(baseUrl + '/api/watchlist');
+            if (wlRes.ok) {
+                var wl = await wlRes.json();
+                var watchedEl = document.getElementById('coll-watched-num');
+                if (watchedEl) watchedEl.textContent = wl.length || 0;
+            }
+        } catch(e) {}
+    }
+
+    updateCollStats();
 
     var ks = document.createElement('style');
     ks.textContent = '@keyframes fsgWiggle{0%,100%{transform:rotate(0deg) scale(1);}20%{transform:rotate(-2.5deg) scale(0.97);}60%{transform:rotate(2.5deg) scale(0.97);}}.fsg-edit-mode .fsg-cell{cursor:pointer;}.fsg-edit-mode .fsg-cell:active{transform:scale(0.92);}';
