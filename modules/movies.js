@@ -14,9 +14,11 @@ function showSkeletonLoaders() {
     
     const genreContainer = document.getElementById('genre');
     if (genreContainer) {
+        const seeMore = genreContainer.querySelector('.mov-see-more');
         genreContainer.innerHTML = Array(3).fill(0).map(() => `
             <div class="skeleton-loader" style="width:40%;aspect-ratio:2/3;border-radius:15px;background:linear-gradient(90deg,var(--bg-primary) 25%,var(--bg-secondary) 50%,var(--bg-primary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
         `).join('');
+        if (seeMore) genreContainer.appendChild(seeMore);
     }
     
     const moodContainer = document.getElementById('mood');
@@ -216,6 +218,7 @@ async function loadGenreMovies() {
 
     const container = document.getElementById('genre');
     if (container) {
+        const seeMore = container.querySelector('.mov-see-more');
         container.innerHTML = '';
         movies.slice(0, 6).forEach((movie, idx) => {
             const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
@@ -231,6 +234,7 @@ async function loadGenreMovies() {
         if (movies.length === 0) {
             container.innerHTML = '<div style="color: var(--text-subtle); padding: 20px;">No recommendations yet...</div>';
         }
+        if (seeMore) container.appendChild(seeMore);
     }
 }
 
@@ -249,6 +253,7 @@ async function loadMoviesByGenre(genreId) {
 
     const container = document.getElementById('genre');
     if (container && data.results) {
+        const seeMore = container.querySelector('.mov-see-more');
         container.innerHTML = '';
         data.results.slice(0, 6).forEach((m, i) => {
             const url = m.poster_path ? `${IMG_W500}${m.poster_path}` : '';
@@ -261,6 +266,7 @@ async function loadMoviesByGenre(genreId) {
             img.onclick = () => showDetails(m);
             container.appendChild(img);
         });
+        if (seeMore) container.appendChild(seeMore);
     }
 }
 
