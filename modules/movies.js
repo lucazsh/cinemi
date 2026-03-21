@@ -484,7 +484,10 @@ async function addToWatchlist(movie) {
             })
         });
         const data = await res.json();
-        if (res.ok) return true;
+        if (res.ok) {
+            if (typeof updateCollStats === 'function') updateCollStats();
+            return true;
+        }
         return false;
     } catch (err) {
         console.error('Watchlist error:', err);
@@ -508,7 +511,10 @@ async function addToFavorites(movie) {
             })
         });
         const data = await res.json();
-        if (res.ok) return true;
+        if (res.ok) {
+            if (typeof updateCollStats === 'function') updateCollStats();
+            return true;
+        }
         return false;
     } catch (err) {
         console.error('Favorites error:', err);
@@ -520,7 +526,10 @@ async function addToFavorites(movie) {
 async function removeFromWatchlist(movieId) {
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/watchlist/${movieId}`, { method: 'DELETE' });
-        if (res.ok) return true;
+        if (res.ok) {
+            if (typeof updateCollStats === 'function') updateCollStats();
+            return true;
+        }
         return false;
     } catch (err) {
         console.error('Remove error:', err);
@@ -531,7 +540,10 @@ async function removeFromWatchlist(movieId) {
 async function removeFromFavorites(movieId) {
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/favorites/${movieId}`, { method: 'DELETE' });
-        if (res.ok) return true;
+        if (res.ok) {
+            if (typeof updateCollStats === 'function') updateCollStats();
+            return true;
+        }
         return false;
     } catch (err) {
         console.error('Remove error:', err);
