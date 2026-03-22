@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="inverted">
-<head>
+<head> 
     <title>Cinemi</title>
     <meta charset='utf-8'>
     <meta name="viewport"
@@ -247,12 +247,11 @@
             cursor: pointer;
             transition: background 0.4s;
         }
-
         #home .nt {
             background-color: transparent;
             transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.35s ease,
-                background-color 0.35s ease !important;
+                        opacity 0.35s ease,
+                        background-color 0.35s ease !important;
             will-change: transform;
             position: sticky;
             top: 0;
@@ -268,26 +267,21 @@
             opacity: 0;
             pointer-events: none;
         }
-
         .navh button.active {
             background: var(--navh-pressed);
             transform: scale(1.02);
         }
-
         .navh button.active svg {
             fill: var(--icon-fill-primary);
         }
-
         .navh button span {
             opacity: 1;
             font-size: 12px;
         }
-
         .navh button svg {
             fill: #6b6b6b;
             transition: fill 0.25s ease;
         }
-
         .view {
             position: fixed;
             top: 0;
@@ -308,13 +302,11 @@
             .navh {
                 bottom: 30px;
             }
-
             .view {
                 height: calc(100% - 83px);
                 margin-bottom: 83px;
             }
         }
-
         .view.active {
             opacity: 1;
             pointer-events: auto;
@@ -760,33 +752,29 @@
             overflow-x: auto;
             gap: 14px;
             scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
+            scroll-snap-type: x mandatory; 
             padding: 10px;
-            scroll-padding-left: 2px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
-
-        .mov::-webkit-scrollbar {
-            display: none;
+        #mood .mov::before {
+            content: '' !important;
+            min-width: 10px !important;
+            flex-shrink: 0 !important;
+            scroll-snap-align: start !important;
         }
-
         .mov img {
             scroll-snap-align: start;
         }
-
         .mov img {
             max-width: 40%;
-            border-radius: clamp(16px, 6vw, 32px);
+            border-radius: clamp(16px, 6vw, 32px); 
             margin-top: 0px;
-            border: 1.67px solid var(--border-light);
+            border: 1.67px solid var(--border-light); 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
-
+        
         #mood img {
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
-
         .f-mov {
             position: relative;
             display: inline-block;
@@ -1180,7 +1168,7 @@
         .cards-container {
             position: relative;
             width: 100%;
-            height: 280px;
+            height: 200px;
             perspective: 1000px;
             margin-bottom: 40px;
             animation: fadeInUp 0.5s ease-out;
@@ -1229,20 +1217,20 @@
         }
 
         .card-1 {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=925&q=80');
             z-index: 3;
-            background: #111;
         }
 
         .card-2 {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1489599809516-9827b6d1cf13?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80');
             z-index: 2;
             transform: rotate(-4deg) translateY(15px) scale(0.95);
-            background: #111;
         }
 
         .card-3 {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
             z-index: 1;
             transform: rotate(4deg) translateY(30px) scale(0.9);
-            background: #111;
         }
 
         .card-content {
@@ -1282,17 +1270,19 @@
 
         .card-counter {
             position: absolute;
-            top: 14px;
-            right: 14px;
-            border: 1px solid var(--card);
-            background: #1c1c1e;
-            color: #e3e3e3;
-            padding: 9px 20px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 800;
-            font-family: 'Nunito', sans-serif;
-            letter-spacing: 0;
+            top: 15px;
+            right: 15px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            padding: 6px 12px;
+            border: 1px solid var(--text-primary);
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(255, 138, 0, 0.3);
             z-index: 4;
         }
 
@@ -1941,7 +1931,6 @@
             overflow-y: auto;
             animation: slideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
-
         .sheet::before {
             content: '';
             position: absolute;
@@ -1955,15 +1944,12 @@
             pointer-events: none;
             z-index: 1;
         }
-
         .sheet {
             padding-top: 32px;
         }
-
         .sheet.sheet-fs {
             max-height: 96vh !important;
         }
-
         .drag-pill {
             width: 36px;
             height: 4px;
@@ -1974,12 +1960,9 @@
             left: 50%;
             transform: translateX(-50%);
         }
-
-        #replies,
-        #add {
+        #replies, #add {
             padding-top: 20px;
         }
-
         .sheet {
             z-index: 2000 !important;
         }
@@ -2751,42 +2734,42 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
             z-index: 999;
             white-space: nowrap;
             touch-action: none;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s;
+            transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.1), opacity 0.3s;
             position: fixed;
         }
-
         .sp-fab span {
             color: var(--bg-primary);
         }
-
-        .sp-fab::before {
-            content: "";
-            position: absolute;
-            inset: -1px;
-            border-radius: 32px;
-            background: repeating-linear-gradient(90deg,
-                    var(--border-light) 0px,
-                    var(--border-light) 6px,
-                    transparent 6px,
-                    transparent 12px);
-            background-size: 12px 100%;
-            animation: dashSlide .6s linear infinite;
-            z-index: 0;
-            pointer-events: none;
+        .sp-fab::before{
+            content:"";
+            position:absolute;
+            inset:-1px;
+            border-radius:32px;
+            background:repeating-linear-gradient(
+                90deg,
+                var(--border-light) 0px,
+                var(--border-light) 6px,
+                transparent 6px,
+                transparent 12px
+            );
+            background-size:12px 100%;
+            animation:dashSlide .6s linear infinite;
+            z-index:0;
+            pointer-events:none;
         }
 
-        .sp-fab::after {
-            content: "";
-            position: absolute;
-            inset: 2px;
-            border-radius: 28px;
-            background: var(--text-primary);
-            z-index: 1;
-            pointer-events: none;
+        .sp-fab::after{
+            content:"";
+            position:absolute;
+            inset:2px;
+            border-radius:28px;
+            background:var(--text-primary);
+            z-index:1;
+            pointer-events:none;
         }
 
         .sp-fab * {
@@ -2794,28 +2777,22 @@
             z-index: 1000;
         }
 
-        .sp-fab svg {
-            fill: var(--bg-primary);
-            width: 16px;
-            height: 16px;
+        .sp-fab svg{
+            fill:var(--bg-primary);
+            width:16px;
+            height:16px;
         }
 
-        .sp-fab.hidden {
-            transform: translateX(-50%) translateY(80px);
-            opacity: 0;
-            pointer-events: none;
+        .sp-fab.hidden{
+            transform:translateX(-50%) translateY(80px);
+            opacity:0;
+            pointer-events:none;
         }
 
-        @keyframes dashSlide {
-            from {
-                background-position: 0 0;
-            }
-
-            to {
-                background-position: 12px 0;
-            }
+        @keyframes dashSlide{
+            from{background-position:0 0;}
+            to{background-position:12px 0;}
         }
-
         #profile-gradient-bg {
             position: absolute;
             top: 0;
@@ -2826,24 +2803,20 @@
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%);
         }
-
         #profile .nt {
             background: transparent;
             position: relative;
             z-index: 2;
         }
-
         #profile .p-user {
             position: relative;
             z-index: 1;
         }
-
         .sec-wrap {
             margin: 36px 0 12px;
             overflow: hidden;
             animation: fadeUp 0.4s ease both;
         }
-
         .sec-sub {
             font-family: "Nunito", sans-serif;
             font-size: 15px;
@@ -2855,7 +2828,6 @@
             margin-top: 10px;
             margin-bottom: 0px;
         }
-
         .sec-title {
             font-family: "Nunito", sans-serif;
             font-size: 30px;
@@ -2870,44 +2842,34 @@
             -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 41%, transparent 106%);
             mask-image: linear-gradient(to bottom, #000 0%, #000 41%, transparent 106%);
         }
-
-        .sec-title.light {
-            font-weight: 800;
-        }
-
+        .sec-title.light { font-weight: 800; }
         .sec-wrap {
             margin: 42px 0 2px;
         }
-
         .sec-sub {
             margin-bottom: 1px;
             margin-top: 0;
             letter-spacing: 2px;
         }
-
         .mov {
             display: flex;
             overflow-x: auto;
             gap: 18px;
         }
-
         .fmov-title,
         .fmov-desciption,
         .fmov-buttons {
             left: 20px;
             width: calc(100% - 40px);
         }
-
         .sec-title {
             padding-bottom: 2px;
             font-size: 32px;
             font-weight: 900;
         }
-
         .fmov-desciption {
             margin-bottom: 13%;
         }
-
         #mood-refresh-btn {
             flex-shrink: 0;
             align-self: center;
@@ -2921,9 +2883,8 @@
             justify-content: center;
             cursor: pointer;
             scroll-snap-align: start;
-            box-shadow: 0 6px 28px rgba(0, 0, 0, 0.22);
+            box-shadow: 0 6px 28px rgba(0,0,0,0.22);
         }
-
         #mood-refresh-btn.visible {
             display: flex;
             animation: slideInFromLeft 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -2932,53 +2893,47 @@
         .home-section {
             position: relative;
             margin: 20px -20px;
+            margin-top: 25px;
             padding: 0 20px 18px;
             border-radius: 36px;
             overflow: hidden;
         }
-
         .home-section::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 65%);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 65%);
             border-radius: 36px;
             pointer-events: none;
             z-index: 0;
         }
-
         .home-section::after {
             content: '';
             position: absolute;
             inset: 0;
             border-radius: 36px;
-            border: 1px solid rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255,255,255,0.13);
             -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
             mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
             pointer-events: none;
             z-index: 1;
         }
-
-        .home-section>* {
+        .home-section > * {
             position: relative;
             z-index: 2;
         }
-
         .home-section .sec-wrap {
             padding: 0;
             margin-top: 44px;
             margin-bottom: 4px;
         }
-
         .home-section .mood-shuffle-pill {
             top: 14px;
             right: 14px;
         }
-
         .home-section .mov {
             padding: 10px 0 14px;
         }
-
         .mood-shuffle-pill {
             position: absolute;
             top: 18px;
@@ -2999,7 +2954,6 @@
             transition: transform 0.15s, opacity 0.15s, background 0.15s;
             min-height: 38px;
         }
-
         @media (max-width: 430px) {
             .mood-shuffle-pill {
                 padding: 11px 18px 11px 14px;
@@ -3007,23 +2961,19 @@
                 min-height: 44px;
                 gap: 7px;
             }
-
             .mood-shuffle-pill svg {
                 width: 15px !important;
                 height: 15px !important;
             }
         }
-
         .mood-shuffle-pill:active {
             transform: scale(0.92);
             opacity: 0.7;
         }
-
         .mood-shuffle-pill svg {
             fill: var(--text-secondary);
             flex-shrink: 0;
         }
-
         .see-all-btn {
             display: flex;
             align-items: center;
@@ -3036,100 +2986,67 @@
             border: 1px solid var(--border-dark-alpha-2);
             font-size: 13px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.45);
+            color: rgba(255,255,255,0.45);
             cursor: pointer;
             justify-content: center;
             transition: opacity 0.15s, transform 0.15s;
             letter-spacing: 0.1px;
         }
-
-        .see-all-btn:active {
-            transform: scale(0.97);
-            opacity: 0.7;
-        }
-
-        .see-all-btn svg {
-            fill: rgba(255, 255, 255, 0.35);
-        }
-
-        #home::after {
-            display: none;
-        }
-
-        #home .m1-rec>div:first-child {
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-
+        .see-all-btn:active { transform: scale(0.97); opacity: 0.7; }
+        .see-all-btn svg { fill: rgba(255,255,255,0.35); }
+        #home::after { display: none; }
+        #home .m1-rec > div:first-child { gap: 6px; margin-bottom: 12px; }
+        #fmov-ambient-a { opacity: 0.24 !important; }
         .mov {
             overflow-x: auto;
         }
-
         .mov img {
             border-radius: clamp(16px, 6vw, 32px) !important;
             border: 1.67px solid var(--border-light) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
         }
-
+        .fmov-title {
+            font-family: 'Nunito', sans-serif !important;
+            font-size: 2.6rem !important;
+            font-weight: 900 !important;
+            letter-spacing: -1.4px !important;
+            line-height: 1.0 !important;
+        }
+        .fmov-desciption {
+            font-size: 0.8rem !important;
+            color: rgba(255,255,255,0.42) !important;
+            line-height: 1.35 !important;
+        }
+        .fmov-b {
+            border-radius: 100px !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            letter-spacing: 1.2px !important;
+            text-transform: uppercase !important;
+            padding: 9px 20px !important;
+        }
         .home-section::after {
             display: none;
         }
-
         .sec-wrap {
             position: relative;
             display: flex;
             flex-direction: column;
         }
-
         .sec-sub {
             display: block !important;
         }
-
-        .mov img:nth-child(1) {
-            position: relative;
-            z-index: 3;
-        }
-
-        .mov img:nth-child(2) {
-            position: relative;
-            z-index: 2;
-            filter: brightness(0.88);
-        }
-
-        .mov img:nth-child(3) {
-            position: relative;
-            z-index: 1;
-            filter: brightness(0.76);
-        }
-
-        .mov img:nth-child(n+4) {
-            filter: brightness(0.65);
-        }
-
+        .mov img:nth-child(1) { position: relative; z-index: 3; }
+        .mov img:nth-child(2) { position: relative; z-index: 2; filter: brightness(0.88); }
+        .mov img:nth-child(3) { position: relative; z-index: 1; filter: brightness(0.76); }
+        .mov img:nth-child(n+4) { filter: brightness(0.65); }
         @keyframes movSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        .mov img:nth-child(1) {
-            animation: movSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
-        .mov img:nth-child(2) {
-            animation: movSlideIn 0.4s 0.06s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
-        .mov img:nth-child(3) {
-            animation: movSlideIn 0.4s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
+        .mov img:nth-child(1) { animation: movSlideIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+        .mov img:nth-child(2) { animation: movSlideIn 0.4s 0.06s cubic-bezier(0.22,1,0.36,1) both; }
+        .mov img:nth-child(3) { animation: movSlideIn 0.4s 0.12s cubic-bezier(0.22,1,0.36,1) both; }
         .mov-see-more {
             flex-shrink: 0;
             width: 40%;
@@ -3147,50 +3064,38 @@
             transition: opacity 0.18s, transform 0.18s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .mov-see-more:active {
-            opacity: 0.5;
-            transform: scale(0.96);
-        }
-
+        .mov-see-more:active { opacity: 0.5; transform: scale(0.96); }
         .mov-see-more-icon {
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
-        .mov-see-more-icon svg {
-            fill: #e3e3e3;
-        }
-
+        .mov-see-more-icon svg { fill: #e3e3e3; }
         .mov-see-more-label {
             font-size: 10px;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255,255,255,0.3);
             letter-spacing: 0.3px;
         }
-
         .film-shelf-wrap {
             margin-top: 8px;
             border-radius: 20px;
             overflow: hidden;
             position: relative;
             background: #0d0d0f;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255,255,255,0.06);
         }
-
         .film-shelf-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 1.5px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
         }
-
         .fsg-cell {
             aspect-ratio: 1;
             background: #0d0d0f;
@@ -3199,16 +3104,12 @@
             justify-content: center;
             font-size: 20px;
             font-weight: 200;
-            color: rgba(255, 255, 255, 0.13);
+            color: rgba(255,255,255,0.13);
             cursor: pointer;
             transition: background 0.12s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .fsg-cell:active {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
+        .fsg-cell:active { background: rgba(255,255,255,0.05); }
         .film-shelf-overlay {
             position: absolute;
             inset: 0;
@@ -3218,7 +3119,6 @@
             justify-content: center;
             pointer-events: none;
         }
-
         .film-shelf-pill {
             background: #f0f0f0;
             color: #0d0d0f;
@@ -3232,14 +3132,9 @@
             cursor: pointer;
             transition: transform 0.15s, opacity 0.15s;
             white-space: nowrap;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-
-        .film-shelf-pill:active {
-            transform: scale(0.95);
-            opacity: 0.85;
-        }
-
+        .film-shelf-pill:active { transform: scale(0.95); opacity: 0.85; }
         .film-shelf-browse {
             width: 100%;
             display: flex;
@@ -3251,17 +3146,13 @@
             font-weight: 600;
             letter-spacing: 2.2px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.35);
+            color: rgba(255,255,255,0.35);
             cursor: pointer;
             transition: background 0.12s;
             -webkit-tap-highlight-color: transparent;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-top: 1px solid rgba(255,255,255,0.04);
         }
-
-        .film-shelf-browse:active {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
+        .film-shelf-browse:active { background: rgba(255,255,255,0.04); }
         .film-shelf-browse-icon {
             width: 30px;
             height: 30px;
@@ -3270,13 +3161,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255,255,255,0.07);
         }
-
-        .film-shelf-browse-icon svg {
-            fill: rgba(255, 255, 255, 0.4);
-        }
-
+        .film-shelf-browse-icon svg { fill: rgba(255,255,255,0.4); }
         .sec-action-row {
             display: flex;
             gap: 7px;
@@ -3284,11 +3171,7 @@
             padding: 10px 0 4px;
             scrollbar-width: none;
         }
-
-        .sec-action-row::-webkit-scrollbar {
-            display: none;
-        }
-
+        .sec-action-row::-webkit-scrollbar { display: none; }
         .sec-chip {
             flex-shrink: 0;
             padding: 7px 14px;
@@ -3296,37 +3179,29 @@
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.3px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.45);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.45);
             cursor: pointer;
             transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .sec-chip:active {
-            transform: scale(0.93);
-            opacity: 0.7;
-        }
-
+        .sec-chip:active { transform: scale(0.93); opacity: 0.7; }
         .sec-chip.sec-chip-active {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.22);
-            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.22);
+            color: rgba(255,255,255,0.85);
         }
-
         :root.light-mode .sec-chip {
-            background: rgba(0, 0, 0, 0.04);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.4);
         }
-
         :root.light-mode .sec-chip.sec-chip-active {
-            background: rgba(0, 0, 0, 0.09);
-            border-color: rgba(0, 0, 0, 0.18);
-            color: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.09);
+            border-color: rgba(0,0,0,0.18);
+            color: rgba(0,0,0,0.8);
         }
-
         .sec-btn-full {
             flex: 1;
             display: flex;
@@ -3335,26 +3210,17 @@
             gap: 7px;
             padding: 13px 16px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.75);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.75);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .sec-btn-full svg {
-            fill: rgba(255, 255, 255, 0.6);
-            flex-shrink: 0;
-        }
-
-        .sec-btn-full:active {
-            transform: scale(0.96);
-            opacity: 0.7;
-        }
-
+        .sec-btn-full svg { fill: rgba(255,255,255,0.6); flex-shrink: 0; }
+        .sec-btn-full:active { transform: scale(0.96); opacity: 0.7; }
         .sec-btn-ghost {
             flex: 1;
             display: flex;
@@ -3364,44 +3230,27 @@
             padding: 13px 16px;
             border-radius: 16px;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.45);
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .sec-btn-ghost svg {
-            fill: rgba(255, 255, 255, 0.35);
-            flex-shrink: 0;
-        }
-
-        .sec-btn-ghost:active {
-            transform: scale(0.96);
-            opacity: 0.7;
-        }
-
+        .sec-btn-ghost svg { fill: rgba(255,255,255,0.35); flex-shrink: 0; }
+        .sec-btn-ghost:active { transform: scale(0.96); opacity: 0.7; }
         :root.light-mode .sec-btn-full {
-            background: rgba(0, 0, 0, 0.06);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: rgba(0, 0, 0, 0.7);
+            background: rgba(0,0,0,0.06);
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.7);
         }
-
-        :root.light-mode .sec-btn-full svg {
-            fill: rgba(0, 0, 0, 0.5);
-        }
-
+        :root.light-mode .sec-btn-full svg { fill: rgba(0,0,0,0.5); }
         :root.light-mode .sec-btn-ghost {
-            border-color: rgba(0, 0, 0, 0.1);
-            color: rgba(0, 0, 0, 0.4);
+            border-color: rgba(0,0,0,0.1);
+            color: rgba(0,0,0,0.4);
         }
-
-        :root.light-mode .sec-btn-ghost svg {
-            fill: rgba(0, 0, 0, 0.3);
-        }
-
+        :root.light-mode .sec-btn-ghost svg { fill: rgba(0,0,0,0.3); }
         .tr-poster-wrap {
             position: relative;
             flex-shrink: 0;
@@ -3409,7 +3258,6 @@
             aspect-ratio: 2 / 2.8;
             scroll-snap-align: start;
         }
-
         .tr-poster-wrap img {
             position: absolute !important;
             inset: 0 !important;
@@ -3419,12 +3267,11 @@
             object-fit: cover !important;
             border-radius: clamp(16px, 6vw, 32px) !important;
             border: 1.67px solid var(--border-light) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
             transform: none !important;
             filter: none !important;
             margin: 0 !important;
         }
-
         .tr-rank-pill {
             position: absolute;
             bottom: -6px;
@@ -3445,11 +3292,9 @@
             z-index: 10;
             box-sizing: content-box;
         }
-
         .sec-wrap {
             position: relative;
         }
-
         .sec-meta {
             position: absolute;
             right: 0;
@@ -3458,13 +3303,9 @@
             font-weight: 700;
             letter-spacing: 1.2px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.2);
+            color: rgba(255,255,255,0.2);
         }
-
-        :root.light-mode .sec-meta {
-            color: rgba(0, 0, 0, 0.2);
-        }
-
+        :root.light-mode .sec-meta { color: rgba(0,0,0,0.2); }
         .swipe-hint {
             display: flex;
             align-items: center;
@@ -3473,7 +3314,6 @@
             margin-top: 14px;
             margin-bottom: 6px;
         }
-
         .swipe-hint-pill {
             display: flex;
             align-items: center;
@@ -3482,68 +3322,44 @@
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.2);
+            color: rgba(255,255,255,0.2);
         }
-
-        .swipe-hint-pill svg {
-            fill: rgba(255, 255, 255, 0.18);
-        }
-
-        :root.light-mode .swipe-hint-pill {
-            color: rgba(0, 0, 0, 0.2);
-        }
-
-        :root.light-mode .swipe-hint-pill svg {
-            fill: rgba(0, 0, 0, 0.18);
-        }
-
+        .swipe-hint-pill svg { fill: rgba(255,255,255,0.18); }
+        :root.light-mode .swipe-hint-pill { color: rgba(0,0,0,0.2); }
+        :root.light-mode .swipe-hint-pill svg { fill: rgba(0,0,0,0.18); }
         .coll-stats {
             display: flex;
             gap: 8px;
             margin-top: 10px;
         }
-
         .coll-stat {
             flex: 1;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 14px;
             padding: 12px 14px;
             display: flex;
             flex-direction: column;
             gap: 3px;
         }
-
         .coll-stat-num {
             font-family: 'Nunito', sans-serif;
             font-size: 20px;
             font-weight: 900;
-            color: rgba(255, 255, 255, 0.55);
+            color: rgba(255,255,255,0.55);
             letter-spacing: -0.5px;
             line-height: 1;
         }
-
         .coll-stat-label {
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.18);
+            color: rgba(255,255,255,0.18);
         }
-
-        :root.light-mode .coll-stat {
-            background: rgba(0, 0, 0, 0.03);
-            border-color: rgba(0, 0, 0, 0.07);
-        }
-
-        :root.light-mode .coll-stat-num {
-            color: rgba(0, 0, 0, 0.45);
-        }
-
-        :root.light-mode .coll-stat-label {
-            color: rgba(0, 0, 0, 0.22);
-        }
-
+        :root.light-mode .coll-stat { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.07); }
+        :root.light-mode .coll-stat-num { color: rgba(0,0,0,0.45); }
+        :root.light-mode .coll-stat-label { color: rgba(0,0,0,0.22); }
         .genre-see-all {
             display: flex;
             align-items: center;
@@ -3551,60 +3367,36 @@
             margin-top: 12px;
             padding: 0 2px;
         }
-
         .genre-see-all-label {
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.18);
+            color: rgba(255,255,255,0.18);
         }
-
         .genre-see-all-btn {
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
-            color: rgba(255, 255, 255, 0.35);
+            color: rgba(255,255,255,0.35);
             display: flex;
             align-items: center;
             gap: 3px;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
-
-        .genre-see-all-btn svg {
-            fill: rgba(255, 255, 255, 0.3);
-        }
-
-        :root.light-mode .genre-see-all-label {
-            color: rgba(0, 0, 0, 0.2);
-        }
-
-        :root.light-mode .genre-see-all-btn {
-            color: rgba(0, 0, 0, 0.38);
-        }
-
-        :root.light-mode .genre-see-all-btn svg {
-            fill: rgba(0, 0, 0, 0.3);
-        }
-
+        .genre-see-all-btn svg { fill: rgba(255,255,255,0.3); }
+        :root.light-mode .genre-see-all-label { color: rgba(0,0,0,0.2); }
+        :root.light-mode .genre-see-all-btn { color: rgba(0,0,0,0.38); }
+        :root.light-mode .genre-see-all-btn svg { fill: rgba(0,0,0,0.3); }
         #mood {
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            overflow-x: auto;
-            overflow-y: hidden;
-            margin-left: -20px;
-            margin-right: -20px;
-            padding-left: 20px;
-            padding-right: 20px;
-            width: calc(100% + 40px);
-            box-sizing: border-box;
+            padding-left: 14px !important;
+            padding-top: 16px !important;
+            overflow: visible !important;
         }
-
-        #mood::-webkit-scrollbar {
-            display: none;
+        .home-section .mov#mood {
+            overflow: visible !important;
         }
-
         .fsg-cell img {
             width: 100%;
             height: 100%;
@@ -3612,7 +3404,6 @@
             border-radius: 0;
             display: block;
         }
-
         #coll-panel {
             position: fixed;
             bottom: 0;
@@ -3621,368 +3412,88 @@
             z-index: 9999;
             background: var(--bg-secondary, #18191e);
             border-radius: 26px 26px 0 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px 20px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 20px 36px;
             transform: translateY(100%);
-            transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.36s cubic-bezier(0.22,1,0.36,1);
             max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #coll-panel.open {
-            transform: translateY(0);
-        }
-
-        #coll-panel-inner {
             overflow-y: auto;
-            flex: 1;
-            min-height: 0;
-            padding-bottom: 8px;
         }
-
-        #coll-panel-apply-bar {
-            padding: 12px 0 calc(20px + env(safe-area-inset-bottom, 0px));
-            background: var(--bg-secondary, #18191e);
-            flex-shrink: 0;
-        }
-
+        #coll-panel.open { transform: translateY(0); }
         #coll-panel-backdrop {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0,0,0,0.55);
             z-index: 9998;
         }
-
-        #coll-panel-backdrop.open {
-            display: block;
-        }
-
-        .coll-panel-drag {
-            width: 40px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 100px;
-            margin: 0 auto 18px;
-        }
-
-        .coll-panel-title {
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 16px;
-        }
-
-        .coll-panel-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
+        #coll-panel-backdrop.open { display: block; }
+        .coll-panel-drag { width: 40px; height: 4px; background: rgba(255,255,255,0.18); border-radius: 100px; margin: 0 auto 18px; }
+        .coll-panel-title { font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+        .coll-panel-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
         .coll-tab {
-            flex: 1;
-            padding: 10px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            font-size: 13px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.15s;
-            text-align: center;
+            flex: 1; padding: 10px; border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.4);
+            cursor: pointer; transition: all 0.15s; text-align: center;
         }
-
         .coll-tab.active {
-            background: rgba(255, 255, 255, 0.14);
-            border-color: rgba(255, 255, 255, 0.22);
-            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255,255,255,0.14);
+            border-color: rgba(255,255,255,0.22);
+            color: rgba(255,255,255,0.9);
         }
-
         .coll-search-wrap {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 10px 14px;
-            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 10px 14px; margin-bottom: 12px;
         }
-
         .coll-search-wrap input {
-            flex: 1;
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            color: var(--text-primary, #fff);
+            flex: 1; background: none; border: none; outline: none;
+            font-size: 15px; color: var(--text-primary, #fff);
         }
-
         .coll-search-results {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
-            min-height: 80px;
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; min-height: 80px;
         }
-
         .coll-res-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            width: 72px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            cursor: pointer; width: 72px;
         }
-
         .coll-res-item img {
-            width: 72px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 2px solid transparent;
+            width: 72px; height: 100px; object-fit: cover;
+            border-radius: 10px; border: 2px solid transparent;
             transition: border-color 0.15s;
         }
-
-        .coll-res-item.selected img {
-            border-color: #fff;
-        }
-
-        .coll-res-item span {
-            font-size: 10px;
-            font-weight: 700;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.2;
-        }
-
-        .coll-colors {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
+        .coll-res-item.selected img { border-color: #fff; }
+        .coll-res-item span { font-size: 10px; font-weight: 700; text-align: center; color: rgba(255,255,255,0.6); line-height: 1.2; }
+        .coll-colors { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
         .coll-color-swatch {
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            cursor: pointer;
-            border: 3px solid transparent;
+            width: 36px; height: 36px; border-radius: 12px;
+            cursor: pointer; border: 3px solid transparent;
             transition: border-color 0.15s, transform 0.15s;
         }
-
-        .coll-color-swatch.selected {
-            border-color: #fff;
-            transform: scale(1.15);
-        }
-
+        .coll-color-swatch.selected { border-color: #fff; transform: scale(1.15); }
         .coll-user-input {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 10px 14px;
-            margin-bottom: 12px;
-            width: 100%;
-            font-size: 15px;
-            color: var(--text-primary, #fff);
-            outline: none;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 10px 14px; margin-bottom: 12px;
+            width: 100%; font-size: 15px; color: var(--text-primary, #fff); outline: none;
             box-sizing: border-box;
         }
-
         .coll-apply-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 16px;
-            background: #f0f0f0;
-            color: #0d0d0f;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer;
+            width: 100%; padding: 14px; border-radius: 16px;
+            background: #f0f0f0; color: #0d0d0f;
+            font-size: 13px; font-weight: 800; letter-spacing: 1.5px;
+            text-transform: uppercase; cursor: pointer;
             transition: transform 0.15s, opacity 0.15s;
         }
-
-        .coll-apply-btn:active {
-            transform: scale(0.97);
-            opacity: 0.85;
-        }
-    </style>
-    <style>
-    #pwa-install-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: var(--bg-primary);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 24px;
-        padding-top: calc(32px + env(safe-area-inset-top));
-        padding-bottom: calc(32px + env(safe-area-inset-bottom));
-        animation: fadeInOverlay 0.3s ease;
-    }
-    @keyframes fadeInOverlay {
-        from { opacity: 0; transform: translateY(12px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    #pwa-install-overlay .pwa-icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 18px;
-        margin-bottom: 28px;
-    }
-    #pwa-install-overlay h1 {
-        font-family: 'Nunito', system-ui, sans-serif;
-        font-size: 22px;
-        font-weight: 900;
-        color: var(--text-primary);
-        margin: 0 0 8px;
-        text-align: center;
-    }
-    #pwa-install-overlay p.pwa-sub {
-        font-size: 14px;
-        color: var(--text-subtle);
-        text-align: center;
-        margin: 0 0 36px;
-        line-height: 1.5;
-        max-width: 280px;
-    }
-    #pwa-install-overlay .pwa-steps {
-        width: 100%;
-        max-width: 340px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 36px;
-    }
-    #pwa-install-overlay .pwa-step {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        background: var(--placeholder-bg);
-        border-radius: var(--inner-radius);
-        padding: 14px 16px;
-    }
-    #pwa-install-overlay .pwa-step-num {
-        min-width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: var(--button-bg);
-        color: var(--button-text);
-        font-size: 13px;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Nunito', system-ui, sans-serif;
-    }
-    #pwa-install-overlay .pwa-step-text {
-        font-size: 14px;
-        color: var(--text-primary);
-        font-weight: 600;
-        line-height: 1.4;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    #pwa-install-overlay .pwa-step-text svg {
-        flex-shrink: 0;
-        vertical-align: middle;
-    }
-    #pwa-install-overlay .pwa-ignore-btn {
-        background: none;
-        border: none;
-        color: var(--text-subtle);
-        font-size: 13px;
-        font-family: 'Nunito', system-ui, sans-serif;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 10px 20px;
-        border-radius: 99px;
-        transition: background 0.15s;
-    }
-    #pwa-install-overlay .pwa-ignore-btn:active {
-        background: var(--placeholder-bg);
-    }
+        .coll-apply-btn:active { transform: scale(0.97); opacity: 0.85; }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
+
 <body>
-    <div id="pwa-install-overlay" style="display:none">
-    <img src="/icons/icon-192.png" class="pwa-icon" alt="Cinemi">
-    <h1>Install Cinemi</h1>
-    <p class="pwa-sub">Add Cinemi to your home screen for the best way to find movies.</p>
-    <div class="pwa-steps" id="pwa-steps-ios" style="display:none">
-        <div class="pwa-step">
-        <div class="pwa-step-num">1</div>
-        <div class="pwa-step-text">
-            Tap the
-            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h120v80H240v400h480v-400H600v-80h120q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm200-240v-447l-64 64-56-57 160-160 160 160-56 57-64-64v447h-80Z"/></svg>
-            <strong>Share</strong> button at the bottom of your browser
-        </div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">2</div>
-        <div class="pwa-step-text">Scroll down and tap <strong>Add to Home Screen</strong></div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">3</div>
-        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
-        </div>
-    </div>
-    <div class="pwa-steps" id="pwa-steps-android" style="display:none">
-        <div class="pwa-step">
-        <div class="pwa-step-num">1</div>
-        <div class="pwa-step-text">Tap the <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M479.79-192Q450-192 429-213.21t-21-51Q408-294 429.21-315t51-21Q510-336 531-314.79t21 51Q552-234 530.79-213t-51 21Zm0-216Q450-408 429-429.21t-21-51Q408-510 429.21-531t51-21Q510-552 531-530.79t21 51Q552-450 530.79-429t-51 21Zm0-216Q450-624 429-645.21t-21-51Q408-726 429.21-747t51-21Q510-768 531-746.79t21 51Q552-666 530.79-645t-51 21Z"/></svg> menu in the top-right of Chrome</div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">2</div>
-        <div class="pwa-step-text">Tap <strong>Add to Home screen</strong></div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">3</div>
-        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
-        </div>
-    </div>
-    <button class="pwa-ignore-btn" id="pwa-ignore-btn">Ignore for now (beta)</button>
-    </div>
-
-    <script>
-    (function() {
-        var isStandalone = window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
-
-        if (isStandalone) return;
-
-        var dismissed = sessionStorage.getItem('pwa-overlay-dismissed');
-        if (dismissed) return;
-
-        var ua = navigator.userAgent;
-        var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-        var isAndroid = /Android/.test(ua);
-
-        if (!isIOS && !isAndroid) return;
-
-        var overlay = document.getElementById('pwa-install-overlay');
-        overlay.style.display = 'flex';
-
-        if (isIOS) {
-        document.getElementById('pwa-steps-ios').style.display = 'flex';
-        } else {
-        document.getElementById('pwa-steps-android').style.display = 'flex';
-        }
-
-        document.getElementById('pwa-ignore-btn').addEventListener('click', function() {
-        sessionStorage.setItem('pwa-overlay-dismissed', '1');
-        overlay.style.display = 'none';
-        });
-    })();
-    </script>
     <div id="logo-sp" class="view active"
         style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--bg-primary); padding:0; margin:0; position:fixed; inset:0; z-index:2000;">
         <img id="sp-logo" src="" style="width:300px; height:auto;">
@@ -4256,51 +3767,31 @@
                 </div>
             </div>
             <div class="question">
-                <h1>What kind of movies do you like? <span style="font-size:14px;color:var(--text-secondary)">(pick up
-                        to 3)</span></h1>
+                <h1>What kind of movies do you like? <span style="font-size:14px;color:var(--text-secondary)">(pick up to 3)</span></h1>
                 <div class="q-yn" id="genreQ">
-                    <input type="checkbox" id="q10a" name="q10" value="psychological_thriller"><label
-                        for="q10a">Psychological / Thriller</label>
+                    <input type="checkbox" id="q10a" name="q10" value="psychological_thriller"><label for="q10a">Psychological / Thriller</label>
                     <input type="checkbox" id="q10b" name="q10" value="action"><label for="q10b">Action</label>
                     <input type="checkbox" id="q10c" name="q10" value="horror"><label for="q10c">Horror</label>
-                    <input type="checkbox" id="q10d" name="q10" value="romantic_drama"><label for="q10d">Romantic
-                        Drama</label>
-                    <input type="checkbox" id="q10e" name="q10" value="romantic_comedy"><label for="q10e">Romantic
-                        Comedy</label>
+                    <input type="checkbox" id="q10d" name="q10" value="romantic_drama"><label for="q10d">Romantic Drama</label>
+                    <input type="checkbox" id="q10e" name="q10" value="romantic_comedy"><label for="q10e">Romantic Comedy</label>
                     <input type="checkbox" id="q10f" name="q10" value="fantasy"><label for="q10f">Fantasy</label>
-                    <input type="checkbox" id="q10g" name="q10" value="science_fiction"><label for="q10g">Science
-                        Fiction</label>
-                    <input type="checkbox" id="q10h" name="q10" value="superheroes"><label
-                        for="q10h">Superheroes</label>
+                    <input type="checkbox" id="q10g" name="q10" value="science_fiction"><label for="q10g">Science Fiction</label>
+                    <input type="checkbox" id="q10h" name="q10" value="superheroes"><label for="q10h">Superheroes</label>
                     <input type="checkbox" id="q10i" name="q10" value="comedy"><label for="q10i">Comedy</label>
-                    <input type="checkbox" id="q10j" name="q10" value="melancholic"><label
-                        for="q10j">Melancholic</label>
-                    <input type="checkbox" id="q10k" name="q10" value="crime_detective"><label for="q10k">Crime /
-                        Detective</label>
+                    <input type="checkbox" id="q10j" name="q10" value="melancholic"><label for="q10j">Melancholic</label>
+                    <input type="checkbox" id="q10k" name="q10" value="crime_detective"><label for="q10k">Crime / Detective</label>
                 </div>
             </div>
             <div class="question">
-                <h1>Which streaming platforms do you use? <span style="font-size:14px;color:var(--text-secondary)">(pick
-                        all that apply)</span></h1>
+                <h1>Which streaming platforms do you use? <span style="font-size:14px;color:var(--text-secondary)">(pick all that apply)</span></h1>
                 <div class="q-yn" id="platformQ">
-                    <input type="checkbox" id="q11a" name="q11" value="netflix"><label for="q11a"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-                            class="streaming-logo" alt="Netflix">Netflix</label>
-                    <input type="checkbox" id="q11b" name="q11" value="disney_plus"><label for="q11b"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
-                            class="streaming-logo" alt="Disney+">Disney+</label>
-                    <input type="checkbox" id="q11c" name="q11" value="showtime"><label for="q11c"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg"
-                            class="streaming-logo" alt="Showtime">Showtime</label>
-                    <input type="checkbox" id="q11d" name="q11" value="prime_video"><label for="q11d"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png"
-                            class="streaming-logo" alt="Prime Video">Prime Video</label>
-                    <input type="checkbox" id="q11e" name="q11" value="hbo_max"><label for="q11e"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg"
-                            class="streaming-logo" alt="HBO Max">HBO Max</label>
+                    <input type="checkbox" id="q11a" name="q11" value="netflix"><label for="q11a"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="streaming-logo" alt="Netflix">Netflix</label>
+                    <input type="checkbox" id="q11b" name="q11" value="disney_plus"><label for="q11b"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" class="streaming-logo" alt="Disney+">Disney+</label>
+                    <input type="checkbox" id="q11c" name="q11" value="showtime"><label for="q11c"><img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg" class="streaming-logo" alt="Showtime">Showtime</label>
+                    <input type="checkbox" id="q11d" name="q11" value="prime_video"><label for="q11d"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" class="streaming-logo" alt="Prime Video">Prime Video</label>
+                    <input type="checkbox" id="q11e" name="q11" value="hbo_max"><label for="q11e"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" class="streaming-logo" alt="HBO Max">HBO Max</label>
                     <input type="checkbox" id="q11f" name="q11" value="apple_tv"><label for="q11f">Apple TV+</label>
-                    <input type="checkbox" id="q11g" name="q11" value="paramount_plus"><label
-                        for="q11g">Paramount+</label>
+                    <input type="checkbox" id="q11g" name="q11" value="paramount_plus"><label for="q11g">Paramount+</label>
                     <input type="checkbox" id="q11h" name="q11" value="other"><label for="q11h">Other</label>
                 </div>
             </div>
@@ -4370,115 +3861,100 @@
                 <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
                 <div class="mov-see-more">
                     <div class="mov-see-more-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px">
-                            <path
-                                d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
                     </div>
                     <span class="mov-see-more-label">see more</span>
                 </div>
             </div>
             <div class="home-section">
                 <button class="mood-shuffle-pill" onclick="document.getElementById('mood-refresh-btn').click()">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px">
-                        <path
-                            d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px"><path d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z"/></svg>
                     Regenerate
                 </button>
-                <div class="sec-wrap">
-                    <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
-                </div>
-                <div class="mov" id="mood">
-                    <button class="mood-refresh-btn" id="mood-refresh-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
-                            fill="#111111">
-                            <path
-                                d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z" />
-                        </svg>
-                    </button>
-                    <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
-                    <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
-                    <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
-                    <div class="mov-see-more">
-                        <div class="mov-see-more-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px">
-                                <path
-                                    d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z" />
-                            </svg>
-                        </div>
-                        <span class="mov-see-more-label">see more</span>
+            <div class="sec-wrap">
+                <span class="sec-sub">You're in the</span> <span class="sec-title"> mood for</span>
+            </div>
+            <div class="mov" id="mood">  
+                <button class="mood-refresh-btn" id="mood-refresh-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#111111"><path d="M479.52-142.04q-140.72 0-239.07-98.74-98.36-98.74-98.36-238.46 0-139.72 98.36-239.34Q338.8-818.2 479.9-818.2q84.82 0 151.01 34.86 66.2 34.86 116.2 95.01v-94.34q0-14.79 10.12-25.16 10.13-10.37 25.14-10.37 15.02 0 25.9 10.37 10.88 10.37 10.88 25.16v207.28q0 16.96-11.49 28.05-11.49 11.1-27.9 11.1H572.24q-14.79 0-25.04-10.68-10.24-10.69-10.24-25.64 0-14.96 10.36-25.22 10.37-10.26 25.16-10.26h138.65q-40-59.53-97.16-95.05-57.17-35.52-134.45-35.52-109.31 0-184.72 75.17-75.41 75.16-75.41 184.08 0 109.69 75.41 184.85t184.72 75.16q72.33 0 135.38-37.12t96.08-102.57q8.19-13.72 22.53-19.34 14.34-5.62 29.36-.14 14.89 5.24 20.63 19.45 5.74 14.22-.74 27.7-42.48 87.28-124.07 138.3-81.58 51.03-179.17 51.03Z"/></svg>
+                </button>          
+                <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+                <div class="mov-see-more">
+                    <div class="mov-see-more-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
                     </div>
+                    <span class="mov-see-more-label">see more</span>
                 </div>
-                <script>
-                    (function () {
-                        function magicRotate(row) {
-                            const imgs = row.querySelectorAll('img');
-                            let lastAngle = 0;
-                            imgs.forEach((img, i) => {
-                                let angle, attempts = 0;
-                                do {
-                                    const mag = 3 + Math.random() * 3.7;
-                                    const sign = (i % 2 === 0 ? 1 : -1) * (Math.random() > 0.15 ? 1 : -1);
-                                    angle = sign * mag;
-                                    attempts++;
-                                } while (Math.abs(angle - lastAngle) < 2 && attempts < 10);
-                                lastAngle = angle;
-                                img._baseAngle = angle;
-                                img.style.animation = 'none';
-                                img.style.opacity = '1';
-                                img.style.transform = `rotate(${angle.toFixed(1)}deg)`;
-                                img.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
-                            });
-                        }
-
-                        const row = document.getElementById('mood');
-                        if (!row) return;
-
-                        magicRotate(row);
-
-                        const observer = new MutationObserver(() => {
-                            clearTimeout(row._rotateTimer);
-                            row._rotateTimer = setTimeout(() => magicRotate(row), 50);
+            </div>
+            <script>
+            (function() {
+                function magicRotate(row) {
+                    const imgs = row.querySelectorAll('img');
+                    let lastAngle = 0;
+                    imgs.forEach((img, i) => {
+                        let angle, attempts = 0;
+                        do {
+                            const mag = 3 + Math.random() * 3.7;
+                            const sign = (i % 2 === 0 ? 1 : -1) * (Math.random() > 0.15 ? 1 : -1);
+                            angle = sign * mag;
+                            attempts++;
+                        } while (Math.abs(angle - lastAngle) < 2 && attempts < 10);
+                        lastAngle = angle;
+                        img._baseAngle = angle;
+                        img.style.animation = 'none';
+                        img.style.opacity = '1';
+                        img.style.transform = `rotate(${angle.toFixed(1)}deg)`;
+                        img.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                    });
+                }
+            
+                const row = document.getElementById('mood');
+                if (!row) return;
+            
+                magicRotate(row);
+            
+                const observer = new MutationObserver(() => {
+                    clearTimeout(row._rotateTimer);
+                    row._rotateTimer = setTimeout(() => magicRotate(row), 50);
+                });
+                observer.observe(row, { childList: true });
+            
+                let lastScrollY = 0;
+                let ticking = false;
+                row.closest('.view, #home') && row.closest('.view, #home').addEventListener('scroll', function() {
+                    if (ticking) return;
+                    ticking = true;
+                    requestAnimationFrame(() => {
+                        const scrollY = this.scrollTop;
+                        const delta = scrollY - lastScrollY;
+                        lastScrollY = scrollY;
+                        row.querySelectorAll('img').forEach((img, i) => {
+                            const base = img._baseAngle || 0;
+                            const wobble = delta * 0.22 * (i % 2 === 0 ? 1 : -1);
+                            const clamped = Math.max(-5, Math.min(6.7, base + wobble));
+                            img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
                         });
-                        observer.observe(row, { childList: true });
-
-                        let lastScrollY = 0;
-                        let ticking = false;
-                        row.closest('.view, #home') && row.closest('.view, #home').addEventListener('scroll', function () {
-                            if (ticking) return;
-                            ticking = true;
-                            requestAnimationFrame(() => {
-                                const scrollY = this.scrollTop;
-                                const delta = scrollY - lastScrollY;
-                                lastScrollY = scrollY;
-                                row.querySelectorAll('img').forEach((img, i) => {
-                                    const base = img._baseAngle || 0;
-                                    const wobble = delta * 0.22 * (i % 2 === 0 ? 1 : -1);
-                                    const clamped = Math.max(-5, Math.min(6.7, base + wobble));
-                                    img.style.transform = `rotate(${clamped.toFixed(2)}deg)`;
-                                });
-                                clearTimeout(row._resetTimer);
-                                row._resetTimer = setTimeout(() => {
-                                    row.querySelectorAll('img').forEach(img => {
-                                        img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
-                                    });
-                                }, 400);
-                                ticking = false;
+                        clearTimeout(row._resetTimer);
+                        row._resetTimer = setTimeout(() => {
+                            row.querySelectorAll('img').forEach(img => {
+                                img.style.transform = `rotate(${(img._baseAngle || 0).toFixed(1)}deg)`;
                             });
-                        }, { passive: true });
-                    })();
-                </script>
-                <button class="see-all-btn">
-                    See all picks
-                    <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px">
-                        <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
-                    </svg>
-                </button>
+                        }, 400);
+                        ticking = false;
+                    });
+                }, { passive: true });
+            })();
+            </script>
+            <button class="see-all-btn">
+                See all picks
+                <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+            </button>
             </div>
             <div class="sec-wrap">
                 <span class="sec-sub">Your</span> <span class="sec-title">collection</span>
-                <span class="sec-meta" id="coll-films-count">0 films</span>
+                <span class="sec-meta">0 films</span>
             </div>
             <div class="film-shelf-wrap">
                 <div class="film-shelf-grid" id="fsg-grid">
@@ -4501,16 +3977,16 @@
             </div>
             <div class="coll-stats">
                 <div class="coll-stat">
-                    <span class="coll-stat-num" id="coll-saved-num">0</span>
+                    <span class="coll-stat-num">0</span>
                     <span class="coll-stat-label">Saved</span>
                 </div>
                 <div class="coll-stat">
-                    <span class="coll-stat-num" id="coll-watched-num">0</span>
+                    <span class="coll-stat-num">0</span>
                     <span class="coll-stat-label">Watched</span>
                 </div>
                 <div class="coll-stat">
-                    <span class="coll-stat-num" id="coll-runtime-num">0h</span>
-                    <span class="coll-stat-label">Hours</span>
+                    <span class="coll-stat-num">0h</span>
+                    <span class="coll-stat-label">Runtime</span>
                 </div>
             </div>
 
@@ -4518,78 +3994,72 @@
                 <span class="sec-sub">Still</span><span class="sec-title light"> nothing?</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 10px;">
-                <div class="cards-container" style="flex: 1; min-width: 280px;" id="swipe-cards-container">
-                    <div class="movie-card card-1" data-card="1" id="swipe-card-1" onclick="openPanel('swipify')">
-                        <div class="card-counter">Tap to swipe</div>
+                <div class="cards-container" style="flex: 1; min-width: 280px;">
+                    <div class="movie-card card-1" data-card="1">
+                        <div class="card-counter">
+                            <i class="fas fa-film"></i> Tap to swipe
+                        </div>
                         <div class="card-content">
-                            <div class="card-title"></div>
-                            <div class="card-year"></div>
-                            <div class="card-tags"></div>
+                            <div class="card-title">Inception</div>
+                            <div class="card-year">2010 • Sci-Fi Thriller</div>
+                            <div class="card-tags">
+                                <div class="tag">Mind-bending</div>
+                                <div class="tag">Dreams</div>
+                                <div class="tag">Heist</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="movie-card card-2" data-card="2" id="swipe-card-2" onclick="openPanel('swipify')">
+                    <div class="movie-card card-2" data-card="2">
                         <div class="card-content">
-                            <div class="card-title"></div>
-                            <div class="card-year"></div>
+                            <div class="card-title">Parasite</div>
+                            <div class="card-year">2019 • Dark Comedy</div>
+                            <div class="card-tags">
+                                <div class="tag">Social Satire</div>
+                                <div class="tag">Thriller</div>
+                                <div class="tag">Oscar Winner</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="movie-card card-3" data-card="3" id="swipe-card-3" onclick="openPanel('swipify')">
+                    <div class="movie-card card-3" data-card="3">
                         <div class="card-content">
-                            <div class="card-title"></div>
+                            <div class="card-title">La La Land</div>
+                            <div class="card-year">2016 • Musical Romance</div>
+                            <div class="card-tags">
+                                <div class="tag">Musical</div>
+                                <div class="tag">Romance</div>
+                                <div class="tag">Hollywood</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <script>
-                    (function () {
-                        function loadSwipeCards() {
-                            var page = Math.floor(Math.random() * 10) + 1;
-                            fetch(baseUrl + '/api/tmdb/trending?page=' + page, { headers: ngrokHeaders })
-                                .then(function (r) { return r.json(); })
-                                .then(function (data) {
-                                    var results = (data.results || []).filter(function (m) { return m.poster_path && m.backdrop_path; });
-                                    if (!results.length) return;
-                                    var pick = results.sort(function () { return 0.5 - Math.random(); }).slice(0, 3);
-                                    pick.forEach(function (movie, i) {
-                                        var card = document.getElementById('swipe-card-' + (i + 1));
-                                        if (!card) return;
-                                        var bg = 'https://image.tmdb.org/t/p/w780' + movie.backdrop_path;
-                                        card.style.backgroundImage = 'linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.72)), url(' + bg + ')';
-                                        card.style.backgroundSize = 'cover';
-                                        card.style.backgroundPosition = 'center';
-                                        var title = card.querySelector('.card-title');
-                                        var year = card.querySelector('.card-year');
-                                        var tags = card.querySelector('.card-tags');
-                                        if (title) title.textContent = movie.title || movie.name || '';
-                                        if (year) year.textContent = ((movie.release_date || movie.first_air_date || '').split('-')[0]) + (movie.vote_average ? ' • ★ ' + movie.vote_average.toFixed(1) : '');
-                                        if (tags && movie.genre_ids) {
-                                            var genreMap = { 28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime', 18: 'Drama', 27: 'Horror', 10749: 'Romance', 878: 'Sci-Fi', 53: 'Thriller', 14: 'Fantasy', 9648: 'Mystery' };
-                                            tags.innerHTML = movie.genre_ids.slice(0, 3).map(function (g) {
-                                                return genreMap[g] ? '<div class="tag">' + genreMap[g] + '</div>' : '';
-                                            }).join('');
-                                        }
-                                        card.onclick = function () { openPanel('swipify'); };
-                                    });
-                                })
-                                .catch(function () { });
-                        }
-                        if (typeof baseUrl !== 'undefined') {
-                            loadSwipeCards();
-                        } else {
-                            document.addEventListener('DOMContentLoaded', loadSwipeCards);
-                        }
-                    })();
-                </script>
             </div>
             <div style="font-size: 21px; font-weight: 600;" class="sec-wrap">
                 <span class="sec-sub">Trending</span> <span class="sec-title">for you</span>
             </div>
             <div class="mov" id="trending" style="padding: 10px 0 14px;">
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                    <span class="tr-rank-pill">1</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                    <span class="tr-rank-pill">2</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/33014583.jpg">
+                    <span class="tr-rank-pill">3</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/30274401.jpg">
+                    <span class="tr-rank-pill">4</span>
+                </div>
+                <div class="tr-poster-wrap">
+                    <img src="https://www.cinematerial.com/media/box-office/26443597.jpg">
+                    <span class="tr-rank-pill">5</span>
+                </div>
                 <div class="mov-see-more">
                     <div class="mov-see-more-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px">
-                            <path
-                                d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px"><path d="M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z"/></svg>
                     </div>
                     <span class="mov-see-more-label">see more</span>
                 </div>
@@ -4914,10 +4384,7 @@
         </div>
     </div>
     <div class="sp-fab hidden" id="sp-fab" onclick="openPanel('spaceedit')">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999">
-            <path
-                d="M209-210h58l315-315-56-57-317 318v54ZM142-74q-29 0-48.5-19.5T74-142v-123q0-26.86 10.2-52.01Q94.39-342.16 114-362l497.32-497.32Q624-873 641.47-879.5 658.93-886 677-886q17.74 0 34.87 6.5T744-860l117 115q14 14 20 31.48 6 17.49 6 36.47 0 18.05-6.5 35.55Q874-624 860-611L364-114q-19.84 19.61-44.99 29.8Q293.86-74 267-74H142Zm594-603-58-58 58 58ZM554-554l-28-28 56 57-28-29Z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999"><path d="M209-210h58l315-315-56-57-317 318v54ZM142-74q-29 0-48.5-19.5T74-142v-123q0-26.86 10.2-52.01Q94.39-342.16 114-362l497.32-497.32Q624-873 641.47-879.5 658.93-886 677-886q17.74 0 34.87 6.5T744-860l117 115q14 14 20 31.48 6 17.49 6 36.47 0 18.05-6.5 35.55Q874-624 860-611L364-114q-19.84 19.61-44.99 29.8Q293.86-74 267-74H142Zm594-603-58-58 58 58ZM554-554l-28-28 56 57-28-29Z"/></svg>
         <span>Edit Space</span>
     </div>
     <div id="settings" class="view">
@@ -5119,40 +4586,23 @@
     <div class="navh">
         <div class="navh-inner">
             <button class="active" onclick="showView('home')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px"
-                    fill="#999999">
-                    <path
-                        d="M131-196.67v-365q0-25.83 10.58-47.83 10.59-22 31.42-37.17l243-183.66q27.45-20.34 63.89-20.34t64.78 20.34l243 183.66q20.16 15.17 31.08 37.17 10.92 22 10.92 47.83v365q0 44.17-31.25 75.09Q767.17-90.67 723-90.67H620.67q-23.5 0-38.42-15.41-14.92-15.42-14.92-37.92v-210q0-21.83-15.41-37.25-15.42-15.42-37.25-15.42H446q-22.5 0-37.92 15.42-15.41 15.42-15.41 37.25v210q0 22.5-14.92 37.92Q362.83-90.67 340-90.67H237q-44.17 0-75.08-30.91Q131-152.5 131-196.67Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M131-196.67v-365q0-25.83 10.58-47.83 10.59-22 31.42-37.17l243-183.66q27.45-20.34 63.89-20.34t64.78 20.34l243 183.66q20.16 15.17 31.08 37.17 10.92 22 10.92 47.83v365q0 44.17-31.25 75.09Q767.17-90.67 723-90.67H620.67q-23.5 0-38.42-15.41-14.92-15.42-14.92-37.92v-210q0-21.83-15.41-37.25-15.42-15.42-37.25-15.42H446q-22.5 0-37.92 15.42-15.41 15.42-15.41 37.25v210q0 22.5-14.92 37.92Q362.83-90.67 340-90.67H237q-44.17 0-75.08-30.91Q131-152.5 131-196.67Z"/></svg>
             </button>
             <button onclick="showView('finder')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px"
-                    fill="#999999">
-                    <path
-                        d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>
             </button>
             <button onclick="showView('pos-t')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px"
-                    fill="#999999">
-                    <path
-                        d="m550-210 200-200H618q-27.6 0-47.8 20.2Q550-369.6 550-342v132ZM210-74q-57.37 0-96.69-39.31Q74-152.63 74-210v-540q0-57.38 39.31-96.69Q152.63-886 210-886h540q57.38 0 96.69 39.31Q886-807.38 886-750v348q0 27.04-10 52.02Q866-325 846-306L654-114q-19 20-43.98 30Q585.04-74 558-74H210Zm132-299h91q21.58 0 36.79-15.5T485-425.98q0-21.98-15.21-37T433-478h-90q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-373 342-373Zm0-185h276q21.57 0 36.79-15.5Q670-589 670-610.98q0-21.98-15.21-37Q639.57-663 618-663H343q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-558 342-558Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="m550-210 200-200H618q-27.6 0-47.8 20.2Q550-369.6 550-342v132ZM210-74q-57.37 0-96.69-39.31Q74-152.63 74-210v-540q0-57.38 39.31-96.69Q152.63-886 210-886h540q57.38 0 96.69 39.31Q886-807.38 886-750v348q0 27.04-10 52.02Q866-325 846-306L654-114q-19 20-43.98 30Q585.04-74 558-74H210Zm132-299h91q21.58 0 36.79-15.5T485-425.98q0-21.98-15.21-37T433-478h-90q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-373 342-373Zm0-185h276q21.57 0 36.79-15.5Q670-589 670-610.98q0-21.98-15.21-37Q639.57-663 618-663H343q-22 0-37.5 15.02t-15.5 37q0 21.98 15.21 37.48Q320.42-558 342-558Z"/></svg>
             </button>
             <button onclick="showView('profile')">
-                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px"
-                    fill="#999999">
-                    <path
-                        d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#999999"><path d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z"/></svg>
             </button>
         </div>
     </div>
 
     <div id="swipify-panel" class="panel" style="display: none;">
         <div class="backdrop" style="position: fixed; inset: 0; background: var(--bg-primary); z-index: 9999;"></div>
-        <div
-            style="position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; margin-top: env(safe-area-inset-top);">
+        <div style="position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; margin-top: env(safe-area-inset-top);">
             <div class="btn-sw" style="position: absolute; top: 15px; left: 15px; z-index: 10001;">
                 <button onclick="closePanel('swipify')"
                     style="background-color: #18191ef0; border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
@@ -5463,7 +4913,7 @@
                 { id: "quote", label: "Quote", visible: true, core: true, titleColor: "auto", customColor: "#ff3b30", titleAlign: "left" },
             ]
         };
-        window._mv = { favs: [], watchlist: [], 'genre-878': [], 'genre-18': [], 'genre-53': [] };
+        window._mv = { favs:[], watchlist:[], 'genre-878':[], 'genre-18':[], 'genre-53':[] };
         window._spaceImgCache = {};
 
         function getColor(c, custom) {
@@ -5524,7 +4974,7 @@
                     img.src = `${IMG}${m.posterPath}`;
                     if (imgStyle) img.style.cssText = imgStyle;
                     img.onclick = () => showMovieDetails(String(m.id));
-                    img.onerror = function () { this.style.display = 'none'; };
+                    img.onerror = function() { this.style.display = 'none'; };
                     if (animated) {
                         img.style.opacity = '0';
                         img.style.transform = 'scale(0.93) translateY(6px)';
@@ -6313,329 +5763,249 @@
             }
         })();
     </script>
-    <div id="coll-panel-backdrop" onclick="closeCollPanel()"></div>
-    <div id="coll-panel">
-        <div class="coll-panel-drag"></div>
-        <div class="coll-panel-title" id="coll-panel-title">Edit slot</div>
-        <div class="coll-panel-tabs">
-            <button class="coll-tab active" data-tab="film" onclick="switchCollTab('film',this)">Film</button>
-            <button class="coll-tab" data-tab="user" onclick="switchCollTab('user',this)">User</button>
-            <button class="coll-tab" data-tab="color" onclick="switchCollTab('color',this)">Color</button>
+<div id="coll-panel-backdrop" onclick="closeCollPanel()"></div>
+<div id="coll-panel">
+    <div class="coll-panel-drag"></div>
+    <div class="coll-panel-title" id="coll-panel-title">Edit slot</div>
+    <div class="coll-panel-tabs">
+        <button class="coll-tab active" data-tab="film" onclick="switchCollTab('film',this)">Film</button>
+        <button class="coll-tab" data-tab="user" onclick="switchCollTab('user',this)">User</button>
+        <button class="coll-tab" data-tab="color" onclick="switchCollTab('color',this)">Color</button>
+    </div>
+    <div id="coll-tab-film">
+        <div class="coll-search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            <input id="coll-search-input" placeholder="Search films..." oninput="searchCollMovies(this.value)" autocomplete="off">
         </div>
-        <div id="coll-panel-inner">
-            <div id="coll-tab-film">
-                <div class="coll-search-wrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px"
-                        fill="rgba(255,255,255,0.4)">
-                        <path
-                            d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
-                    </svg>
-                    <input id="coll-search-input" placeholder="Search films..." oninput="searchCollMovies(this.value)"
-                        autocomplete="off">
-                </div>
-                <div class="coll-search-results" id="coll-search-results"></div>
-            </div>
-            <div id="coll-tab-user" style="display:none;">
-                <div class="coll-search-wrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px"
-                        fill="rgba(255,255,255,0.4)">
-                        <path
-                            d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
-                    </svg>
-                    <input id="coll-user-input" placeholder="Search users..." oninput="searchCollUsers(this.value)"
-                        autocomplete="off"
-                        style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary,#fff);">
-                </div>
-                <div class="coll-search-results" id="coll-user-results"></div>
-            </div>
-            <div id="coll-tab-color" style="display:none;">
-                <div class="coll-colors">
-                    <div class="coll-color-swatch" style="background:#e74c3c" data-color="#e74c3c"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#e67e22" data-color="#e67e22"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#f1c40f" data-color="#f1c40f"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#2ecc71" data-color="#2ecc71"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#1abc9c" data-color="#1abc9c"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#3498db" data-color="#3498db"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#9b59b6" data-color="#9b59b6"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#ff69b4" data-color="#ff69b4"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#ffffff" data-color="#ffffff"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#888888" data-color="#888888"
-                        onclick="selectCollColor(this)"></div>
-                    <div class="coll-color-swatch" style="background:#222222" data-color="#222222"
-                        onclick="selectCollColor(this)"></div>
-                </div>
-            </div>
+        <div class="coll-search-results" id="coll-search-results"></div>
+    </div>
+    <div id="coll-tab-user" style="display:none;">
+        <div class="coll-search-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 129-46.5T480-440q66 0 133 15.5T742-378q29 15 46.5 43.5T806-272v112H160Z"/></svg>
+            <input id="coll-user-input" placeholder="Search users..." oninput="searchCollUsers(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary,#fff);">
         </div>
-        <div id="coll-panel-apply-bar">
-            <button class="coll-apply-btn" onclick="applyCollPanel()">Apply</button>
+        <div id="coll-user-results"></div>
+    </div>
+    <div id="coll-tab-color" style="display:none;">
+        <div class="coll-colors">
+            <div class="coll-color-swatch" style="background:#e74c3c" data-color="#e74c3c" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#e67e22" data-color="#e67e22" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#f1c40f" data-color="#f1c40f" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#2ecc71" data-color="#2ecc71" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#1abc9c" data-color="#1abc9c" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#3498db" data-color="#3498db" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#9b59b6" data-color="#9b59b6" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#ff69b4" data-color="#ff69b4" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#ffffff" data-color="#ffffff" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#888888" data-color="#888888" onclick="selectCollColor(this)"></div>
+            <div class="coll-color-swatch" style="background:#222222" data-color="#222222" onclick="selectCollColor(this)"></div>
         </div>
     </div>
-    <script>
-        (function () {
-            var CELL_DATA = {};
-            var activeIdx = null;
-            var activeTab = 'film';
-            var selectedMovie = null;
-            var selectedColor = null;
-            var selectedUser = null;
-            var editMode = false;
-            var longPressTimer = null;
-            var filmSearchTimer = null;
-            var userSearchTimer = null;
+    <button class="coll-apply-btn" onclick="applyCollPanel()">Apply</button>
+</div>
+<script>
+(function(){
+    const CELL_DATA = {};
+    let activeIdx = null;
+    let activeTab = 'film';
+    let selectedMovie = null;
+    let selectedColor = null;
+    let selectedUser = null;
+    let editMode = false;
+    let longPressTimer = null;
 
-            var grid = document.getElementById('fsg-grid');
+    const grid = document.getElementById('fsg-grid');
+    function startLongPress(e) {
+        const cell = e.target.closest('.fsg-cell');
+        if (!cell) return;
+        longPressTimer = setTimeout(() => {
+            longPressTimer = null;
+            enterEditMode(parseInt(cell.dataset.idx));
+        }, 500);
+    }
+    function cancelLongPress() {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
 
-            function startLongPress(e) {
-                var cell = e.target.closest('.fsg-cell');
-                if (!cell) return;
-                longPressTimer = setTimeout(function () {
-                    longPressTimer = null;
-                    enterEditMode();
-                }, 500);
+    grid.addEventListener('touchstart', startLongPress, { passive: true });
+    grid.addEventListener('touchend', cancelLongPress);
+    grid.addEventListener('touchmove', cancelLongPress);
+    grid.addEventListener('mousedown', startLongPress);
+    grid.addEventListener('mouseup', cancelLongPress);
+    grid.addEventListener('mouseleave', cancelLongPress);
+    grid.addEventListener('click', function(e) {
+        if (longPressTimer !== null) { cancelLongPress(); return; } 
+        const cell = e.target.closest('.fsg-cell');
+        if (!cell) return;
+        const idx = parseInt(cell.dataset.idx);
+        const data = CELL_DATA[idx];
+
+        if (editMode) {
+            openPanel(idx);
+            return;
+        }
+        if (data) {
+            if (data.type === 'film' && data.movie) {
+                if (typeof showDetails === 'function') showDetails(data.movie);
+            } else if (data.type === 'user' && data.username) {
+                if (typeof viewUserProfile === 'function') viewUserProfile(data.username);
             }
-            function cancelLongPress() {
-                clearTimeout(longPressTimer);
-                longPressTimer = null;
-            }
+        } else {
+            openPanel(idx);
+        }
+    });
 
-            grid.addEventListener('touchstart', startLongPress, { passive: true });
-            grid.addEventListener('touchend', cancelLongPress);
-            grid.addEventListener('touchmove', cancelLongPress);
-            grid.addEventListener('mousedown', startLongPress);
-            grid.addEventListener('mouseup', cancelLongPress);
-            grid.addEventListener('mouseleave', cancelLongPress);
+    function enterEditMode(focusIdx) {
+        editMode = true;
+        grid.classList.add('fsg-edit-mode');
+        grid.querySelectorAll('.fsg-cell').forEach((c, i) => {
+            c.style.animation = 'none';
+            c.offsetHeight;
+            c.style.animation = `fsgWiggle 0.5s ease ${(i % 3) * 0.04}s infinite`;
+        });
+        openPanel(focusIdx);
+    }
 
-            grid.addEventListener('click', function (e) {
-                var cell = e.target.closest('.fsg-cell');
-                if (!cell) return;
-                var idx = parseInt(cell.dataset.idx);
-                if (editMode) {
-                    openPanel(idx);
-                    return;
-                }
-                var data = CELL_DATA[idx];
-                if (data) {
-                    if (data.type === 'film' && data.movie) showDetails(data.movie);
-                    else if (data.type === 'user' && data.username) viewUserProfile(data.username);
-                } else {
-                    openPanel(idx);
-                }
-            });
+    function exitEditMode() {
+        editMode = false;
+        grid.classList.remove('fsg-edit-mode');
+        grid.querySelectorAll('.fsg-cell').forEach(c => { c.style.animation = ''; });
+    }
 
-            document.addEventListener('click', function (e) {
-                if (!editMode) return;
-                if (e.target.closest('#fsg-grid') || e.target.closest('#coll-panel') || e.target.closest('#coll-panel-backdrop')) return;
-                exitEditMode();
-            });
+    function openPanel(idx) {
+        activeIdx = idx;
+        selectedMovie = null;
+        selectedColor = null;
+        selectedUser = null;
+        document.getElementById('coll-search-input').value = '';
+        document.getElementById('coll-search-results').innerHTML = '';
+        document.getElementById('coll-user-input').value = '';
+        document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
+        const filmTab = document.querySelector('.coll-tab[data-tab="film"]');
+        document.querySelectorAll('.coll-tab').forEach(t => t.classList.remove('active'));
+        filmTab.classList.add('active');
+        switchCollTab('film', filmTab);
+        document.getElementById('coll-panel-title').textContent = 'Edit slot ' + (idx + 1);
+        document.getElementById('coll-panel').classList.add('open');
+        document.getElementById('coll-panel-backdrop').classList.add('open');
+    }
 
-            function enterEditMode() {
-                editMode = true;
-                grid.classList.add('fsg-edit-mode');
-                grid.querySelectorAll('.fsg-cell').forEach(function (c, i) {
-                    c.style.animation = 'none';
-                    c.offsetHeight;
-                    c.style.animation = 'fsgWiggle 0.5s ease ' + (i % 3) * 0.04 + 's infinite';
-                });
-            }
+    window.closeCollPanel = function() {
+        document.getElementById('coll-panel').classList.remove('open');
+        document.getElementById('coll-panel-backdrop').classList.remove('open');
+        exitEditMode();
+    };
 
-            function exitEditMode() {
-                editMode = false;
-                grid.classList.remove('fsg-edit-mode');
-                grid.querySelectorAll('.fsg-cell').forEach(function (c) { c.style.animation = ''; });
-            }
+    window.switchCollTab = function(tab, btn) {
+        activeTab = tab;
+        ['film','user','color'].forEach(t => {
+            document.getElementById('coll-tab-' + t).style.display = t === tab ? '' : 'none';
+        });
+        document.querySelectorAll('.coll-tab').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+    };
 
-            function openPanel(idx) {
-                activeIdx = idx;
-                selectedMovie = null;
-                selectedColor = null;
-                selectedUser = null;
-                document.getElementById('coll-search-input').value = '';
-                document.getElementById('coll-search-results').innerHTML = '';
-                document.getElementById('coll-search-results').style.display = '';
-                document.getElementById('coll-user-input').value = '';
-                document.getElementById('coll-user-results').innerHTML = '';
-                document.getElementById('coll-user-results').style.display = '';
-                document.querySelectorAll('.coll-color-swatch').forEach(function (s) { s.classList.remove('selected'); });
-                document.querySelectorAll('.coll-tab').forEach(function (t) { t.classList.remove('active'); });
-                var filmTab = document.querySelector('.coll-tab[data-tab="film"]');
-                filmTab.classList.add('active');
-                switchCollTab('film', filmTab);
-                document.getElementById('coll-panel').classList.add('open');
-                document.getElementById('coll-panel-backdrop').classList.add('open');
-            }
+    let searchTimer;
+    window.searchCollMovies = function(q) {
+        clearTimeout(searchTimer);
+        const res = document.getElementById('coll-search-results');
+        if (!q || q.length < 2) { res.innerHTML = ''; return; }
+        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
+        searchTimer = setTimeout(() => {
+            fetch(`${window.baseUrl || ''}/api/tmdb/search/multi?query=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
+                .then(r => r.json())
+                .then(data => {
+                    const valid = (data.results || []).filter(m => m.poster_path);
+                    if (!valid.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No results.</span>'; return; }
+                    res.innerHTML = '';
+                    valid.slice(0, 8).forEach(m => {
+                        const item = document.createElement('div');
+                        item.className = 'coll-res-item';
+                        item.innerHTML = `<img src="https://image.tmdb.org/t/p/w200${m.poster_path}" loading="lazy"><span>${m.title || m.name || ''}</span>`;
+                        item.onclick = () => {
+                            document.querySelectorAll('.coll-res-item').forEach(i => i.classList.remove('selected'));
+                            item.classList.add('selected');
+                            selectedMovie = m;
+                        };
+                        res.appendChild(item);
+                    });
+                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
+        }, 400);
+    };
 
-            window.closeCollPanel = function () {
-                document.getElementById('coll-panel').classList.remove('open');
-                document.getElementById('coll-panel-backdrop').classList.remove('open');
-                exitEditMode();
-            };
+    let userTimer;
+    window.searchCollUsers = function(q) {
+        clearTimeout(userTimer);
+        const res = document.getElementById('coll-user-results');
+        if (!q || q.length < 1) { res.innerHTML = ''; return; }
+        res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Searching...</span>';
+        userTimer = setTimeout(() => {
+            fetch(`${window.baseUrl || ''}/api/search/users?q=${encodeURIComponent(q)}`, { headers: window.ngrokHeaders || {} })
+                .then(r => r.json())
+                .then(users => {
+                    if (!users || !users.length) { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">No users found.</span>'; return; }
+                    res.innerHTML = '';
+                    users.slice(0, 6).forEach(u => {
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,0.05);cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;margin-bottom:8px;';
+                        item.innerHTML = `<img src="${u.photoUrl || ''}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:14px;font-weight:700;color:var(--text-primary);">@${u.username}</span>`;
+                        item.onclick = () => {
+                            res.querySelectorAll('div').forEach(i => i.style.borderColor = 'transparent');
+                            item.style.borderColor = '#fff';
+                            selectedUser = u;
+                        };
+                        res.appendChild(item);
+                    });
+                }).catch(() => { res.innerHTML = '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Error.</span>'; });
+        }, 400);
+    };
 
-            window.switchCollTab = function (tab, btn) {
-                activeTab = tab;
-                ['film', 'user', 'color'].forEach(function (t) {
-                    document.getElementById('coll-tab-' + t).style.display = t === tab ? '' : 'none';
-                });
-                document.querySelectorAll('.coll-tab').forEach(function (b) { b.classList.remove('active'); });
-                if (btn) btn.classList.add('active');
-            };
+    window.selectCollColor = function(el) {
+        document.querySelectorAll('.coll-color-swatch').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedColor = el.dataset.color;
+    };
 
-            window.searchCollMovies = function (q) {
-                clearTimeout(filmSearchTimer);
-                var res = document.getElementById('coll-search-results');
-                if (!q || q.length < 2) { res.innerHTML = ''; res.style.display = ''; return; }
-                res.style.display = '';
-                res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Searching...</div>';
-                filmSearchTimer = setTimeout(function () {
-                    fetch(baseUrl + '/api/tmdb/search/multi?query=' + encodeURIComponent(q), { headers: ngrokHeaders })
-                        .then(function (r) { return r.json(); })
-                        .then(function (data) {
-                            var valid = (data.results || []).filter(function (m) {
-                                return m.poster_path && m.overview && m.overview.length > 5;
-                            });
-                            if (!valid.length) {
-                                res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">No results found.</div>';
-                                res.style.display = '';
-                                return;
-                            }
-                            res.innerHTML = '';
-                            res.style.display = 'grid';
-                            res.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                            res.style.gap = '10px';
-                            valid.slice(0, 9).forEach(function (m) {
-                                var card = document.createElement('div');
-                                card.className = 'search-result-card';
-                                card.style.border = '2px solid transparent';
-                                card.style.transition = 'border-color 0.15s';
-                                var title = m.title || m.name || '';
-                                var year = (m.release_date || m.first_air_date || '').split('-')[0];
-                                card.innerHTML = '<img src="' + IMG_W500 + m.poster_path + '" class="search-poster" alt="' + escapeHtml(title) + '"><div class="search-info"><div class="search-card-title">' + escapeHtml(title) + '</div><div style="font-size:11px;opacity:0.6;">' + year + '</div></div>';
-                                card.onclick = function () {
-                                    res.querySelectorAll('.search-result-card').forEach(function (c) { c.style.borderColor = 'transparent'; });
-                                    card.style.borderColor = '#fff';
-                                    selectedMovie = m;
-                                };
-                                res.appendChild(card);
-                            });
-                        })
-                        .catch(function () {
-                            res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Error loading results.</div>';
-                            res.style.display = '';
-                        });
-                }, 400);
-            };
+    window.applyCollPanel = function() {
+        if (activeIdx === null) return;
+        const cell = document.querySelector(`#fsg-grid .fsg-cell[data-idx="${activeIdx}"]`);
+        if (!cell) return;
+        cell.innerHTML = '';
+        cell.style.background = '';
+        if (activeTab === 'film' && selectedMovie) {
+            const poster = selectedMovie.poster_path ? 'https://image.tmdb.org/t/p/w200' + selectedMovie.poster_path : '';
+            if (poster) {
+                const img = document.createElement('img');
+                img.src = poster;
+                cell.appendChild(img);
+            } else { cell.textContent = '+'; }
+            CELL_DATA[activeIdx] = { type: 'film', movie: selectedMovie };
+        } else if (activeTab === 'user' && selectedUser) {
+            cell.style.background = 'rgba(255,255,255,0.06)';
+            cell.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;"><img src="${selectedUser.photoUrl||''}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#333;"><span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.1;">@${selectedUser.username}</span></div>`;
+            CELL_DATA[activeIdx] = { type: 'user', username: selectedUser.username };
+        } else if (activeTab === 'color' && selectedColor) {
+            cell.style.background = selectedColor;
+            CELL_DATA[activeIdx] = { type: 'color', color: selectedColor };
+        } else {
+            return;
+        }
+        closeCollPanel();
+    };
 
-            window.searchCollUsers = function (q) {
-                clearTimeout(userSearchTimer);
-                var res = document.getElementById('coll-user-results');
-                if (!q || q.length < 1) { res.innerHTML = ''; res.style.display = ''; return; }
-                res.style.display = '';
-                res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Searching...</div>';
-                userSearchTimer = setTimeout(function () {
-                    fetch(baseUrl + '/api/search/users?q=' + encodeURIComponent(q), { headers: ngrokHeaders })
-                        .then(function (r) { return r.json(); })
-                        .then(function (users) {
-                            if (!users || !users.length) {
-                                res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">No users found.</div>';
-                                return;
-                            }
-                            res.innerHTML = '';
-                            users.slice(0, 6).forEach(function (u) {
-                                var item = document.createElement('div');
-                                item.className = 'usr usr-coll';
-                                item.setAttribute('data-username', u.username);
-                                item.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-secondary);border-radius:12px;cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;margin-bottom:8px;';
-                                item.innerHTML = '<img src="' + (u.photoUrl || '') + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);flex-shrink:0;"><div><div style="font-weight:600;color:var(--text-primary);">@' + escapeHtml(u.username) + '</div></div>';
-                                item.onclick = function () {
-                                    res.querySelectorAll('.usr-coll').forEach(function (i) { i.style.borderColor = 'transparent'; });
-                                    item.style.borderColor = '#fff';
-                                    selectedUser = u;
-                                };
-                                res.appendChild(item);
-                            });
-                        })
-                        .catch(function () {
-                            res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Error loading users.</div>';
-                        });
-                }, 300);
-            };
-
-            window.selectCollColor = function (el) {
-                document.querySelectorAll('.coll-color-swatch').forEach(function (s) { s.classList.remove('selected'); });
-                el.classList.add('selected');
-                selectedColor = el.dataset.color;
-            };
-
-            window.applyCollPanel = function () {
-                if (activeIdx === null) return;
-                var cell = document.querySelector('#fsg-grid .fsg-cell[data-idx="' + activeIdx + '"]');
-                if (!cell) return;
-                cell.innerHTML = '';
-                cell.style.background = '';
-                if (activeTab === 'film' && selectedMovie) {
-                    var poster = selectedMovie.poster_path ? 'https://image.tmdb.org/t/p/w200' + selectedMovie.poster_path : '';
-                    if (poster) {
-                        var img = document.createElement('img');
-                        img.src = poster;
-                        cell.appendChild(img);
-                    } else { cell.textContent = '+'; }
-                    CELL_DATA[activeIdx] = { type: 'film', movie: selectedMovie };
-                } else if (activeTab === 'user' && selectedUser) {
-                    cell.style.background = 'rgba(255,255,255,0.06)';
-                    cell.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;"><img src="' + (selectedUser.photoUrl || '') + '" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);"><span style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.1;">@' + escapeHtml(selectedUser.username) + '</span></div>';
-                    CELL_DATA[activeIdx] = { type: 'user', username: selectedUser.username, user: selectedUser };
-                } else if (activeTab === 'color' && selectedColor) {
-                    cell.style.background = selectedColor;
-                    CELL_DATA[activeIdx] = { type: 'color', color: selectedColor };
-                } else {
-                    return;
-                }
-                closeCollPanel();
-            };
-
-            function updateGridCount() {
-                var filled = document.querySelectorAll('#fsg-grid .fsg-cell img').length;
-                var el = document.getElementById('coll-films-count');
-                if (el) el.textContent = filled + (filled === 1 ? ' film' : ' films');
-            }
-
-            var gridObserver = new MutationObserver(updateGridCount);
-            gridObserver.observe(grid, { childList: true, subtree: true });
-            updateGridCount();
-
-            async function updateCollStats() {
-                try {
-                    var favRes = await fetchWithAuth(baseUrl + '/api/favorites');
-                    if (favRes.ok) {
-                        var favs = await favRes.json();
-                        var savedEl = document.getElementById('coll-saved-num');
-                        if (savedEl) savedEl.textContent = favs.length || 0;
-                    }
-                } catch (e) { }
-                try {
-                    var wlRes = await fetchWithAuth(baseUrl + '/api/watchlist');
-                    if (wlRes.ok) {
-                        var wl = await wlRes.json();
-                        var watchedEl = document.getElementById('coll-watched-num');
-                        if (watchedEl) watchedEl.textContent = wl.length || 0;
-                    }
-                } catch (e) { }
-            }
-
-            updateCollStats();
-
-            var ks = document.createElement('style');
-            ks.textContent = '@keyframes fsgWiggle{0%,100%{transform:rotate(0deg) scale(1);}20%{transform:rotate(-2.5deg) scale(0.97);}60%{transform:rotate(2.5deg) scale(0.97);}}.fsg-edit-mode .fsg-cell{cursor:pointer;}.fsg-edit-mode .fsg-cell:active{transform:scale(0.92);}';
-            document.head.appendChild(ks);
-        })();
-    </script>
+    const ks = document.createElement('style');
+    ks.textContent = `
+        @keyframes fsgWiggle {
+            0%,100%{transform:rotate(0deg) scale(1);}
+            20%{transform:rotate(-2.5deg) scale(0.97);}
+            60%{transform:rotate(2.5deg) scale(0.97);}
+        }
+        .fsg-edit-mode .fsg-cell { cursor:pointer; }
+        .fsg-edit-mode .fsg-cell:active { transform:scale(0.92); }
+    `;
+    document.head.appendChild(ks);
+})();
+</script>
 </body>
 </html>
