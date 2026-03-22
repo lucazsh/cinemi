@@ -770,11 +770,13 @@
         .mov::-webkit-scrollbar {
             display: none;
         }
+
         .spacer {
             min-width: 5px;
             flex-shrink: 0;
             scroll-snap-align: start;
         }
+
         .mov img {
             scroll-snap-align: start;
         }
@@ -1022,34 +1024,53 @@
             box-sizing: border-box;
         }
 
-        .f-search {
+        .finder-search-wrap {
+            padding: 0 3.4% 10px;
+        }
+
+        .finder-search-bar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 10px;
-            padding: 0px 3.4%;
+            background: var(--placeholder-bg);
+            border-radius: 18px;
+            padding: 12px 16px;
+            border: 1.5px solid transparent;
+            transition: border-color 0.2s;
         }
 
-        .f-search textarea {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 12px;
-            border: 1px solid #ccc;
+        .finder-search-bar:focus-within {
+            border-color: var(--border-dark-alpha-1);
+        }
+
+        .finder-search-bar svg {
+            fill: var(--text-subtle);
+            flex-shrink: 0;
+        }
+
+        .finder-search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
             outline: none;
-            overflow: hidden;
-            resize: none;
-            width: 100%;
-            min-height: 40px;
-            box-sizing: border-box;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-primary);
         }
 
-        textarea::placeholder {
+        .finder-search-bar input::placeholder {
+            color: var(--text-subtle);
+        }
+
+        .finder-cancel-btn {
+            background: none;
+            border: none;
             font-size: 15px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .f-search button {
-            display: none;
+            font-weight: 600;
+            color: var(--text-subtle);
+            cursor: pointer;
+            padding: 0 2px;
+            flex-shrink: 0;
         }
 
         #ai-chat {
@@ -3816,177 +3837,204 @@
         }
     </style>
     <style>
-    #pwa-install-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: var(--bg-primary);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 24px;
-        padding-top: calc(32px + env(safe-area-inset-top));
-        padding-bottom: calc(32px + env(safe-area-inset-bottom));
-        animation: fadeInOverlay 0.3s ease;
-    }
-    @keyframes fadeInOverlay {
-        from { opacity: 0; transform: translateY(12px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    #pwa-install-overlay .pwa-icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 18px;
-        margin-bottom: 28px;
-    }
-    #pwa-install-overlay h1 {
-        font-family: 'Nunito', system-ui, sans-serif;
-        font-size: 22px;
-        font-weight: 900;
-        color: var(--text-primary);
-        margin: 0 0 8px;
-        text-align: center;
-    }
-    #pwa-install-overlay p.pwa-sub {
-        font-size: 14px;
-        color: var(--text-subtle);
-        text-align: center;
-        margin: 0 0 36px;
-        line-height: 1.5;
-        max-width: 280px;
-    }
-    #pwa-install-overlay .pwa-steps {
-        width: 100%;
-        max-width: 340px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 36px;
-    }
-    #pwa-install-overlay .pwa-step {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        background: var(--placeholder-bg);
-        border-radius: var(--inner-radius);
-        padding: 14px 16px;
-    }
-    #pwa-install-overlay .pwa-step-num {
-        min-width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: var(--button-bg);
-        color: var(--button-text);
-        font-size: 13px;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Nunito', system-ui, sans-serif;
-    }
-    #pwa-install-overlay .pwa-step-text {
-        font-size: 14px;
-        color: var(--text-primary);
-        font-weight: 600;
-        line-height: 1.4;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    #pwa-install-overlay .pwa-step-text svg {
-        flex-shrink: 0;
-        vertical-align: middle;
-    }
-    #pwa-install-overlay .pwa-ignore-btn {
-        background: none;
-        border: none;
-        color: var(--text-subtle);
-        font-size: 13px;
-        font-family: 'Nunito', system-ui, sans-serif;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 10px 20px;
-        border-radius: 99px;
-        transition: background 0.15s;
-    }
-    #pwa-install-overlay .pwa-ignore-btn:active {
-        background: var(--placeholder-bg);
-    }
+        #pwa-install-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            padding-top: calc(32px + env(safe-area-inset-top));
+            padding-bottom: calc(32px + env(safe-area-inset-bottom));
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #pwa-install-overlay .pwa-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            margin-bottom: 28px;
+        }
+
+        #pwa-install-overlay h1 {
+            font-family: 'Nunito', system-ui, sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin: 0 0 8px;
+            text-align: center;
+        }
+
+        #pwa-install-overlay p.pwa-sub {
+            font-size: 14px;
+            color: var(--text-subtle);
+            text-align: center;
+            margin: 0 0 36px;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        #pwa-install-overlay .pwa-steps {
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 36px;
+        }
+
+        #pwa-install-overlay .pwa-step {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--placeholder-bg);
+            border-radius: var(--inner-radius);
+            padding: 14px 16px;
+        }
+
+        #pwa-install-overlay .pwa-step-num {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--button-bg);
+            color: var(--button-text);
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', system-ui, sans-serif;
+        }
+
+        #pwa-install-overlay .pwa-step-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        #pwa-install-overlay .pwa-step-text svg {
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        #pwa-install-overlay .pwa-ignore-btn {
+            background: none;
+            border: none;
+            color: var(--text-subtle);
+            font-size: 13px;
+            font-family: 'Nunito', system-ui, sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 99px;
+            transition: background 0.15s;
+        }
+
+        #pwa-install-overlay .pwa-ignore-btn:active {
+            background: var(--placeholder-bg);
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
+
 <body>
     <div id="pwa-install-overlay" style="display:none">
-    <img src="/icons/icon-192.png" class="pwa-icon" alt="Cinemi">
-    <h1>Install Cinemi</h1>
-    <p class="pwa-sub">Add Cinemi to your home screen for the best way to find movies.</p>
-    <div class="pwa-steps" id="pwa-steps-ios" style="display:none">
-        <div class="pwa-step">
-        <div class="pwa-step-num">1</div>
-        <div class="pwa-step-text">
-            Tap the
-            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h120v80H240v400h480v-400H600v-80h120q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm200-240v-447l-64 64-56-57 160-160 160 160-56 57-64-64v447h-80Z"/></svg>
-            <strong>Share</strong> button at the bottom of your browser
+        <img src="/icons/icon-192.png" class="pwa-icon" alt="Cinemi">
+        <h1>Install Cinemi</h1>
+        <p class="pwa-sub">Add Cinemi to your home screen for the best way to find movies.</p>
+        <div class="pwa-steps" id="pwa-steps-ios" style="display:none">
+            <div class="pwa-step">
+                <div class="pwa-step-num">1</div>
+                <div class="pwa-step-text">
+                    Tap the
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                        fill="currentColor">
+                        <path
+                            d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h120v80H240v400h480v-400H600v-80h120q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm200-240v-447l-64 64-56-57 160-160 160 160-56 57-64-64v447h-80Z" />
+                    </svg>
+                    <strong>Share</strong> button at the bottom of your browser
+                </div>
+            </div>
+            <div class="pwa-step">
+                <div class="pwa-step-num">2</div>
+                <div class="pwa-step-text">Scroll down and tap <strong>Add to Home Screen</strong></div>
+            </div>
+            <div class="pwa-step">
+                <div class="pwa-step-num">3</div>
+                <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
+            </div>
         </div>
+        <div class="pwa-steps" id="pwa-steps-android" style="display:none">
+            <div class="pwa-step">
+                <div class="pwa-step-num">1</div>
+                <div class="pwa-step-text">Tap the <svg xmlns="http://www.w3.org/2000/svg" height="20px"
+                        viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                        <path
+                            d="M479.79-192Q450-192 429-213.21t-21-51Q408-294 429.21-315t51-21Q510-336 531-314.79t21 51Q552-234 530.79-213t-51 21Zm0-216Q450-408 429-429.21t-21-51Q408-510 429.21-531t51-21Q510-552 531-530.79t21 51Q552-450 530.79-429t-51 21Zm0-216Q450-624 429-645.21t-21-51Q408-726 429.21-747t51-21Q510-768 531-746.79t21 51Q552-666 530.79-645t-51 21Z" />
+                    </svg> menu in the top-right of Chrome</div>
+            </div>
+            <div class="pwa-step">
+                <div class="pwa-step-num">2</div>
+                <div class="pwa-step-text">Tap <strong>Add to Home screen</strong></div>
+            </div>
+            <div class="pwa-step">
+                <div class="pwa-step-num">3</div>
+                <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
+            </div>
         </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">2</div>
-        <div class="pwa-step-text">Scroll down and tap <strong>Add to Home Screen</strong></div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">3</div>
-        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
-        </div>
-    </div>
-    <div class="pwa-steps" id="pwa-steps-android" style="display:none">
-        <div class="pwa-step">
-        <div class="pwa-step-num">1</div>
-        <div class="pwa-step-text">Tap the <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M479.79-192Q450-192 429-213.21t-21-51Q408-294 429.21-315t51-21Q510-336 531-314.79t21 51Q552-234 530.79-213t-51 21Zm0-216Q450-408 429-429.21t-21-51Q408-510 429.21-531t51-21Q510-552 531-530.79t21 51Q552-450 530.79-429t-51 21Zm0-216Q450-624 429-645.21t-21-51Q408-726 429.21-747t51-21Q510-768 531-746.79t21 51Q552-666 530.79-645t-51 21Z"/></svg> menu in the top-right of Chrome</div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">2</div>
-        <div class="pwa-step-text">Tap <strong>Add to Home screen</strong></div>
-        </div>
-        <div class="pwa-step">
-        <div class="pwa-step-num">3</div>
-        <div class="pwa-step-text">Tap <strong>Add</strong> to confirm</div>
-        </div>
-    </div>
-    <button class="pwa-ignore-btn" id="pwa-ignore-btn">Ignore for now (beta)</button>
+        <button class="pwa-ignore-btn" id="pwa-ignore-btn">Ignore for now (beta)</button>
     </div>
 
     <script>
-    (function() {
-        var isStandalone = window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
+        (function () {
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true;
 
-        if (isStandalone) return;
+            if (isStandalone) return;
 
-        var dismissed = sessionStorage.getItem('pwa-overlay-dismissed');
-        if (dismissed) return;
+            var dismissed = sessionStorage.getItem('pwa-overlay-dismissed');
+            if (dismissed) return;
 
-        var ua = navigator.userAgent;
-        var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-        var isAndroid = /Android/.test(ua);
+            var ua = navigator.userAgent;
+            var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            var isAndroid = /Android/.test(ua);
 
-        if (!isIOS && !isAndroid) return;
+            if (!isIOS && !isAndroid) return;
 
-        var overlay = document.getElementById('pwa-install-overlay');
-        overlay.style.display = 'flex';
+            var overlay = document.getElementById('pwa-install-overlay');
+            overlay.style.display = 'flex';
 
-        if (isIOS) {
-        document.getElementById('pwa-steps-ios').style.display = 'flex';
-        } else {
-        document.getElementById('pwa-steps-android').style.display = 'flex';
-        }
+            if (isIOS) {
+                document.getElementById('pwa-steps-ios').style.display = 'flex';
+            } else {
+                document.getElementById('pwa-steps-android').style.display = 'flex';
+            }
 
-        document.getElementById('pwa-ignore-btn').addEventListener('click', function() {
-        sessionStorage.setItem('pwa-overlay-dismissed', '1');
-        overlay.style.display = 'none';
-        });
-    })();
+            document.getElementById('pwa-ignore-btn').addEventListener('click', function () {
+                sessionStorage.setItem('pwa-overlay-dismissed', '1');
+                overlay.style.display = 'none';
+            });
+        })();
     </script>
     <div id="logo-sp" class="view active"
         style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:var(--bg-primary); padding:0; margin:0; position:fixed; inset:0; z-index:2000;">
@@ -4616,9 +4664,15 @@
                 </svg>
             </button>
         </div>
-        <div class="f-search">
-            <textarea rows="1" id="fs-textarea" placeholder="Search movies, films, or @users..."></textarea>
-            <button style="font-size: 15px; font-weight: 500; color: rgb(50, 50, 50);">Cancel</button>
+        <div class="finder-search-wrap">
+            <div class="finder-search-bar">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px">
+                    <path
+                        d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                </svg>
+                <input id="fs-textarea" placeholder="Movies, films, or @users…" type="search">
+                <button class="finder-cancel-btn">Cancel</button>
+            </div>
         </div>
         <div id="search-results" style="padding: 20px 3.4%;"></div>
     </div>
