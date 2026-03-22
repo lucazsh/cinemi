@@ -97,119 +97,75 @@ async function updateMyFriendsCount() {
         ...following.map(f => f.username)
         ]).size;
         
-        const fc=document.getElementById('friendsCount');if(fc)fc.textContent=`${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
+        const fc = document.getElementById('friendsCount');
+        if (fc) fc.textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
     } catch (err) {
         console.error('Failed to update friends count:', err);
     }
 }
 
 async function showFriendsPanel() {
-const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-const panel = document.getElementById('friends-panel');
-const sheet = panel.querySelector('.sheet');
-
-try {
-    const [followersRes, followingRes] = await Promise.all([
-    fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
-    fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
-    ]);
-    
-    const followers = await followersRes.json();
-    const following = await followingRes.json();
-    
-    const totalFriends = new Set([
-    ...followers.map(f => f.username),
-    ...following.map(f => f.username)
-    ]).size;
-    
-    sheet.innerHTML = `
-    <h2>Friends (${totalFriends})</h2>
-    <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
-        ${followers.length > 0 ? `
-        <div style="margin-bottom:20px;">
-            <h3 style="font-size:16px; margin-bottom:10px;">Followers (${followers.length})</h3>
-            ${followers.map(f => `
-            <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
-                <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                <div style="flex:1;">
-                <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
-                <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
-                </div>
-            </div>
-            `).join('')}
-        </div>
-        ` : ''}
-        ${following.length > 0 ? `
-        <div>
-            <h3 style="font-size:16px; margin-bottom:10px;">Following (${following.length})</h3>
-            ${following.map(f => `
-            <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
-                <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                <div style="flex:1;">
-                <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
-                <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
-                </div>
-            </div>
-            `).join('')}
-        </div>
-        ` : ''}
-        ${totalFriends === 0 ? '<p style="text-align:center; color:var(--text-subtle); padding:40px;">No friends yet</p>' : ''}
-    </div>
-    <button class="btn-close" onclick="closePanel('friends')">Close</button>
-    `;
-} catch (err) {
-    sheet.innerHTML = `
-    <h2>Friends</h2>
-    <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
-    <button class="btn-close" onclick="closePanel('friends')">Close</button>
-    `;
-}
-}
-
-async function showWatchlistPanel() {
     const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
-    const panel = document.getElementById('watchlist-panel');
+    const panel = document.getElementById('friends-panel');
     const sheet = panel.querySelector('.sheet');
-    openPanel('watchlist');
 
     try {
-        const movies = await loadWatchlist();
-
-        if (!movies || movies.length === 0) {
-            sheet.innerHTML = `
-                <h2>Watch List</h2>
-                <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies yet!</p>
-                <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
-            `;
-        } else {
-            sheet.innerHTML = `
-                <h2>Watch List (${movies.length})</h2>
-                <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
-                    ${movies.map(m => `
-                        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="showMovieDetails('${m.movieId}')">
-                            <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
-                            <div style="flex:1;">
-                                <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
-                                <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
-                            </div>
-                        </div>
-                    `).join('')}
+        const [followersRes, followingRes] = await Promise.all([
+        fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+        fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
+        ]);
+        
+        const followers = await followersRes.json();
+        const following = await followingRes.json();
+        
+        const totalFriends = new Set([
+        ...followers.map(f => f.username),
+        ...following.map(f => f.username)
+        ]).size;
+        
+        sheet.innerHTML = `
+        <h2>Friends (${totalFriends})</h2>
+        <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+            ${followers.length > 0 ? `
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:16px; margin-bottom:10px;">Followers (${followers.length})</h3>
+                ${followers.map(f => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
+                    <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                    </div>
                 </div>
-                <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
-            `;
-        }
+                `).join('')}
+            </div>
+            ` : ''}
+            ${following.length > 0 ? `
+            <div>
+                <h3 style="font-size:16px; margin-bottom:10px;">Following (${following.length})</h3>
+                ${following.map(f => `
+                <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('friends'); viewUserProfile('${f.username}')">
+                    <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div style="flex:1;">
+                    <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
+                    <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            ${totalFriends === 0 ? '<p style="text-align:center; color:var(--text-subtle); padding:40px;">No friends yet</p>' : ''}
+        </div>
+        <button class="btn-close" onclick="closePanel('friends')">Close</button>
+        `;
     } catch (err) {
         sheet.innerHTML = `
-            <h2>Watch List</h2>
-            <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
-            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        <h2>Friends</h2>
+        <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
+        <button class="btn-close" onclick="closePanel('friends')">Close</button>
         `;
     }
-
-    const backdrop = panel.querySelector('.backdrop');
-    if (backdrop) backdrop.onclick = () => closePanel('watchlist');
 }
-
 
 let currentViewedUser = null;
 
@@ -367,7 +323,7 @@ async function openUserPanel(panelType) {
     const panelId = `user-${panelType}-panel`;
     const panel = document.getElementById(panelId);
     const sheet = panel.querySelector('.sheet');
-    openPanel('user-favorites');
+    openPanel(`user-${panelType}`);
     
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/${panelType}`);
@@ -434,28 +390,28 @@ async function reportUser(username) {
 }
 
 document.addEventListener('click', (e) => {
-  const searchEl = e.target.closest('.usr-search');
-  if (searchEl) {
-    const username = searchEl.dataset.username;
-    if (username) {
-      viewUserProfile(username);
+    const searchEl = e.target.closest('.usr-search');
+    if (searchEl) {
+        const username = searchEl.dataset.username;
+        if (username) {
+            viewUserProfile(username);
+        }
+        return;
     }
-    return;
-  }
 
-  const postUsr = e.target.closest('.usr-post');
-  if (postUsr) {
-    const username = postUsr.dataset.username;
-    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
-    return;
-  }
+    const postUsr = e.target.closest('.usr-post');
+    if (postUsr) {
+        const username = postUsr.dataset.username;
+        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+        return;
+    }
 
-  const prImg = e.target.closest('.pr-img');
-  if (prImg && prImg.dataset && prImg.dataset.username) {
-    const username = prImg.dataset.username;
-    if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
-    return;
-  }
+    const prImg = e.target.closest('.pr-img');
+    if (prImg && prImg.dataset && prImg.dataset.username) {
+        const username = prImg.dataset.username;
+        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+        return;
+    }
 });
 
 function switchProfileTab(tab, btn) {
