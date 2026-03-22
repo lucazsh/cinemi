@@ -166,6 +166,49 @@ try {
 }
 }
 
+async function showWatchlistPanel() {
+    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+    const panel = document.getElementById('watchlist-panel');
+    const sheet = panel.querySelector('.sheet');
+    openPanel('watchlist');
+
+    try {
+        const movies = await loadWatchlist();
+
+        if (!movies || movies.length === 0) {
+            sheet.innerHTML = `
+                <h2>Watch List</h2>
+                <p style="text-align:center; color:var(--text-subtle); padding:40px;">No movies yet!</p>
+                <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+            `;
+        } else {
+            sheet.innerHTML = `
+                <h2>Watch List (${movies.length})</h2>
+                <div style="max-height:60vh; overflow-y:auto; margin:20px 0;">
+                    ${movies.map(m => `
+                        <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="showMovieDetails('${m.movieId}')">
+                            <img src="${IMG_W500}${m.posterPath}" style="width:50px; height:75px; border-radius:8px; object-fit:cover;">
+                            <div style="flex:1;">
+                                <div style="font-weight:600; font-size:14px;">${escapeHtml(m.title)}</div>
+                                <div style="font-size:12px; color:var(--text-subtle);">⭐ ${m.rating?.toFixed(1) || 'N/A'}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+            `;
+        }
+    } catch (err) {
+        sheet.innerHTML = `
+            <h2>Watch List</h2>
+            <p style="text-align:center; color:var(--text-subtle); padding:40px;">Failed to load</p>
+            <button class="btn-close" onclick="closePanel('watchlist')">Close</button>
+        `;
+    }
+
+    const backdrop = panel.querySelector('.backdrop');
+    if (backdrop) backdrop.onclick = () => closePanel('watchlist');
+}
 
 
 let currentViewedUser = null;
