@@ -385,7 +385,7 @@ function showInAppToast(notif) {
   const toast = document.createElement('div');
   toast.id = 'notif-toast';
   toast.style.cssText = `
-    position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    position: fixed; top: calc(16px+env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-80px);
     background: var(--bg-primary); border: 1px solid var(--border-light);
     border-radius: 16px; padding: 12px 16px; display: flex; align-items: center;
     gap: 12px; z-index: 99999; max-width: 340px; width: calc(100vw - 32px);
@@ -394,7 +394,7 @@ function showInAppToast(notif) {
   `;
   const icon = notifTypeIcon(notif.type);
   toast.innerHTML = `
-    <div style="position:relative;flex-shrink:0;margin-top:env(safe-area-inset-top);">
+    <div style="position:relative;flex-shrink:0;">
       <img src="${notif.fromPhoto}" style="width:40px;height:40px;border-radius:12.8px;object-fit:cover;" onerror="this.src='https://i.imgflip.com/1ickup.jpg'">
       <span style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:${icon.bg};display:flex;align-items:center;justify-content:center;border:2px solid var(--bg-primary);">${icon.svg}</span>
     </div>
