@@ -9,7 +9,7 @@ notifStyles.textContent = `
 }
 #notif-badge {
   position: absolute;
-  top: 2px;
+  bottom: 2px;
   right: 2px;
   background: #e63946;
   width: 9px;
