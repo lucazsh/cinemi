@@ -195,7 +195,10 @@ function injectAdsIntoPosts(posts, config) {
     const pos = Math.floor(total / 2);
     const referenceEl = children[pos];
     if (referenceEl) {
-        postsContainer.insertBefore(createAdPost(config.slot, config.publisherId), referenceEl);
+        postsContainer.insertBefore(
+            createAdPost('6300978111', 'ca-pub-3940256099942544'),
+            referenceEl
+        );
     }
 }
 
