@@ -5,7 +5,6 @@ function initMovieSearch() {
     const results = document.getElementById('search-results');
     
     if (!input || !results) return;
-
     input.addEventListener('input', (e) => {
         clearTimeout(searchTimer);
         const query = e.target.value.trim();
