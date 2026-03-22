@@ -132,6 +132,15 @@ function buildPostElement(username, displayName, content, files, photoUrl) {
 }
 
 let adConfig = null;
+let adScriptLoaded = false;
+
+function waitForAdsense(callback) {
+    if (adScriptLoaded && window.adsbygoogle) {
+        callback();
+    } else {
+        setTimeout(() => waitForAdsense(callback), 300);
+    }
+}
 
 async function loadAdConfig() {
     if (adConfig) return adConfig;
@@ -139,11 +148,18 @@ async function loadAdConfig() {
         const res = await fetch(baseUrl + '/api/ads/config');
         adConfig = await res.json();
         if (adConfig.publisherId) {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.publisherId}`;
-            script.crossOrigin = 'anonymous';
-            document.head.appendChild(script);
+            const existing = document.querySelector(`script[src*="adsbygoogle"]`);
+            if (!existing) {
+                const script = document.createElement('script');
+                script.async = true;
+                script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.publisherId}`;
+                script.crossOrigin = 'anonymous';
+                script.onload = () => { adScriptLoaded = true; };
+                script.onerror = () => { adScriptLoaded = true; };
+                document.head.appendChild(script);
+            } else {
+                adScriptLoaded = true;
+            }
         }
     } catch (e) { adConfig = { publisherId: '', slot: '' }; }
     return adConfig;
@@ -165,7 +181,7 @@ function createAdPost(slotId, publisherId) {
                  data-full-width-responsive="true"></ins>
         </div>
     `;
-    requestAnimationFrame(() => {
+    waitForAdsense(() => {
         try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
     });
     return wrapper;
