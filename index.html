@@ -755,14 +755,14 @@
             scroll-snap-type: x mandatory; 
             padding: 10px;
         }
-        #mood .mov {
-            scroll-padding-left: 5px !important;
-        }
-        
-        #mood .mov::before {
+        #mood::before {
             content: '' !important;
             min-width: 5px !important;
             flex-shrink: 0 !important;
+        }
+        
+        #mood {
+            scroll-padding-left: 5px !important;
         }
         .mov img {
             scroll-snap-align: start;
