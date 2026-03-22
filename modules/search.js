@@ -45,7 +45,7 @@ async function fetchUsers(query, container) {
             <div 
                 class="usr usr-search"
                 data-username="${user.username}"
-                style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg-secondary); border-radius:16px; cursor:pointer; border:1px solid var(--border-dark-alpha-2);"
+                style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg-secondary); border-radius:18px; cursor:pointer; border:1px solid var(--border-dark-alpha-2);"
             >
                 <img src="${user.photoUrl}" style="width:48px; height:48px; border-radius:15.36px; object-fit:cover;">
                 <div>
