@@ -394,8 +394,8 @@ function showInAppToast(notif) {
   `;
   const icon = notifTypeIcon(notif.type);
   toast.innerHTML = `
-    <div style="position:relative;flex-shrink:0;">
-      <img src="${notif.fromPhoto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.src='https://i.imgflip.com/1ickup.jpg'">
+    <div style="position:relative;flex-shrink:0;margin-top:env(safe-area-inset-top);">
+      <img src="${notif.fromPhoto}" style="width:40px;height:40px;border-radius:12.8px;object-fit:cover;" onerror="this.src='https://i.imgflip.com/1ickup.jpg'">
       <span style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:${icon.bg};display:flex;align-items:center;justify-content:center;border:2px solid var(--bg-primary);">${icon.svg}</span>
     </div>
     <div style="flex:1;min-width:0;">
