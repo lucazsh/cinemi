@@ -385,7 +385,7 @@ function showInAppToast(notif) {
   const toast = document.createElement('div');
   toast.id = 'notif-toast';
   toast.style.cssText = `
-    position: fixed; top: calc(16px+env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-80px);
+    position: fixed; top: calc(16px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-80px);
     background: var(--bg-primary); border: 1px solid var(--border-light);
     border-radius: 16px; padding: 12px 16px; display: flex; align-items: center;
     gap: 12px; z-index: 99999; max-width: 340px; width: calc(100vw - 32px);
