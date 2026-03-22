@@ -89,7 +89,7 @@ notifStyles.textContent = `
 }
 .notif-item:active { background: var(--iconbox-bg); }
 .notif-item.unseen {
-  background: rgba(230, 57, 70, 0.07);
+  background: var(--iconbox-bg);
   border-left-color: transparent;
 }
 .notif-avatar {
@@ -375,9 +375,9 @@ function showInAppToast(notif) {
   toast.id = 'notif-toast';
   toast.style.cssText = `
     position: fixed;
-    top: calc(16px + env(safe-area-inset-top));
+    top: 0;
     left: 50%;
-    transform: translateX(-50%) translateY(-80px);
+    transform: translateX(-50%) translateY(-120px);
     background: var(--bg-primary);
     border: 1px solid var(--border-light);
     border-radius: 16px;
@@ -409,7 +409,7 @@ function showInAppToast(notif) {
   document.body.appendChild(toast);
 
   toast.getBoundingClientRect();
-  toast.style.transform = 'translateX(-50%) translateY(0)';
+  toast.style.transform = 'translateX(-50%) translateY(calc(16px + env(safe-area-inset-top)))';
 
   toast.addEventListener('click', () => {
     handleNotifClick(notif.type, notif.refId);
@@ -417,7 +417,7 @@ function showInAppToast(notif) {
   });
 
   setTimeout(() => {
-    toast.style.transform = 'translateX(-50%) translateY(-80px)';
+    toast.style.transform = 'translateX(-50%) translateY(-120px)';
     setTimeout(() => toast.remove(), 400);
   }, 4000);
 }
