@@ -12,17 +12,11 @@ notifStyles.textContent = `
   top: 2px;
   right: 2px;
   background: #e63946;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
   pointer-events: none;
+  border: 2px solid var(--bg-primary);
 }
 #notif-panel {
   position: fixed;
@@ -95,8 +89,8 @@ notifStyles.textContent = `
 }
 .notif-item:active { background: var(--iconbox-bg); }
 .notif-item.unseen {
-  background: var(--iconbox-bg);
-  border-left-color: #e63946;
+  background: rgba(230, 57, 70, 0.07);
+  border-left-color: transparent;
 }
 .notif-avatar {
   width: 44px;
@@ -295,12 +289,7 @@ async function markAllSeen() {
 function updateBadge() {
   const badge = document.getElementById('notif-badge');
   if (!badge) return;
-  if (unseenCount > 0) {
-    badge.style.display = 'flex';
-    badge.textContent = unseenCount > 99 ? '99+' : unseenCount;
-  } else {
-    badge.style.display = 'none';
-  }
+  badge.style.display = unseenCount > 0 ? 'block' : 'none';
 }
 
 async function fetchUnseenCount() {
@@ -385,14 +374,27 @@ function showInAppToast(notif) {
   const toast = document.createElement('div');
   toast.id = 'notif-toast';
   toast.style.cssText = `
-    position: fixed; top: calc(16px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-80px);
-    background: var(--bg-primary); border: 1px solid var(--border-light);
-    border-radius: 16px; padding: 12px 16px; display: flex; align-items: center;
-    gap: 12px; z-index: 99999; max-width: 340px; width: calc(100vw - 32px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    position: fixed;
+    top: calc(16px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 99999;
+    max-width: 340px;
+    width: calc(100vw - 32px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
   `;
+
   const icon = notifTypeIcon(notif.type);
+
   toast.innerHTML = `
     <div style="position:relative;flex-shrink:0;">
       <img src="${notif.fromPhoto}" style="width:40px;height:40px;border-radius:12.8px;object-fit:cover;" onerror="this.src='https://i.imgflip.com/1ickup.jpg'">
@@ -403,16 +405,17 @@ function showInAppToast(notif) {
       ${notif.refText ? `<div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${notif.refText}</div>` : ''}
     </div>
   `;
+
   document.body.appendChild(toast);
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      toast.style.transform = 'translateX(-50%) translateY(0)';
-    });
-  });
+
+  toast.getBoundingClientRect();
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+
   toast.addEventListener('click', () => {
     handleNotifClick(notif.type, notif.refId);
     toast.remove();
   });
+
   setTimeout(() => {
     toast.style.transform = 'translateX(-50%) translateY(-80px)';
     setTimeout(() => toast.remove(), 400);
