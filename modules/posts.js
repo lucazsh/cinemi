@@ -131,6 +131,8 @@ function buildPostElement(username, displayName, content, files, photoUrl) {
     return createPostWrapper(username, displayName, content, files, timeLabelForNow(), photoUrl);
 }
 
+const ADS = false;
+
 let adConfig = null;
 let adScriptLoaded = false;
 
@@ -188,6 +190,7 @@ function createAdPost(slotId, publisherId) {
 }
 
 function injectAdsIntoPosts(posts, config) {
+    if (!ADS) return;
     if (!config.publisherId || !config.slot) return;
     const children = Array.from(postsContainer.children).filter(el => !el.getAttribute('data-ad'));
     const total = children.length;
@@ -195,10 +198,7 @@ function injectAdsIntoPosts(posts, config) {
     const pos = Math.floor(total / 2);
     const referenceEl = children[pos];
     if (referenceEl) {
-        postsContainer.insertBefore(
-            createAdPost('6300978111', 'ca-pub-3940256099942544'),
-            referenceEl
-        );
+        postsContainer.insertBefore(createAdPost(config.slot, config.publisherId), referenceEl);
     }
 }
 
@@ -563,6 +563,4 @@ if (baseUrl) {
         }
     });
 }
-
-
 feedOptions[0]?.classList.add('active');
