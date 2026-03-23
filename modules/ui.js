@@ -73,17 +73,29 @@ function updateNavActive(id) {
 
 function closeAdd() {
     const add = document.getElementById('add');
-    add.classList.remove('active');
+    add.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+    add.style.transform = 'translateY(110%)';
+    setTimeout(() => {
+        add.classList.remove('active');
+        add.style.transition = '';
+        add.style.transform = '';
+    }, 280);
 }
 function closeReplies() {
     const replies = document.getElementById('replies');
-    replies.classList.remove('active');
-    if (replyPollingInterval) {
-        clearInterval(replyPollingInterval);
-        replyPollingInterval = null;
-    }
-    seenReplyIds = new Set();
-    lastReplyTimestamp = 0;
+    replies.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+    replies.style.transform = 'translateY(110%)';
+    setTimeout(() => {
+        replies.classList.remove('active');
+        replies.style.transition = '';
+        replies.style.transform = '';
+        if (replyPollingInterval) {
+            clearInterval(replyPollingInterval);
+            replyPollingInterval = null;
+        }
+        seenReplyIds = new Set();
+        lastReplyTimestamp = 0;
+    }, 280);
 }
 
 function forceSafeAreaUpdate() {
