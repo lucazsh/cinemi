@@ -23,6 +23,10 @@ let partyStarted = false;
             0%{opacity:0;transform:translateY(18px)} 
             100%{opacity:1;transform:translateY(0)} 
         }
+        @keyframes swPanClose {
+            0%   { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(24px); }
+        }
         .match-overlay { 
             animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; 
         }
@@ -75,6 +79,9 @@ let partyStarted = false;
             max-width: 720px;
             line-height: 1.3;
         }
+        #swipify-panel.open > div:not(.backdrop) {
+            animation: swCenterAppear 0.38s cubic-bezier(0.22,1,0.36,1) both;
+        }
         .party-code-display { font-size:38px;font-weight:900;letter-spacing:10px;color:var(--text-primary);background:var(--card-bg);border:2px solid var(--border-h);border-radius:16px;padding:18px 28px;text-align:center;cursor:pointer;transition:transform 0.15s; }
         .party-code-display:active { transform:scale(0.96); }
         .sw-btn-primary { width:100%;max-width:300px;padding:15px 24px;background:var(--button-bg);color:var(--button-text);border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s; }
@@ -120,9 +127,19 @@ function openPan(panelName) {
 function closePan(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
     if (panel) {
-        panel.classList.remove('open');
-        setTimeout(() => { panel.style.display = 'none'; }, 300);
-        if (panelName === 'swipify') cleanupParty();
+        const inner = panel.querySelector(':not(.backdrop)');
+        if (inner) {
+            inner.style.animation = 'swPanClose 0.3s cubic-bezier(0.55,0,1,0.45) both';
+        }
+        const backdrop = panel.querySelector('.backdrop');
+        if (backdrop) backdrop.style.opacity = '0';
+        setTimeout(() => {
+            panel.classList.remove('open');
+            if (inner) inner.style.animation = '';
+            if (backdrop) backdrop.style.opacity = '';
+            panel.style.display = 'none';
+            if (panelName === 'swipify') cleanupParty();
+        }, 300);
     }
 }
 
