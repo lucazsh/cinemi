@@ -19,13 +19,13 @@ let partyStarted = false;
             0%,70%{opacity:1} 
             100%{opacity:0} 
         }
-        @keyframes swCenterAppear { 
-            0%{opacity:0;transform:translateY(18px)} 
-            100%{opacity:1;transform:translateY(0)} 
+        @keyframes swCenterAppear {
+            0%   { opacity: 0; }
+            100% { opacity: 1; }
         }
         @keyframes swPanClose {
-            0%   { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(24px); }
+            0%   { opacity: 1; }
+            100% { opacity: 0; }
         }
         .match-overlay { 
             animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; 
