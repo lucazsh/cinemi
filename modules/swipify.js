@@ -492,12 +492,3 @@ async function sendAIFeedback(movie, action) {
         });
     } catch (e) {}
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.movie-card').forEach(card => card.addEventListener('click', () => openPan('swipify')));
-});
-
-
-
-
-
