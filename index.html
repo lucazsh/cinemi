@@ -6608,6 +6608,7 @@
         }
 
         function openPanel(name) {
+            if (name === 'swipify') { if (typeof openPan === 'function') openPan('swipify'); return; }
             if (name === 'spaceedit') renderEditPanel();
             if (name === 'quoteedit') {
                 document.getElementById('quote-text-input').value = state.quoteText;
@@ -6624,8 +6625,9 @@
             panel.classList.remove('closing-panel');
             panel.classList.add('open');
         }
-
+        
         function closePanel(name) {
+            if (name === 'swipify') { if (typeof closePan === 'function') closePan('swipify'); return; }
             const panel = document.getElementById(name + '-panel');
             const sheet = panel.querySelector('.sheet');
             sheet.classList.add('closing');
