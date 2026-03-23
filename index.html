@@ -609,7 +609,14 @@
             pointer-events: auto;
             opacity: 1;
         }
-
+        #add, #replies {
+            transform: translateY(100%) !important;
+            opacity: 1 !important;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+        }
+        #add.active, #replies.active {
+            transform: translateY(0) !important;
+        }
         .tp {
             position: relative;
             font-size: 18px;
@@ -6599,12 +6606,18 @@
             el.classList.add("active");
             renderSpace(true);
         }
-
+        
         function switchProfileTab(tab, btn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
+            const otherEl = document.getElementById("profile-tab-other");
             document.getElementById("profile-tab-space").style.display = tab === "space" ? "block" : "none";
-            document.getElementById("profile-tab-other").style.display = tab === "other" ? "block" : "none";
+            otherEl.style.display = tab === "other" ? "block" : "none";
+            if (tab === "other") {
+                otherEl.style.animation = "none";
+                otherEl.offsetHeight;
+                otherEl.style.animation = "FadeIn 0.3s ease-out both";
+            }
         }
 
         function openPanel(name) {
