@@ -3824,6 +3824,500 @@
             transform: scale(0.97);
             opacity: 0.85;
         }
+
+        .report-panel {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: flex-end;
+            z-index: 1300;
+        }
+
+        .report-panel.open {
+            display: flex;
+        }
+
+        .report-panel .backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: opacity 0.3s;
+        }
+
+        .report-panel.closing .backdrop {
+            opacity: 0;
+        }
+
+        .report-panel .sheet {
+            width: 100%;
+            background: var(--card);
+            border-radius: 32px 32px 0 0;
+            padding: 32px 20px 28px;
+            position: relative;
+            z-index: 2000;
+            animation: reportSlideUp 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.08);
+        }
+
+        .report-panel.closing .sheet {
+            animation: reportSlideDown 0.28s cubic-bezier(0.55, 0, 1, 0.8) forwards;
+        }
+
+        @keyframes reportSlideUp {
+            from {
+                transform: translateY(100%);
+                opacity: .6
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        @keyframes reportSlideDown {
+            from {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(100%)
+            }
+        }
+
+        .report-panel .drag-pill {
+            width: 36px;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.18);
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .report-step-view {
+            animation: reportStepIn .28s cubic-bezier(.25, .46, .45, .94);
+        }
+
+        .report-step-view.back {
+            animation: reportStepInBack .28s cubic-bezier(.25, .46, .45, .94);
+        }
+
+        @keyframes reportStepIn {
+            from {
+                opacity: 0;
+                transform: translateX(18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes reportStepInBack {
+            from {
+                opacity: 0;
+                transform: translateX(-18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .report-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .report-icon-wrap {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 68, 68, 0.12);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .report-icon-wrap svg {
+            fill: #ff4444;
+            width: 20px;
+            height: 20px;
+        }
+
+        .report-sheet-title {
+            font-size: 17px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            letter-spacing: -0.2px;
+        }
+
+        .report-subtitle {
+            font-size: 13px;
+            color: var(--text-subtle);
+            margin-bottom: 20px;
+            padding-left: 52px;
+            line-height: 1.45;
+        }
+
+        .report-steps {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .report-step-dot {
+            height: 3px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.12);
+            transition: all .35s cubic-bezier(.25, .46, .45, .94);
+            flex: 1;
+        }
+
+        .report-step-dot.active {
+            background: var(--text-primary);
+            flex: 2.8;
+        }
+
+        .report-step-dot.done {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .report-section-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .9px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .report-reason-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .report-reason-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 13px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: background .15s, border-color .15s, transform .12s;
+            -webkit-tap-highlight-color: transparent;
+            animation: reportItemIn .32s ease both;
+        }
+
+        .report-reason-item:nth-child(1) {
+            animation-delay: .04s
+        }
+
+        .report-reason-item:nth-child(2) {
+            animation-delay: .08s
+        }
+
+        .report-reason-item:nth-child(3) {
+            animation-delay: .12s
+        }
+
+        .report-reason-item:nth-child(4) {
+            animation-delay: .16s
+        }
+
+        .report-reason-item:nth-child(5) {
+            animation-delay: .20s
+        }
+
+        @keyframes reportItemIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .report-reason-item:active {
+            transform: scale(0.985);
+        }
+
+        .report-reason-item.selected {
+            background: rgba(255, 255, 255, 0.075);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .report-reason-svg {
+            width: 34px;
+            height: 34px;
+            background: var(--iconbox-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background .15s;
+        }
+
+        .report-reason-item.selected .report-reason-svg {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .report-reason-svg svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-subtle);
+            transition: fill .15s;
+        }
+
+        .report-reason-item.selected .report-reason-svg svg {
+            fill: var(--text-primary);
+        }
+
+        .report-reason-name {
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .report-reason-desc {
+            font-size: 11.5px;
+            color: var(--text-subtle);
+            margin-top: 1px;
+            line-height: 1.3;
+        }
+
+        .report-details-back {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-subtle);
+            cursor: pointer;
+            margin-bottom: 16px;
+            width: fit-content;
+            transition: color .15s;
+        }
+
+        .report-details-back svg {
+            fill: currentColor;
+        }
+
+        .report-selected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            padding: 5px 12px 5px 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            animation: reportBadgePop .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes reportBadgePop {
+            from {
+                opacity: 0;
+                transform: scale(0.85)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .report-selected-badge-icon {
+            width: 22px;
+            height: 22px;
+            background: var(--iconbox-bg);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .report-selected-badge-icon svg {
+            width: 13px;
+            height: 13px;
+            fill: var(--text-primary);
+        }
+
+        .report-textarea-wrap {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.09);
+            border-radius: 16px;
+            padding: 13px 14px;
+            transition: border-color .2s;
+            margin-bottom: 6px;
+        }
+
+        .report-textarea-wrap:focus-within {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .report-textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            resize: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.55;
+            min-height: 86px;
+        }
+
+        .report-textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .report-char-count {
+            text-align: right;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 18px;
+            transition: color .2s;
+        }
+
+        .report-char-count.warn {
+            color: #ff9500;
+        }
+
+        .report-success {
+            text-align: center;
+            padding: 12px 8px 6px;
+        }
+
+        .report-success-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(52, 199, 89, 0.1);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            animation: reportSuccessPop .45s cubic-bezier(0.34, 1.56, 0.64, 1) .05s both;
+        }
+
+        @keyframes reportSuccessPop {
+            from {
+                opacity: 0;
+                transform: scale(0.5)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .report-success-icon svg {
+            fill: #34c759;
+            width: 30px;
+            height: 30px;
+        }
+
+        .report-success-title {
+            font-size: 21px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            margin-bottom: 8px;
+            animation: reportFadeUp .3s ease .15s both;
+        }
+
+        .report-success-body {
+            font-size: 13.5px;
+            color: var(--text-subtle);
+            line-height: 1.55;
+            margin-bottom: 24px;
+            padding: 0 8px;
+            animation: reportFadeUp .3s ease .2s both;
+        }
+
+        @keyframes reportFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .report-submit-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: var(--button-bg);
+            color: var(--button-text);
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: transform .15s, opacity .15s;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .report-submit-btn:active {
+            transform: scale(0.97);
+            opacity: .88;
+        }
+
+        .report-submit-btn:disabled {
+            opacity: .28;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .report-submit-btn.danger {
+            background: #ff3b30;
+            color: #fff;
+        }
+
+        .report-submit-btn svg {
+            fill: currentColor;
+        }
+
+        .report-cancel-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-subtle);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: color .15s;
+        }
     </style>
     <style>
         #pwa-install-overlay {
@@ -3942,8 +4436,9 @@
         #pwa-install-overlay .pwa-ignore-btn:active {
             background: var(--placeholder-bg);
         }
+
         input[type="search"]::-webkit-search-cancel-button {
-          display: none;
+            display: none;
         }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -4358,13 +4853,21 @@
             <span style="display:flex; align-items:center; gap:8px;">
                 <button id="notif-bell-btn"
                     style="fill:var(--text-primary); display:flex; align-items:center; position:relative;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M210-74q-57.12 0-96.56-39.44Q74-152.88 74-210v-540q0-57.13 39.44-96.56Q152.88-886 210-886h540q57.13 0 96.56 39.44Q886-807.13 886-750v540q0 57.12-39.44 96.56Q807.13-74 750-74H210Zm270.5-257q30.5 0 57-13t42.5-37q9.23-13.6 23.43-21.8Q617.64-411 635-411h115v-339H210v339h115q17.36 0 31.57 8.2 14.2 8.2 23.43 21.8 17.32 24.9 43.66 37.45Q450-331 480.5-331Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                        fill="var(--text-primary)">
+                        <path
+                            d="M210-74q-57.12 0-96.56-39.44Q74-152.88 74-210v-540q0-57.13 39.44-96.56Q152.88-886 210-886h540q57.13 0 96.56 39.44Q886-807.13 886-750v540q0 57.12-39.44 96.56Q807.13-74 750-74H210Zm270.5-257q30.5 0 57-13t42.5-37q9.23-13.6 23.43-21.8Q617.64-411 635-411h115v-339H210v339h115q17.36 0 31.57 8.2 14.2 8.2 23.43 21.8 17.32 24.9 43.66 37.45Q450-331 480.5-331Z" />
+                    </svg>
                     <span id="notif-badge"
                         style="display:none; position:absolute; bottom:2px; right:2px; background:#e63946; width:9px; height:9px; border-radius:50%; border:2px solid var(--bg-primary);"></span>
                 </button>
                 <button onclick="showView('finder')"
                     style="fill:var(--text-primary); display:flex; align-items:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M371-289q-121.71 0-206.86-85.2Q79-459.41 79-581.2 79-703 164.2-788q85.21-85 207-85Q493-873 578-787.86q85 85.15 85 206.86 0 47-11.5 85T620-429l214 215q19 20 19 47.48 0 27.48-20 47.52-19.8 19-47.4 19-27.6 0-47.6-19L526.47-332Q497-313 457-301t-86 12Zm-.41-136q66.59 0 111.5-44.5T527-580.59q0-66.59-44.91-111.5T370.59-737Q304-737 259.5-692.09T215-580.59q0 66.59 44.5 111.09T370.59-425Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                        fill="var(--text-primary)">
+                        <path
+                            d="M371-289q-121.71 0-206.86-85.2Q79-459.41 79-581.2 79-703 164.2-788q85.21-85 207-85Q493-873 578-787.86q85 85.15 85 206.86 0 47-11.5 85T620-429l214 215q19 20 19 47.48 0 27.48-20 47.52-19.8 19-47.4 19-27.6 0-47.6-19L526.47-332Q497-313 457-301t-86 12Zm-.41-136q66.59 0 111.5-44.5T527-580.59q0-66.59-44.91-111.5T370.59-737Q304-737 259.5-692.09T215-580.59q0 66.59 44.5 111.09T370.59-425Z" />
+                    </svg>
                 </button>
             </span>
         </div>
@@ -5455,6 +5958,135 @@
         opacity: 0;
         transition: opacity 0.35s ease;
     "></div>
+    <div class="report-panel" id="report-panel">
+        <div class="backdrop" id="report-backdrop"></div>
+        <div class="sheet">
+            <div class="drag-pill"></div>
+
+            <div id="report-step-reason" class="report-step-view">
+                <div class="report-header">
+                    <div class="report-icon-wrap"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                        </svg></div>
+                    <div class="report-sheet-title">Report user</div>
+                </div>
+                <div class="report-subtitle">Help us understand what's going on.</div>
+                <div class="report-steps">
+                    <div class="report-step-dot active"></div>
+                    <div class="report-step-dot"></div>
+                    <div class="report-step-dot"></div>
+                </div>
+                <div class="report-section-label">Select a reason</div>
+                <div class="report-reason-list">
+                    <div class="report-reason-item" onclick="reportSelectReason(this,'spam')">
+                        <div class="report-reason-svg"><svg viewBox="0 -960 960 960">
+                                <path
+                                    d="m774-62-53-52H170q-57 0-96.5-40T34-250v-460q0-48 30-85t75-48l133 133H125l-94-93q-15-15-15-36.5T32-877q15-15 36.5-15t37.5 15l742 742q15 15 15.5 36T848-62q-16 16-37 16t-37-16Zm72-226q-20-3-36-19L632-485l135-89q22-14 23.5-34t-9-36q-10.5-16-29-22.5T712-659L559-558 388-729q-16-16-19.5-36.5t4-38q7.5-17.5 23.5-30t39-12.5h355q57 0 96.5 40t39.5 96v355q0 23-12 39.5T884-292q-18 7-38 4Z" />
+                            </svg></div>
+                        <div>
+                            <div class="report-reason-name">Spam</div>
+                            <div class="report-reason-desc">Repetitive or unsolicited content</div>
+                        </div>
+                    </div>
+                    <div class="report-reason-item" onclick="reportSelectReason(this,'harassment')">
+                        <div class="report-reason-svg"><svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M306-69q-81-35-141.58-95.76-60.58-60.77-95.5-142.52Q34-389.04 34-482q0-91.29 35.09-172.82 35.1-81.52 95.26-141.83 60.17-60.31 141.86-94.83Q387.91-926 479.95-926q92.05 0 173.77 34.52 81.72 34.52 141.89 94.83 60.18 60.31 95.29 141.83Q926-573.29 926-481.5q0 92.4-34.92 174.17-34.92 81.78-95.5 142.55Q735-104 653.93-69q-81.08 35-174 35Q387-34 306-69Zm342-151q28-18.5 52.25-42.75T743-315L314-745q-28 18.5-52.75 43.25T218-649l430 429Z" />
+                            </svg></div>
+                        <div>
+                            <div class="report-reason-name">Harassment or bullying</div>
+                            <div class="report-reason-desc">Abusive behaviour or intimidation</div>
+                        </div>
+                    </div>
+                    <div class="report-reason-item" onclick="reportSelectReason(this,'fake')">
+                        <div class="report-reason-svg"><svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M801-34h1-93q-29 0-48.5-19.5T641-102q0-27 8.5-41.5T672-166h-2l-61-60H294q-28 0-48-20t-20-48v-22q0-25 12.5-46.5T272-397q28-16 58-28t61-19L166-668v-3q-8 14-24 22t-40 8q-29 0-48.5-19.5T34-709v-94l7 7q-8-15-6-32t15-31q15-15 36.5-15t36.5 15l752 751q15 15 15.5 36T875-35q-16 16-37 16.5T801-34Zm125-217v60L792-325v-10q20 7 37 11.5t30 4.5q29 0 48.5 19.5T926-251ZM170-34q-57 0-96.5-39.5T34-170v-81q0-29 19.5-48.5T102-319q28 0 48 19.5t20 48.5v81h81q29 0 48.5 20t19.5 48q0 29-19.5 48.5T251-34h-81Zm620-675v-81h-81q-29 0-48.5-20T641-858.5q0-28.5 19.5-48T709-926h81q57 0 96.5 39.5T926-790v81q0 29-19.5 48.5t-48 19.5q-28.5 0-48.5-19.5T790-709ZM191-926h60q29 0 48.5 19t19.5 48q0 13 4.5 30t11.5 37h-10L191-926Zm423 312q0 24-7.5 44.5T585-532L398-719q17-14 38-21.5t44-7.5q55 0 94.5 39.5T614-614Z" />
+                            </svg></div>
+                        <div>
+                            <div class="report-reason-name">Fake profile</div>
+                            <div class="report-reason-desc">Impersonating someone else</div>
+                        </div>
+                    </div>
+                    <div class="report-reason-item" onclick="reportSelectReason(this,'inappropriate')">
+                        <div class="report-reason-svg"><svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M109-87q-20 0-35-10t-24-25q-9-14-9-32t9-36l371-640q9-18 25.5-26t33.5-8q17 0 33.5 8t25.5 26l371 640q9 18 9 36t-9 32.5Q901-107 886-97t-35 10H109Zm406.5-160.5q14.5-14.5 14.5-35t-14.5-35Q501-332 480.5-332T445-317.5q-15 14.5-15 35t15 35q15 14.5 35.5 14.5t35-14.5Zm-3.5-124q13-13.5 13-31.5v-101q0-19-13-32t-31.5-13q-18.5 0-32 13T435-504v101q0 18 13.5 31.5t32 13.5q18.5 0 31.5-13.5Z" />
+                            </svg></div>
+                        <div>
+                            <div class="report-reason-name">Inappropriate content</div>
+                            <div class="report-reason-desc">Offensive or explicit material</div>
+                        </div>
+                    </div>
+                    <div class="report-reason-item" onclick="reportSelectReason(this,'other')">
+                        <div class="report-reason-svg"><svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M520-251q19-19 19-45.5t-19-45Q501-360 474.5-360T429-341.5q-19 18.5-19 45t19 45.5q19 19 45.5 19t45.5-19Zm107-354q0-57-39.5-91.5T484-731q-44 0-81 20.5T342-652q-11 17-2.5 35.5T369-590q17 7 35.5.5T438-613q10-10 20.5-15t22.5-5q17 0 29 11.5t12 26.5q0 12-9.5 27.5T489-540q-38 35-49.5 53T425-440q-2 20 13 34.5t37 14.5q19 0 34-13t23-35q5-14 15-27.5t27-29.5q28-27 40.5-53t12.5-56ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Z" />
+                            </svg></div>
+                        <div>
+                            <div class="report-reason-name">Something else</div>
+                            <div class="report-reason-desc">An issue not listed above</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="report-submit-btn" id="report-next-btn" disabled onclick="reportGoToDetails()">
+                    Continue
+                    <svg width="15" height="15" viewBox="0 0 24 24">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                    </svg>
+                </button>
+                <button class="report-cancel-btn" onclick="closeReportPanel()">Cancel</button>
+            </div>
+
+            <div id="report-step-details" style="display:none">
+                <div class="report-details-back" onclick="reportGoBack()">
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                    </svg>
+                    Back
+                </div>
+                <div class="report-header">
+                    <div class="report-icon-wrap"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                        </svg></div>
+                    <div class="report-sheet-title">Additional details</div>
+                </div>
+                <div class="report-subtitle">Optional, but it helps us a lot.</div>
+                <div class="report-steps">
+                    <div class="report-step-dot done"></div>
+                    <div class="report-step-dot active"></div>
+                    <div class="report-step-dot"></div>
+                </div>
+                <div class="report-selected-badge" id="report-selected-badge"></div>
+                <div class="report-textarea-wrap">
+                    <textarea class="report-textarea" id="report-details-text"
+                        placeholder="Briefly describe what happened..." maxlength="300"
+                        oninput="reportUpdateCharCount()"></textarea>
+                </div>
+                <div class="report-char-count" id="report-char-count">0 / 300</div>
+                <button class="report-submit-btn danger" onclick="reportSubmit()">
+                    <svg width="16" height="16" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    Submit report
+                </button>
+                <button class="report-cancel-btn" onclick="closeReportPanel()">Cancel</button>
+            </div>
+
+            <div id="report-step-success" style="display:none" class="report-success">
+                <div class="report-success-icon"><svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg></div>
+                <div class="report-success-title">Report submitted!</div>
+                <div class="report-success-body">Thanks for helping keep Cinemi safe. We'll review your report as soon
+                    as possible.</div>
+                <button class="report-submit-btn" onclick="closeReportPanel()">Done</button>
+            </div>
+        </div>
+    </div>
     <script src="/modules/utils.js"></script>
     <script src="/modules/auth.js"></script>
     <script src="/modules/ui.js"></script>
