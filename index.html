@@ -6606,18 +6606,18 @@
             el.classList.add("active");
             renderSpace(true);
         }
-        
+
         function switchProfileTab(tab, btn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
+            const spaceEl = document.getElementById("profile-tab-space");
             const otherEl = document.getElementById("profile-tab-other");
-            document.getElementById("profile-tab-space").style.display = tab === "space" ? "block" : "none";
+            spaceEl.style.display = tab === "space" ? "block" : "none";
             otherEl.style.display = tab === "other" ? "block" : "none";
-            if (tab === "other") {
-                otherEl.style.animation = "none";
-                otherEl.offsetHeight;
-                otherEl.style.animation = "FadeIn 0.3s ease-out both";
-            }
+            const target = tab === "space" ? spaceEl : otherEl;
+            target.style.animation = "none";
+            target.offsetHeight;
+            target.style.animation = "FadeIn 0.3s ease-out both";
         }
 
         function openPanel(name) {
