@@ -26,12 +26,6 @@ function showView(id) {
     
     document.getElementById('replies')?.classList.remove('active')
     document.getElementById(id).classList.add('active');
-    if (id === 'finder' || id === 'settings') {
-        const el = document.getElementById(id);
-        el.style.animation = 'none';
-        el.offsetHeight;
-        el.style.animation = 'FadeIn 0.3s ease-out both';
-    }
     if (id === 'home') {
         initHomeFeed();
     }
