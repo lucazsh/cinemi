@@ -89,7 +89,7 @@ let partyStarted = false;
         .sw-btn-secondary { width:100%;max-width:300px;padding:15px 24px;background:var(--card-bg);color:var(--text-primary);border:1.5px solid var(--border-h);border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.15s; }
         .sw-btn-secondary:active { transform:scale(0.97); }
         .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
-        .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+        .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.3s ease-out both; }
         .sw-match-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;border:1.5px solid var(--border-h); }
     `;
     document.head.appendChild(s);
@@ -129,7 +129,7 @@ function closePan(panelName) {
     if (panel) {
         const inner = panel.querySelector(':not(.backdrop)');
         if (inner) {
-            inner.style.animation = 'swPanClose 0.3s cubic-bezier(0.55,0,1,0.45) both';
+            inner.style.animation = 'swPanClose 0.3s ease-out both';
         }
         const backdrop = panel.querySelector('.backdrop');
         if (backdrop) backdrop.style.opacity = '0';
