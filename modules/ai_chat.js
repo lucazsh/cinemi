@@ -33,8 +33,8 @@
     {
       id: 'smollm2',
       name: 'SmolLM2 360M',
-      // url: 'https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF/resolve/main/SmolLM2-360M-Instruct-Q4_K_M.gguf'
-      url: 'https://huggingface.co/professorf/SmolLM-135M-Instruct-gguf/resolve/main/SmolLM-135M-Instructt-q8_0.gguf'
+      url: 'https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF/resolve/main/SmolLM2-360M-Instruct-Q4_K_M.gguf'
+      // url: 'https://huggingface.co/professorf/SmolLM-135M-Instruct-gguf/resolve/main/SmolLM-135M-Instructt-q8_0.gguf'
     },
     {
       id: 'gemma3',
