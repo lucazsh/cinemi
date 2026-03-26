@@ -126,15 +126,10 @@ function createPostWrapper(username, displayName, content, files, timeLabel, pho
         </div></div>
     `;
     const ptEl = wrapper.querySelector('.pt');
-    const _ring = document.getElementById('post-hold-ring');
     let _holdTimer = null;
     ptEl.addEventListener('pointerdown', e => {
         if (e.button !== 0 && e.button !== undefined) return;
-        _ring.style.left = e.clientX + 'px';
-        _ring.style.top = e.clientY + 'px';
-        _ring.classList.add('active');
         _holdTimer = setTimeout(() => {
-            _ring.classList.remove('active');
             ptEl.classList.add('pt-holding');
             openPostCtx(e.clientX, e.clientY, { username, wrapper });
             setTimeout(() => ptEl.classList.remove('pt-holding'), 200);
@@ -142,7 +137,6 @@ function createPostWrapper(username, displayName, content, files, timeLabel, pho
     });
     const _endHold = () => {
         clearTimeout(_holdTimer); _holdTimer = null;
-        _ring.classList.remove('active');
         ptEl.classList.remove('pt-holding');
     };
     ptEl.addEventListener('pointerup', _endHold);
