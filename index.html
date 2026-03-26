@@ -4664,9 +4664,11 @@
         /* See More poster grid */
         #seemore-list {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             padding-bottom: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .sm-poster-card {
@@ -4674,6 +4676,7 @@
             flex-direction: column;
             gap: 6px;
             cursor: pointer;
+            min-width: 0;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -4684,6 +4687,7 @@
 
         .sm-poster-img {
             width: 100%;
+            max-width: 100%;
             aspect-ratio: 2/3;
             object-fit: cover;
             border-radius: 14px;
