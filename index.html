@@ -6530,20 +6530,10 @@
     <div id="post-ctx-menu" class="post-ctx-menu" style="display:none;"></div>
     <div id="seemore-panel" class="panel">
         <div class="backdrop"></div>
-        <div class="sheet" style="max-height:88vh;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-                <span id="seemore-title"
-                    style="font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;letter-spacing:-0.4px;color:var(--text-primary);"></span>
-                <button onclick="closePanel('seemore')"
-                    style="width:32px;height:32px;border-radius:10px;background:var(--iconbox-bg);display:flex;align-items:center;justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px"
-                        fill="var(--text-primary)">
-                        <path
-                            d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
-                    </svg>
-                </button>
-            </div>
-            <div id="seemore-list"></div>
+        <div class="sheet">
+            <h2>See More</h2>
+            <p>Loading...</p>
+            <button class="btn-close" onclick="closePanel('seemore')">Close</button>
         </div>
     </div>
     <script src="/modules/utils.js"></script>
