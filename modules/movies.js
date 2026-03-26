@@ -7,6 +7,9 @@ window._genreMoviesFull = [];
 window._moodMoviesFull = [];
 window._trendingMoviesFull = [];
 
+const SVG_WATCHLIST = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m480-203-139 59q-63 26-119-11.08T166-260v-488q0-53 36.5-89.5T292-874h376q53 0 89.5 36.5T794-748v488q0 67.84-56 104.92T619-144l-139-59Zm0-137 188 80v-488H292v488l188-80Zm0-408H292h376-188Z"/></svg>`;
+const SVG_FAVORITES = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M434-125.5q-22-8.5-40-25.5l-71-65q-104-94-190.5-193T46-634q0-108.95 72-181.98Q190-889 299-889q51 0 97 18t83 53q37-35 83-53t97-18q109.38 0 182.69 73.02Q915-742.95 915-634q0 126-87.5 225.5T634-214l-69 64q-18 17-40.5 25t-45.5 8q-23 0-45-8.5Zm0-559.5q-23-35-57.5-56.5T299.27-763q-54.54 0-90.91 36.5Q172-690 172-634q0 50.08 35.5 106.42 35.49 56.34 84.9 109.3 49.41 52.97 101.7 99.2Q446.38-272.85 479-243q33-31 85.7-77.14 52.7-46.13 102.5-99Q717-472 753-527.5T789-634q0-56-37.01-92.5-37-36.5-92.51-36.5Q616-763 582-741.5 548-720 525-685q-8.3 13-20.15 19.5Q493-659 479-659q-14 0-25.48-6.5T434-685Zm46 182Z"/></svg>`;
+
 function openSeeMorePanel(title, movies) {
   const list = document.getElementById('seemore-list');
   const titleEl = document.getElementById('seemore-title');
@@ -18,17 +21,40 @@ function openSeeMorePanel(title, movies) {
       ? `${IMG_W500}${movie.poster_path || movie.posterPath}` : null;
     const title_ = movie.title || movie.name || '';
     const year = ((movie.release_date || movie.first_air_date || '')).split('-')[0];
-    const card = document.createElement('div');
-    card.className = 'sm-poster-card';
-    card.innerHTML = `
+    const rating = movie.vote_average ? '⭐ ' + movie.vote_average.toFixed(1) : '';
+
+    const row = document.createElement('div');
+    row.className = 'sm-row';
+    row.innerHTML = `
       ${poster
-        ? `<img class="sm-poster-img" src="${poster}" alt="${escapeHtml(title_)}" loading="lazy">`
-        : `<div class="sm-poster-img" style="background:var(--bg-secondary);"></div>`}
-      <div class="sm-poster-title">${escapeHtml(title_)}</div>
-      ${year ? `<div class="sm-poster-year">${year}</div>` : ''}
+        ? `<img class="sm-row-poster" src="${poster}" alt="${escapeHtml(title_)}" loading="lazy">`
+        : `<div class="sm-row-poster"></div>`}
+      <div class="sm-row-info">
+        <div class="sm-row-title">${escapeHtml(title_)}</div>
+        <div class="sm-row-meta">${[year, rating].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="sm-row-actions">
+        <div class="sm-action-btn" data-action="watchlist">${SVG_WATCHLIST}</div>
+        <div class="sm-action-btn" data-action="favorites">${SVG_FAVORITES}</div>
+      </div>
     `;
-    card.onclick = () => { closePanel('seemore'); showDetails(movie); };
-    list.appendChild(card);
+
+    row.querySelector('[data-action="watchlist"]').onclick = async (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      btn.classList.toggle('added');
+      await addToWatchlist(movie);
+    };
+
+    row.querySelector('[data-action="favorites"]').onclick = async (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      btn.classList.toggle('added');
+      await addToFavorites(movie);
+    };
+
+    row.onclick = () => { closePanel('seemore'); showDetails(movie); };
+    list.appendChild(row);
   });
   openPanel('seemore');
 }
