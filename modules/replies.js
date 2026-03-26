@@ -110,7 +110,6 @@ async function submitReplyHandler(e) {
     
     try {
             replySubmitBtn.disabled = true; 
-            replySubmitBtn.textContent = 'Posting...';
             const res = await fetchWithAuth(`${baseUrl}/api/posts/${currentReplyPostId}/replies`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -135,7 +134,6 @@ async function submitReplyHandler(e) {
             alert('Failed to send reply. Try again.');
         } finally {
             replySubmitBtn.disabled = false; 
-            replySubmitBtn.textContent = 'Post';
         }
     }
 
