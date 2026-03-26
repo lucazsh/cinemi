@@ -206,7 +206,9 @@
         svg {
             fill: var(--text-primary);
         }
-
+        input, textarea {
+            caret-color: var(--text-primary);
+        }
         .navh {
             position: fixed;
             bottom: 20px;
@@ -1114,7 +1116,7 @@
         .i-rep {
             flex-shrink: 0;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 10px;
             padding: 10px 0px calc(12px + env(safe-area-inset-bottom));
             background: var(--card);
@@ -1122,9 +1124,9 @@
         }
 
         .i-rep-avatar {
-            width: 43px;
-            height: 43px;
-            border-radius: 15.48px;
+            width: 43.6px;
+            height: 43.6px;
+            border-radius: 16.668px;
             object-fit: cover;
             flex-shrink: 0;
             background: var(--placeholder-bg);
@@ -5932,7 +5934,7 @@
             <div class="i-rep-input-wrap">
                 <textarea id="replyTextarea" placeholder="What do you think of this?" rows="1"></textarea>
             </div>
-            <button class="btn-p" id="replySubmit" style="padding:8px 9px;"><svg xmlns="http://www.w3.org/2000/svg"
+            <button class="btn-p" id="replySubmit" style="padding:9.3px 10.3px;"><svg xmlns="http://www.w3.org/2000/svg"
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                     <path
                         d="M440-647 244-451q-12 12-28 11.5T188-452q-11-12-11.5-28t11.5-28l264-264q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l264 264q11 11 11 27.5T772-452q-12 12-28.5 12T715-452L520-647v447q0 17-11.5 28.5T480-160q-17 0-28.5-11.5T440-200v-447Z" />
