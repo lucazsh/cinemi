@@ -29,7 +29,7 @@ if (img_input) {
                     const formData = new FormData();
                     formData.append('photo', blob, 'profile.jpg');
 
-                    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+                    const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
                     formData.append('username', username);
 
                     try {
@@ -69,7 +69,7 @@ if (img_input) {
     });
 
     try {
-        const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+        const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
         const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
         if (savedPhotoUrl) {
             document.getElementById('profileImg').src = savedPhotoUrl;
@@ -81,7 +81,7 @@ if (img_input) {
 }
 
 async function updateMyFriendsCount() {
-    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+    const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
 
     try {
         const [followersRes, followingRes] = await Promise.all([
@@ -105,7 +105,7 @@ async function updateMyFriendsCount() {
 }
 
 async function showFriendsPanel() {
-    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+    const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
     const panel = document.getElementById('friends-panel');
     const sheet = panel.querySelector('.sheet');
 
@@ -459,14 +459,14 @@ document.addEventListener('click', (e) => {
     const postUsr = e.target.closest('.usr-post');
     if (postUsr) {
         const username = postUsr.dataset.username;
-        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+        if (username && username !== (document.getElementById('addUsername')?.textContent || 'user_tag').trim()) viewUserProfile(username);
         return;
     }
 
     const prImg = e.target.closest('.pr-img');
     if (prImg && prImg.dataset && prImg.dataset.username) {
         const username = prImg.dataset.username;
-        if (username && username !== (document.getElementById('addUsername')?.value || 'user_tag').trim()) viewUserProfile(username);
+        if (username && username !== (document.getElementById('addUsername')?.textContent || 'user_tag').trim()) viewUserProfile(username);
         return;
     }
 });
