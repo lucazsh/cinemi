@@ -7,8 +7,8 @@ window._genreMoviesFull = [];
 window._moodMoviesFull = [];
 window._trendingMoviesFull = [];
 
-const SVG_WATCHLIST = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m480-203-139 59q-63 26-119-11t-56-105v-488q0-53 36.5-89.5T292-874h376q53 0 89.5 36.5T794-748v488q0 68-56 105t-119 11l-139-59Z"/></svg>`;
-const SVG_FAVORITES = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M434-125.5q-22-8.5-40-25.5l-71-65q-104-94-190.5-193T46-634q0-109 72-182t181-73q51 0 97 18t83 53q37-35 83-53t97-18q109 0 182.5 73T915-634q0 126-87.5 225.5T634-214l-69 64q-18 17-40.5 25t-45.5 8q-23 0-45-8.5Z"/></svg>`;
+const SVG_WATCHLIST = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m480-203-139 59q-63 26-119-11t-56-105v-488q0-53 36.5-89.5T292-874h376q53 0 89.5 36.5T794-748v488q0 68-56 105t-119 11l-139-59Z"/></svg>`;
+const SVG_FAVORITES = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M434-125.5q-22-8.5-40-25.5l-71-65q-104-94-190.5-193T46-634q0-109 72-182t181-73q51 0 97 18t83 53q37-35 83-53t97-18q109 0 182.5 73T915-634q0 126-87.5 225.5T634-214l-69 64q-18 17-40.5 25t-45.5 8q-23 0-45-8.5Z"/></svg>`;
 
 function openSeeMorePanel(title, movies) {
   const panel = document.getElementById('seemore-panel');
