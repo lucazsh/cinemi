@@ -81,7 +81,8 @@ async function checkAuthStatus() {
                     localStorage.setItem(`profilePhotoUrl_${data.user.username}`, data.user.photoUrl);
                 } catch(e) {}
             }
-            
+            const replyAvatar = document.getElementById('replyAvatar');
+            if (replyAvatar && data.user.photoUrl) replyAvatar.src = data.user.photoUrl;
             document.querySelectorAll('.p-name').forEach(el => {
                 el.textContent = data.user.displayName || data.user.username;
             });
