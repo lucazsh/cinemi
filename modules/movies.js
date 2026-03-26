@@ -3,6 +3,39 @@ const IMG_BACKDROP = 'https://image.tmdb.org/t/p/original';
 let featuredMovie = null;
 let featuredGenres = [];
 let moviesLoaded = false;
+window._genreMoviesFull = [];
+window._moodMoviesFull = [];
+window._trendingMoviesFull = [];
+
+function openSeeMorePanel(title, movies) {
+  const list = document.getElementById('seemore-list');
+  const titleEl = document.getElementById('seemore-title');
+  if (!list || !titleEl) return;
+  titleEl.textContent = title;
+  list.innerHTML = '';
+  movies.forEach(movie => {
+    const poster = (movie.poster_path || movie.posterPath)
+      ? `${IMG_W500}${movie.poster_path || movie.posterPath}` : '';
+    const title_ = movie.title || movie.name || '';
+    const year = ((movie.release_date || movie.first_air_date || '')).split('-')[0];
+    const rating = movie.vote_average ? '★ ' + movie.vote_average.toFixed(1) : '';
+    const overview = movie.overview ? movie.overview.slice(0, 120) + (movie.overview.length > 120 ? '…' : '') : '';
+    const card = document.createElement('div');
+    card.className = 'sm-card';
+    card.innerHTML = `
+      ${poster ? `<img class="sm-card-poster" src="${poster}" alt="">` : `<div class="sm-card-poster"></div>`}
+      <div class="sm-card-info">
+        <div class="sm-card-title">${escapeHtml(title_)}</div>
+        <div class="sm-card-meta">${year}${rating ? ' · ' + rating : ''}</div>
+        ${overview ? `<div class="sm-card-overview">${escapeHtml(overview)}</div>` : ''}
+      </div>
+    `;
+    card.onclick = () => { closePanel('seemore'); showDetails(movie); };
+    list.appendChild(card);
+  });
+  openPanel('seemore');
+}
+window.openSeeMorePanel = openSeeMorePanel;
 
 function showSkeletonLoaders() {
     const fMovContainer = document.querySelector('.f-mov');
@@ -239,9 +272,11 @@ async function loadGenreMovies() {
             img.onclick = () => showDetails(movie);
             container.appendChild(img);
         });
+        window._genreMoviesFull = movies;
         if (movies.length === 0) {
             container.innerHTML = '<div style="color: var(--text-subtle); padding: 20px;">No recommendations yet...</div>';
         }
+        seeMore.onclick = () => openSeeMorePanel('Recommended for you', window._genreMoviesFull);
         if (seeMore) container.appendChild(seeMore);
     }
 }
@@ -263,6 +298,7 @@ async function loadMoviesByGenre(genreId) {
     if (container && data.results) {
         const seeMore = container.querySelector('.mov-see-more');
         container.innerHTML = '';
+        window._genreMoviesFull = data.results;
         data.results.slice(0, 6).forEach((m, i) => {
             const url = m.poster_path ? `${IMG_W500}${m.poster_path}` : '';
             if (!url) return;
@@ -274,6 +310,7 @@ async function loadMoviesByGenre(genreId) {
             img.onclick = () => showDetails(m);
             container.appendChild(img);
         });
+        seeMore.onclick = () => openSeeMorePanel(genreName + ' movies', window._genreMoviesFull);
         if (seeMore) container.appendChild(seeMore);
     }
 }
@@ -311,6 +348,7 @@ async function loadMoodMovies() {
         if (moodContainer && data.results) {
             moodContainer.querySelectorAll('img, .skeleton-loader').forEach(i => i.remove());
             const seeMore = moodContainer.querySelector('.mov-see-more');
+            window._moodMoviesFull = data.results;
             data.results.slice(0, 6).forEach((movie, idx) => {
                 const posterUrl = movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '';
                 if (posterUrl) {
@@ -323,6 +361,7 @@ async function loadMoodMovies() {
                     moodContainer.appendChild(img);
                 }
             });
+            seeMore.onclick = () => openSeeMorePanel('Mood picks', window._moodMoviesFull);
             if (seeMore) moodContainer.appendChild(seeMore);
             initMoodSwipe();
         }
@@ -371,6 +410,11 @@ async function loadAIRecommendations() {
                     moodContainer.appendChild(img);
                 }
             });
+            window._moodMoviesFull = recommendations.map(m => {
+            const id = m.movieId.includes('-') ? m.movieId.split('-').pop() : m.movieId;
+            return { id: parseInt(id), media_type: m.mediaType||'movie', title: m.title, poster_path: m.posterPath, backdrop_path: m.backdropPath, overview: m.overview, vote_average: m.rating };
+            });
+            seeMore.onclick = () => openSeeMorePanel('Mood picks', window._moodMoviesFull);
             if (seeMore) moodContainer.appendChild(seeMore);
             initMoodSwipe();
         }
@@ -404,6 +448,8 @@ async function loadTrendingMovies() {
                 wrap.appendChild(pill);
                 trendingContainer.appendChild(wrap);
             });
+            window._trendingMoviesFull = data.results;
+            seeMore.onclick = () => openSeeMorePanel('Trending for you', window._trendingMoviesFull);
             if (seeMore) trendingContainer.appendChild(seeMore);
         }
     } catch (err) {
