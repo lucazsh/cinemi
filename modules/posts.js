@@ -656,10 +656,14 @@ async function postCtxAction(type) {
 
 function showPostCtxToast(msg) {
     clearTimeout(_ctxToastTimer);
-    document.querySelector('.post-ctx-toast')?.remove();
+    const old = document.querySelector('.post-ctx-toast');
+    if (old) old.remove();
     const t = document.createElement('div');
     t.className = 'post-ctx-toast';
     t.textContent = msg;
     document.body.appendChild(t);
-    _ctxToastTimer = setTimeout(() => t.remove(), 2200);
+    _ctxToastTimer = setTimeout(() => {
+        t.classList.add('hide');
+        t.addEventListener('animationend', () => t.remove(), { once: true });
+    }, 1800);
 }
