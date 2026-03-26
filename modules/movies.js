@@ -58,18 +58,20 @@ function openSeeMorePanel(title, movies) {
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
       btn.dataset.added = isAdded ? '0' : '1';
-      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      btn.style.color = isAdded ? '#e3e3e3' : '#000000';
+      btn.classList.toggle('added', !isAdded);
+      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '';
+      btn.style.color = isAdded ? '#e3e3e3' : '';
       await addToWatchlist(movie);
     });
-
+    
     row.querySelector('[data-action="favorites"]').addEventListener('click', async (e) => {
       e.stopPropagation();
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
       btn.dataset.added = isAdded ? '0' : '1';
-      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      btn.style.color = isAdded ? '#e3e3e3' : '#000000';
+      btn.classList.toggle('added', !isAdded);
+      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '';
+      btn.style.color = isAdded ? '#e3e3e3' : '';
       await addToFavorites(movie);
     });
 
