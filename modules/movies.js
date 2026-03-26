@@ -27,7 +27,7 @@ function openSeeMorePanel(title, movies) {
   }
 
   sheet.innerHTML = `
-    <h2>${title} (${movies.length})</h2>
+    <h2>${title}</h2>
     <div style="max-height:60vh; overflow-y:auto; margin:20px 0;" id="seemore-list"></div>
     <button class="btn-close" onclick="closePanel('seemore')">Close</button>
   `;
