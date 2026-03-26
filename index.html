@@ -1685,9 +1685,8 @@
         }
 
         .pt-holding {
-            background: var(--placeholder-bg);
             transform: scale(0.985);
-            transition: background 0.15s, transform 0.12s;
+            transition: transform 0.12s;
         }
 
         .post-ctx-backdrop {
@@ -1748,6 +1747,24 @@
         .post-ctx-sep {
             height: 0.5px;
             background: var(--border-dark-alpha-2);
+        }
+
+        .post-hold-ring {
+            position: fixed;
+            z-index: 99;
+            pointer-events: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid var(--border-dark-alpha-2);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s;
+            opacity: 0;
+        }
+
+        .post-hold-ring.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
         .post-ctx-toast {
@@ -6397,6 +6414,7 @@
     </div>
     <div id="post-ctx-backdrop" class="post-ctx-backdrop" style="display:none;" onpointerdown="closePostCtx()"></div>
     <div id="post-ctx-menu" class="post-ctx-menu" style="display:none;"></div>
+    <div id="post-hold-ring" class="post-hold-ring"></div>
     <script src="/modules/utils.js"></script>
     <script src="/modules/auth.js"></script>
     <script src="/modules/ui.js"></script>
