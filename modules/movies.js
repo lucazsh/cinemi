@@ -13,21 +13,21 @@ function openSeeMorePanel(title, movies) {
   if (!list || !titleEl) return;
   titleEl.textContent = title;
   list.innerHTML = '';
+  list.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:10px;';
   movies.forEach(movie => {
     const poster = (movie.poster_path || movie.posterPath)
       ? `${IMG_W500}${movie.poster_path || movie.posterPath}` : '';
     const title_ = movie.title || movie.name || '';
     const year = ((movie.release_date || movie.first_air_date || '')).split('-')[0];
-    const rating = movie.vote_average ? '★ ' + movie.vote_average.toFixed(1) : '';
-    const overview = movie.overview ? movie.overview.slice(0, 120) + (movie.overview.length > 120 ? '…' : '') : '';
     const card = document.createElement('div');
-    card.className = 'sm-card';
+    card.className = 'search-result-card';
     card.innerHTML = `
-      ${poster ? `<img class="sm-card-poster" src="${poster}" alt="">` : `<div class="sm-card-poster"></div>`}
-      <div class="sm-card-info">
-        <div class="sm-card-title">${escapeHtml(title_)}</div>
-        <div class="sm-card-meta">${year}${rating ? ' · ' + rating : ''}</div>
-        ${overview ? `<div class="sm-card-overview">${escapeHtml(overview)}</div>` : ''}
+      ${poster
+        ? `<img src="${poster}" class="search-poster" alt="${escapeHtml(title_)}">`
+        : `<div class="search-poster" style="background:var(--bg-secondary);aspect-ratio:2/3;"></div>`}
+      <div class="search-info">
+        <div class="search-card-title">${escapeHtml(title_)}</div>
+        <div style="font-size:11px;opacity:0.6;">${year}</div>
       </div>
     `;
     card.onclick = () => { closePanel('seemore'); showDetails(movie); };
