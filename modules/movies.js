@@ -7,8 +7,8 @@ window._genreMoviesFull = [];
 window._moodMoviesFull = [];
 window._trendingMoviesFull = [];
 
-const SVG_WATCHLIST = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m480-203-139 59q-63 26-119-11t-56-105v-488q0-53 36.5-89.5T292-874h376q53 0 89.5 36.5T794-748v488q0 68-56 105t-119 11l-139-59Z"/></svg>`;
-const SVG_FAVORITES = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M434-125.5q-22-8.5-40-25.5l-71-65q-104-94-190.5-193T46-634q0-109 72-182t181-73q51 0 97 18t83 53q37-35 83-53t97-18q109 0 182.5 73T915-634q0 126-87.5 225.5T634-214l-69 64q-18 17-40.5 25t-45.5 8q-23 0-45-8.5Z"/></svg>`;
+const SVG_WATCHLIST = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m480-203-139 59q-63 26-119-11t-56-105v-488q0-53 36.5-89.5T292-874h376q53 0 89.5 36.5T794-748v488q0 68-56 105t-119 11l-139-59Z"/></svg>`;
+const SVG_FAVORITES = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M434-125.5q-22-8.5-40-25.5l-71-65q-104-94-190.5-193T46-634q0-109 72-182t181-73q51 0 97 18t83 53q37-35 83-53t97-18q109 0 182.5 73T915-634q0 126-87.5 225.5T634-214l-69 64q-18 17-40.5 25t-45.5 8q-23 0-45-8.5Z"/></svg>`;
 
 function openSeeMorePanel(title, movies) {
   const panel = document.getElementById('seemore-panel');
@@ -48,8 +48,8 @@ function openSeeMorePanel(title, movies) {
         <div style="font-size:12px; color:var(--text-subtle);">${rating}</div>
       </div>
       <div style="display:flex; gap:6px; flex-shrink:0;">
-        <button class="sm-action-btn" data-action="watchlist" style="display:flex; align-items:center; justify-content:center; padding:8px; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg);">${SVG_WATCHLIST}</button>
-        <button class="sm-action-btn" data-action="favorites" style="display:flex; align-items:center; justify-content:center; padding:8px; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg);">${SVG_FAVORITES}</button>
+        <button class="sm-action-btn" data-action="watchlist" style="display:flex; align-items:center; justify-content:center; padding:8px; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg); color:#e3e3e3;">${SVG_WATCHLIST}</button>
+        <button class="sm-action-btn" data-action="favorites" style="display:flex; align-items:center; justify-content:center; padding:8px; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg); color:#e3e3e3;">${SVG_FAVORITES}</button>
       </div>
     `;
 
@@ -57,12 +57,9 @@ function openSeeMorePanel(title, movies) {
       e.stopPropagation();
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
-      const svg = btn.querySelector('svg');
-      
       btn.dataset.added = isAdded ? '0' : '1';
       btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      if (svg) svg.setAttribute('fill', isAdded ? '#e3e3e3' : '#000000');
-      
+      btn.style.color = isAdded ? '#e3e3e3' : '#000000';
       await addToWatchlist(movie);
     });
 
@@ -70,12 +67,9 @@ function openSeeMorePanel(title, movies) {
       e.stopPropagation();
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
-      const svg = btn.querySelector('svg');
-      
       btn.dataset.added = isAdded ? '0' : '1';
       btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      if (svg) svg.setAttribute('fill', isAdded ? '#e3e3e3' : '#000000');
-      
+      btn.style.color = isAdded ? '#e3e3e3' : '#000000';
       await addToFavorites(movie);
     });
 
