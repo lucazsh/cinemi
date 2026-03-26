@@ -1778,6 +1778,7 @@
                 opacity: 0;
                 transform: translateX(-50%) translateY(8px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
@@ -1789,6 +1790,7 @@
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
             }
+
             to {
                 opacity: 0;
                 transform: translateX(-50%) translateY(8px);
@@ -5350,12 +5352,12 @@
                         }, { passive: true });
                     })();
                 </script>
-            <button class="see-all-btn" onclick="openSeeMorePanel('All picks', window._moodMoviesFull || [])">
-                See all picks
-                <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px">
-                    <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
-                </svg>
-            </button>
+                <button class="see-all-btn" onclick="openSeeMorePanel('All picks', window._moodMoviesFull || [])">
+                    See all picks
+                    <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px">
+                        <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+                    </svg>
+                </button>
             </div>
             <div class="sec-wrap">
                 <span class="sec-sub">Your</span> <span class="sec-title">collection</span>
@@ -6421,9 +6423,10 @@
                 </div>
                 <div class="report-char-count" id="report-char-count">0 / 300</div>
                 <button class="report-submit-btn danger" onclick="reportSubmit()">
-                    <svg width="16" height="16" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px"
+                        fill="#e3e3e3">
                         <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                            d="M479.61-270Q503-270 519-285.61q16-15.62 16-39Q535-348 519.39-364q-15.62-16-39-16-22.39 0-38.89 15.61-16.5 15.62-16.5 39Q425-302 441.11-286q16.12 16 38.5 16Zm34.89-151.35Q529-435.7 529-456v-189q0-20.3-14.29-34.65Q500.42-694 480.21-694t-34.71 13.85Q431-666.3 431-645v189q0 19.3 14.29 34.15Q459.58-407 479.79-407t34.71-14.35ZM375-98q-25.65 0-48.96-9.09Q302.73-116.17 284-136L136-285q-18.87-17.91-28.43-41.74Q98-350.57 98-376v-209q0-25.65 9.09-48.96Q116.17-657.27 136-676l148-148q18.73-19.83 42.04-28.91Q349.35-862 375-862h210q25.65 0 48.96 9.09Q657.27-843.83 676-824l148 148q19.83 18.73 28.91 42.04Q862-610.65 862-585v210q0 25.65-9.09 48.96Q843.83-302.73 824-284L675-136q-17.91 18.87-41.74 28.43Q609.43-98 584-98H375Z" />
                     </svg>
                     Submit report
                 </button>
