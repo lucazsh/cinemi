@@ -70,10 +70,10 @@ async function checkAuthStatus() {
             
             const usernameField = document.getElementById('addUsername');
             if (usernameField) {
-                usernameField.value = data.user.username;
-                usernameField.disabled = true;
+                usernameField.textContent = data.user.username;
             }
-            
+            const addAvatar = document.getElementById('addAvatar');
+            if (addAvatar && data.user.photoUrl) addAvatar.src = data.user.photoUrl;
             if (data.user.photoUrl) {
                 const profileImg = document.getElementById('profileImg');
                 if (profileImg) profileImg.src = data.user.photoUrl;
@@ -184,7 +184,7 @@ async function showUsernameSetup() {
             
             setup.style.display = 'none';
             
-            document.getElementById('addUsername').value = data.username;
+            document.getElementById('addUsername').textContent = data.username;
             document.querySelectorAll('.p-tag').forEach(el => {
                 el.textContent = '@' + data.username;
             });
