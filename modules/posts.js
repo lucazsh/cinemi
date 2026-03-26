@@ -125,6 +125,31 @@ function createPostWrapper(username, displayName, content, files, timeLabel, pho
             </div>
         </div></div>
     `;
+    const ptEl = wrapper.querySelector('.pt');
+    const _ring = document.getElementById('post-hold-ring');
+    let _holdTimer = null;
+    ptEl.addEventListener('pointerdown', e => {
+        if (e.button !== 0 && e.button !== undefined) return;
+        _ring.style.left = e.clientX + 'px';
+        _ring.style.top = e.clientY + 'px';
+        _ring.classList.add('active');
+        _holdTimer = setTimeout(() => {
+            _ring.classList.remove('active');
+            ptEl.classList.add('pt-holding');
+            openPostCtx(e.clientX, e.clientY, { username, wrapper });
+            setTimeout(() => ptEl.classList.remove('pt-holding'), 200);
+        }, 450);
+    });
+    const _endHold = () => {
+        clearTimeout(_holdTimer); _holdTimer = null;
+        _ring.classList.remove('active');
+        ptEl.classList.remove('pt-holding');
+    };
+    ptEl.addEventListener('pointerup', _endHold);
+    ptEl.addEventListener('pointercancel', _endHold);
+    ptEl.addEventListener('pointermove', e => {
+        if (_holdTimer && (Math.abs(e.movementX) > 6 || Math.abs(e.movementY) > 6)) _endHold();
+    });
     return wrapper;
 }
 function buildPostElement(username, displayName, content, files, photoUrl) {
@@ -394,6 +419,10 @@ function initSocket() {
                 addPostToUIFromServer(post);
             }
         });
+        socket.on('post_deleted', ({ postId }) => {
+            const el = document.querySelector(`[data-post-id="${postId}"]`);
+            if (el) el.remove();
+        });
     } catch (err) {
         console.error('Socket initialization error:', err);
     }
@@ -571,3 +600,68 @@ if (baseUrl) {
     });
 }
 feedOptions[0]?.classList.add('active');
+
+let _ctxPost = null;
+let _ctxToastTimer = null;
+
+function openPostCtx(cx, cy, data) {
+    _ctxPost = data;
+    const me = (document.getElementById('addUsername')?.textContent || '').trim();
+    const isOwn = data.username === me;
+    const menu = document.getElementById('post-ctx-menu');
+    menu.innerHTML = isOwn ? `
+        <button class="post-ctx-item danger" onclick="postCtxAction('delete')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M299-98q-53.7 0-90.85-37.15Q171-172.3 171-226v-461h-12q-26.3 0-44.65-18.29Q96-723.58 96-750.29T114.35-796q18.35-19 44.65-19h201v-12q0-25.3 17.85-43.65Q395.7-889 422-889h114q26.3 0 44.65 18.35Q599-852.3 599-827v12h202q27.3 0 45.65 18.79Q865-777.42 865-750.71t-18.35 45.21Q828.3-687 801-687h-12v460.57Q789-172 751.85-135 714.7-98 661-98H299Zm148.5-204.35Q463-317.7 463-339v-235q0-21.3-15.29-36.65Q432.42-626 411.21-626T374-610.65Q358-595.3 358-574v235q0 21.3 15.79 36.65 15.79 15.35 37 15.35t36.71-15.35Zm140 0Q603-317.7 603-339v-235q0-21.3-15.29-36.65Q572.42-626 551.21-626T514-610.65Q498-595.3 498-574v235q0 21.3 15.79 36.65 15.79 15.35 37 15.35t36.71-15.35Z"/></svg>
+            Delete post
+        </button>` : `
+        <button class="post-ctx-item" onclick="postCtxAction('message')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="m204-200-44.88 44.88Q129-125 89.5-140.91 50-156.81 50-200v-587q0-54.1 36.95-91.05Q123.9-915 178-915h604q54.1 0 91.05 36.95Q910-841.1 910-787v459q0 54.1-36.95 91.05Q836.1-200 782-200H204Zm138-321.78q15-14.78 15-35.5T342.22-593q-14.78-15-35.5-15T271-593.22q-15 14.78-15 35.5T270.78-522q14.78 15 35.5 15T342-521.78Zm173.5 0q14.5-14.78 14.5-35.5T515.71-593q-14.29-15-35.5-15t-35.71 14.78q-14.5 14.78-14.5 35.5T444.29-522q14.29 15 35.5 15t35.71-14.78Zm173.5 0q15-14.78 15-35.5T689.22-593q-14.78-15-35.5-15T618-593.22q-15 14.78-15 35.5T617.78-522q14.78 15 35.5 15T689-521.78Z"/></svg>
+            Message @${data.username}
+        </button>
+        <div class="post-ctx-sep"></div>
+        <button class="post-ctx-item danger" onclick="postCtxAction('report')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M479.61-270Q503-270 519-285.61q16-15.62 16-39Q535-348 519.39-364q-15.62-16-39-16-22.39 0-38.89 15.61-16.5 15.62-16.5 39Q425-302 441.11-286q16.12 16 38.5 16Zm34.89-151.35Q529-435.7 529-456v-189q0-20.3-14.29-34.65Q500.42-694 480.21-694t-34.71 13.85Q431-666.3 431-645v189q0 19.3 14.29 34.15Q459.58-407 479.79-407t34.71-14.35ZM375-98q-25.65 0-48.96-9.09Q302.73-116.17 284-136L136-285q-18.87-17.91-28.43-41.74Q98-350.57 98-376v-209q0-25.65 9.09-48.96Q116.17-657.27 136-676l148-148q18.73-19.83 42.04-28.91Q349.35-862 375-862h210q25.65 0 48.96 9.09Q657.27-843.83 676-824l148 148q19.83 18.73 28.91 42.04Q862-610.65 862-585v210q0 25.65-9.09 48.96Q843.83-302.73 824-284L675-136q-17.91 18.87-41.74 28.43Q609.43-98 584-98H375Z"/></svg>
+            Report
+        </button>`;
+    const mw = 200, mh = 120;
+    const x = cx + mw > window.innerWidth - 8 ? cx - mw : cx;
+    const y = cy + mh > window.innerHeight - 8 ? cy - mh : cy;
+    menu.style.cssText = `display:block; left:${x}px; top:${y}px; --origin:${cx > window.innerWidth / 2 ? 'top right' : 'top left'}`;
+    document.getElementById('post-ctx-backdrop').style.display = 'block';
+}
+
+function closePostCtx() {
+    document.getElementById('post-ctx-menu').style.display = 'none';
+    document.getElementById('post-ctx-backdrop').style.display = 'none';
+    _ctxPost = null;
+}
+
+async function postCtxAction(type) {
+    const data = _ctxPost;
+    closePostCtx();
+    if (!data) return;
+    if (type === 'delete') {
+        const postId = data.wrapper.getAttribute('data-post-id');
+        if (!postId) { data.wrapper.remove(); return; }
+        data.wrapper.style.cssText = 'transition:opacity .2s,transform .2s;opacity:0;transform:scale(0.97)';
+        setTimeout(() => data.wrapper.remove(), 200);
+        try {
+            await fetchWithAuth(`${baseUrl}/api/posts/${postId}`, { method: 'DELETE' });
+        } catch (e) {}
+        showPostCtxToast('Post deleted');
+    } else if (type === 'message') {
+        showPostCtxToast('Message @' + data.username);
+    } else if (type === 'report') {
+        showPostCtxToast('Reported @' + data.username);
+    }
+}
+
+function showPostCtxToast(msg) {
+    clearTimeout(_ctxToastTimer);
+    document.querySelector('.post-ctx-toast')?.remove();
+    const t = document.createElement('div');
+    t.className = 'post-ctx-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    _ctxToastTimer = setTimeout(() => t.remove(), 2200);
+}
