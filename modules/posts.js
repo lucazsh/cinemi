@@ -624,9 +624,13 @@ function openPostCtx(cx, cy, data) {
             Report
         </button>`;
     const mw = 200, mh = 120;
-    const x = cx + mw > window.innerWidth - 8 ? cx - mw : cx;
-    const y = cy + mh > window.innerHeight - 8 ? cy - mh : cy;
-    menu.style.cssText = `display:block; left:${x}px; top:${y}px; --origin:${cx > window.innerWidth / 2 ? 'top right' : 'top left'}`;
+    let x = cx - mw / 2;
+    let y = cy - mh / 2;
+    if (x < 8) x = 8;
+    if (x + mw > window.innerWidth - 8) x = window.innerWidth - mw - 8;
+    if (y < 8) y = 8;
+    if (y + mh > window.innerHeight - 8) y = window.innerHeight - mh - 8;
+    menu.style.cssText = `display:block; left:${x}px; top:${y}px; --origin:center center`;
     document.getElementById('post-ctx-backdrop').style.display = 'block';
 }
 
