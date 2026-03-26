@@ -48,8 +48,8 @@ function openSeeMorePanel(title, movies) {
         <div style="font-size:12px; color:var(--text-subtle);">${rating}</div>
       </div>
       <div style="display:flex; gap:6px; flex-shrink:0;">
-        <button class="sm-action-btn" data-action="watchlist" style="display:flex; align-items:center; justify-content:center; padding:8px; color:white; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg);">${SVG_WATCHLIST}</button>
-        <button class="sm-action-btn" data-action="favorites" style="display:flex; align-items:center; justify-content:center; padding:8px; color:white; border:none; border-radius:6px; cursor:pointer; background-color:var(--placeholder-bg);">${SVG_FAVORITES}</button>
+        <button class="sm-action-btn" data-action="watchlist" style="display:flex; align-items:center; justify-content:center; padding:8px; color:#000000; border:none; border-radius:6px; cursor:pointer; background-color:#ffffff;">${SVG_WATCHLIST}</button>
+        <button class="sm-action-btn" data-action="favorites" style="display:flex; align-items:center; justify-content:center; padding:8px; color:#000000; border:none; border-radius:6px; cursor:pointer; background-color:#ffffff;">${SVG_FAVORITES}</button>
       </div>
     `;
 
@@ -58,8 +58,8 @@ function openSeeMorePanel(title, movies) {
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
       btn.dataset.added = isAdded ? '0' : '1';
-      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      btn.querySelector('svg').setAttribute('fill', isAdded ? '#e3e3e3' : '#000000');
+      btn.style.backgroundColor = isAdded ? '#ffffff' : '#000000';
+      btn.style.color = isAdded ? '#000000' : '#ffffff';
       await addToWatchlist(movie);
     });
 
@@ -68,8 +68,8 @@ function openSeeMorePanel(title, movies) {
       const btn = e.currentTarget;
       const isAdded = btn.dataset.added === '1';
       btn.dataset.added = isAdded ? '0' : '1';
-      btn.style.backgroundColor = isAdded ? 'var(--placeholder-bg)' : '#ffffff';
-      btn.querySelector('svg').setAttribute('fill', isAdded ? '#e3e3e3' : '#000000');
+      btn.style.backgroundColor = isAdded ? '#ffffff' : '#000000';
+      btn.style.color = isAdded ? '#000000' : '#ffffff';
       await addToFavorites(movie);
     });
 
