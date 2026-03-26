@@ -80,6 +80,53 @@ if (img_input) {
     }
 }
 
+const _otherCache = {
+    friends: null,
+    favorites: null,
+    watchlist: null
+};
+
+async function prefetchOtherTab() {
+    const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
+
+    const [followersRes, followingRes, favsRes, wlRes] = await Promise.allSettled([
+        fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+        fetchWithAuth(`${baseUrl}/api/user/${username}/following`),
+        fetchWithAuth(`${baseUrl}/api/user/${username}/favorites`),
+        fetchWithAuth(`${baseUrl}/api/user/${username}/watchlist`)
+    ]);
+
+    try {
+        const followers = followersRes.status === 'fulfilled' ? await followersRes.value.json() : [];
+        const following = followingRes.status === 'fulfilled' ? await followingRes.value.json() : [];
+        _otherCache.friends = { followers, following };
+
+        const total = new Set([
+            ...followers.map(f => f.username),
+            ...following.map(f => f.username)
+        ]).size;
+
+        const fc = document.getElementById('friendsCount');
+        if (fc) fc.textContent = `${total} friend${total !== 1 ? 's' : ''}`;
+    } catch (e) {}
+
+    try {
+        const favs = favsRes.status === 'fulfilled' ? await favsRes.value.json() : [];
+        _otherCache.favorites = Array.isArray(favs) ? favs : [];
+
+        const favSubtitle = document.querySelector('#profile-tab-other .card[onclick*="favorites"] .subtitle');
+        if (favSubtitle) favSubtitle.textContent = `${_otherCache.favorites.length} movie${_otherCache.favorites.length !== 1 ? 's' : ''}`;
+    } catch (e) {}
+
+    try {
+        const wl = wlRes.status === 'fulfilled' ? await wlRes.value.json() : [];
+        _otherCache.watchlist = Array.isArray(wl) ? wl : [];
+
+        const wlSubtitle = document.querySelector('#profile-tab-other .card[onclick*="watchlist"] .subtitle');
+        if (wlSubtitle) wlSubtitle.textContent = `${_otherCache.watchlist.length} movie${_otherCache.watchlist.length !== 1 ? 's' : ''}`;
+    } catch (e) {}
+}
+
 async function updateMyFriendsCount() {
     const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
 
@@ -110,13 +157,19 @@ async function showFriendsPanel() {
     const sheet = panel.querySelector('.sheet');
 
     try {
-        const [followersRes, followingRes] = await Promise.all([
-            fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
-            fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
-        ]);
+        let followers, following;
 
-        const followers = await followersRes.json();
-        const following = await followingRes.json();
+        if (_otherCache.friends) {
+            ({ followers, following } = _otherCache.friends);
+        } else {
+            const [followersRes, followingRes] = await Promise.all([
+                fetchWithAuth(`${baseUrl}/api/user/${username}/followers`),
+                fetchWithAuth(`${baseUrl}/api/user/${username}/following`)
+            ]);
+            followers = await followersRes.json();
+            following = await followingRes.json();
+            _otherCache.friends = { followers, following };
+        }
 
         const totalFriends = new Set([
             ...followers.map(f => f.username),
@@ -241,6 +294,8 @@ document.getElementById('followBtn').onclick = async function () {
             this.style.color = 'var(--text-primary)';
             this.style.border = '1px solid var(--border-dark-alpha-2)';
         }
+
+        _otherCache.friends = null;
     } catch (err) {
         console.error('Follow error:', err);
     }
@@ -476,6 +531,7 @@ function switchProfileTab(tab, btn) {
     btn.classList.add('active');
     document.getElementById('profile-tab-space').style.display = tab === 'space' ? 'block' : 'none';
     document.getElementById('profile-tab-other').style.display = tab === 'other' ? 'block' : 'none';
+    if (tab === 'other') prefetchOtherTab();
 }
 
 async function loadSpaceTab() {
