@@ -321,7 +321,14 @@ async function submitPostToServerHandler(e) {
     const fi = document.getElementById('postFiles');
     if (fi) fi.value = '';
     selectedFiles = [];
-    try { document.getElementById('add').classList.remove('active'); } catch(e){}
+    const addEl = document.getElementById('add');
+    if (addEl) {
+        addEl.classList.remove('active');
+        addEl.style.transform = '';
+        addEl.style.transition = '';
+        addEl.style.height = '';
+        addEl.style.paddingBottom = '';
+    }
     showView('pos-t');
 
     const fd = new FormData();
