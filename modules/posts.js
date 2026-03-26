@@ -285,7 +285,7 @@ async function submitPostToServerHandler(e) {
     e.stopPropagation();
 
     const content = document.getElementById('postTextarea')?.value || '';
-    const username = (document.getElementById('addUsername')?.value || '').trim() || 'user_tag';
+    const username = (document.getElementById('addUsername')?.textContent || '').trim() || 'user_tag';
     const displayName = document.querySelector('.p-name')?.textContent || username;
     const selected = selectedFiles || [];
 
