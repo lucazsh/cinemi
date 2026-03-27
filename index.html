@@ -5105,7 +5105,28 @@
             left: 0;
             top: 0;
         }
-
+        .reply-count-wrap {
+            overflow: hidden;
+            height: 18px;
+            width: 0px;
+            margin-left: 0px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            transition: width 0.25s cubic-bezier(0.4,0,0.2,1), margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        
+        .reply-count {
+            font-size: 12px;
+            line-height: 18px;
+            color: #e3e3e3;
+            display: inline-block;
+            white-space: nowrap;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
         .like-btn {
             background: none;
             border: none;
@@ -6588,7 +6609,11 @@
                                     height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666">
                                     <path
                                         d="m282-474 98 98q11 11 11 25.5t-11 25.98Q369-314 354.5-314T329-325L169-485q-11-10.64-11-24.82T169-535l160-160q11-11 25.67-11 14.66 0 25.33 11 11 10.67 11 25.33Q391-655 380-644l-98 98h342q79.68 0 135.84 56.16T816-354v108q0 15.3-10.29 25.65Q795.42-210 780.21-210t-25.71-10.35Q744-230.7 744-246v-108q0-50-35-85t-85-35H282Z" />
-                                </svg></button>
+                                </svg>
+                                <div class="reply-count-wrap">
+                                    <span class="reply-count"></span>
+                                </div>
+                            </button>
                             <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px"
                                     viewBox="0 -960 960 960" width="20px" fill="#666666">
                                     <path
