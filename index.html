@@ -5086,7 +5086,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             padding: 4px 6px;
@@ -5104,7 +5104,7 @@
         }
 
         .like-btn.liked .heart-fill {
-            display: inline !important;
+            display: inline-block !important;
         }
 
         .heart-fill {
@@ -5116,7 +5116,7 @@
             height: 18px;
             min-width: 4px;
             position: relative;
-            display: flex;
+            display: inline-flex;
             align-items: center;
         }
 
@@ -5124,7 +5124,8 @@
             font-size: 12px;
             line-height: 18px;
             color: inherit;
-            display: block;
+            display: inline-block;
+            white-space: nowrap;
         }
 
         @keyframes lcDownIn {
