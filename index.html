@@ -597,7 +597,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            height: 52vh;
+            height: auto;
+            min-height: 52vh;
+            max-height: 88dvh;
             top: auto;
             transform: translateY(100%);
             background: var(--card);
@@ -609,7 +611,6 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         #add.active,
@@ -661,7 +662,7 @@
         .ti-add-body {
             flex: 1;
             overflow-y: auto;
-            min-height: 0;
+            min-height: 90px;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 8px;
         }
@@ -7331,17 +7332,24 @@
                     canvas.style.height = line.height + 'px';
                     span.appendChild(canvas);
                     var ctx = canvas.getContext('2d');
-                    var cols = Math.ceil(canvas.width / p), rows = Math.ceil(canvas.height / p);
-                    ctx.fillStyle = textColor;
-                    for (var row = 0; row < rows; row++) {
-                        for (var col = 0; col < cols; col++) {
-                            if (Math.random() > 0.48) {
-                                ctx.globalAlpha = 0.4 + Math.random() * 0.6;
-                                ctx.fillRect(col * p, row * p, p - 0.5, p - 0.5);
-                            }
-                        }
-                    }
-                    ctx.globalAlpha = 1;
+                    var source = document.createElement('canvas');
+                    source.width = Math.ceil(line.width);
+                    source.height = Math.ceil(line.height);
+                    var sctx = source.getContext('2d');
+                    sctx.fillStyle = textColor;
+                    sctx.font = style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily;
+                    sctx.textBaseline = 'top';
+                    sctx.fillText(line.text, 0, 0);
+                    var miniW = Math.max(1, Math.floor(line.width / p));
+                    var miniH = Math.max(1, Math.floor(line.height / p));
+                    var tiny = document.createElement('canvas');
+                    tiny.width = miniW;
+                    tiny.height = miniH;
+                    var tctx = tiny.getContext('2d');
+                    tctx.imageSmoothingEnabled = false;
+                    tctx.drawImage(source, 0, 0, miniW, miniH);
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.drawImage(tiny, 0, 0, miniW, miniH, 0, 0, line.width, line.height);
                 });
             }
 
