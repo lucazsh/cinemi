@@ -492,12 +492,13 @@ function initSocket() {
             if (el) el.remove();
         });
         socket.on('post_liked', ({ postId, count }) => {
+            if (likesCountMap[postId] === count) return;
             document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(wrapper => {
                 const btn = wrapper.querySelector('.like-btn');
                 if (!btn) return;
                 const countWrap = btn.querySelector('.like-count-wrap');
                 const current = parseInt(btn.querySelector('.like-count')?.textContent) || 0;
-                animateLikeCount(countWrap, count > 0 ? count : '', count > current ? 'up' : 'down');
+                animateLikeCount(countWrap, formatLikeCount(count), count > current ? 'up' : 'down');
                 likesCountMap[postId] = count;
             });
         });
