@@ -10,6 +10,79 @@ const filePreview = document.getElementById('filePreview');
 let currentFeed = 'posts';
 let selectedFiles = [];
 
+const likedPostIds = new Set();
+const likesCountMap = {};
+
+function animateLikeCount(wrap, newVal, direction) {
+  const old = wrap.querySelector('.like-count');
+  if (!old) return;
+  const neo = document.createElement('span');
+  neo.className = 'like-count';
+  neo.textContent = newVal;
+  neo.style.cssText = 'position:absolute;top:0;left:0;width:100%';
+  wrap.style.position = 'relative';
+  old.classList.add(direction === 'up' ? 'lc-down-out' : 'lc-up-out');
+  neo.classList.add(direction === 'up' ? 'lc-down-in' : 'lc-up-in');
+  wrap.appendChild(neo);
+  setTimeout(() => { old.remove(); neo.style.position = ''; neo.classList.remove('lc-down-in', 'lc-up-in'); }, 220);
+}
+
+function setupLikeBtn(wrapper, postId) {
+  const btn = wrapper.querySelector('.like-btn');
+  if (!btn || !postId) return;
+  let count = likesCountMap[postId] || 0;
+  const countWrap = btn.querySelector('.like-count-wrap');
+  const countSpan = btn.querySelector('.like-count');
+  if (countSpan) countSpan.textContent = count > 0 ? count : '';
+  if (likedPostIds.has(postId)) btn.classList.add('liked');
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const wasLiked = likedPostIds.has(postId);
+    const newCount = wasLiked ? Math.max(0, count - 1) : count + 1;
+    if (wasLiked) { likedPostIds.delete(postId); btn.classList.remove('liked'); }
+    else { likedPostIds.add(postId); btn.classList.add('liked'); }
+    animateLikeCount(countWrap, newCount > 0 ? newCount : '', wasLiked ? 'down' : 'up');
+    count = newCount;
+    likesCountMap[postId] = count;
+    try {
+      const res = await fetchWithAuth(`${baseUrl}/api/posts/${postId}/like`, { method: 'POST' });
+      const json = await res.json();
+      if (json.count !== count) {
+        const dir = json.count > count ? 'up' : 'down';
+        animateLikeCount(countWrap, json.count > 0 ? json.count : '', dir);
+        count = json.count;
+        likesCountMap[postId] = count;
+      }
+    } catch (_) {
+      if (wasLiked) { likedPostIds.add(postId); btn.classList.add('liked'); }
+      else { likedPostIds.delete(postId); btn.classList.remove('liked'); }
+      animateLikeCount(countWrap, count > 0 ? count : '', wasLiked ? 'up' : 'down');
+    }
+  });
+}
+
+async function loadLikesData() {
+  try {
+    const [bulkRes, myRes] = await Promise.all([
+      fetch(`${baseUrl}/api/posts/likes-bulk`),
+      fetchWithAuth(`${baseUrl}/api/posts/liked-by-me`)
+    ]);
+    if (bulkRes.ok) { const bulk = await bulkRes.json(); Object.assign(likesCountMap, bulk); }
+    if (myRes.ok) { const myLiked = await myRes.json(); myLiked.forEach(id => likedPostIds.add(id)); }
+    document.querySelectorAll('[data-post-id]').forEach(wrapper => {
+      const postId = wrapper.getAttribute('data-post-id');
+      if (!postId) return;
+      const btn = wrapper.querySelector('.like-btn');
+      if (!btn) return;
+      const c = likesCountMap[postId] || 0;
+      const countSpan = btn.querySelector('.like-count');
+      if (countSpan) countSpan.textContent = c > 0 ? c : '';
+      if (likedPostIds.has(postId)) btn.classList.add('liked');
+      else btn.classList.remove('liked');
+    });
+  } catch (_) {}
+}
+
 fileInput && fileInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -109,7 +182,11 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
                 <div class="cnt">${contentHtml}</div>
                 ${filesHtml}
                 <div class="re">
-                    <button class="like"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M441.88-148.52q-17.69-7.11-33.9-21.05l-72.33-66.32q-104.24-93-189.62-188.48-85.38-95.48-85.38-216.43 0-101.65 69.7-169.98 69.7-68.33 172.16-68.33 56.49 0 101.65 21.81 45.17 21.8 75.6 49.52 32.44-27.72 76.86-49.52 44.42-21.81 100.07-21.81 102.57 0 172.73 68.33 70.17 68.33 70.17 169.98 0 120.95-86.24 216.05-86.24 95.1-187.96 187.34l-73.56 68.04q-16.24 14-34.06 20.98-17.81 6.98-38.01 6.98-20.19 0-37.88-7.11Zm-8.12-544.13q-12.24-29.48-49.51-55.38-37.26-25.9-81.11-25.9-58.96 0-98.14 37.28-39.17 37.28-39.17 96.48 0 51.67 36.04 107.52 36.05 55.85 86.42 110.25Q338.66-368.01 392-322.04q53.33 45.97 87.76 76.45 34.52-30.76 87.97-76.81 53.45-46.06 103.81-100.19 50.35-54.13 86.61-110.03t36.26-107.68q0-59.07-39.45-96.35-39.45-37.28-98.32-37.28-44.06 0-82.23 25.9T525-692.65q-6.31 14-18.67 21-12.36 7-26.19 7-13.66 0-26.39-7-12.74-7-19.99-21ZM480-509.76Z"/></svg></button>
+                    <button class="like-btn">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor" class="heart-out"><path d="M441.88-148.52q-17.69-7.11-33.9-21.05l-72.33-66.32q-104.24-93-189.62-188.48-85.38-95.48-85.38-216.43 0-101.65 69.7-169.98 69.7-68.33 172.16-68.33 56.49 0 101.65 21.81 45.17 21.8 75.6 49.52 32.44-27.72 76.86-49.52 44.42-21.81 100.07-21.81 102.57 0 172.73 68.33 70.17 68.33 70.17 169.98 0 120.95-86.24 216.05-86.24 95.1-187.96 187.34l-73.56 68.04q-16.24 14-34.06 20.98-17.81 6.98-38.01 6.98-20.19 0-37.88-7.11Zm-8.12-544.13q-12.24-29.48-49.51-55.38-37.26-25.9-81.11-25.9-58.96 0-98.14 37.28-39.17 37.28-39.17 96.48 0 51.67 36.04 107.52 36.05 55.85 86.42 110.25Q338.66-368.01 392-322.04q53.33 45.97 87.76 76.45 34.52-30.76 87.97-76.81 53.45-46.06 103.81-100.19 50.35-54.13 86.61-110.03t36.26-107.68q0-59.07-39.45-96.35-39.45-37.28-98.32-37.28-44.06 0-82.23 25.9T525-692.65q-6.31 14-18.67 21-12.36 7-26.19 7-13.66 0-26.39-7-12.74-7-19.99-21ZM480-509.76Z"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor" class="heart-fill"><path d="M441.87-148.51q-17.7-7.1-33.89-21.06l-72.33-66.32q-104.24-93-189.62-188.48-85.38-95.48-85.38-216.43 0-101.68 69.84-169.99 69.84-68.32 172.51-68.32 55.8 0 101.07 21.81 45.26 21.8 75.69 49.52 32.44-27.72 76.7-49.52 44.26-21.81 100.06-21.81 102.68 0 172.87 68.32 70.2 68.31 70.2 169.99 0 120.95-86.24 216.05-86.24 95.1-187.96 187.34l-73.61 68.08q-16.19 13.96-34.01 20.94-17.81 6.98-38.01 6.98-20.19 0-37.89-7.1Z</svg>
+                      <div class="like-count-wrap"><span class="like-count"></span></div>
+                    </button>
                     <button class="reply" onclick="showView('replies')"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m309.04-458.17 73.31 73.3q15.72 15.72 15.83 37.77.12 22.06-15.59 37.49-15.96 15.72-37.51 14.72-21.56-1-36.51-15.96L145.28-474.13q-15.95-15.59-15.95-36.57 0-20.97 15.95-36.93l164.05-164.04q16.19-15.96 36.91-15.96 20.72 0 36.35 15.96 15.71 14.86 16.21 36.46t-15.45 37.32l-74.31 74.54h331.2q87.11 0 149.11 61.62 62 61.62 62 149.49v125q0 21.97-15.25 37.28-15.24 15.31-37.01 15.31-21.76 0-37.34-15.31-15.58-15.31-15.58-37.28v-125q0-44.56-31.18-75.25-31.19-30.68-74.75-30.68h-331.2Z"/></svg></svg></button>
                     <button class="send"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M775.33-434.41 189.72-198.37q-25.92 10.96-48.85-4.74-22.94-15.69-22.94-43.37v-472.09q0-27.67 22.94-43.36 22.93-15.7 48.85-4.98l585.61 236.04q32.15 12.96 32.15 48.35t-32.15 48.11ZM205.67-300.83l453.72-182.69-453.72-182.46v103.59l231.68 78.87-231.68 79.11v103.58Zm0 0v-365.15 365.15Z"/></svg></button>
                 </div>
@@ -206,6 +283,7 @@ function addPostToUIFromServer(post) {
             newWrapper.setAttribute('data-post-id', post.id);
             newWrapper.setAttribute('data-timestamp', post.createdAt);
             newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
+            setupLikeBtn(newWrapper, post.id);
             existing.parentNode.replaceChild(newWrapper, existing);
             lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
             setTimeout(() => {
@@ -223,6 +301,7 @@ function addPostToUIFromServer(post) {
     wrapper.setAttribute('data-post-id', post.id);
     wrapper.setAttribute('data-timestamp', post.createdAt);
     wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
+    setupLikeBtn(wrapper, post.id);
     postsContainer.prepend(wrapper);
     lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
     setTimeout(() => {
@@ -253,6 +332,7 @@ async function loadInitialPostsFromServer() {
         list.slice().reverse().forEach(p => { seenPostIds.add(p.id); addPostToUIFromServer(p); });
         if (list.length) lastTimestamp = new Date(list[0].createdAt).getTime();
         injectAdsIntoPosts(list, config);
+        await loadLikesData();
         setTimeout(() => {
             if (typeof spInitAllParticleSpans === 'function') spInitAllParticleSpans();
             if (typeof spInitAllPixelSpans === 'function') spInitAllPixelSpans();
@@ -373,6 +453,16 @@ function initSocket() {
         socket.on('post_deleted', ({ postId }) => {
             const el = document.querySelector(`[data-post-id="${postId}"]`);
             if (el) el.remove();
+        });
+        socket.on('post_liked', ({ postId, count }) => {
+          document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(wrapper => {
+            const btn = wrapper.querySelector('.like-btn');
+            if (!btn) return;
+            const countWrap = btn.querySelector('.like-count-wrap');
+            const current = parseInt(btn.querySelector('.like-count')?.textContent) || 0;
+            animateLikeCount(countWrap, count > 0 ? count : '', count > current ? 'up' : 'down');
+            if (likesCountMap) likesCountMap[postId] = count;
+          });
         });
     } catch (err) { console.error('Socket initialization error:', err); }
 }
