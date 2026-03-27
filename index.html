@@ -7318,7 +7318,9 @@
                 var p = Math.max(1, pixelSize);
                 var textColor = style.color;
                 if (textColor === 'rgba(0, 0, 0, 0)' || textColor === 'transparent' || !span.classList.contains('revealed')) {
-                    textColor = document.documentElement.classList.contains('dark') ? '#e8ecff' : '#18191e';
+                    const root = getComputedStyle(document.documentElement);
+                    const primaryColor = root.getPropertyValue('--text-primary').trim();
+                    textColor = primaryColor || (document.documentElement.classList.contains('dark') ? '#e8ecff' : '#18191e');
                 }
                 lineRects.forEach(function (line) {
                     if (line.width < 0.5) return;
