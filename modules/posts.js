@@ -47,6 +47,19 @@ function animateLikeCount(wrap, newVal, direction) {
   setCountWrapSize(wrap, newVal);
 }
 
+function setCountWrapSize(wrap, text) {
+  if (!text) {
+    wrap.style.width = '0px';
+    wrap.style.marginLeft = '0px';
+  } else {
+    requestAnimationFrame(() => {
+      const s = wrap.querySelector('.like-count');
+      wrap.style.width = (s ? s.scrollWidth : 0) + 'px';
+      wrap.style.marginLeft = '4px';
+    });
+  }
+}
+
 function setupLikeBtn(wrapper, postId) {
   const btn = wrapper.querySelector('.like-btn');
   if (!btn || !postId) return;
