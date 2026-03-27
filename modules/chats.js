@@ -112,7 +112,7 @@
   const chatSearchInput   = document.getElementById('chat-search-input');
   const chatSearchResults = document.getElementById('chat-search-results');
 
-  function myUsername() { return (document.getElementById('addUsername')?.value || '').trim(); }
+  function myUsername() { return (document.getElementById('addUsername')?.textContent || '').trim(); }
   function showEl(el) { el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
   function hideEl(el) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }
   function showToast(msg) { toast.textContent = msg; toast.style.opacity = '1'; setTimeout(() => { toast.style.opacity = '0'; }, 2800); }
