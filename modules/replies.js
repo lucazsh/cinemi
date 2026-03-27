@@ -5,6 +5,7 @@ let replyPollingInterval = null;
 let lastReplyTimestamp = 0;
 let seenReplyIds = new Set();
 let currentReplyPostId = null;
+const replyCountMap = window.replyCountMap || {};
 
 function renderReplyElement(reply) {
     const el = document.createElement('div');
@@ -120,6 +121,12 @@ async function submitReplyHandler(e) {
             
             document.querySelector(`[data-temp-reply="${optimisticReply.id}"]`)?.remove();
             seenReplyIds.add(json.reply.id);
+            replyCountMap[currentReplyPostId] = (replyCountMap[currentReplyPostId] || 0) + 1;
+            document.querySelectorAll(`[data-post-id="${currentReplyPostId}"]`).forEach(wrapper => {
+              const replyBtn = wrapper.querySelector('.reply');
+              const rcWrap = replyBtn && replyBtn.querySelector('.reply-count-wrap');
+              if (rcWrap) animateReplyCount(rcWrap, String(replyCountMap[currentReplyPostId]), 'up');
+            });
             lastReplyTimestamp = Math.max(lastReplyTimestamp, new Date(json.reply.createdAt).getTime());
             
             setTimeout(() => {
