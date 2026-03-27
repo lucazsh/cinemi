@@ -13,27 +13,43 @@ let selectedFiles = [];
 const likedPostIds = new Set();
 const likesCountMap = {};
 
+function formatLikeCount(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  return n > 0 ? String(n) : '';
+}
+
 function animateLikeCount(wrap, newVal, direction) {
+  wrap.querySelectorAll('.like-count').forEach((el, i) => { if (i > 0) el.remove(); });
   const old = wrap.querySelector('.like-count');
   if (!old) return;
+  if (old.textContent === String(newVal)) return;
   const neo = document.createElement('span');
   neo.className = 'like-count';
   neo.textContent = newVal;
-  neo.style.cssText = 'position:absolute;top:0;left:0;width:100%';
+  neo.style.cssText = 'position:absolute;top:0;left:0;width:100%;display:inline-block;';
   wrap.style.position = 'relative';
+  old.style.display = 'inline-block';
   old.classList.add(direction === 'up' ? 'lc-down-out' : 'lc-up-out');
   neo.classList.add(direction === 'up' ? 'lc-down-in' : 'lc-up-in');
   wrap.appendChild(neo);
-  setTimeout(() => { old.remove(); neo.style.position = ''; neo.classList.remove('lc-down-in', 'lc-up-in'); }, 220);
+  setTimeout(() => {
+    old.remove();
+    neo.style.position = '';
+    neo.style.cssText = '';
+    neo.classList.remove('lc-down-in', 'lc-up-in');
+  }, 220);
 }
 
 function setupLikeBtn(wrapper, postId) {
   const btn = wrapper.querySelector('.like-btn');
   if (!btn || !postId) return;
+  if (btn.dataset.likeInit === postId) return;
+  btn.dataset.likeInit = postId;
   let count = likesCountMap[postId] || 0;
   const countWrap = btn.querySelector('.like-count-wrap');
   const countSpan = btn.querySelector('.like-count');
-  if (countSpan) countSpan.textContent = count > 0 ? count : '';
+  if (countSpan) countSpan.textContent = formatLikeCount(count);
   if (likedPostIds.has(postId)) btn.classList.add('liked');
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -41,7 +57,7 @@ function setupLikeBtn(wrapper, postId) {
     const newCount = wasLiked ? Math.max(0, count - 1) : count + 1;
     if (wasLiked) { likedPostIds.delete(postId); btn.classList.remove('liked'); }
     else { likedPostIds.add(postId); btn.classList.add('liked'); }
-    animateLikeCount(countWrap, newCount > 0 ? newCount : '', wasLiked ? 'down' : 'up');
+    animateLikeCount(countWrap, formatLikeCount(newCount), wasLiked ? 'down' : 'up');
     count = newCount;
     likesCountMap[postId] = count;
     try {
@@ -49,14 +65,14 @@ function setupLikeBtn(wrapper, postId) {
       const json = await res.json();
       if (json.count !== count) {
         const dir = json.count > count ? 'up' : 'down';
-        animateLikeCount(countWrap, json.count > 0 ? json.count : '', dir);
+        animateLikeCount(countWrap, formatLikeCount(json.count), dir);
         count = json.count;
         likesCountMap[postId] = count;
       }
     } catch (_) {
       if (wasLiked) { likedPostIds.add(postId); btn.classList.add('liked'); }
       else { likedPostIds.delete(postId); btn.classList.remove('liked'); }
-      animateLikeCount(countWrap, count > 0 ? count : '', wasLiked ? 'up' : 'down');
+      animateLikeCount(countWrap, formatLikeCount(count), wasLiked ? 'up' : 'down');
     }
   });
 }
