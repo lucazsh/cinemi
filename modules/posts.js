@@ -44,6 +44,7 @@ function animateLikeCount(wrap, newVal, direction) {
     neo.classList.remove('lc-down-in', 'lc-up-in');
     wrap._lcTimeout = null;
   }, 220);
+  setCountWrapSize(wrap, newVal);
 }
 
 function setupLikeBtn(wrapper, postId) {
@@ -56,6 +57,7 @@ function setupLikeBtn(wrapper, postId) {
   const countWrap = btn.querySelector('.like-count-wrap');
   const countSpan = btn.querySelector('.like-count');
   if (countSpan) countSpan.textContent = formatLikeCount(count);
+  setCountWrapSize(countWrap, formatLikeCount(count));
   if (likedPostIds.has(postId)) btn.classList.add('liked');
 
   btn.addEventListener('click', async (e) => {
@@ -114,6 +116,8 @@ async function loadLikesData() {
       const c = likesCountMap[postId] || 0;
       const countSpan = btn.querySelector('.like-count');
       if (countSpan) countSpan.textContent = c > 0 ? c : '';
+      const cw = btn.querySelector('.like-count-wrap');
+      if (cw) setCountWrapSize(cw, c > 0 ? String(c) : '');
       if (likedPostIds.has(postId)) btn.classList.add('liked');
       else btn.classList.remove('liked');
     });
