@@ -578,6 +578,14 @@ function initSocket() {
                 likesCountMap[postId] = count;
             });
         });
+        socket.on('reply_created', ({ postId }) => {
+            replyCountMap[postId] = (replyCountMap[postId] || 0) + 1;
+            document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(wrapper => {
+                const replyBtn = wrapper.querySelector('.reply');
+                const rcWrap = replyBtn && replyBtn.querySelector('.reply-count-wrap');
+                if (rcWrap) animateReplyCount(rcWrap, String(replyCountMap[postId]), 'up');
+            });
+        });
     } catch (err) { console.error('Socket initialization error:', err); }
 }
 
