@@ -79,8 +79,10 @@ function closeAdd() {
         add.classList.remove('active');
         add.style.transition = '';
         add.style.transform = '';
+        if (typeof spResetComposeState === 'function') spResetComposeState();
     }, 280);
 }
+
 function closeReplies() {
     const replies = document.getElementById('replies');
     replies.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
