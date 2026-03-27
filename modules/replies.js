@@ -5,7 +5,7 @@ let replyPollingInterval = null;
 let lastReplyTimestamp = 0;
 let seenReplyIds = new Set();
 let currentReplyPostId = null;
-const replyCountMap = window.replyCountMap || {};
+if (typeof replyCountMap === 'undefined') var replyCountMap = {};
 
 function renderReplyElement(reply) {
     const el = document.createElement('div');
