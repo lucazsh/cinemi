@@ -509,3 +509,169 @@ async function sendAIFeedback(movie, action) {
         });
     } catch (e) {}
 }
+let trailerMode = false;
+let trailerMovies = [];
+let trailerIndex = 0;
+let trailerCache = {};
+
+async function fetchTrailerKey(movie) {
+    const id = movie.id;
+    if (trailerCache[id]) return trailerCache[id];
+    try {
+        const mediaType = movie.media_type === 'tv' ? 'tv' : 'movie';
+        const res = await fetch(`${baseUrl}/api/tmdb/${mediaType}/${id}/videos`);
+        const data = await res.json();
+        const videos = data.results || [];
+        const trailer = videos.find(v => v.site === 'YouTube' && v.type === 'Trailer') ||
+                        videos.find(v => v.site === 'YouTube' && v.type === 'Teaser') ||
+                        videos.find(v => v.site === 'YouTube');
+        const key = trailer ? trailer.key : null;
+        trailerCache[id] = key;
+        return key;
+    } catch { return null; }
+}
+
+function enterTrailerMode() {
+    if (!swipifyMovies || !swipifyMovies.length) {
+        showToastMsg('Load movies first');
+        return;
+    }
+    trailerMode = true;
+    trailerMovies = swipifyMovies.slice(currentSwipifyIndex);
+    trailerIndex = 0;
+    setSwipeButtonsVisible(false);
+    renderTrailerCard();
+}
+
+function exitTrailerMode() {
+    trailerMode = false;
+    const container = document.getElementById('swipify-container');
+    container.innerHTML = '';
+    setSwipeButtonsVisible(true);
+    renderSwipifyCard();
+}
+
+async function renderTrailerCard() {
+    const container = document.getElementById('swipify-container');
+    if (!trailerMovies.length || trailerIndex >= trailerMovies.length) {
+        trailerMode = false;
+        setSwipeButtonsVisible(true);
+        renderSwipifyCard();
+        return;
+    }
+
+    const movie = trailerMovies[trailerIndex];
+    const title = movie.title || movie.name || 'Unknown';
+
+    container.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;opacity:0.6;">Loading trailer...</div>`;
+
+    const key = await fetchTrailerKey(movie);
+
+    if (!key) {
+        trailerIndex++;
+        renderTrailerCard();
+        return;
+    }
+
+    container.innerHTML = '';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'position:absolute;inset:0;border-radius:20px;overflow:hidden;background:#000;display:flex;flex-direction:column;user-select:none;touch-action:none;box-shadow:0 10px 40px rgba(0,0,0,0.5);';
+
+    const iframeWrap = document.createElement('div');
+    iframeWrap.style.cssText = 'position:relative;flex:1;pointer-events:none;';
+
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=${key}&color=white&origin=${encodeURIComponent(location.origin)}`;
+    iframe.allow = 'autoplay; fullscreen';
+    iframe.style.cssText = 'position:absolute;top:-60px;left:-2px;width:calc(100% + 4px);height:calc(100% + 120px);border:none;pointer-events:none;';
+    iframe.setAttribute('frameborder', '0');
+
+    iframeWrap.appendChild(iframe);
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 50%);border-radius:20px;';
+
+    const info = document.createElement('div');
+    info.style.cssText = 'position:absolute;bottom:20px;left:20px;right:20px;z-index:3;pointer-events:none;';
+    info.innerHTML = `<div style="font-size:20px;font-weight:700;color:white;margin-bottom:4px;">${escapeHtml(title)}</div><div style="font-size:12px;color:rgba(255,255,255,0.7);">Swipe right to save &bull; left to skip</div>`;
+
+    const exitBtn = document.createElement('button');
+    exitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>`;
+    exitBtn.style.cssText = 'position:absolute;top:14px;left:14px;z-index:10;background:rgba(0,0,0,0.6);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;pointer-events:auto;backdrop-filter:blur(6px);';
+    exitBtn.onclick = exitTrailerMode;
+
+    const leftInd = document.createElement('div');
+    leftInd.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s;pointer-events:none;z-index:5;';
+    leftInd.innerHTML = `<div style="width:90px;height:90px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:3px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div>`;
+
+    const rightInd = document.createElement('div');
+    rightInd.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s;pointer-events:none;z-index:5;';
+    rightInd.innerHTML = `<div style="width:90px;height:90px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:3px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div>`;
+
+    card.appendChild(iframeWrap);
+    card.appendChild(overlay);
+    card.appendChild(info);
+    card.appendChild(exitBtn);
+    card.appendChild(leftInd);
+    card.appendChild(rightInd);
+    container.appendChild(card);
+
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.85)';
+    requestAnimationFrame(() => {
+        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+    });
+
+    let startX = 0, currentX = 0, isDragging = false;
+
+    const onStart = (e) => {
+        if (e.target === exitBtn || exitBtn.contains(e.target)) return;
+        isDragging = true;
+        const p = e.touches ? e.touches[0] : e;
+        startX = p.clientX;
+        card.style.transition = 'none';
+    };
+    const onMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const p = e.touches ? e.touches[0] : e;
+        currentX = p.clientX - startX;
+        const lx = Math.max(-130, Math.min(130, currentX));
+        card.style.transform = `translateX(${lx}px) rotate(${lx / 22}deg)`;
+        if (currentX < -40) { leftInd.style.opacity = Math.min(Math.abs(currentX) / 120, 1); rightInd.style.opacity = 0; }
+        else if (currentX > 40) { rightInd.style.opacity = Math.min(currentX / 120, 1); leftInd.style.opacity = 0; }
+        else { leftInd.style.opacity = 0; rightInd.style.opacity = 0; }
+    };
+    const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        leftInd.style.opacity = 0; rightInd.style.opacity = 0;
+        if (currentX > 100) {
+            card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(60px) scale(0.85)';
+            addToFavorites(movie).catch(() => {});
+            setTimeout(() => { trailerIndex++; renderTrailerCard(); }, 250);
+        } else if (currentX < -100) {
+            card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(-60px) scale(0.85)';
+            setTimeout(() => { trailerIndex++; renderTrailerCard(); }, 250);
+        } else {
+            card.style.transition = 'transform 0.3s ease';
+            card.style.transform = 'scale(1)';
+        }
+        currentX = 0;
+    };
+
+    card.addEventListener('mousedown', onStart);
+    card.addEventListener('touchstart', onStart, { passive: false });
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('touchmove', onMove, { passive: false });
+    card.addEventListener('mouseup', onEnd);
+    card.addEventListener('touchend', onEnd);
+    card.addEventListener('mouseleave', onEnd);
+}
