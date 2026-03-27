@@ -60,11 +60,7 @@ let partyStarted = false;
             z-index: -1;
             pointer-events: none;
         }
-        .match-overlay .match-title::before {
-            top: 10px;
-            -webkit-text-stroke-width: 2px;
-            -webkit-text-stroke-color: rgba(70,211,105,0.55);
-        }
+        .match-overlay .match-title::before { top: 10px; }
         .match-overlay .match-title::after {
             top: 22px;
             -webkit-text-stroke-width: 1px;
@@ -96,6 +92,8 @@ let partyStarted = false;
 })();
 
 const BACK_ARROW = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m382-480 294 294q15 15 14.5 35T675-116q-15 15-35 15t-35-15L297-423q-12-12-18-27t-6-30q0-15 6-30t18-27l308-308q15-15 35.5-14.5T676-844q15 15 15 35t-15 35L382-480Z"/></svg> Back`;
+const ICON_MUTED = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M792-56 56-792l56-56 736 736-56 56ZM560-514l-80-80v-246l80 80v246Zm160 354L560-320v-64l-200-200H240v-160h82L56-912l56-56 736 736-56 56Zm-160-58v-82l-80-80v82l80 80ZM400-400H240v-160h82L400-400Z"/></svg>`;
+const ICON_UNMUTED = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320Z"/></svg>`;
 
 function setSwipeButtonsVisible(visible) {
     const leftBtn = document.getElementById('swipe-left-btn');
@@ -128,9 +126,7 @@ function closePan(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
     if (panel) {
         const inner = panel.querySelector(':not(.backdrop)');
-        if (inner) {
-            inner.style.animation = 'swPanClose 0.3s ease-out both';
-        }
+        if (inner) inner.style.animation = 'swPanClose 0.3s ease-out both';
         const backdrop = panel.querySelector('.backdrop');
         if (backdrop) backdrop.style.opacity = '0';
         setTimeout(() => {
@@ -225,28 +221,15 @@ async function startParty() {
     if (partyRole !== 'host') return;
     const btn = document.getElementById('start-party-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Starting...'; }
-
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:16px;color:var(--text-secondary);">Loading movies...</div></div>`;
-
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/content/recommend`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         const movies = (data.content || []).filter(m => m.overview && (m.title || m.name));
-
-        await fetchWithAuth(`${baseUrl}/api/party/set-movies`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: partyCode, movies })
-        });
-
-        await fetchWithAuth(`${baseUrl}/api/party/start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: partyCode })
-        });
-
+        await fetchWithAuth(`${baseUrl}/api/party/set-movies`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode, movies }) });
+        await fetchWithAuth(`${baseUrl}/api/party/start`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode }) });
         partyStarted = true;
         swipifyMovies = movies;
         currentSwipifyIndex = 0;
@@ -456,11 +439,7 @@ function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-primary);pointer-events:none;';
-    overlay.innerHTML = `
-        <div class="match-small">It's a</div>
-        <div class="match-title">MATCH</div>
-        <div class="match-subtitle" style="margin-top: 30px;">${escapeHtml(title)}</div>
-    `;
+    overlay.innerHTML = `<div class="match-small">It's a</div><div class="match-title">MATCH</div><div class="match-subtitle" style="margin-top:30px;">${escapeHtml(title)}</div>`;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2900);
 }
@@ -534,10 +513,7 @@ async function fetchTrailerKey(movie) {
 }
 
 function enterTrailerMode() {
-    if (!swipifyMovies || !swipifyMovies.length) {
-        showToastMsg('Load movies first');
-        return;
-    }
+    if (!swipifyMovies || !swipifyMovies.length) { showToastMsg('Load movies first'); return; }
     trailerMode = true;
     trailerUserUnmuted = false;
     trailerMovies = swipifyMovies.slice(currentSwipifyIndex);
@@ -553,6 +529,36 @@ function exitTrailerMode() {
     container.innerHTML = '';
     setSwipeButtonsVisible(true);
     renderSwipifyCard();
+}
+
+function fitIframeCover(iframe, wrap) {
+    const w = wrap.offsetWidth || wrap.clientWidth;
+    const h = wrap.offsetHeight || wrap.clientHeight;
+    if (!w || !h) return;
+    const videoRatio = 16 / 9;
+    const containerRatio = w / h;
+    let iw, ih, il, it;
+    if (containerRatio < videoRatio) {
+        ih = h;
+        iw = h * videoRatio;
+        it = 0;
+        il = (w - iw) / 2;
+    } else {
+        iw = w;
+        ih = w / videoRatio;
+        il = 0;
+        it = (h - ih) / 2;
+    }
+    iframe.style.width = iw + 'px';
+    iframe.style.height = ih + 'px';
+    iframe.style.top = it + 'px';
+    iframe.style.left = il + 'px';
+}
+
+function ytCmd(iframe, func) {
+    try {
+        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), '*');
+    } catch (e) {}
 }
 
 async function renderTrailerCard() {
@@ -571,33 +577,32 @@ async function renderTrailerCard() {
     container.innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;opacity:0.6;">Loading trailer...</div>`;
 
     const key = await fetchTrailerKey(movie);
-
-    if (!key) {
-        trailerIndex++;
-        renderTrailerCard();
-        return;
-    }
+    if (!key) { trailerIndex++; renderTrailerCard(); return; }
 
     container.innerHTML = '';
 
-    const isMuted = !trailerUserUnmuted;
+    const startMuted = !trailerUserUnmuted;
 
     const card = document.createElement('div');
-    card.style.cssText = 'position:absolute;inset:0;border-radius:20px;overflow:hidden;background:#000;display:flex;flex-direction:column;user-select:none;touch-action:none;box-shadow:0 10px 40px rgba(0,0,0,0.5);';
+    card.style.cssText = 'position:absolute;inset:0;border-radius:20px;overflow:hidden;background:#000;user-select:none;touch-action:none;box-shadow:0 10px 40px rgba(0,0,0,0.5);';
 
-    const iframeWrap = document.createElement('div');
-    iframeWrap.style.cssText = 'position:relative;flex:1;pointer-events:none;';
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;inset:0;overflow:hidden;';
 
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=${key}&color=white&origin=${encodeURIComponent(location.origin)}`;
+    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&mute=${startMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=${key}&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
     iframe.allow = 'autoplay; fullscreen; encrypted-media';
-    iframe.style.cssText = 'position:absolute;top:-60px;left:-2px;width:calc(100% + 4px);height:calc(100% + 120px);border:none;pointer-events:none;';
     iframe.setAttribute('frameborder', '0');
+    iframe.style.cssText = 'position:absolute;border:none;pointer-events:none;';
+    wrap.appendChild(iframe);
 
-    iframeWrap.appendChild(iframe);
+    const doFit = () => fitIframeCover(iframe, wrap);
+    requestAnimationFrame(doFit);
+    const ro = new ResizeObserver(doFit);
+    ro.observe(wrap);
 
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 50%);border-radius:20px;';
+    const gradientOverlay = document.createElement('div');
+    gradientOverlay.style.cssText = 'position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,0.78) 0%,transparent 48%);';
 
     const info = document.createElement('div');
     info.style.cssText = 'position:absolute;bottom:20px;left:20px;right:20px;z-index:3;pointer-events:none;';
@@ -606,19 +611,14 @@ async function renderTrailerCard() {
     const exitBtn = document.createElement('button');
     exitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>`;
     exitBtn.style.cssText = 'position:absolute;top:14px;left:14px;z-index:10;background:rgba(0,0,0,0.6);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;pointer-events:auto;backdrop-filter:blur(6px);';
-    exitBtn.onclick = exitTrailerMode;
-
-    const ICON_MUTED = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M792-56 56-792l56-56 736 736-56 56ZM560-514l-80-80v-246l80 80v246Zm160 354L560-320v-64l-200-200H240v-160h82L56-912l56-56 736 736-56 56Zm-160-58v-82l-80-80v82l80 80ZM400-400H240v-160h82L400-400Z"/></svg>`;
-    const ICON_UNMUTED = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320Z"/></svg>`;
+    exitBtn.onclick = () => { ro.disconnect(); exitTrailerMode(); };
 
     const muteBtn = document.createElement('button');
-    muteBtn.innerHTML = isMuted ? ICON_MUTED : ICON_UNMUTED;
+    muteBtn.innerHTML = startMuted ? ICON_MUTED : ICON_UNMUTED;
     muteBtn.style.cssText = 'position:absolute;top:14px;right:14px;z-index:10;background:rgba(0,0,0,0.6);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;pointer-events:auto;backdrop-filter:blur(6px);transition:transform 0.15s;';
-
     muteBtn.onclick = () => {
         trailerUserUnmuted = !trailerUserUnmuted;
-        const newSrc = `https://www.youtube.com/embed/${key}?autoplay=1&mute=${trailerUserUnmuted ? 0 : 1}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=${key}&color=white&origin=${encodeURIComponent(location.origin)}`;
-        iframe.src = newSrc;
+        ytCmd(iframe, trailerUserUnmuted ? 'unMute' : 'mute');
         muteBtn.innerHTML = trailerUserUnmuted ? ICON_UNMUTED : ICON_MUTED;
     };
 
@@ -630,8 +630,8 @@ async function renderTrailerCard() {
     rightInd.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s;pointer-events:none;z-index:5;';
     rightInd.innerHTML = `<div style="width:90px;height:90px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:3px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div>`;
 
-    card.appendChild(iframeWrap);
-    card.appendChild(overlay);
+    card.appendChild(wrap);
+    card.appendChild(gradientOverlay);
     card.appendChild(info);
     card.appendChild(exitBtn);
     card.appendChild(muteBtn);
@@ -650,8 +650,7 @@ async function renderTrailerCard() {
     let startX = 0, currentX = 0, isDragging = false;
 
     const onStart = (e) => {
-        if (e.target === exitBtn || exitBtn.contains(e.target)) return;
-        if (e.target === muteBtn || muteBtn.contains(e.target)) return;
+        if (exitBtn.contains(e.target) || muteBtn.contains(e.target)) return;
         isDragging = true;
         const p = e.touches ? e.touches[0] : e;
         startX = p.clientX;
@@ -677,12 +676,12 @@ async function renderTrailerCard() {
             card.style.opacity = '0';
             card.style.transform = 'translateX(60px) scale(0.85)';
             addToFavorites(movie).catch(() => {});
-            setTimeout(() => { trailerIndex++; renderTrailerCard(); }, 250);
+            setTimeout(() => { ro.disconnect(); trailerIndex++; renderTrailerCard(); }, 250);
         } else if (currentX < -100) {
             card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
             card.style.opacity = '0';
             card.style.transform = 'translateX(-60px) scale(0.85)';
-            setTimeout(() => { trailerIndex++; renderTrailerCard(); }, 250);
+            setTimeout(() => { ro.disconnect(); trailerIndex++; renderTrailerCard(); }, 250);
         } else {
             card.style.transition = 'transform 0.3s ease';
             card.style.transform = 'scale(1)';
