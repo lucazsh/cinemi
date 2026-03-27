@@ -5081,6 +5081,99 @@
                 transform: translateY(0)
             }
         }
+
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            border-radius: 8px;
+            color: #e3e3e3;
+            transition: color 0.2s;
+        }
+
+        .like-btn.liked {
+            color: #e8394c;
+        }
+
+        .like-btn.liked .heart-out {
+            display: none !important;
+        }
+
+        .like-btn.liked .heart-fill {
+            display: inline !important;
+        }
+
+        .heart-fill {
+            display: none;
+        }
+
+        .like-count-wrap {
+            overflow: hidden;
+            height: 18px;
+            min-width: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .like-count {
+            font-size: 12px;
+            line-height: 18px;
+            color: inherit;
+            display: block;
+        }
+
+        @keyframes lcDownIn {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lcDownOut {
+            to {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes lcUpIn {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lcUpOut {
+            to {
+                transform: translateY(-100%);
+            }
+        }
+
+        .lc-down-in {
+            animation: lcDownIn 0.18s ease;
+        }
+
+        .lc-down-out {
+            animation: lcDownOut 0.18s ease forwards;
+        }
+
+        .lc-up-in {
+            animation: lcUpIn 0.18s ease;
+        }
+
+        .lc-up-out {
+            animation: lcUpOut 0.18s ease forwards;
+        }
     </style>
     <style>
         #pwa-install-overlay {
