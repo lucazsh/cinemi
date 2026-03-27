@@ -5093,10 +5093,16 @@
             border-radius: 8px;
             color: #e3e3e3;
             transition: color 0.2s;
+            min-width: 52px;
         }
 
-        .like-btn.liked {
-            color: #e8394c;
+        .like-btn .heart-out {
+            fill: #e3e3e3;
+        }
+
+        .like-btn .heart-fill {
+            display: none;
+            fill: #e8394c;
         }
 
         .like-btn.liked .heart-out {
@@ -5107,23 +5113,20 @@
             display: inline-block !important;
         }
 
-        .heart-fill {
-            display: none;
-        }
-
         .like-count-wrap {
             overflow: hidden;
             height: 18px;
-            min-width: 4px;
+            width: 28px;
             position: relative;
             display: inline-flex;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .like-count {
             font-size: 12px;
             line-height: 18px;
-            color: inherit;
+            color: #e3e3e3;
             display: inline-block;
             white-space: nowrap;
         }
