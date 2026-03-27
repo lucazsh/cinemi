@@ -12,6 +12,7 @@ let selectedFiles = [];
 
 const likedPostIds = new Set();
 const likesCountMap = {};
+const replyCountMap = {};
 
 function formatLikeCount(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -116,12 +117,59 @@ function setupLikeBtn(wrapper, postId) {
   });
 }
 
+function setReplyCountWrapSize(wrap, text) {
+  if (!text) {
+    wrap.style.width = '0px';
+    wrap.style.marginLeft = '0px';
+  } else {
+    const tmp = document.createElement('span');
+    tmp.style.cssText = 'position:absolute;visibility:hidden;font-size:12px;white-space:nowrap;pointer-events:none;';
+    tmp.textContent = text;
+    document.body.appendChild(tmp);
+    const w = tmp.getBoundingClientRect().width;
+    tmp.remove();
+    wrap.style.width = Math.ceil(w) + 'px';
+    wrap.style.marginLeft = '4px';
+  }
+}
+
+function animateReplyCount(wrap, newVal, direction) {
+  if (wrap._rcTimeout) { clearTimeout(wrap._rcTimeout); wrap._rcTimeout = null; }
+  wrap.querySelectorAll('.reply-count').forEach((s, i) => { if (i > 0) { s.remove(); } else { s.className = 'reply-count'; s.style.cssText = 'position:absolute;left:0;top:0;'; } });
+  const old = wrap.querySelector('.reply-count');
+  if (!old) {
+    const s = document.createElement('span');
+    s.className = 'reply-count';
+    s.textContent = newVal;
+    s.style.cssText = 'position:absolute;left:0;top:0;';
+    wrap.appendChild(s);
+    setReplyCountWrapSize(wrap, newVal);
+    return;
+  }
+  if (old.textContent === String(newVal)) return;
+  const neo = document.createElement('span');
+  neo.className = 'reply-count';
+  neo.textContent = newVal;
+  neo.style.cssText = 'position:absolute;left:0;top:0;';
+  old.classList.add(direction === 'up' ? 'lc-down-out' : 'lc-up-out');
+  neo.classList.add(direction === 'up' ? 'lc-down-in' : 'lc-up-in');
+  wrap.appendChild(neo);
+  wrap._rcTimeout = setTimeout(() => {
+    old.remove();
+    neo.classList.remove('lc-down-in', 'lc-up-in');
+    wrap._rcTimeout = null;
+  }, 220);
+  setReplyCountWrapSize(wrap, newVal);
+}
+
 async function loadLikesData() {
   try {
-    const [bulkRes, myRes] = await Promise.all([
+    const [bulkRes, myRes, repliesRes] = await Promise.all([
       fetch(`${baseUrl}/api/posts/likes-bulk`),
-      fetchWithAuth(`${baseUrl}/api/posts/liked-by-me`)
+      fetchWithAuth(`${baseUrl}/api/posts/liked-by-me`),
+      fetch(`${baseUrl}/api/posts/replies-bulk`)
     ]);
+    if (repliesRes.ok) { const bulk = await repliesRes.json(); Object.assign(replyCountMap, bulk); }
     if (bulkRes.ok) { const bulk = await bulkRes.json(); Object.assign(likesCountMap, bulk); }
     if (myRes.ok) { const myLiked = await myRes.json(); myLiked.forEach(id => likedPostIds.add(id)); }
     document.querySelectorAll('[data-post-id]').forEach(wrapper => {
@@ -134,6 +182,14 @@ async function loadLikesData() {
       if (countSpan) countSpan.textContent = c > 0 ? c : '';
       const cw = btn.querySelector('.like-count-wrap');
       if (cw) setCountWrapSize(cw, c > 0 ? String(c) : '');
+      const btn2 = wrapper.querySelector('.reply');
+      const rc = btn2 && btn2.querySelector('.reply-count-wrap');
+      if (rc) {
+        const c2 = replyCountMap[postId] || 0;
+        const span = rc.querySelector('.reply-count');
+        if (span) span.textContent = c2 > 0 ? String(c2) : '';
+        setReplyCountWrapSize(rc, c2 > 0 ? String(c2) : '');
+      }
       if (likedPostIds.has(postId)) btn.classList.add('liked');
       else btn.classList.remove('liked');
     });
