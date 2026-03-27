@@ -83,7 +83,7 @@ async function submitReplyHandler(e) {
     e && e.preventDefault();
     if (!currentReplyPostId) { alert('No post selected'); return; }
     const text = (replyTextarea?.value || '').trim();
-    const username = (document.getElementById('addUsername')?.value || 'user_tag').trim();
+    const username = (document.getElementById('addUsername')?.textContent || '').trim() || 'user_tag';
     const displayName = document.querySelector('.p-name')?.textContent || username;
     const photoUrl = localStorage.getItem(`profilePhotoUrl_${username}`) || 'https://i.imgflip.com/1ickup.jpg';
     
