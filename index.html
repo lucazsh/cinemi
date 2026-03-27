@@ -5085,17 +5085,6 @@
             gap: 10px;
         }
 
-        .like-count-wrap {
-            overflow: hidden;
-            height: 18px;
-            width: 8px;
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            flex-shrink: 0;
-            margin-left: 0;
-        }
-
         .like-count {
             font-size: 12px;
             line-height: 18px;
@@ -5113,10 +5102,21 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
             padding: 4px 0px;
             border-radius: 8px;
             color: #e3e3e3;
+        }
+        
+        .like-count-wrap {
+            overflow: hidden;
+            height: 18px;
+            width: 0px;
+            margin-left: 0px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            transition: width 0.25s cubic-bezier(0.4,0,0.2,1), margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
         }
 
         .like-btn .heart-out {
