@@ -569,7 +569,7 @@ function initSocket() {
         });
         socket.on('post_liked', ({ postId, count }) => {
             if (likesCountMap[postId] === count) return;
-            document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(wrapper => {
+            document.querySelectorAll(`.post[data-post-id="${postId}"]`).forEach(wrapper => {
                 const btn = wrapper.querySelector('.like-btn');
                 if (!btn) return;
                 const countWrap = btn.querySelector('.like-count-wrap');
@@ -580,7 +580,7 @@ function initSocket() {
         });
         socket.on('reply_created', ({ postId }) => {
             replyCountMap[postId] = (replyCountMap[postId] || 0) + 1;
-            document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(wrapper => {
+            document.querySelectorAll(`.post[data-post-id="${postId}"]`).forEach(wrapper => {
                 const replyBtn = wrapper.querySelector('.reply');
                 const rcWrap = replyBtn && replyBtn.querySelector('.reply-count-wrap');
                 if (rcWrap) animateReplyCount(rcWrap, String(replyCountMap[postId]), 'up');
