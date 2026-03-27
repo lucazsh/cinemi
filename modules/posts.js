@@ -20,23 +20,29 @@ function formatLikeCount(n) {
 }
 
 function animateLikeCount(wrap, newVal, direction) {
-  wrap.querySelectorAll('.like-count').forEach((el, i) => { if (i > 0) el.remove(); });
+  if (wrap._lcTimeout) { clearTimeout(wrap._lcTimeout); wrap._lcTimeout = null; }
+  wrap.querySelectorAll('.like-count').forEach((s, i) => { if (i > 0) { s.remove(); } else { s.className = 'like-count'; s.style.cssText = 'position:absolute;left:0;top:0;'; } });
   const old = wrap.querySelector('.like-count');
-  if (!old) return;
+  if (!old) {
+    const s = document.createElement('span');
+    s.className = 'like-count';
+    s.textContent = newVal;
+    s.style.cssText = 'position:absolute;left:0;top:0;';
+    wrap.appendChild(s);
+    return;
+  }
   if (old.textContent === String(newVal)) return;
   const neo = document.createElement('span');
   neo.className = 'like-count';
   neo.textContent = newVal;
-  neo.style.cssText = 'position:absolute;top:0;left:0;width:100%;display:inline-block;';
-  wrap.style.position = 'relative';
-  old.style.display = 'inline-block';
+  neo.style.cssText = 'position:absolute;left:0;top:0;';
   old.classList.add(direction === 'up' ? 'lc-down-out' : 'lc-up-out');
   neo.classList.add(direction === 'up' ? 'lc-down-in' : 'lc-up-in');
   wrap.appendChild(neo);
-  setTimeout(() => {
+  wrap._lcTimeout = setTimeout(() => {
     old.remove();
-    neo.style.cssText = '';
     neo.classList.remove('lc-down-in', 'lc-up-in');
+    wrap._lcTimeout = null;
   }, 220);
 }
 
@@ -51,6 +57,7 @@ function setupLikeBtn(wrapper, postId) {
   const countSpan = btn.querySelector('.like-count');
   if (countSpan) countSpan.textContent = formatLikeCount(count);
   if (likedPostIds.has(postId)) btn.classList.add('liked');
+
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     if (pending) return;
@@ -58,8 +65,17 @@ function setupLikeBtn(wrapper, postId) {
     btn.style.pointerEvents = 'none';
     const wasLiked = likedPostIds.has(postId);
     const newCount = wasLiked ? Math.max(0, count - 1) : count + 1;
-    if (wasLiked) { likedPostIds.delete(postId); btn.classList.remove('liked'); }
-    else { likedPostIds.add(postId); btn.classList.add('liked'); }
+    if (wasLiked) {
+      likedPostIds.delete(postId);
+      btn.classList.remove('liked');
+      const hf = btn.querySelector('.heart-out');
+      if (hf) { hf.classList.remove('heart-unpop'); void hf.offsetWidth; hf.classList.add('heart-unpop'); }
+    } else {
+      likedPostIds.add(postId);
+      btn.classList.add('liked');
+      const hf = btn.querySelector('.heart-fill');
+      if (hf) { hf.classList.remove('heart-pop'); void hf.offsetWidth; hf.classList.add('heart-pop'); }
+    }
     animateLikeCount(countWrap, formatLikeCount(newCount), wasLiked ? 'down' : 'up');
     count = newCount;
     likesCountMap[postId] = count;
@@ -67,8 +83,7 @@ function setupLikeBtn(wrapper, postId) {
       const res = await fetchWithAuth(`${baseUrl}/api/posts/${postId}/like`, { method: 'POST' });
       const json = await res.json();
       if (json.count !== count) {
-        const dir = json.count > count ? 'up' : 'down';
-        animateLikeCount(countWrap, formatLikeCount(json.count), dir);
+        animateLikeCount(countWrap, formatLikeCount(json.count), json.count > count ? 'up' : 'down');
         count = json.count;
         likesCountMap[postId] = count;
       }
