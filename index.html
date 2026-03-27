@@ -4742,6 +4742,344 @@
         .sm-action-btn.added svg {
             fill: #000 !important;
         }
+
+        .spoiler-span {
+            position: relative;
+            cursor: pointer;
+            display: inline
+        }
+
+        .spoiler-span[data-mode="redacted"] {
+            background: #1a1a1a;
+            color: transparent !important;
+            border-radius: 8px;
+            user-select: none;
+            -webkit-user-select: none;
+            padding: 1px 3px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+            transition: background .3s, color .3s
+        }
+
+        .spoiler-span.revealed[data-mode="redacted"] {
+            background: rgba(255, 255, 255, .08) !important;
+            color: var(--text-secondary) !important;
+            border-radius: 8px;
+            transition: background .3s, color .3s
+        }
+
+        .spoiler-span[data-mode="blur"] {
+            display: inline-block;
+            border-radius: 5px;
+            transition: filter .35s;
+            padding: 2px 7px;
+            margin: -2px -7px;
+            vertical-align: baseline
+        }
+
+        .spoiler-span[data-mode="blur"]:not(.revealed) {
+            filter: blur(6px);
+            color: var(--text-secondary)
+        }
+
+        .spoiler-span.revealed[data-mode="blur"] {
+            filter: none
+        }
+
+        .spoiler-span[data-mode="pixel"] {
+            position: relative;
+            display: inline;
+            line-height: inherit
+        }
+
+        .spoiler-span[data-mode="pixel"] .sp-text-inner {
+            display: inline;
+            line-height: inherit
+        }
+
+        .spoiler-span[data-mode="pixel"]:not(.revealed) .sp-text-inner {
+            color: transparent !important;
+            text-shadow: none !important;
+            user-select: none
+        }
+
+        .spoiler-line-canvas {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            margin: 0;
+            padding: 0;
+            border: none
+        }
+
+        .spoiler-span.revealed[data-mode="pixel"] .sp-text-inner {
+            color: inherit !important
+        }
+
+        .spoiler-span[data-mode="particles"] {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            vertical-align: baseline
+        }
+
+        .spoiler-span[data-mode="particles"]:not(.revealed) .sp-text-inner {
+            visibility: hidden
+        }
+
+        .spoiler-span[data-mode="particles"] .px-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2
+        }
+
+        .spoiler-span.revealed[data-mode="particles"] .px-canvas {
+            display: none
+        }
+
+        .spoiler-span.revealed[data-mode="particles"] .sp-text-inner {
+            visibility: visible
+        }
+
+        .sp-ctabs-wrap {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px) scale(.98);
+            transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+            margin-bottom: 0;
+            overflow: hidden
+        }
+
+        .sp-ctabs-wrap.open {
+            max-height: 100px;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            margin-bottom: 10px
+        }
+
+        .sp-compose-tabs {
+            display: flex;
+            gap: 6px
+        }
+
+        .sp-c-tab {
+            flex: 1;
+            padding: 9px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            background: var(--iconbox-bg);
+            color: var(--muted);
+            transition: background .2s, color .2s, transform .12s;
+            text-align: center
+        }
+
+        .sp-c-tab.active {
+            background: var(--button-bg);
+            color: var(--button-text)
+        }
+
+        .sp-c-tab:active {
+            transform: scale(.95)
+        }
+
+        .sp-word-sel-area {
+            display: none
+        }
+
+        .sp-word-sel-area.show {
+            display: block
+        }
+
+        .sp-ws-box {
+            background: var(--iconbox-bg);
+            border-radius: 16px;
+            padding: 14px 12px;
+            font-size: 15px;
+            line-height: 2.5;
+            word-break: break-word;
+            min-height: 80px;
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        .ws-word {
+            display: inline;
+            padding: 3px 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background .1s, color .12s, outline .1s
+        }
+
+        .ws-word:active {
+            transform: scale(.92)
+        }
+
+        .ws-word.ws-anchor {
+            background: rgba(240, 240, 240, .18);
+            outline: 2px solid var(--text-primary);
+            outline-offset: 1px
+        }
+
+        .ws-word.ws-in-range {
+            background: rgba(240, 240, 240, .1);
+            outline: 1.5px solid rgba(180, 180, 180, .35);
+            outline-offset: 1px
+        }
+
+        .ws-word.ws-spoiler {
+            background: #111 !important;
+            color: transparent !important;
+            border-radius: 6px;
+            outline: none !important
+        }
+
+        html:not(.dark) .ws-word.ws-spoiler {
+            background: #1c1c1c !important
+        }
+
+        .sp-ws-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            min-height: 20px
+        }
+
+        .sp-ws-status {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            line-height: 1.5;
+            animation: wsStatusIn .22s ease
+        }
+
+        .sp-ws-undo {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            padding: 3px 10px;
+            border-radius: 8px;
+            background: var(--iconbox-bg);
+            border: 1px solid var(--border-dark-alpha-2, rgba(255, 255, 255, .12));
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all .25s ease;
+            pointer-events: none
+        }
+
+        .sp-ws-undo.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto
+        }
+
+        .sp-ws-undo:active {
+            transform: scale(.92)
+        }
+
+        .sp-sec-wrap {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-20px) scale(.98);
+            transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+            margin-top: 0;
+            overflow: hidden
+        }
+
+        .sp-sec-wrap.open {
+            max-height: 300px;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            margin-top: 12px
+        }
+
+        .sp-spoiler-section {
+            background: var(--iconbox-bg);
+            border-radius: 20px;
+            padding: 14px;
+            overflow: hidden
+        }
+
+        .sp-spoiler-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px
+        }
+
+        .sp-spoiler-row-label {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .sp-spoiler-row-label svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary)
+        }
+
+        .sp-spoiler-row-title {
+            font-weight: 700;
+            font-size: 14px
+        }
+
+        .sp-modes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .sp-mode-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--card);
+            color: var(--muted);
+            border: 1.5px solid transparent;
+            transition: all .15s;
+            cursor: pointer;
+            gap: 6px
+        }
+
+        .sp-mode-chip.active {
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+            background: var(--card)
+        }
+
+        .sp-mode-chip:active {
+            transform: scale(.92)
+        }
+
+        .sp-hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+            line-height: 1.5;
+            margin-left: 2px
+        }
+
+        @keyframes wsStatusIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
     </style>
     <style>
         #pwa-install-overlay {
@@ -5642,13 +5980,69 @@
                         <div id="addUsername" class="username">user_tag</div>
                     </div>
                 </div>
+                <div class="sp-ctabs-wrap" id="spCtabsWrap">
+                    <div class="sp-compose-tabs">
+                        <button class="sp-c-tab active" id="spTabWrite"
+                            onclick="spSetComposeTab('write')">Write</button>
+                        <button class="sp-c-tab" id="spTabMark" onclick="spSetComposeTab('mark')">Mark Spoilers</button>
+                    </div>
+                </div>
                 <textarea id="postTextarea" style="padding-left: 1px;font-family: 'Inter', sans-serif;line-height: 1.6;"
                     placeholder="What's on your mind?" rows="4"></textarea>
+                <div class="sp-word-sel-area" id="spWordSelArea">
+                    <div class="sp-ws-box" id="spWsBox"></div>
+                    <div class="sp-ws-status-bar">
+                        <div class="sp-ws-status" id="spWsStatus">Tap the first word to start</div>
+                        <button class="sp-ws-undo" id="spWsUndo" onclick="spWsUndoLast()"><svg
+                                xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px"
+                                fill="#e3e3e3">
+                                <path
+                                    d="M362-146q-26 0-45-19t-19-45.5q0-26.5 19-45t45-18.5h243q37 0 59-31t22-72q0-41-22-72.5T605-481H390l23 24q19 20 19 45t-20 45q-19 19-43.5 19T324-367L192-499q-9-9-14.5-21t-5.5-24.5q0-12.5 5.5-25T192-590l131-131q20-19 45-19.5t45 19.5q20 19 20 44t-19 45l-24 23h215q89 0 149 69t60 162q0 93-60 162.5T605-146H362Z" />
+                            </svg> Undo</button>
+                    </div>
+                </div>
                 <input id="postFiles" type="file" accept="image/*,video/*,application/pdf" multiple
                     style="display:none">
                 <div id="filePreview" class="fp" aria-live="polite"></div>
             </div>
             <div class="ti-add-footer">
+                <div class="sp-sec-wrap" id="spSecWrap">
+                    <div class="sp-spoiler-section">
+                        <div class="sp-spoiler-row">
+                            <div class="sp-spoiler-row-label">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+                                </svg>
+                                <span class="sp-spoiler-row-title">Spoiler Effect</span>
+                            </div>
+                        </div>
+                        <div class="sp-modes">
+                            <div class="sp-mode-chip active" onclick="spSelectMode(this,'redacted')"><svg
+                                    style="transform:rotate(90deg);transform-origin:center" height="16px"
+                                    viewBox="0 -960 960 960" width="16px" fill="#e3e3e3">
+                                    <path
+                                        d="M693.26-146Q667-146 648-164.35 629-182.7 629-210v-221q0-27.3 18.82-45.65Q666.65-495 692.91-495h56.83q27.26 0 45.76 18.35Q814-458.3 814-431v221q0 27.3-18.32 45.65Q777.35-146 750.09-146h-56.83Zm-241 0Q426-146 407-164.34q-19-18.35-19-45.64v-539.73q0-27.29 18.82-45.79 18.83-18.5 45.09-18.5h55.83Q534-814 553-795.66q19 18.35 19 45.64v539.73q0 27.29-18.82 45.79-18.83 18.5-45.09 18.5h-55.83Zm-242 0q-27.26 0-45.76-18.35Q146-182.7 146-210v-345.25Q146-581 164.32-600q18.33-19 45.59-19h56.83Q293-619 312-600.15q19 18.85 19 45.15v345.25q0 26.75-18.82 45.25-18.83 18.5-45.09 18.5h-56.83Z" />
+                                </svg> Redacted</div>
+                            <div class="sp-mode-chip" onclick="spSelectMode(this,'blur')"><svg height="16px"
+                                    viewBox="0 -960 960 960" width="16px" fill="#e3e3e3">
+                                    <path
+                                        d="M117-381q-8-8-8-20t8-20.5q8-8.5 20.5-8.5t20 8.5Q165-413 165-401t-7.5 20q-7.5 8-20 8t-20.5-8Zm0-157.5q-8-8.5-8-20.5t8-20q8-8 20.5-8t20 8q7.5 8 7.5 20t-7.5 20.5q-7.5 8.5-20 8.5t-20.5-8.5ZM207-207q-14-14-14-35.5t14-36q14-14.5 35-14.5t35.5 14.5q14.5 14.5 14.5 36T277.5-207Q263-193 242-193t-35-14Zm0-159q-14-14-14-35t14-35.5q14-14.5 35-14.5t35.5 14.5Q292-422 292-401t-14.5 35Q263-352 242-352t-35-14Zm355-147.44q-18.5-18.73-18.5-45.5Q495-428 513.44-447q18.44-19 46-19T605-447.06q18 18.94 18 46t-18.24 45.56q-18.23 18.5-45.5 18.5-27.26 0-45.76-18.74Zm10 306.44Q509-221 509-242.5t14.5-36q14.5-14.5 36-14.5t35.5 14.5q14 14.5 14 36T595-207q-14 14-35.5 14t-36-14Z" />
+                                </svg> Blur</div>
+                            <div class="sp-mode-chip" onclick="spSelectMode(this,'pixel')"><svg height="16px"
+                                    viewBox="0 -960 960 960" width="16px" fill="#e3e3e3">
+                                    <path
+                                        d="M228-100h1v-129H100v1q0 53.7 37.15 90.85Q174.3-100 228-100Zm83 0h128v-129H311v129Zm210 0h128v-129H521v129Zm212 0h-1q53.7 0 90.85-37.15Q860-174.3 860-228v-1H733v129ZM100-732h129v-128h-1q-53.7 0-90.85 37.15Q100-785.7 100-732Zm0 211h129v-129H100v129Zm0 210h129v-128H100v128Zm211-421h128v-128H311v128Zm0 211h128v-129H311v129Zm0 210h128v-128H311v128Zm210-421h128v-128H521v128Zm0 211h128v-129H521v129Zm0 210h128v-128H521v128Zm212-421h127q0-53.7-37.15-90.85Q785.7-860 732-860h1v128Zm0 211h127v-129H733v129Zm0 210h127v-128H733v128Z" />
+                                </svg> Pixel</div>
+                            <div class="sp-mode-chip" onclick="spSelectMode(this,'particles')"><svg height="16px"
+                                    viewBox="0 -960 960 960" width="16px" fill="#e3e3e3">
+                                    <path
+                                        d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                                </svg> Particles</div>
+                        </div>
+                        <div class="sp-hint">Select words to mark as spoilers, then post.</div>
+                    </div>
+                </div>
                 <div class="ti-add-divider"></div>
                 <div class="controls">
                     <div class="left-controls">
@@ -5664,13 +6058,12 @@
                                 <path
                                     d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330q0-17 11.5-28.5T400-720q17 0 28.5 11.5T440-680v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350q0-17 11.5-28.5T680-720q17 0 28.5 11.5T720-680v350Z" />
                             </svg></button>
-                        <button class="btn-g">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                fill="#e3e3e3">
+                        <button class="btn-g" id="spSpoilerToggleBtn" title="Spoiler Mode"
+                            onclick="spToggleSpoilerSection()"><svg viewBox="0 0 24 24" width="24" height="24"
+                                fill="currentColor">
                                 <path
-                                    d="M764-84 624-222q-35 11-71 16.5t-73 5.5q-134 0-245-72T61-462q-5-9-7.5-18.5T51-500q0-10 2.5-19.5T61-538q22-39 47-76t58-66l-83-84q-11-11-11-27.5T84-820q11-11 28-11t28 11l680 680q11 11 11.5 27.5T820-84q-11 11-28 11t-28-11ZM480-320q11 0 21-1t20-4L305-541q-3 10-4 20t-1 21q0 75 52.5 127.5T480-320Zm0-480q134 0 245.5 72.5T900-537q5 8 7.5 17.5T910-500q0 10-2 19.5t-7 17.5q-19 37-42.5 70T806-331q-14 14-33 13t-33-15l-80-80q-7-7-9-16.5t1-19.5q4-13 6-25t2-26q0-75-52.5-127.5T480-680q-14 0-26 2t-25 6q-10 3-20 1t-17-9l-33-33q-19-19-12.5-44t31.5-32q25-5 50.5-8t51.5-3Zm79 226q11 13 18.5 28.5T587-513q1 8-6 11t-13-3l-82-82q-6-6-2.5-13t11.5-7q19 2 35 10.5t29 22.5Z" />
-                            </svg>
-                        </button>
+                                    d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+                            </svg></button>
                     </div>
                 </div>
             </div>
@@ -6551,6 +6944,489 @@
     <script src="/modules/logo-sp.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="modules/notifications.js"></script>
+    <script>
+        (function () {
+            var spParticleRafs = new WeakMap();
+            var spCurrentMode = 'redacted';
+            var spWsTokens = [];
+            var spWsSpoiled = new Set();
+            var spWsAnchor = null;
+            var spWsComposeMode = 'write';
+
+            function spEscHtml(s) {
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            window.spToggleSpoilerSection = function () {
+                var wrap = document.getElementById('spSecWrap');
+                var tabs = document.getElementById('spCtabsWrap');
+                var btn = document.getElementById('spSpoilerToggleBtn');
+                var isOpen = wrap.classList.contains('open');
+                if (isOpen) {
+                    wrap.classList.remove('open');
+                    tabs.classList.remove('open');
+                    btn.classList.remove('active');
+                    spSetComposeTab('write');
+                } else {
+                    wrap.classList.add('open');
+                    tabs.classList.add('open');
+                    btn.classList.add('active');
+                }
+            };
+
+            window.spSelectMode = function (el, mode) {
+                document.querySelectorAll('.sp-mode-chip').forEach(function (c) { c.classList.remove('active'); });
+                el.classList.add('active');
+                spCurrentMode = mode;
+            };
+
+            window.spSetComposeTab = function (mode) {
+                spWsComposeMode = mode;
+                var ta = document.getElementById('postTextarea');
+                var wordArea = document.getElementById('spWordSelArea');
+                var tabWrite = document.getElementById('spTabWrite');
+                var tabMark = document.getElementById('spTabMark');
+                tabWrite.classList.toggle('active', mode === 'write');
+                tabMark.classList.toggle('active', mode === 'mark');
+                if (mode === 'mark') {
+                    var text = ta.value;
+                    if (!text.trim()) {
+                        spWsComposeMode = 'write';
+                        tabWrite.classList.add('active');
+                        tabMark.classList.remove('active');
+                        ta.placeholder = 'Write something first, then mark spoilers!';
+                        ta.focus();
+                        setTimeout(function () { ta.placeholder = "What's on your mind?"; }, 2400);
+                        return;
+                    }
+                    var newTokens = spTokenize(text);
+                    var oldText = spWsTokens.map(function (t) { return t.text; }).join('');
+                    if (oldText !== text) {
+                        spWsTokens = newTokens;
+                        spWsSpoiled = new Set();
+                        spWsAnchor = null;
+                    } else {
+                        spWsTokens = newTokens;
+                    }
+                    ta.style.display = 'none';
+                    wordArea.classList.add('show');
+                    spRenderWordSel();
+                } else {
+                    ta.style.display = '';
+                    wordArea.classList.remove('show');
+                    if (spWsTokens.length > 0) {
+                        ta.value = spWsTokens.map(function (t) { return t.text; }).join('');
+                    }
+                    spWsAnchor = null;
+                }
+            };
+
+            function spTokenize(text) {
+                var parts = text.match(/[ \t\n]+|[\w\u00C0-\u024F\u0400-\u04FF]+|[^\s\w\u00C0-\u024F\u0400-\u04FF]+/gu) || [];
+                return parts.map(function (p) {
+                    return {
+                        text: p,
+                        kind: /^[ \t\n]+$/.test(p) ? 'space' : /^[\w\u00C0-\u024F\u0400-\u04FF]+$/u.test(p) ? 'word' : 'punct'
+                    };
+                });
+            }
+
+            function spRenderWordSel() {
+                var box = document.getElementById('spWsBox');
+                box.innerHTML = '';
+                spWsTokens.forEach(function (token, idx) {
+                    if (token.kind !== 'word') {
+                        var sp = document.createElement('span');
+                        if (token.kind === 'space') {
+                            sp.innerHTML = token.text.replace(/\n/g, '<br>');
+                        } else {
+                            sp.textContent = token.text;
+                        }
+                        box.appendChild(sp);
+                        return;
+                    }
+                    var sp = document.createElement('span');
+                    sp.className = 'ws-word';
+                    sp.textContent = token.text;
+                    sp.dataset.idx = idx;
+                    if (spWsSpoiled.has(idx)) {
+                        sp.classList.add('ws-spoiler');
+                    } else if (spWsAnchor === idx) {
+                        sp.classList.add('ws-anchor');
+                    }
+                    sp.addEventListener('click', function () { spOnWordClick(idx); });
+                    box.appendChild(sp);
+                });
+                spUpdateWSStatus();
+            }
+
+            function spOnWordClick(idx) {
+                if (spWsSpoiled.has(idx)) {
+                    spWsSpoiled.delete(idx);
+                    spWsAnchor = null;
+                    spRenderWordSel();
+                    return;
+                }
+                if (spWsAnchor === null) {
+                    spWsAnchor = idx;
+                    spRenderWordSel();
+                    return;
+                }
+                if (spWsAnchor === idx) {
+                    spWsSpoiled.add(idx);
+                    spWsAnchor = null;
+                    spRenderWordSel();
+                    return;
+                }
+                var start = Math.min(spWsAnchor, idx);
+                var end = Math.max(spWsAnchor, idx);
+                for (var i = start; i <= end; i++) {
+                    if (spWsTokens[i] && spWsTokens[i].kind === 'word') {
+                        spWsSpoiled.add(i);
+                    }
+                }
+                spWsAnchor = null;
+                spRenderWordSel();
+            }
+
+            window.spWsUndoLast = function () {
+                if (spWsSpoiled.size === 0 && spWsAnchor === null) return;
+                if (spWsAnchor !== null) {
+                    spWsAnchor = null;
+                    spRenderWordSel();
+                    return;
+                }
+                var arr = Array.from(spWsSpoiled);
+                spWsSpoiled.delete(arr[arr.length - 1]);
+                spRenderWordSel();
+            };
+
+            function spUpdateWSStatus() {
+                var status = document.getElementById('spWsStatus');
+                var undoBtn = document.getElementById('spWsUndo');
+                var count = spWsSpoiled.size;
+                var newText, newClass;
+                if (spWsAnchor !== null) {
+                    newText = 'Now tap the last word';
+                    newClass = 'sp-ws-status ws-st-active';
+                } else if (count > 0) {
+                    newText = 'tap to un-mark';
+                    newClass = 'sp-ws-status ws-st-done';
+                } else {
+                    newText = 'Tap the first word to start';
+                    newClass = 'sp-ws-status hint';
+                }
+                if (status.textContent !== newText) {
+                    status.style.animation = 'none';
+                    status.offsetHeight;
+                    status.style.animation = '';
+                    status.textContent = newText;
+                }
+                status.className = newClass;
+                undoBtn.classList.toggle('show', spWsAnchor !== null || count > 0);
+            }
+
+            function spBuildHtml() {
+                var html = '';
+                var i = 0;
+                while (i < spWsTokens.length) {
+                    var tok = spWsTokens[i];
+                    if (tok.kind === 'word' && spWsSpoiled.has(i)) {
+                        var runText = tok.text;
+                        var j = i + 1;
+                        while (j < spWsTokens.length) {
+                            if (spWsTokens[j].kind === 'space') {
+                                var k = j + 1;
+                                if (k < spWsTokens.length && spWsTokens[k].kind === 'word' && spWsSpoiled.has(k)) {
+                                    runText += spWsTokens[j].text + spWsTokens[k].text;
+                                    j = k + 1;
+                                } else { break; }
+                            } else if (spWsTokens[j].kind === 'word' && spWsSpoiled.has(j)) {
+                                runText += spWsTokens[j].text;
+                                j++;
+                            } else { break; }
+                        }
+                        var safe = spEscHtml(runText);
+                        if (spCurrentMode === 'particles' || spCurrentMode === 'pixel') {
+                            html += '<span class="spoiler-span" data-mode="' + spCurrentMode + '" onclick="revealSpoiler(this)"><span class="sp-text-inner">' + safe + '</span></span>';
+                        } else {
+                            html += '<span class="spoiler-span" data-mode="' + spCurrentMode + '" onclick="revealSpoiler(this)">' + safe + '</span>';
+                        }
+                        i = j;
+                    } else {
+                        if (tok.kind === 'space') {
+                            html += tok.text.replace(/\n/g, '<br>').replace(/ /g, ' ');
+                        } else {
+                            html += spEscHtml(tok.text);
+                        }
+                        i++;
+                    }
+                }
+                return html;
+            }
+
+            window.spGetContentForPost = function () {
+                if (spWsComposeMode === 'mark' && spWsSpoiled.size > 0) {
+                    return { html: spBuildHtml(), isSpoilerHtml: true };
+                } else if (spWsComposeMode === 'mark') {
+                    var plain = spWsTokens.map(function (t) { return t.text; }).join('');
+                    return { html: spEscHtml(plain).replace(/\n/g, '<br>'), isSpoilerHtml: false };
+                }
+                return null;
+            };
+
+            window.spResetComposeState = function () {
+                spWsTokens = [];
+                spWsSpoiled = new Set();
+                spWsAnchor = null;
+                spWsComposeMode = 'write';
+                spCurrentMode = 'redacted';
+                var ta = document.getElementById('postTextarea');
+                var wordArea = document.getElementById('spWordSelArea');
+                if (ta) { ta.style.display = ''; }
+                if (wordArea) wordArea.classList.remove('show');
+                var ctabs = document.getElementById('spCtabsWrap');
+                var secWrap = document.getElementById('spSecWrap');
+                var toggleBtn = document.getElementById('spSpoilerToggleBtn');
+                var tabWrite = document.getElementById('spTabWrite');
+                var tabMark = document.getElementById('spTabMark');
+                if (ctabs) ctabs.classList.remove('open');
+                if (secWrap) secWrap.classList.remove('open');
+                if (toggleBtn) toggleBtn.classList.remove('active');
+                if (tabWrite) tabWrite.classList.add('active');
+                if (tabMark) tabMark.classList.remove('active');
+                document.querySelectorAll('.sp-mode-chip').forEach(function (c) { c.classList.remove('active'); });
+                var first = document.querySelector('.sp-mode-chip');
+                if (first) first.classList.add('active');
+            };
+
+            var _spParticleRafs = new WeakMap();
+
+            function spSpawnParticles(span, reappear) {
+                var inner = span.querySelector('.sp-text-inner');
+                if (!inner) return;
+                requestAnimationFrame(function () {
+                    var rect = inner.getBoundingClientRect();
+                    var W = Math.ceil(rect.width) || 180, H = Math.ceil(rect.height) || 24;
+                    span.querySelectorAll('.px-canvas').forEach(function (c) { c.remove(); });
+                    var canvas = document.createElement('canvas');
+                    canvas.className = 'px-canvas';
+                    canvas.width = W; canvas.height = H;
+                    canvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
+                    span.appendChild(canvas);
+                    var ctx = canvas.getContext('2d');
+                    var N = Math.max(20, Math.floor((W * H) / 80));
+                    var particles = Array.from({ length: N }, function () {
+                        var a = Math.random() * Math.PI * 2;
+                        var spd = 0.1 + Math.random() * 0.32;
+                        return { x: Math.random() * W, y: Math.random() * H, size: 0.9 + Math.random() * 2.4, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd * 0.55, phase: Math.random() * Math.PI * 2, alpha: 0.28 + Math.random() * 0.52 };
+                    });
+                    var t = 0, rafId, alive = true;
+                    function drawIdle() {
+                        if (!alive) return;
+                        t++;
+                        ctx.clearRect(0, 0, W, H);
+                        particles.forEach(function (p) {
+                            p.x += p.vx; p.y += p.vy;
+                            if (p.x < 0) { p.x = 0; p.vx *= -1; } if (p.x > W) { p.x = W; p.vx *= -1; }
+                            if (p.y < 0) { p.y = 0; p.vy *= -1; } if (p.y > H) { p.y = H; p.vy *= -1; }
+                            var pulse = Math.sin(t * 0.022 + p.phase) * 0.16;
+                            ctx.globalAlpha = Math.max(0, Math.min(1, p.alpha + pulse));
+                            ctx.fillStyle = '#fff';
+                            var s = p.size * 1.5, br = s * 0.28;
+                            ctx.beginPath(); ctx.roundRect(p.x - s / 2, p.y - s / 2, s, s, br); ctx.fill();
+                        });
+                        rafId = requestAnimationFrame(drawIdle);
+                    }
+                    rafId = requestAnimationFrame(drawIdle);
+                    if (reappear) {
+                        canvas.style.opacity = '0'; canvas.style.transition = 'opacity 0.4s ease';
+                        requestAnimationFrame(function () { requestAnimationFrame(function () { canvas.style.opacity = '1'; }); });
+                    }
+                    function scatter() {
+                        alive = false; cancelAnimationFrame(rafId);
+                        var EXP = 72;
+                        canvas.style.cssText = 'position:absolute;top:' + (-EXP) + 'px;left:' + (-EXP) + 'px;pointer-events:none;z-index:2;';
+                        var EW = W + EXP * 2, EH = H + EXP * 2;
+                        canvas.width = EW; canvas.height = EH;
+                        var sp = particles.map(function (p) { return { x: p.x + EXP, y: p.y + EXP, size: p.size, alpha: p.alpha + 0.2, vx: (Math.random() - 0.5) * 5.5, vy: -(0.6 + Math.random() * 3.2), grav: 0.10 + Math.random() * 0.09, drag: 0.978 + Math.random() * 0.014, decay: 0.025 + Math.random() * 0.022, shrink: 0.966 + Math.random() * 0.02 }; });
+                        function drawScatter() {
+                            ctx.clearRect(0, 0, EW, EH);
+                            var any = false;
+                            sp.forEach(function (p) {
+                                p.vy += p.grav; p.vx *= p.drag; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; p.size *= p.shrink;
+                                if (p.alpha <= 0 || p.size < 0.12) return;
+                                any = true;
+                                ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = '#fff';
+                                var s = p.size * 1.5, br = s * 0.28;
+                                ctx.beginPath(); ctx.roundRect(p.x - s / 2, p.y - s / 2, s, s, br); ctx.fill();
+                            });
+                            if (any) { requestAnimationFrame(drawScatter); } else { if (canvas.parentNode) canvas.remove(); }
+                        }
+                        requestAnimationFrame(drawScatter);
+                    }
+                    _spParticleRafs.set(span, { canvas, rafId, scatter });
+                });
+            }
+
+            function spInitParticleSpan(span) {
+                if (span.dataset.ptInited) return;
+                span.dataset.ptInited = '1';
+                spSpawnParticles(span, false);
+            }
+
+            function spReappearParticles(span) {
+                span.dataset.ptInited = '1';
+                spSpawnParticles(span, true);
+            }
+
+            function spGetRenderedLines(textNode) {
+                var text = textNode.textContent || '';
+                var lines = [], current = null;
+                for (var i = 0; i < text.length; i++) {
+                    var range = document.createRange();
+                    range.setStart(textNode, i); range.setEnd(textNode, i + 1);
+                    var rect = range.getBoundingClientRect();
+                    if (!rect || rect.width === 0 || rect.height === 0) continue;
+                    var topKey = Math.round(rect.top);
+                    if (!current || current.topKey !== topKey) {
+                        current = { topKey, top: rect.top, left: rect.left, right: rect.right, height: rect.height, start: i, end: i + 1 };
+                        lines.push(current);
+                    } else {
+                        current.left = Math.min(current.left, rect.left);
+                        current.right = Math.max(current.right, rect.right);
+                        current.height = Math.max(current.height, rect.height);
+                        current.end = i + 1;
+                    }
+                }
+                return lines.map(function (l) { return { text: text.slice(l.start, l.end), top: l.top, left: l.left, width: Math.max(1, l.right - l.left), height: Math.max(1, l.height) }; });
+            }
+
+            function spRenderPixelated(span, pixelSize) {
+                var inner = span.querySelector('.sp-text-inner');
+                if (!inner) return;
+                span.querySelectorAll('.spoiler-line-canvas').forEach(function (c) { c.remove(); });
+                var textNode = inner.firstChild;
+                if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+                var lineRects = spGetRenderedLines(textNode);
+                if (!lineRects.length) return;
+                var spanRects = span.getClientRects();
+                var refLeft = spanRects.length > 0 ? spanRects[0].left : span.getBoundingClientRect().left;
+                var refTop = spanRects.length > 0 ? spanRects[0].top : span.getBoundingClientRect().top;
+                var style = window.getComputedStyle(inner);
+                var p = Math.max(1, pixelSize);
+                var textColor = style.color;
+                if (textColor === 'rgba(0, 0, 0, 0)' || textColor === 'transparent' || !span.classList.contains('revealed')) {
+                    textColor = document.documentElement.classList.contains('dark') ? '#e8ecff' : '#18191e';
+                }
+                lineRects.forEach(function (line) {
+                    if (line.width < 0.5) return;
+                    var canvas = document.createElement('canvas');
+                    canvas.className = 'spoiler-line-canvas';
+                    canvas.style.left = Math.round(line.left - refLeft) + 'px';
+                    canvas.style.top = Math.round(line.top - refTop) + 'px';
+                    canvas.width = Math.ceil(line.width);
+                    canvas.height = Math.ceil(line.height);
+                    canvas.style.width = line.width + 'px';
+                    canvas.style.height = line.height + 'px';
+                    span.appendChild(canvas);
+                    var ctx = canvas.getContext('2d');
+                    var cols = Math.ceil(canvas.width / p), rows = Math.ceil(canvas.height / p);
+                    ctx.fillStyle = textColor;
+                    for (var row = 0; row < rows; row++) {
+                        for (var col = 0; col < cols; col++) {
+                            if (Math.random() > 0.48) {
+                                ctx.globalAlpha = 0.4 + Math.random() * 0.6;
+                                ctx.fillRect(col * p, row * p, p - 0.5, p - 0.5);
+                            }
+                        }
+                    }
+                    ctx.globalAlpha = 1;
+                });
+            }
+
+            function spAnimateDepixelate(span, onDone) {
+                span.classList.remove('revealed');
+                var p = 10;
+                function step() {
+                    p -= 0.3;
+                    spRenderPixelated(span, p);
+                    if (p > 1) { requestAnimationFrame(step); }
+                    else { spRenderPixelated(span, 1); span.querySelectorAll('.spoiler-line-canvas').forEach(function (c) { c.remove(); }); if (onDone) onDone(); }
+                }
+                requestAnimationFrame(step);
+            }
+
+            function spAnimateRepixelate(span, onDone) {
+                span.classList.remove('revealed');
+                var p = 1;
+                function step() {
+                    p += 0.3;
+                    spRenderPixelated(span, p);
+                    if (p < 10) { requestAnimationFrame(step); }
+                    else { spRenderPixelated(span, 10); if (onDone) onDone(); }
+                }
+                requestAnimationFrame(step);
+            }
+
+            function spInitPixelSpan(span) {
+                if (span.dataset.pxInited) return;
+                setTimeout(function () {
+                    span.dataset.pxInited = '1';
+                    spRenderPixelated(span, 10);
+                }, 200);
+            }
+
+            window.spInitAllParticleSpans = function () {
+                document.querySelectorAll('.spoiler-span[data-mode="particles"]:not([data-pt-inited])').forEach(spInitParticleSpan);
+            };
+
+            window.spInitAllPixelSpans = function () {
+                document.querySelectorAll('.spoiler-span[data-mode="pixel"]:not([data-px-inited])').forEach(spInitPixelSpan);
+            };
+
+            window.revealSpoiler = function (el) {
+                var mode = el.dataset.mode;
+                if (el.classList.contains('revealed')) {
+                    if (mode === 'pixel') {
+                        spAnimateRepixelate(el);
+                    } else if (mode === 'particles') {
+                        var inner = el.querySelector('.sp-text-inner');
+                        if (inner) {
+                            el.classList.add('hiding');
+                            setTimeout(function () {
+                                el.classList.remove('hiding');
+                                el.classList.remove('revealed');
+                                delete el.dataset.ptInited;
+                                setTimeout(function () { spReappearParticles(el); }, 50);
+                            }, 240);
+                        } else {
+                            el.classList.remove('revealed');
+                            delete el.dataset.ptInited;
+                            setTimeout(function () { spReappearParticles(el); }, 50);
+                        }
+                    } else {
+                        el.classList.remove('revealed');
+                    }
+                    return;
+                }
+                if (mode === 'pixel') {
+                    spAnimateDepixelate(el, function () { el.classList.add('revealed'); });
+                } else if (mode === 'particles') {
+                    var ctrl = _spParticleRafs.get(el);
+                    if (ctrl) ctrl.scatter();
+                    setTimeout(function () { el.classList.add('revealed'); }, 300);
+                } else {
+                    el.classList.add('revealed');
+                }
+            };
+
+            setTimeout(function () {
+                window.spInitAllParticleSpans();
+                window.spInitAllPixelSpans();
+            }, 200);
+        })();
+    </script>
     <script>
         const COLORS = [
             { label: "Default", value: "auto" },
