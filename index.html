@@ -7318,16 +7318,15 @@
                 var p = Math.max(1, pixelSize);
                 var textColor = style.color;
                 if (textColor === 'rgba(0, 0, 0, 0)' || textColor === 'transparent' || !span.classList.contains('revealed')) {
-                    const root = getComputedStyle(document.documentElement);
-                    const primaryColor = root.getPropertyValue('--text-primary').trim();
-                    textColor = primaryColor || (document.documentElement.classList.contains('dark') ? '#e8ecff' : '#18191e');
+                    textColor = document.documentElement.classList.contains('dark') ? '#e8ecff' : '#18191e';
                 }
+                var paddingTop = parseFloat(window.getComputedStyle(inner).paddingTop) || 0;
                 lineRects.forEach(function (line) {
                     if (line.width < 0.5) return;
                     var canvas = document.createElement('canvas');
                     canvas.className = 'spoiler-line-canvas';
                     canvas.style.left = Math.round(line.left - refLeft) + 'px';
-                    canvas.style.top = Math.round(line.top - refTop) + 'px';
+                    canvas.style.top = Math.round(line.top - refTop + paddingTop) + 'px';
                     canvas.width = Math.ceil(line.width);
                     canvas.height = Math.ceil(line.height);
                     canvas.style.width = line.width + 'px';
