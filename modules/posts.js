@@ -52,11 +52,14 @@ function setCountWrapSize(wrap, text) {
     wrap.style.width = '0px';
     wrap.style.marginLeft = '0px';
   } else {
-    requestAnimationFrame(() => {
-      const s = wrap.querySelector('.like-count');
-      wrap.style.width = (s ? s.scrollWidth : 0) + 'px';
-      wrap.style.marginLeft = '4px';
-    });
+    const tmp = document.createElement('span');
+    tmp.style.cssText = 'position:absolute;visibility:hidden;font-size:12px;white-space:nowrap;pointer-events:none;';
+    tmp.textContent = text;
+    document.body.appendChild(tmp);
+    const w = tmp.getBoundingClientRect().width;
+    tmp.remove();
+    wrap.style.width = Math.ceil(w) + 'px';
+    wrap.style.marginLeft = '4px';
   }
 }
 
