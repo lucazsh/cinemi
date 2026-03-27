@@ -422,11 +422,6 @@
             color: var(--text-primary);
         }
 
-        .re {
-            padding-top: 8px;
-            margin-left: -6.5px;
-        }
-
         .emoji {
             display: inline-block;
             margin-right: 12px;
@@ -5082,27 +5077,35 @@
             }
         }
 
+        .re {
+            padding-top: 8px;
+            margin-left: -6.5px;
+            display: flex;
+            align-items: center;
+            gap: 0px;
+        }
+
         .like-btn {
             background: none;
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 4px 6px;
+            gap: 4px;
+            padding: 4px 5px;
             border-radius: 8px;
             color: #e3e3e3;
-            transition: color 0.2s;
-            min-width: 52px;
         }
 
         .like-btn .heart-out {
             fill: #e3e3e3;
+            flex-shrink: 0;
         }
 
         .like-btn .heart-fill {
             display: none;
             fill: #e8394c;
+            flex-shrink: 0;
         }
 
         .like-btn.liked .heart-out {
@@ -5113,10 +5116,44 @@
             display: inline-block !important;
         }
 
+        @keyframes heartPop {
+            0% {
+                transform: scale(0.4);
+                opacity: 0.6;
+            }
+
+            60% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes heartUnpop {
+            0% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .heart-pop {
+            animation: heartPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .heart-unpop {
+            animation: heartUnpop 0.15s ease forwards;
+        }
+
         .like-count-wrap {
             overflow: hidden;
             height: 18px;
-            width: 28px;
+            width: 26px;
             position: relative;
             display: inline-flex;
             align-items: center;
@@ -5129,6 +5166,9 @@
             color: #e3e3e3;
             display: inline-block;
             white-space: nowrap;
+            position: absolute;
+            left: 0;
+            top: 0;
         }
 
         @keyframes lcDownIn {
@@ -5164,7 +5204,7 @@
         }
 
         .lc-down-in {
-            animation: lcDownIn 0.18s ease;
+            animation: lcDownIn 0.18s ease forwards;
         }
 
         .lc-down-out {
@@ -5172,7 +5212,7 @@
         }
 
         .lc-up-in {
-            animation: lcUpIn 0.18s ease;
+            animation: lcUpIn 0.18s ease forwards;
         }
 
         .lc-up-out {
