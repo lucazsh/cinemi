@@ -270,7 +270,7 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
         const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
         const others = files.filter(f => !((f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/')));
         if (imgs.length) {
-            filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;">';
+            filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;">';
             imgs.forEach(f => {
                 const src = f.dataUrl || f.url;
                 filesHtml += `<img src="${src}" style="height:220px;width:auto;object-fit:cover;flex-shrink:0;border-radius:10px;display:block;"/>`;
@@ -296,7 +296,7 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
             <div class="pr-img" data-username="${escapeHtml(username)}">
                 <img src="${imgSrc}" alt="${escapeHtml(username)} profile image">
             </div>
-            <div style="display:block;">
+            <div style="display:block;min-width:0;flex:1;">
                 <span class="usr usr-post" data-username="${escapeHtml(username)}">${escapeHtml(username)}</span>
                 <span class="time">${timeLabel}</span>
                 <div class="cnt">${contentHtml}</div>
