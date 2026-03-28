@@ -392,7 +392,7 @@ function injectAdsIntoPosts(posts, config) {
 }
 
 function addPostToUIFromServer(post) {
-    if (currentFeed !== 'posts') return;
+    if (currentFeed !== 'posts' && currentFeed !== 'friends') return;
     if (document.querySelector(`[data-post-id="${post.id}"]`)) return;
 
     const timeLabel = post.createdAt ? formatTimeAgo(post.createdAt) : timeLabelForNow();
@@ -724,7 +724,14 @@ async function filterPostsByFeed(feedType) {
             if (list.length === 0) postsContainer.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-subtle);">No posts yet</div>';
         } catch (err) { postsContainer.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-subtle);">Failed to load posts</div>'; }
     } else if (feedType === 'friends') {
-        postsContainer.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-subtle);">Friends feed coming soon...</div>';
+        try {
+            const res = await fetchWithAuth(`${baseUrl}/api/posts/friends`);
+            if (!res.ok) throw new Error('Failed to load friends posts');
+            const list = await res.json();
+            postsContainer.innerHTML = '';
+            list.forEach(p => addPostToUIFromServer(p));
+            if (list.length === 0) postsContainer.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-subtle);">No posts from friends yet</div>';
+        } catch (err) { postsContainer.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-subtle);">Failed to load friends posts</div>'; }
     } else if (feedType === 'reviews') {
         try {
             const res = await fetchWithAuth(`${baseUrl}/api/reviews/all`);
