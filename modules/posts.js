@@ -827,8 +827,19 @@ function showPostCtxToast(msg) {
 
 let _ivSourcePost = null;
 let _ivObserver = null;
+let _ivAllImgs = [];
+let _ivIndex = 0;
 
 function openImgViewer(imgEl) {
+    const postImages = imgEl.closest('.post-images');
+    _ivAllImgs = postImages ? Array.from(postImages.querySelectorAll('img')) : [imgEl];
+    _ivIndex = _ivAllImgs.indexOf(imgEl);
+
+    _showIvImage(imgEl, true);
+    document.addEventListener('keydown', _ivEsc);
+}
+
+function _showIvImage(imgEl, animate) {
     const viewer = document.getElementById('img-viewer');
     const viewerImg = document.getElementById('img-viewer-img');
     const actions = document.getElementById('img-viewer-actions');
@@ -839,10 +850,14 @@ function openImgViewer(imgEl) {
     if (_ivSourcePost) {
         const likeBtn = _ivSourcePost.querySelector('.like-btn');
         const replyBtn = _ivSourcePost.querySelector('.reply');
+        const sendBtn = _ivSourcePost.querySelector('.send');
 
         if (likeBtn) {
             const lb = likeBtn.cloneNode(true);
-            lb.addEventListener('click', () => { likeBtn.click(); syncIvActions(); });
+            lb.addEventListener('click', () => {
+                likeBtn.click();
+                setTimeout(() => syncIvActions(), 20);
+            });
             actions.appendChild(lb);
         }
         if (replyBtn) {
@@ -850,53 +865,77 @@ function openImgViewer(imgEl) {
             rb.addEventListener('click', () => replyBtn.click());
             actions.appendChild(rb);
         }
+        if (sendBtn) {
+            const sb = sendBtn.cloneNode(true);
+            sb.addEventListener('click', () => sendBtn.click());
+            actions.appendChild(sb);
+        }
 
         if (_ivObserver) _ivObserver.disconnect();
         _ivObserver = new MutationObserver(() => syncIvActions());
         _ivObserver.observe(_ivSourcePost, { subtree: true, childList: true, characterData: true, attributes: true });
     }
 
-    const rect = imgEl.getBoundingClientRect();
     viewerImg.src = imgEl.src;
 
-    const fromX = rect.left + rect.width / 2 - window.innerWidth / 2;
-    const fromY = rect.top + rect.height / 2 - window.innerHeight / 2;
-    const scale = rect.width / window.innerWidth;
+    if (animate) {
+        const rect = imgEl.getBoundingClientRect();
+        const fromX = rect.left + rect.width / 2 - window.innerWidth / 2;
+        const fromY = rect.top + rect.height / 2 - window.innerHeight / 2;
+        const scale = rect.width / window.innerWidth;
 
-    viewerImg.style.transition = 'none';
-    viewerImg.style.transform = `translate(${fromX}px, ${fromY}px) scale(${scale})`;
-    viewerImg.style.borderRadius = '10px';
-    viewerImg.style.opacity = '0.6';
-    viewer.style.display = 'flex';
+        viewerImg.style.transition = 'none';
+        viewerImg.style.transform = `translate(${fromX}px, ${fromY}px) scale(${scale})`;
+        viewerImg.style.borderRadius = '20px';
+        viewerImg.style.opacity = '0.6';
+        viewer.style.display = 'flex';
 
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        viewerImg.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1), border-radius 0.38s ease, opacity 0.2s ease';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            viewerImg.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1), border-radius 0.38s ease, opacity 0.2s ease';
+            viewerImg.style.transform = 'translate(0,0) scale(1)';
+            viewerImg.style.borderRadius = '0px';
+            viewerImg.style.opacity = '1';
+            viewer.classList.add('open');
+        }));
+    } else {
+        viewerImg.style.transition = 'none';
         viewerImg.style.transform = 'translate(0,0) scale(1)';
-        viewerImg.style.borderRadius = '0px';
         viewerImg.style.opacity = '1';
-        viewer.classList.add('open');
-    }));
+    }
 
-    document.addEventListener('keydown', _ivEsc);
+    _initIvSwipe();
 }
 
 function syncIvActions() {
     if (!_ivSourcePost) return;
     const actions = document.getElementById('img-viewer-actions');
     const srcLike = _ivSourcePost.querySelector('.like-btn');
-    const srcReply = _ivSourcePost.querySelector('.reply');
     const ivLike = actions.querySelector('.like-btn');
-    const ivReply = actions.querySelector('.reply');
 
     if (srcLike && ivLike) {
+        const wasLiked = ivLike.classList.contains('liked');
+        const isLiked = srcLike.classList.contains('liked');
         ivLike.className = srcLike.className;
+
         const srcCount = srcLike.querySelector('.like-count');
         const ivCount = ivLike.querySelector('.like-count');
         if (srcCount && ivCount) ivCount.textContent = srcCount.textContent;
+
         const srcWrap = srcLike.querySelector('.like-count-wrap');
         const ivWrap = ivLike.querySelector('.like-count-wrap');
         if (srcWrap && ivWrap) ivWrap.style.cssText = srcWrap.style.cssText;
+
+        if (isLiked !== wasLiked) {
+            const heart = ivLike.querySelector(isLiked ? '.heart-fill' : '.heart-out');
+            if (heart) {
+                heart.classList.add(isLiked ? 'heart-pop' : 'heart-unpop');
+                setTimeout(() => heart.classList.remove('heart-pop', 'heart-unpop'), 300);
+            }
+        }
     }
+
+    const srcReply = _ivSourcePost.querySelector('.reply');
+    const ivReply = actions.querySelector('.reply');
     if (srcReply && ivReply) {
         const srcCount = srcReply.querySelector('.reply-count');
         const ivCount = ivReply.querySelector('.reply-count');
@@ -912,11 +951,73 @@ function closeImgViewer() {
     const viewerImg = document.getElementById('img-viewer-img');
     viewerImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
     viewerImg.style.opacity = '0';
-    viewerImg.style.transform = 'scale(0.92)';
+    viewerImg.style.transform = 'scale(0.88)';
     viewer.classList.remove('open');
     setTimeout(() => { viewer.style.display = 'none'; }, 310);
     if (_ivObserver) { _ivObserver.disconnect(); _ivObserver = null; }
     document.removeEventListener('keydown', _ivEsc);
 }
 
-function _ivEsc(e) { if (e.key === 'Escape') closeImgViewer(); }
+function _ivEsc(e) {
+    if (e.key === 'Escape') closeImgViewer();
+    if (e.key === 'ArrowRight') _ivNav(1);
+    if (e.key === 'ArrowLeft') _ivNav(-1);
+}
+
+function _ivNav(dir) {
+    const next = _ivIndex + dir;
+    if (next < 0 || next >= _ivAllImgs.length) return;
+    _ivIndex = next;
+    const viewerImg = document.getElementById('img-viewer-img');
+    viewerImg.style.transition = 'opacity 0.15s ease';
+    viewerImg.style.opacity = '0';
+    setTimeout(() => {
+        _showIvImage(_ivAllImgs[_ivIndex], false);
+        viewerImg.style.transition = 'opacity 0.15s ease';
+        viewerImg.style.opacity = '1';
+    }, 150);
+}
+
+function _initIvSwipe() {
+    const viewerImg = document.getElementById('img-viewer-img');
+    let startX = 0, startY = 0, isDragging = false;
+
+    viewerImg.onpointerdown = (e) => {
+        startX = e.clientX;
+        startY = e.clientY;
+        isDragging = true;
+        viewerImg.setPointerCapture(e.pointerId);
+        viewerImg.style.transition = 'none';
+    };
+
+    viewerImg.onpointermove = (e) => {
+        if (!isDragging) return;
+        const dy = e.clientY - startY;
+        const dx = e.clientX - startX;
+        if (Math.abs(dy) > Math.abs(dx)) {
+            const prog = Math.min(Math.max(dy / 300, 0), 1);
+            viewerImg.style.transform = `translateY(${dy}px) scale(${1 - prog * 0.15})`;
+            document.getElementById('img-viewer').style.background = `rgba(0,0,0,${1 - prog * 0.9})`;
+        }
+    };
+
+    viewerImg.onpointerup = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const dy = e.clientY - startY;
+        const dx = e.clientX - startX;
+
+        if (Math.abs(dy) > Math.abs(dx) && dy > 90) {
+            closeImgViewer();
+        } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
+            viewerImg.style.transition = 'none';
+            viewerImg.style.transform = 'translate(0,0) scale(1)';
+            document.getElementById('img-viewer').style.background = '#000';
+            _ivNav(dx < 0 ? 1 : -1);
+        } else {
+            viewerImg.style.transition = 'transform 0.3s ease, opacity 0.2s ease';
+            viewerImg.style.transform = 'translate(0,0) scale(1)';
+            document.getElementById('img-viewer').style.background = '#000';
+        }
+    };
+}
