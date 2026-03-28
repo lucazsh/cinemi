@@ -255,7 +255,6 @@ function removeFile(id) {
 
 async function openPostMovie(movieId) {
     try {
-        showView('finder');
         const res = await fetch(`${baseUrl}/api/tmdb/movie/${movieId}`, { headers: ngrokHeaders });
         if (res.ok) { const movie = await res.json(); showDetails(movie); }
     } catch (err) { console.error('Failed to open movie:', err); }
