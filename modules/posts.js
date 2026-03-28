@@ -410,7 +410,12 @@ function addPostToUIFromServer(post) {
     const noPostsMsg = postsContainer.querySelector('div[style*="No posts yet"]');
     if (noPostsMsg) postsContainer.innerHTML = '';
 
-    const wrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files || [], timeLabel, post.photoUrl);
+    let serverMovieHtml = '';
+    if (post.movie) {
+        const poster = 'https://image.tmdb.org/t/p/w200' + post.movie.poster;
+        serverMovieHtml = `<div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);"><img src="${poster}" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;"><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(post.movie.title || '')}</div><div style="font-size:12px;opacity:0.45;margin-top:3px;">${escapeHtml(post.movie.year || '')}</div></div></div>`;
+    }
+    const wrapper = createPostWrapper(post.username, post.displayName, (post.text || '') + serverMovieHtml, post.files || [], timeLabel, post.photoUrl);
     wrapper.setAttribute('data-post-id', post.id);
     wrapper.setAttribute('data-timestamp', post.createdAt);
     wrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
@@ -537,6 +542,12 @@ async function submitPostToServerHandler(e) {
     fd.append('text', spoilerData ? spoilerData.html : rawText);
     fd.append('tempId', tempId);
     selected.forEach((f) => fd.append('files', f.file, f.file.name));
+    if (attachedMovie) {
+        fd.append('movieId', String(attachedMovie.id));
+        fd.append('movieTitle', attachedMovie.title || attachedMovie.name || '');
+        fd.append('moviePoster', attachedMovie.poster_path || '');
+        fd.append('movieYear', (attachedMovie.release_date || attachedMovie.first_air_date || '').split('-')[0]);
+    }
 
     try {
         const btn = document.getElementById('postSubmit');
