@@ -392,12 +392,12 @@ function addPostToUIFromServer(post) {
     if (post.tempId) {
         const existing = document.querySelector(`[data-temp-id="${post.tempId}"]`);
         if (existing) {
-            const newWrapper = createPostWrapper(post.username, post.displayName, post.text || '', post.files, timeLabel, post.photoUrl);
-            newWrapper.setAttribute('data-post-id', post.id);
-            newWrapper.setAttribute('data-timestamp', post.createdAt);
-            newWrapper.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
-            setupLikeBtn(newWrapper, post.id);
-            existing.parentNode.replaceChild(newWrapper, existing);
+            existing.setAttribute('data-post-id', post.id);
+            existing.setAttribute('data-timestamp', post.createdAt);
+            existing.removeAttribute('data-temp-id');
+            existing.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', post.id));
+            setupLikeBtn(existing, post.id);
+            seenPostIds.add(post.id);
             lastTimestamp = Math.max(lastTimestamp, new Date(post.createdAt).getTime());
             setTimeout(() => {
                 if (typeof spInitAllParticleSpans === 'function') spInitAllParticleSpans();
