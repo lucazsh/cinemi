@@ -253,6 +253,14 @@ function removeFile(id) {
     if (node) node.remove();
 }
 
+async function openPostMovie(movieId) {
+    try {
+        showView('finder');
+        const res = await fetch(`${baseUrl}/api/tmdb/movie/${movieId}`, { headers: ngrokHeaders });
+        if (res.ok) { const movie = await res.json(); showDetails(movie); }
+    } catch (err) { console.error('Failed to open movie:', err); }
+}
+
 function createPostWrapper(username, displayName, contentHtml, files, timeLabel, photoUrl) {
     const wrapper = document.createElement('div');
     wrapper.className = 'post';
@@ -413,7 +421,7 @@ function addPostToUIFromServer(post) {
     let serverMovieHtml = '';
     if (post.movie) {
         const poster = 'https://image.tmdb.org/t/p/w200' + post.movie.poster;
-        serverMovieHtml = `<div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);"><img src="${poster}" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;"><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(post.movie.title || '')}</div><div style="font-size:12px;opacity:0.45;margin-top:3px;">${escapeHtml(post.movie.year || '')}</div></div></div>`;
+        serverMovieHtml = `<div data-movie-id="${post.movie.id}" onclick="openPostMovie('${post.movie.id}')" style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);cursor:pointer;"><img src="${poster}" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;"><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(post.movie.title || '')}</div><div style="font-size:12px;opacity:0.45;margin-top:3px;">${escapeHtml(post.movie.year || '')}</div></div></div>`;
     }
     const wrapper = createPostWrapper(post.username, post.displayName, (post.text || '') + serverMovieHtml, post.files || [], timeLabel, post.photoUrl);
     wrapper.setAttribute('data-post-id', post.id);
@@ -487,7 +495,7 @@ async function submitPostToServerHandler(e) {
         const mYear = (attachedMovie.release_date || attachedMovie.first_air_date || '').split('-')[0];
         const mPoster = 'https://image.tmdb.org/t/p/w200' + attachedMovie.poster_path;
         movieHtml = `
-            <div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);">
+            <div data-movie-id="${attachedMovie.id}" onclick="openPostMovie('${attachedMovie.id}')" style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);cursor:pointer;">
                 <img src="${mPoster}" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">
                 <div style="flex:1;min-width:0;">
                     <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(mTitle)}</div>
