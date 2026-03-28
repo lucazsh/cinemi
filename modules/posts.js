@@ -987,22 +987,17 @@ function _ivNav(dir) {
     if (next < 0 || next >= _ivAllImgs.length) return;
     _ivIndex = next;
     const viewerImg = document.getElementById('img-viewer-img');
-    const outX = dir < 0 ? '100%' : '-100%';
-    const inX = dir < 0 ? '-100%' : '100%';
-    viewerImg.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
-    viewerImg.style.transform = `translateX(${outX})`;
-    viewerImg.style.opacity = '0';
+    viewerImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+    viewerImg.style.transform = `translateX(${dir < 0 ? '100%' : '-100%'})`;
     setTimeout(() => {
-        viewerImg.style.transition = 'none';
-        viewerImg.style.transform = `translateX(${inX})`;
-        viewerImg.style.opacity = '0';
         _showIvImage(_ivAllImgs[_ivIndex], false);
+        viewerImg.style.transition = 'none';
+        viewerImg.style.transform = `translateX(${dir < 0 ? '-100%' : '100%'})`;
         requestAnimationFrame(() => requestAnimationFrame(() => {
-            viewerImg.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
+            viewerImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
             viewerImg.style.transform = 'translateX(0)';
-            viewerImg.style.opacity = '1';
         }));
-    }, 220);
+    }, 280);
 }
 
 function _initIvSwipe() {
@@ -1012,6 +1007,10 @@ function _initIvSwipe() {
     const actions = document.getElementById('img-viewer-actions');
     let startX = 0, startY = 0, isDragging = false, mode = null;
 
+    const nextImg = document.createElement('img');
+    nextImg.style.cssText = 'position:absolute;width:100%;height:auto;max-height:75vh;object-fit:contain;pointer-events:none;opacity:0;';
+    viewer.appendChild(nextImg);
+
     viewerImg.onpointerdown = (e) => {
         startX = e.clientX;
         startY = e.clientY;
@@ -1019,6 +1018,7 @@ function _initIvSwipe() {
         mode = null;
         viewerImg.setPointerCapture(e.pointerId);
         viewerImg.style.transition = 'none';
+        nextImg.style.transition = 'none';
     };
 
     viewerImg.onpointermove = (e) => {
@@ -1035,8 +1035,24 @@ function _initIvSwipe() {
             const prog = Math.min(dy / 300, 1);
             viewerImg.style.transform = `translateY(${dy}px) scale(${1 - prog * 0.15})`;
             viewer.style.background = `rgba(0,0,0,${1 - prog * 0.9})`;
-            top.style.opacity = `${1 - prog * 2}`;
-            actions.style.opacity = `${1 - prog * 2}`;
+            top.style.opacity = `${Math.max(0, 1 - prog * 5)}`;
+            actions.style.opacity = `${Math.max(0, 1 - prog * 5)}`;
+            nextImg.style.opacity = '0';
+        }
+
+        if (mode === 'x') {
+            const dir = dx < 0 ? 1 : -1;
+            const neighborIndex = _ivIndex + (dx < 0 ? 1 : -1);
+            viewerImg.style.transform = `translateX(${dx}px)`;
+
+            if (neighborIndex >= 0 && neighborIndex < _ivAllImgs.length) {
+                nextImg.src = _ivAllImgs[neighborIndex].src;
+                const offset = dx < 0 ? window.innerWidth : -window.innerWidth;
+                nextImg.style.transform = `translateX(${offset + dx}px)`;
+                nextImg.style.opacity = '1';
+            } else {
+                nextImg.style.opacity = '0';
+            }
         }
     };
 
@@ -1047,6 +1063,7 @@ function _initIvSwipe() {
         const dx = e.clientX - startX;
 
         if (mode === 'y' && dy > 90) {
+            nextImg.style.opacity = '0';
             closeImgViewer();
         } else if (mode === 'y') {
             viewerImg.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
@@ -1055,7 +1072,33 @@ function _initIvSwipe() {
             top.style.opacity = '';
             actions.style.opacity = '';
         } else if (mode === 'x' && Math.abs(dx) > 60) {
-            _ivNav(dx < 0 ? 1 : -1);
+            const dir = dx < 0 ? 1 : -1;
+            const neighborIndex = _ivIndex + dir;
+            if (neighborIndex >= 0 && neighborIndex < _ivAllImgs.length) {
+                viewerImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+                nextImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+                viewerImg.style.transform = `translateX(${dx < 0 ? '-100%' : '100%'})`;
+                nextImg.style.transform = 'translateX(0)';
+                setTimeout(() => {
+                    _ivIndex = neighborIndex;
+                    nextImg.style.opacity = '0';
+                    nextImg.style.transition = 'none';
+                    _showIvImage(_ivAllImgs[_ivIndex], false);
+                    viewerImg.style.transition = 'none';
+                    viewerImg.style.transform = 'translateX(0)';
+                }, 290);
+            } else {
+                viewerImg.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+                viewerImg.style.transform = 'translateX(0)';
+                nextImg.style.opacity = '0';
+            }
+        } else if (mode === 'x') {
+            viewerImg.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+            viewerImg.style.transform = 'translateX(0)';
+            nextImg.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+            const offset = dx < 0 ? window.innerWidth : -window.innerWidth;
+            nextImg.style.transform = `translateX(${offset}px)`;
+            setTimeout(() => { nextImg.style.opacity = '0'; }, 350);
         }
     };
 }
