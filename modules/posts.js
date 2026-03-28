@@ -270,10 +270,10 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
         const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
         const others = files.filter(f => !((f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/')));
         if (imgs.length) {
-            filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;margin-right:calc(-2.3% - 9px);padding-left:5px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;">';
+            filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;margin-right:calc(-2.3% - 20px);margin-left:-70px; padding-left: 70px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch; padding-right: 9px;">';
             imgs.forEach(f => {
                 const src = f.dataUrl || f.url;
-                filesHtml += `<img src="${src}" style="height:220px;width:auto;object-fit:cover;flex-shrink:0;border-radius:10px;display:block;"/>`;
+                filesHtml += `<img src="${src}" style="height:220px;width:auto;object-fit:cover;flex-shrink:0;border-radius:20px;display:block;"/>`;
             });
             filesHtml += '</div>';
         }
