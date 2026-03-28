@@ -546,7 +546,13 @@ async function submitPostToServerHandler(e) {
         if (!res.ok) throw new Error(json?.error || 'upload failed');
         if (currentFeed === 'posts') {
             const optimisticEl = document.querySelector(`[data-temp-id="${tempId}"]`);
-            if (optimisticEl) optimisticEl.remove();
+            if (optimisticEl && json.id) {
+                optimisticEl.setAttribute('data-post-id', json.id);
+                optimisticEl.removeAttribute('data-temp-id');
+                optimisticEl.querySelectorAll('.reply').forEach(b => b.setAttribute('data-post-id', json.id));
+                setupLikeBtn(optimisticEl, json.id);
+                seenPostIds.add(json.id);
+            }
         }
     } catch (err) {
         console.error('Post error:', err);
