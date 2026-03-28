@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html class="inverted">
 <head>
@@ -6225,8 +6224,7 @@
                     <div class="left-controls">
                         <button class="btn-g" title="Add photo"
                             onclick="document.getElementById('postFiles').click()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M206.78-83.83q-51.35 0-87.15-35.8-35.8-35.8-35.8-87.15v-546.44q0-51.35 35.8-87.15 35.8-35.8 87.15-35.8h546.44q51.35 0 87.15 35.8 35.8 35.8 35.8 87.15v546.44q0 51.35-35.8 87.15-35.8 35.8-87.15 35.8H206.78Zm0-122.95h546.44v-546.44H206.78v546.44Zm0 0v-546.44 546.44Zm72.18-56.09h402.08q19.26 0 27.39-16.76 8.14-16.76-3-32.02l-109.6-150.31q-9.13-12.13-24.4-12.19-15.26-.07-24.95 12.63L450-332.74l-66.48-88.35q-9.69-12.69-24.95-12.41-15.27.28-24.4 12.98l-79.6 108.87q-11.14 15.26-3 32.02 8.13 16.76 27.39 16.76Z"/></svg></button>
-                        <button class="btn-g" title="Add audio"
-                            onclick="document.getElementById('postFiles').click()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M163.04-243.04v-296.09 326.78-30.69Zm0 122.95q-51.3 0-87.12-35.26-35.83-35.26-35.83-86v-475.61q0-51.34 32.28-84.56t80.76-38.39l73.48 147.82q6.95 14 19.85 22 12.91 8 28.47 8 31.11 0 46.83-25.87 15.72-25.87 2.28-53l-49.47-98.95h80.87l73.47 147.82q6.96 14 19.89 22 12.92 8 28.5 8 31.15 0 47.1-25.9 15.95-25.91 1.95-52.97l-49.48-98.95h81.43l73.48 147.82q6.95 14 19.86 22 12.9 8 28.46 8 31.12 0 46.84-25.87 15.71-25.87 2.28-53l-49.48-98.95h117.22q51.3 0 87.12 35.83 35.83 35.82 35.83 87.12v116.35q0 25.96-17.76 43.72-17.76 17.76-44.08 17.76H163.04v296.09h255.83q25.96 0 43.72 18.15 17.76 18.16 17.76 43.32 0 25.96-17.76 43.72-17.76 17.76-43.72 17.76H163.04Zm397.31-21.48v-63.73q0-12.13 4.85-23.47 4.84-11.34 13.97-19.62l208.44-208q11.4-12.35 26.02-17.81 14.62-5.45 29.24-5.45 15.96 0 30.61 5.85 14.66 5.84 26.74 17.41l37 38q11.46 11.56 17.08 26.07 5.61 14.51 5.61 29.45 0 15.7-5.39 30.44-5.39 14.74-17.3 26.65l-208 208q-8.77 8.56-19.86 13.13-11.1 4.56-23.79 4.56h-63.74q-25.17 0-43.33-17.76-18.15-17.76-18.15-43.72Zm319.78-221.3-37-37 37 37Zm-240 203h38l118.74-119.74-18-19-19-18-119.74 118.74v38Zm138.74-138.74-19-18 37 37-18-19Z"/></svg></button>
+                        <button class="btn-g" id="addMovieBtn" title="Add film to post" onclick="openPostMoviePanel()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M163.04-243.04v-296.09 326.78-30.69Zm0 122.95q-51.3 0-87.12-35.26-35.83-35.26-35.83-86v-475.61q0-51.34 32.28-84.56t80.76-38.39l73.48 147.82q6.95 14 19.85 22 12.91 8 28.47 8 31.11 0 46.83-25.87 15.72-25.87 2.28-53l-49.47-98.95h80.87l73.47 147.82q6.96 14 19.89 22 12.92 8 28.5 8 31.15 0 47.1-25.9 15.95-25.91 1.95-52.97l-49.48-98.95h81.43l73.48 147.82q6.95 14 19.86 22 12.9 8 28.46 8 31.12 0 46.84-25.87 15.71-25.87 2.28-53l-49.48-98.95h117.22q51.3 0 87.12 35.83 35.83 35.82 35.83 87.12v116.35q0 25.96-17.76 43.72-17.76 17.76-44.08 17.76H163.04v296.09h255.83q25.96 0 43.72 18.15 17.76 18.16 17.76 43.32 0 25.96-17.76 43.72-17.76 17.76-43.72 17.76H163.04Zm397.31-21.48v-63.73q0-12.13 4.85-23.47 4.84-11.34 13.97-19.62l208.44-208q11.4-12.35 26.02-17.81 14.62-5.45 29.24-5.45 15.96 0 30.61 5.85 14.66 5.84 26.74 17.41l37 38q11.46 11.56 17.08 26.07 5.61 14.51 5.61 29.45 0 15.7-5.39 30.44-5.39 14.74-17.3 26.65l-208 208q-8.77 8.56-19.86 13.13-11.1 4.56-23.79 4.56h-63.74q-25.17 0-43.33-17.76-18.15-17.76-18.15-43.72Zm319.78-221.3-37-37 37 37Zm-240 203h38l118.74-119.74-18-19-19-18-119.74 118.74v38Zm138.74-138.74-19-18 37 37-18-19Z"/></svg></button>
                         <button class="btn-g" id="spSpoilerToggleBtn" title="Spoiler Mode"
                             onclick="spToggleSpoilerSection()"><svg viewBox="0 0 24 24" width="24" height="24"
                                 fill="currentColor">
@@ -7102,6 +7100,112 @@
             <button class="btn-close" onclick="closePanel('seemore')">Close</button>
         </div>
     </div>
+    <div id="post-movie-backdrop" onclick="closePostMoviePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;"></div>
+    <div id="post-movie-panel" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--bg-secondary,#18191e);border-radius:26px 26px 0 0;border:1px solid rgba(255,255,255,0.1);padding:20px 20px 0;transform:translateY(100%);transition:transform 0.36s cubic-bezier(0.22,1,0.36,1);max-height:85vh;display:flex;flex-direction:column;">
+        <div style="width:40px;height:4px;background:rgba(255,255,255,0.18);border-radius:100px;margin:0 auto 18px;"></div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:16px;">Tag a film</div>
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 14px;margin-bottom:12px;">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(255,255,255,0.4)"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            <input id="post-movie-search-input" placeholder="Search films..." oninput="searchPostMovies(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary,#fff);">
+        </div>
+        <div id="post-movie-results" style="overflow-y:auto;flex:1;min-height:120px;margin-bottom:8px;"></div>
+        <div style="padding:12px 0 calc(20px + env(safe-area-inset-bottom,0px));flex-shrink:0;">
+            <button onclick="confirmPostMovie()" style="width:100%;padding:14px;border-radius:16px;background:#f0f0f0;color:#0d0d0f;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;">Add to post</button>
+        </div>
+    </div>  
+    <script>
+    var postAttachedMovie = null;
+    var postMovieSearchTimer = null;
+    
+    function openPostMoviePanel() {
+        postAttachedMovie = null;
+        document.getElementById('post-movie-search-input').value = '';
+        document.getElementById('post-movie-results').innerHTML = '';
+        var panel = document.getElementById('post-movie-panel');
+        var backdrop = document.getElementById('post-movie-backdrop');
+        panel.style.transform = 'translateY(0)';
+        backdrop.style.display = 'block';
+        setTimeout(function() { document.getElementById('post-movie-search-input').focus(); }, 350);
+    }
+    
+    function closePostMoviePanel() {
+        document.getElementById('post-movie-panel').style.transform = 'translateY(100%)';
+        document.getElementById('post-movie-backdrop').style.display = 'none';
+    }
+    
+    function searchPostMovies(q) {
+        clearTimeout(postMovieSearchTimer);
+        var res = document.getElementById('post-movie-results');
+        if (!q || q.length < 2) { res.innerHTML = ''; return; }
+        res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">Searching...</div>';
+        postMovieSearchTimer = setTimeout(function() {
+            fetch(baseUrl + '/api/tmdb/search/multi?query=' + encodeURIComponent(q), { headers: ngrokHeaders })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var valid = (data.results || []).filter(function(m) {
+                        return m.poster_path && m.overview && m.overview.length > 5;
+                    });
+                    res.innerHTML = '';
+                    if (!valid.length) { res.innerHTML = '<div style="color:var(--text-primary);padding:10px;">No results.</div>'; return; }
+                    res.style.display = 'grid';
+                    res.style.gridTemplateColumns = 'repeat(3,1fr)';
+                    res.style.gap = '10px';
+                    valid.slice(0, 9).forEach(function(m) {
+                        var card = document.createElement('div');
+                        card.style.cssText = 'border:2px solid transparent;transition:border-color 0.15s,transform 0.15s;border-radius:10px;overflow:hidden;cursor:pointer;background:rgba(255,255,255,0.04);';
+                        var title = m.title || m.name || '';
+                        var year = (m.release_date || m.first_air_date || '').split('-')[0];
+                        card.innerHTML = '<img src="https://image.tmdb.org/t/p/w200' + m.poster_path + '" style="width:100%;display:block;aspect-ratio:2/3;object-fit:cover;"><div style="padding:6px 5px;font-size:11px;font-weight:700;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + title + '</div><div style="padding:0 5px 6px;font-size:10px;opacity:0.4;">' + year + '</div>';
+                        card.onclick = function() {
+                            res.querySelectorAll('div[data-selected]').forEach(function(c) { c.style.borderColor = 'transparent'; c.style.transform = 'scale(1)'; delete c.dataset.selected; });
+                            card.style.borderColor = '#fff';
+                            card.style.transform = 'scale(0.96)';
+                            card.dataset.selected = '1';
+                            postAttachedMovie = m;
+                        };
+                        res.appendChild(card);
+                    });
+                })
+                .catch(function() { res.innerHTML = '<div style="padding:10px;opacity:0.5;">Error loading results.</div>'; });
+        }, 400);
+    }
+    
+    function confirmPostMovie() {
+        if (!postAttachedMovie) return;
+        var m = postAttachedMovie;
+        var title = m.title || m.name || '';
+        var year = (m.release_date || m.first_air_date || '').split('-')[0];
+        var poster = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
+        var prev = document.getElementById('postMoviePreview');
+        prev.innerHTML = '<img src="' + poster + '" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;"><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + title + '</div><div style="font-size:12px;opacity:0.45;margin-top:3px;">' + year + '</div></div><button onclick="removePostMovie()" style="background:rgba(255,255,255,0.08);border:none;color:var(--text-primary,#fff);font-size:16px;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>';
+        prev.style.display = 'flex';
+        prev.style.animation = 'pmFadeIn 0.25s ease';
+        document.getElementById('addMovieBtn').classList.add('active');
+        closePostMoviePanel();
+    }
+    
+    function removePostMovie() {
+        postAttachedMovie = null;
+        var prev = document.getElementById('postMoviePreview');
+        prev.style.display = 'none';
+        prev.innerHTML = '';
+        document.getElementById('addMovieBtn').classList.remove('active');
+    }
+    </script>
+    
+    <style>
+    @keyframes pmFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    #postMoviePreview {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        margin: 10px 16px 0;
+        padding: 10px 12px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 14px;
+        border: 1.5px solid rgba(255,255,255,0.08);
+    }
+    </style>
     <script src="/modules/utils.js"></script>
     <script src="/modules/auth.js"></script>
     <script src="/modules/ui.js"></script>
