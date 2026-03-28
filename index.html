@@ -5267,13 +5267,13 @@
             justify-content: center;
             transition: background 0.35s ease;
         }
-        #img-viewer.open { background: rgba(0,0,0,0.93); }
+        #img-viewer.open { background: #000; }
         #img-viewer-top {
             position: fixed;
             top: 0; left: 0; right: 0;
             display: flex;
             justify-content: space-between;
-            padding: 16px;
+            padding: calc(env(safe-area-inset-top) + 16px) 16px 16px;
             opacity: 0;
             transition: opacity 0.2s ease 0.15s;
         }
@@ -5291,6 +5291,7 @@
             max-height: 75vh;
             object-fit: contain;
             will-change: transform;
+            touch-action: none;
         }
         #img-viewer-actions {
             position: fixed;
@@ -5299,6 +5300,7 @@
             justify-content: center;
             gap: 28px;
             padding: 28px;
+            padding-bottom: calc(env(safe-area-inset-bottom) + 28px);
             opacity: 0;
             transition: opacity 0.2s ease 0.15s;
         }
