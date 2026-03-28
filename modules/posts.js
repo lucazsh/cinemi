@@ -270,12 +270,12 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
         const imgs = files.filter(f => (f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/'));
         const others = files.filter(f => !((f.dataUrl || f.url) && (f.file ? f.file.type : f.mime).startsWith('image/')));
         if (imgs.length) {
-          filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;overflow:hidden;border-radius:10px;">';
-          imgs.forEach(f => {
-              const src = f.dataUrl || f.url;
-              filesHtml += `<img src="${src}" style="height:220px;width:auto;object-fit:cover;flex:1;min-width:0;max-width:100%;display:block;"/>`;
-          });
-          filesHtml += '</div>';
+            filesHtml += '<div class="post-images" style="display:flex;gap:6px;margin-top:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;">';
+            imgs.forEach(f => {
+                const src = f.dataUrl || f.url;
+                filesHtml += `<img src="${src}" style="height:220px;width:auto;object-fit:cover;flex-shrink:0;border-radius:10px;display:block;"/>`;
+            });
+            filesHtml += '</div>';
         }
         if (others.length) {
             filesHtml += '<div class="post-files" style="margin-top:8px">';
