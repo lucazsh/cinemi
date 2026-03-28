@@ -842,9 +842,13 @@ function _showIvImage(imgEl, animate) {
     const viewer = document.getElementById('img-viewer');
     const viewerImg = document.getElementById('img-viewer-img');
     const actions = document.getElementById('img-viewer-actions');
+    const top = document.getElementById('img-viewer-top');
 
     _ivSourcePost = imgEl.closest('.pt');
     actions.innerHTML = '';
+
+    top.style.opacity = '';
+    actions.style.opacity = '';
 
     if (_ivSourcePost) {
         const likeBtn = _ivSourcePost.querySelector('.like-btn');
@@ -853,10 +857,7 @@ function _showIvImage(imgEl, animate) {
 
         if (likeBtn) {
             const lb = likeBtn.cloneNode(true);
-            lb.addEventListener('click', () => {
-                likeBtn.click();
-                setTimeout(() => syncIvActions(), 20);
-            });
+            lb.addEventListener('click', () => { likeBtn.click(); setTimeout(() => syncIvActions(), 20); });
             actions.appendChild(lb);
         }
         if (replyBtn) {
@@ -955,15 +956,22 @@ function syncIvActions() {
 function closeImgViewer() {
     const viewer = document.getElementById('img-viewer');
     const viewerImg = document.getElementById('img-viewer-img');
+    const top = document.getElementById('img-viewer-top');
+    const actions = document.getElementById('img-viewer-actions');
+
     viewerImg.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
     viewerImg.style.opacity = '0';
     viewerImg.style.transform = 'scale(0.88)';
     viewer.classList.remove('open');
     viewer.style.background = '';
+    top.style.opacity = '';
+    actions.style.opacity = '';
+
     setTimeout(() => {
         viewer.style.display = 'none';
         viewer.style.background = '';
     }, 310);
+
     if (_ivObserver) { _ivObserver.disconnect(); _ivObserver = null; }
     document.removeEventListener('keydown', _ivEsc);
 }
