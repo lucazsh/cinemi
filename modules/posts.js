@@ -475,7 +475,21 @@ async function submitPostToServerHandler(e) {
 
     const spoilerData = (typeof spGetContentForPost === 'function') ? spGetContentForPost() : null;
     const contentHtml = spoilerData ? spoilerData.html : escapeHtml(rawText).replace(/\n/g, '<br>');
-
+    let movieHtml = '';
+    const attachedMovie = window.postAttachedMovie || null;
+    if (attachedMovie) {
+        const mTitle = attachedMovie.title || attachedMovie.name || '';
+        const mYear = (attachedMovie.release_date || attachedMovie.first_air_date || '').split('-')[0];
+        const mPoster = 'https://image.tmdb.org/t/p/w200' + attachedMovie.poster_path;
+        movieHtml = `
+            <div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:14px;border:1.5px solid rgba(255,255,255,0.08);">
+                <img src="${mPoster}" style="width:42px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(mTitle)}</div>
+                    <div style="font-size:12px;opacity:0.45;margin-top:3px;">${escapeHtml(mYear)}</div>
+                </div>
+            </div>`;
+    }
     const hasContent = rawText.trim() !== '' || (spoilerData && spoilerData.html) || selected.length > 0;
     if (!hasContent) {
         const ta = document.getElementById('postTextarea');
@@ -490,7 +504,7 @@ async function submitPostToServerHandler(e) {
     if (currentFeed === 'posts') {
         const noPostsMsg = postsContainer.querySelector('div[style*="No posts yet"]');
         if (noPostsMsg) postsContainer.innerHTML = '';
-        const optimisticPostEl = buildPostElement(username, displayName, contentHtml, filesForPost, currentPhotoUrl);
+        const optimisticPostEl = buildPostElement(username, displayName, contentHtml + movieHtml, filesForPost, currentPhotoUrl);
         optimisticPostEl.setAttribute('data-temp-id', tempId);
         postsContainer.prepend(optimisticPostEl);
         setTimeout(() => {
@@ -506,7 +520,13 @@ async function submitPostToServerHandler(e) {
     const fi = document.getElementById('postFiles');
     if (fi) fi.value = '';
     selectedFiles = [];
-
+    if (window.postAttachedMovie) {
+        window.postAttachedMovie = null;
+        const prev = document.getElementById('postMoviePreview');
+        if (prev) { prev.style.display = 'none'; prev.innerHTML = ''; }
+        const btn = document.getElementById('addMovieBtn');
+        if (btn) btn.classList.remove('active');
+    }
     if (typeof spResetComposeState === 'function') spResetComposeState();
     if (typeof closeAdd === 'function') closeAdd();
 
