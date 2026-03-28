@@ -834,7 +834,6 @@ function openImgViewer(imgEl) {
     const postImages = imgEl.closest('.post-images');
     _ivAllImgs = postImages ? Array.from(postImages.querySelectorAll('img')) : [imgEl];
     _ivIndex = _ivAllImgs.indexOf(imgEl);
-
     _showIvImage(imgEl, true);
     document.addEventListener('keydown', _ivEsc);
 }
@@ -899,7 +898,7 @@ function _showIvImage(imgEl, animate) {
         }));
     } else {
         viewerImg.style.transition = 'none';
-        viewerImg.style.transform = 'translate(0,0) scale(1)';
+        viewerImg.style.transform = 'translateX(0)';
         viewerImg.style.opacity = '1';
     }
 
@@ -915,6 +914,7 @@ function syncIvActions() {
     if (srcLike && ivLike) {
         const wasLiked = ivLike.classList.contains('liked');
         const isLiked = srcLike.classList.contains('liked');
+
         ivLike.className = srcLike.className;
 
         const srcCount = srcLike.querySelector('.like-count');
@@ -926,10 +926,16 @@ function syncIvActions() {
         if (srcWrap && ivWrap) ivWrap.style.cssText = srcWrap.style.cssText;
 
         if (isLiked !== wasLiked) {
-            const heart = ivLike.querySelector(isLiked ? '.heart-fill' : '.heart-out');
-            if (heart) {
-                heart.classList.add(isLiked ? 'heart-pop' : 'heart-unpop');
-                setTimeout(() => heart.classList.remove('heart-pop', 'heart-unpop'), 300);
+            const ivHeart = ivLike.querySelector(isLiked ? '.heart-fill' : '.heart-out');
+            const srcHeart = srcLike.querySelector(isLiked ? '.heart-fill' : '.heart-out');
+            if (ivHeart && srcHeart) {
+                const cls = Array.from(srcHeart.classList).find(c => c === 'heart-pop' || c === 'heart-unpop');
+                if (cls) {
+                    ivHeart.classList.remove('heart-pop', 'heart-unpop');
+                    void ivHeart.offsetWidth;
+                    ivHeart.classList.add(cls);
+                    setTimeout(() => ivHeart.classList.remove(cls), 300);
+                }
             }
         }
     }
@@ -953,7 +959,11 @@ function closeImgViewer() {
     viewerImg.style.opacity = '0';
     viewerImg.style.transform = 'scale(0.88)';
     viewer.classList.remove('open');
-    setTimeout(() => { viewer.style.display = 'none'; }, 310);
+    viewer.style.background = '';
+    setTimeout(() => {
+        viewer.style.display = 'none';
+        viewer.style.background = '';
+    }, 310);
     if (_ivObserver) { _ivObserver.disconnect(); _ivObserver = null; }
     document.removeEventListener('keydown', _ivEsc);
 }
@@ -969,23 +979,36 @@ function _ivNav(dir) {
     if (next < 0 || next >= _ivAllImgs.length) return;
     _ivIndex = next;
     const viewerImg = document.getElementById('img-viewer-img');
-    viewerImg.style.transition = 'opacity 0.15s ease';
+    const outX = dir < 0 ? '100%' : '-100%';
+    const inX = dir < 0 ? '-100%' : '100%';
+    viewerImg.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
+    viewerImg.style.transform = `translateX(${outX})`;
     viewerImg.style.opacity = '0';
     setTimeout(() => {
+        viewerImg.style.transition = 'none';
+        viewerImg.style.transform = `translateX(${inX})`;
+        viewerImg.style.opacity = '0';
         _showIvImage(_ivAllImgs[_ivIndex], false);
-        viewerImg.style.transition = 'opacity 0.15s ease';
-        viewerImg.style.opacity = '1';
-    }, 150);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            viewerImg.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease';
+            viewerImg.style.transform = 'translateX(0)';
+            viewerImg.style.opacity = '1';
+        }));
+    }, 220);
 }
 
 function _initIvSwipe() {
     const viewerImg = document.getElementById('img-viewer-img');
-    let startX = 0, startY = 0, isDragging = false;
+    const viewer = document.getElementById('img-viewer');
+    const top = document.getElementById('img-viewer-top');
+    const actions = document.getElementById('img-viewer-actions');
+    let startX = 0, startY = 0, isDragging = false, mode = null;
 
     viewerImg.onpointerdown = (e) => {
         startX = e.clientX;
         startY = e.clientY;
         isDragging = true;
+        mode = null;
         viewerImg.setPointerCapture(e.pointerId);
         viewerImg.style.transition = 'none';
     };
@@ -994,10 +1017,18 @@ function _initIvSwipe() {
         if (!isDragging) return;
         const dy = e.clientY - startY;
         const dx = e.clientX - startX;
-        if (Math.abs(dy) > Math.abs(dx)) {
-            const prog = Math.min(Math.max(dy / 300, 0), 1);
+
+        if (!mode) {
+            if (Math.abs(dy) > 8 || Math.abs(dx) > 8)
+                mode = Math.abs(dy) > Math.abs(dx) ? 'y' : 'x';
+        }
+
+        if (mode === 'y' && dy > 0) {
+            const prog = Math.min(dy / 300, 1);
             viewerImg.style.transform = `translateY(${dy}px) scale(${1 - prog * 0.15})`;
-            document.getElementById('img-viewer').style.background = `rgba(0,0,0,${1 - prog * 0.9})`;
+            viewer.style.background = `rgba(0,0,0,${1 - prog * 0.9})`;
+            top.style.opacity = `${1 - prog * 2}`;
+            actions.style.opacity = `${1 - prog * 2}`;
         }
     };
 
@@ -1007,17 +1038,16 @@ function _initIvSwipe() {
         const dy = e.clientY - startY;
         const dx = e.clientX - startX;
 
-        if (Math.abs(dy) > Math.abs(dx) && dy > 90) {
+        if (mode === 'y' && dy > 90) {
             closeImgViewer();
-        } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
-            viewerImg.style.transition = 'none';
-            viewerImg.style.transform = 'translate(0,0) scale(1)';
-            document.getElementById('img-viewer').style.background = '#000';
+        } else if (mode === 'y') {
+            viewerImg.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+            viewerImg.style.transform = 'translateY(0) scale(1)';
+            viewer.style.background = '#000';
+            top.style.opacity = '';
+            actions.style.opacity = '';
+        } else if (mode === 'x' && Math.abs(dx) > 60) {
             _ivNav(dx < 0 ? 1 : -1);
-        } else {
-            viewerImg.style.transition = 'transform 0.3s ease, opacity 0.2s ease';
-            viewerImg.style.transform = 'translate(0,0) scale(1)';
-            document.getElementById('img-viewer').style.background = '#000';
         }
     };
 }
