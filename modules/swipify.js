@@ -115,7 +115,7 @@ const MINIMISE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" view
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1.5px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
+            border-radius: 25.92px;
             cursor: pointer;
             pointer-events: auto;
             transition: opacity 0.22s ease, transform 0.22s ease, background 0.15s;
