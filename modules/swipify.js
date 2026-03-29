@@ -463,18 +463,6 @@ async function injectTrailerOverlay(card, movie) {
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
     card.insertBefore(wrapper, card.firstChild);
-    if (!isIos) {
-        const unlockPlay = () => {
-            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch (e) {}
-            setTimeout(() => showControls(), 300);
-        };
-        if (globalUserInteracted) {
-            setTimeout(unlockPlay, 400);
-        } else {
-            card.addEventListener('touchstart', unlockPlay, { passive: true, once: true });
-            card.addEventListener('pointerdown', unlockPlay, { once: true });
-        }
-    }
     let paused = isIos;
     let iosUnlocked = !isIos;
     let isCoverFit = true;
