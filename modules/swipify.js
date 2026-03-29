@@ -545,8 +545,6 @@ async function injectTrailerOverlay(card, movie) {
         cover.style.opacity = '1';
         centerBtn.innerHTML = PLAY_SVG;
         setControlsVisible(true);
-    } else {
-        setTimeout(() => showControls(), 1200);
     }
 }
 
