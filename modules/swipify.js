@@ -442,8 +442,7 @@ async function injectTrailerOverlay(card, movie) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
-    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
-
+    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=0&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
 
@@ -469,7 +468,15 @@ async function injectTrailerOverlay(card, movie) {
     wrapper.appendChild(zoomBtn);
 
     card.insertBefore(wrapper, card.firstChild);
+    const iosAutoplayUrl = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+    
+    const unlockIosPlay = () => {
+        iframe.src = iosAutoplayUrl;
+        setTimeout(() => showControls(), 1400);
+    };
 
+card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
+card.addEventListener('pointerdown', unlockIosPlay, { once: true });
     let paused = false;
     let isCoverFit = true;
     let hideTimer = null;
@@ -558,7 +565,8 @@ async function injectTrailerOverlay(card, movie) {
         showControls();
     });
 
-    setTimeout(() => showControls(), 1200);
+    const isIos = /iP(hone|od|ad)/.test(navigator.userAgent);
+    if (!isIos) setTimeout(() => showControls(), 1200);
 }
 
 function toggleTrailerMode() {
