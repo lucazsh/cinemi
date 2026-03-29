@@ -5,6 +5,8 @@ let partyRole = null;
 let partyMatches = [];
 let partyPollInterval = null;
 let partyStarted = false;
+let trailerMode = false;
+let trailerCache = {};
 
 (function injectStyles() {
     const s = document.createElement('style');
@@ -91,6 +93,9 @@ let partyStarted = false;
         .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
         .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.3s ease-out both; }
         .sw-match-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;border:1.5px solid var(--border-h); }
+        .trailer-iframe-container { transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease; }
+        .trailer-zoom-btn:hover { opacity: 1 !important; }
+        .trailer-play-btn:hover { transform: scale(1.1); }
     `;
     document.head.appendChild(s);
 })();
@@ -138,7 +143,11 @@ function closePan(panelName) {
             if (inner) inner.style.animation = '';
             if (backdrop) backdrop.style.opacity = '';
             panel.style.display = 'none';
-            if (panelName === 'swipify') cleanupParty();
+            if (panelName === 'swipify') {
+                cleanupParty();
+                const iframe = document.querySelector('#swipify-container .trailer-iframe');
+                if (iframe) iframe.src = 'about:blank';
+            }
         }, 300);
     }
 }
@@ -359,26 +368,148 @@ function renderSwipifyCard() {
     const overview = movie.overview || '';
     const card = document.createElement('div');
     card.className = 'swipify-card';
-    card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;cursor:grab;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);opacity:0;transform:scale(0.8);`;
-    const partyBadge = partyCode && partyStarted ? `<div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;">${partyCode}</div>` : '';
-    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div style="position:absolute;bottom:24px;left:24px;right:24px;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
+    card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;cursor:grab;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);opacity:0;transform:scale(0.8);overflow:hidden;`;
+    const partyBadge = partyCode && partyStarted ? `<div class="swipify-party-badge" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;z-index:6;">${partyCode}</div>` : '';
+    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div class="swipify-info" style="position:absolute;bottom:24px;left:24px;right:24px;z-index:6;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
     container.appendChild(card);
     requestAnimationFrame(() => {
         card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
         card.style.opacity = '1';
         card.style.transform = 'scale(1)';
     });
+    if (trailerMode) injectTrailerOverlay(card, movie);
     setupSwipeGestures(card, movie);
 }
 
+async function fetchTrailerKey(movie) {
+    const type = movie.media_type === 'tv' ? 'tv' : 'movie';
+    const cacheKey = `${type}-${movie.id}`;
+    if (trailerCache[cacheKey] !== undefined) return trailerCache[cacheKey];
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/tmdb/${type}/${movie.id}/videos`);
+        if (!res || !res.ok) throw new Error();
+        const data = await res.json();
+        const trailer = (data.results || []).find(v => v.type === 'Trailer' && v.site === 'YouTube')
+            || (data.results || []).find(v => v.site === 'YouTube');
+        trailerCache[cacheKey] = trailer ? trailer.key : null;
+        return trailerCache[cacheKey];
+    } catch (e) {
+        trailerCache[cacheKey] = null;
+        return null;
+    }
+}
+
+async function injectTrailerOverlay(card, movie) {
+    const key = await fetchTrailerKey(movie);
+    if (!card.isConnected) return;
+
+    if (!key) {
+        const pill = document.createElement('div');
+        pill.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);padding:4px 14px;border-radius:20px;font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap;z-index:6;pointer-events:none;';
+        pill.textContent = 'No trailer available';
+        card.appendChild(pill);
+        return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'trailer-wrapper';
+    wrapper.style.cssText = 'position:absolute;inset:0;overflow:hidden;border-radius:18px;background:#000;z-index:1;';
+
+    const iframeContainer = document.createElement('div');
+    iframeContainer.className = 'trailer-iframe-container';
+    iframeContainer.style.cssText = 'position:absolute;width:118%;height:118%;top:-9%;left:-9%;';
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'trailer-iframe';
+    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('playsinline', '');
+    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+
+    iframeContainer.appendChild(iframe);
+    wrapper.appendChild(iframeContainer);
+
+    const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
+    const cover = document.createElement('div');
+    cover.className = 'trailer-cover';
+    cover.style.cssText = `position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}') center/cover no-repeat;opacity:0;transition:opacity 0.25s ease;z-index:2;pointer-events:none;`;
+    wrapper.appendChild(cover);
+
+    const pauseIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white"><path d="M640-200q-33 0-56.5-23.5T560-280v-400q0-33 23.5-56.5T640-760q33 0 56.5 23.5T720-680v400q0 33-23.5 56.5T640-200Zm-320 0q-33 0-56.5-23.5T240-280v-400q0-33 23.5-56.5T320-760q33 0 56.5 23.5T400-680v400q0 33-23.5 56.5T320-200Z"/></svg>`;
+    const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white"><path d="M320-200v-560l440 280-440 280Z"/></svg>`;
+
+    const playBtn = document.createElement('div');
+    playBtn.className = 'trailer-play-btn';
+    playBtn.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:4;transition:transform 0.15s ease;pointer-events:none;';
+    playBtn.innerHTML = playIcon;
+    wrapper.appendChild(playBtn);
+
+    const zoomOutSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M340-280H200q-17 0-28.5-11.5T160-320v-140q0-17 11.5-28.5T200-500q17 0 28.5 11.5T240-460v100h100q17 0 28.5 11.5T380-320q0 17-11.5 28.5T340-280Zm480 0H680q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360h100v-100q0-17 11.5-28.5T820-500q17 0 28.5 11.5T860-460v140q0 17-11.5 28.5T800-280ZM200-460q-17 0-28.5-11.5T160-500v-140q0-17 11.5-28.5T200-680h140q17 0 28.5 11.5T380-640q0 17-11.5 28.5T340-600H240v100q0 17-11.5 28.5T200-460Zm620 0q-17 0-28.5-11.5T780-500v-100H680q-17 0-28.5-11.5T640-640q0-17 11.5-28.5T680-680h140q17 0 28.5 11.5T860-640v140q0 17-11.5 28.5T820-460Z"/></svg>`;
+    const zoomInSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>`;
+
+    const zoomBtn = document.createElement('button');
+    zoomBtn.className = 'trailer-zoom-btn';
+    zoomBtn.style.cssText = 'position:absolute;top:12px;right:12px;z-index:5;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.75;';
+    let isCoverFit = true;
+    zoomBtn.innerHTML = zoomOutSvg;
+    zoomBtn.addEventListener('pointerdown', e => e.stopPropagation());
+    zoomBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        isCoverFit = !isCoverFit;
+        if (isCoverFit) {
+            iframeContainer.style.width = '118%';
+            iframeContainer.style.height = '118%';
+            iframeContainer.style.top = '-9%';
+            iframeContainer.style.left = '-9%';
+            zoomBtn.innerHTML = zoomOutSvg;
+        } else {
+            iframeContainer.style.width = '100%';
+            iframeContainer.style.height = '100%';
+            iframeContainer.style.top = '0';
+            iframeContainer.style.left = '0';
+            zoomBtn.innerHTML = zoomInSvg;
+        }
+    });
+    wrapper.appendChild(zoomBtn);
+
+    wrapper._paused = false;
+    wrapper._togglePause = () => {
+        wrapper._paused = !wrapper._paused;
+        if (wrapper._paused) {
+            cover.style.opacity = '1';
+            playBtn.style.display = 'flex';
+            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
+        } else {
+            cover.style.opacity = '0';
+            playBtn.style.display = 'none';
+            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch (e) {}
+        }
+    };
+
+    card.insertBefore(wrapper, card.firstChild);
+}
+
+function toggleTrailerMode() {
+    trailerMode = !trailerMode;
+    const container = document.getElementById('swipify-container');
+    if (container && container.querySelector('.swipify-card')) {
+        const iframe = container.querySelector('.trailer-iframe');
+        if (iframe) iframe.src = 'about:blank';
+        renderSwipifyCard();
+    }
+    return trailerMode;
+}
+
 function setupSwipeGestures(card, movie) {
-    let startX = 0, startY = 0, currentX = 0, isDragging = false;
+    let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false;
     const leftIndicator = card.querySelector('.swipe-left');
     const rightIndicator = card.querySelector('.swipe-right');
     const onStart = (e) => {
         isDragging = true;
         const p = e.touches ? e.touches[0] : e;
         startX = p.clientX; startY = p.clientY;
+        currentX = 0; currentY = 0;
         card.style.cursor = 'grabbing';
         card.style.transition = 'none';
     };
@@ -387,7 +518,7 @@ function setupSwipeGestures(card, movie) {
         e.preventDefault();
         const p = e.touches ? e.touches[0] : e;
         currentX = p.clientX - startX;
-        const currentY = p.clientY - startY;
+        currentY = p.clientY - startY;
         const lx = Math.max(-150, Math.min(150, currentX));
         const ly = Math.max(-150, Math.min(150, currentY));
         card.style.transform = `translateX(${lx}px) translateY(${ly}px) rotate(${lx / 20}deg)`;
@@ -402,6 +533,13 @@ function setupSwipeGestures(card, movie) {
         leftIndicator.style.opacity = 0; rightIndicator.style.opacity = 0;
         if (Math.abs(currentX) > 100) {
             swipeCard(currentX > 0 ? 'right' : 'left', movie);
+        } else if (Math.abs(currentX) < 8 && Math.abs(currentY) < 8) {
+            if (trailerMode) {
+                const wrapper = card.querySelector('.trailer-wrapper');
+                if (wrapper && wrapper._togglePause) wrapper._togglePause();
+            }
+            card.style.transition = 'transform 0.3s ease';
+            card.style.transform = '';
         } else {
             card.style.transition = 'transform 0.3s ease';
             card.style.transform = '';
@@ -420,6 +558,11 @@ function swipeCard(direction, movie) {
     const container = document.getElementById('swipify-container');
     const card = container.querySelector('.swipify-card');
     if (!card) return;
+    const iframe = card.querySelector('.trailer-iframe');
+    if (iframe) {
+        try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'stopVideo', args: '' }), '*'); } catch (e) {}
+        setTimeout(() => { iframe.src = 'about:blank'; }, 50);
+    }
     card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
     card.style.opacity = '0';
     card.style.transform = direction === 'right' ? 'translateX(60px) scale(0.8)' : 'translateX(-60px) scale(0.8)';
