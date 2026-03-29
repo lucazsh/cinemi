@@ -443,7 +443,7 @@ async function injectTrailerOverlay(card, movie) {
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
     const baseUrl = `https://www.youtube.com/embed/${key}?autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
-    iframe.src = isIos ? `${baseUrl}&mute=1` : `${baseUrl}&mute=0`;
+    iframe.src = `${baseUrl}&mute=0`;
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
     const cover = document.createElement('div');
@@ -462,23 +462,24 @@ async function injectTrailerOverlay(card, movie) {
     zoomBtn.style.cssText = 'position:absolute;top:14px;right:14px;width:36px;height:36px;opacity:0;z-index:5;pointer-events:auto;';
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
+    const ytCover = document.createElement('div');
+    ytCover.style.cssText = 'position:absolute;bottom:0;right:0;width:84px;height:48px;background:#000;z-index:3;pointer-events:none;';
+    wrapper.appendChild(ytCover);
     card.insertBefore(wrapper, card.firstChild);
-    const unlockIosPlay = () => {
-        try {
-            if (isIos) {
-                iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unMute', args: '' }), '*');
-            }
-            iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*');
-        } catch (e) {}
-        setTimeout(() => showControls(), 300);
-    };
-    if (globalUserInteracted) {
-        setTimeout(unlockIosPlay, 400);
-    } else {
-        card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
-        card.addEventListener('pointerdown', unlockIosPlay, { once: true });
+    if (!isIos) {
+        const unlockPlay = () => {
+            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch(e) {}
+            setTimeout(() => showControls(), 300);
+        };
+        if (globalUserInteracted) {
+            setTimeout(unlockPlay, 400);
+        } else {
+            card.addEventListener('touchstart', unlockPlay, { passive: true, once: true });
+            card.addEventListener('pointerdown', unlockPlay, { once: true });
+        }
     }
-    let paused = false;
+    let paused = isIos;
+    let iosUnlocked = !isIos;
     let isCoverFit = true;
     let hideTimer = null;
     let controlsVisible = false;
@@ -510,6 +511,15 @@ async function injectTrailerOverlay(card, movie) {
         scheduleHide();
     }
     function togglePlayPause() {
+        if (!iosUnlocked) {
+            iosUnlocked = true;
+            paused = false;
+            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch(e) {}
+            cover.style.opacity = '0';
+            centerBtn.innerHTML = PAUSE_SVG;
+            showControls();
+            return;
+        }
         paused = !paused;
         if (paused) {
             postToIframe('pauseVideo');
@@ -546,7 +556,13 @@ async function injectTrailerOverlay(card, movie) {
         }
         showControls();
     });
-    if (!isIos) setTimeout(() => showControls(), 1200);
+    if (isIos) {
+        cover.style.opacity = '1';
+        centerBtn.innerHTML = PLAY_SVG;
+        setControlsVisible(true);
+    } else {
+        setTimeout(() => showControls(), 1200);
+    }
 }
 
 function toggleTrailerMode() {
