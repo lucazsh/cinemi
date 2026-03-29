@@ -418,7 +418,6 @@ async function fetchTrailerKey(movie) {
 async function injectTrailerOverlay(card, movie) {
     const key = await fetchTrailerKey(movie);
     if (!card.isConnected) return;
-
     if (!key) {
         const pill = document.createElement('div');
         pill.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);padding:5px 14px;border-radius:20px;font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;z-index:6;pointer-events:none;';
@@ -426,66 +425,54 @@ async function injectTrailerOverlay(card, movie) {
         card.appendChild(pill);
         return;
     }
-
     const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
-
     const wrapper = document.createElement('div');
     wrapper.className = 'trailer-wrapper';
     wrapper.style.cssText = 'position:absolute;inset:0;overflow:hidden;border-radius:18px;background:#000;z-index:1;';
-
     const iframeContainer = document.createElement('div');
     iframeContainer.style.cssText = 'position:absolute;width:118%;height:118%;top:-9%;left:-9%;transition:width 0.35s cubic-bezier(0.22,1,0.36,1),height 0.35s cubic-bezier(0.22,1,0.36,1),top 0.35s cubic-bezier(0.22,1,0.36,1),left 0.35s cubic-bezier(0.22,1,0.36,1);';
-
     const iframe = document.createElement('iframe');
     iframe.className = 'trailer-iframe';
     iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;pointer-events:none;';
     iframe.allow = 'autoplay; encrypted-media';
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
-    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=0&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+    const iosAutoplayUrl = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+    iframe.src = iosAutoplayUrl;
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
-
     const cover = document.createElement('div');
     cover.style.cssText = `position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(0,0,0,0.8)),url('${backdropUrl}') center/cover no-repeat;opacity:0;transition:opacity 0.3s ease;z-index:3;pointer-events:none;`;
     wrapper.appendChild(cover);
-
     const controlsOverlay = document.createElement('div');
     controlsOverlay.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;cursor:pointer;';
     wrapper.appendChild(controlsOverlay);
-
     const centerBtn = document.createElement('div');
     centerBtn.className = 'trailer-ctrl-btn';
     centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;pointer-events:auto;z-index:6;position:relative;';
     centerBtn.innerHTML = PAUSE_SVG;
     controlsOverlay.appendChild(centerBtn);
-
-    
     const zoomBtn = document.createElement('div');
     zoomBtn.className = 'trailer-ctrl-btn';
     zoomBtn.style.cssText = 'position:absolute;top:14px;right:14px;width:36px;height:36px;opacity:0;z-index:5;pointer-events:auto;';
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
-
     card.insertBefore(wrapper, card.firstChild);
-    const iosAutoplayUrl = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
-    
     const unlockIosPlay = () => {
-        iframe.src = iosAutoplayUrl;
-        setTimeout(() => showControls(), 1400);
+        try {
+            iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*');
+        } catch (e) {}
+        setTimeout(() => showControls(), 400);
     };
-
-card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
-card.addEventListener('pointerdown', unlockIosPlay, { once: true });
+    card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
+    card.addEventListener('pointerdown', unlockIosPlay, { once: true });
     let paused = false;
     let isCoverFit = true;
     let hideTimer = null;
     let controlsVisible = false;
-
     function postToIframe(func) {
         try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: '' }), '*'); } catch (e) {}
     }
-
     function setControlsVisible(visible) {
         controlsVisible = visible;
         if (visible) {
@@ -502,17 +489,14 @@ card.addEventListener('pointerdown', unlockIosPlay, { once: true });
             zoomBtn.style.animation = 'trailerCtrlOut 0.22s ease forwards';
         }
     }
-
     function scheduleHide() {
         clearTimeout(hideTimer);
         if (!paused) hideTimer = setTimeout(() => setControlsVisible(false), 2400);
     }
-
     function showControls() {
         setControlsVisible(true);
         scheduleHide();
     }
-
     function togglePlayPause() {
         paused = !paused;
         if (paused) {
@@ -528,22 +512,14 @@ card.addEventListener('pointerdown', unlockIosPlay, { once: true });
             showControls();
         }
     }
-
-    
     controlsOverlay.addEventListener('click', e => {
         e.stopPropagation();
-        
-        
         showControls();
     });
-
-    
     centerBtn.addEventListener('click', e => {
         e.stopPropagation();
         togglePlayPause();
     });
-
-    
     zoomBtn.addEventListener('pointerdown', e => e.stopPropagation());
     zoomBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
     zoomBtn.addEventListener('click', e => {
@@ -564,7 +540,6 @@ card.addEventListener('pointerdown', unlockIosPlay, { once: true });
         }
         showControls();
     });
-
     const isIos = /iP(hone|od|ad)/.test(navigator.userAgent);
     if (!isIos) setTimeout(() => showControls(), 1200);
 }
