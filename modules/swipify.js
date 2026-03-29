@@ -393,7 +393,7 @@ function renderSwipifyCard() {
         card.style.opacity = '1';
         card.style.transform = 'scale(1)';
     });
-    if (trailerMode) railerOverlay(card, movie);
+    if (trailerMode) injectTrailerOverlay(card, movie);
     setupSwipeGestures(card, movie);
 }
 
