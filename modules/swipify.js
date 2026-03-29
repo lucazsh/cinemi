@@ -454,7 +454,7 @@ async function injectTrailerOverlay(card, movie) {
     wrapper.appendChild(controlsOverlay);
     const centerBtn = document.createElement('div');
     centerBtn.className = 'trailer-ctrl-btn';
-    centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;pointer-events:auto;z-index:6;position:relative;';
+    centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;pointer-events:auto;z-index:6;position:relative;border-radius:25.92px;';
     centerBtn.innerHTML = PAUSE_SVG;
     controlsOverlay.appendChild(centerBtn);
     const zoomBtn = document.createElement('div');
