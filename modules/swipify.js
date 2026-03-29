@@ -393,7 +393,7 @@ function renderSwipifyCard() {
         card.style.opacity = '1';
         card.style.transform = 'scale(1)';
     });
-    if (trailerMode) injectTrailerOverlay(card, movie);
+    if (trailerMode) railerOverlay(card, movie);
     setupSwipeGestures(card, movie);
 }
 
@@ -414,6 +414,10 @@ async function fetchTrailerKey(movie) {
         return null;
     }
 }
+
+let globalUserInteracted = false;
+document.addEventListener('touchstart', () => { globalUserInteracted = true; }, { once: true });
+document.addEventListener('pointerdown', () => { globalUserInteracted = true; }, { once: true });
 
 async function injectTrailerOverlay(card, movie) {
     const key = await fetchTrailerKey(movie);
@@ -458,14 +462,21 @@ async function injectTrailerOverlay(card, movie) {
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
     card.insertBefore(wrapper, card.firstChild);
+
     const unlockIosPlay = () => {
         try {
             iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*');
         } catch (e) {}
         setTimeout(() => showControls(), 400);
     };
-    card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
-    card.addEventListener('pointerdown', unlockIosPlay, { once: true });
+
+    if (globalUserInteracted) {
+        setTimeout(unlockIosPlay, 600);
+    } else {
+        card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
+        card.addEventListener('pointerdown', unlockIosPlay, { once: true });
+    }
+
     let paused = false;
     let isCoverFit = true;
     let hideTimer = null;
