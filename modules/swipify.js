@@ -429,6 +429,7 @@ async function injectTrailerOverlay(card, movie) {
         card.appendChild(pill);
         return;
     }
+    const isIos = /iP(hone|od|ad)/.test(navigator.userAgent);
     const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
     const wrapper = document.createElement('div');
     wrapper.className = 'trailer-wrapper';
@@ -441,8 +442,8 @@ async function injectTrailerOverlay(card, movie) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
-    const iosAutoplayUrl = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
-    iframe.src = iosAutoplayUrl;
+    const baseUrl = `https://www.youtube.com/embed/${key}?autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+    iframe.src = isIos ? `${baseUrl}&mute=1` : `${baseUrl}&mute=0`;
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
     const cover = document.createElement('div');
@@ -462,21 +463,21 @@ async function injectTrailerOverlay(card, movie) {
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
     card.insertBefore(wrapper, card.firstChild);
-
     const unlockIosPlay = () => {
         try {
+            if (isIos) {
+                iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unMute', args: '' }), '*');
+            }
             iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*');
         } catch (e) {}
-        setTimeout(() => showControls(), 400);
+        setTimeout(() => showControls(), 300);
     };
-
     if (globalUserInteracted) {
-        setTimeout(unlockIosPlay, 600);
+        setTimeout(unlockIosPlay, 400);
     } else {
         card.addEventListener('touchstart', unlockIosPlay, { passive: true, once: true });
         card.addEventListener('pointerdown', unlockIosPlay, { once: true });
     }
-
     let paused = false;
     let isCoverFit = true;
     let hideTimer = null;
@@ -523,14 +524,8 @@ async function injectTrailerOverlay(card, movie) {
             showControls();
         }
     }
-    controlsOverlay.addEventListener('click', e => {
-        e.stopPropagation();
-        showControls();
-    });
-    centerBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        togglePlayPause();
-    });
+    controlsOverlay.addEventListener('click', e => { e.stopPropagation(); showControls(); });
+    centerBtn.addEventListener('click', e => { e.stopPropagation(); togglePlayPause(); });
     zoomBtn.addEventListener('pointerdown', e => e.stopPropagation());
     zoomBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
     zoomBtn.addEventListener('click', e => {
@@ -551,7 +546,6 @@ async function injectTrailerOverlay(card, movie) {
         }
         showControls();
     });
-    const isIos = /iP(hone|od|ad)/.test(navigator.userAgent);
     if (!isIos) setTimeout(() => showControls(), 1200);
 }
 
