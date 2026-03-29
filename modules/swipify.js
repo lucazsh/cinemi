@@ -100,9 +100,9 @@ const MINIMISE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" view
         }
         .party-code-display { font-size:38px;font-weight:900;letter-spacing:10px;color:var(--text-primary);background:var(--card-bg);border:2px solid var(--border-h);border-radius:16px;padding:18px 28px;text-align:center;cursor:pointer;transition:transform 0.15s; }
         .party-code-display:active { transform:scale(0.96); }
-        .sw-btn-primary { width:100%;max-width:300px;padding:15px 24px;background:var(--button-bg);color:var(--button-text);border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s; }
+        .sw-btn-primary { width:100%;max-width:300px;padding:15px 24px;background:var(--button-bg);color:var(--button-text);border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s; }
         .sw-btn-primary:active { transform:scale(0.97);opacity:0.85; }
-        .sw-btn-secondary { width:100%;max-width:300px;padding:15px 24px;background:var(--card-bg);color:var(--text-primary);border:1.5px solid var(--border-h);border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.15s; }
+        .sw-btn-secondary { width:100%;max-width:300px;padding:15px 24px;background:var(--card-bg);color:var(--text-primary);border:1.5px solid var(--border-h);border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.15s; }
         .sw-btn-secondary:active { transform:scale(0.97); }
         .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
         .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.3s ease-out both; }
@@ -115,7 +115,7 @@ const MINIMISE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" view
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1.5px solid rgba(255,255,255,0.12);
-            border-radius: 50%;
+            border-radius: 10px;
             cursor: pointer;
             pointer-events: auto;
             transition: opacity 0.22s ease, transform 0.22s ease, background 0.15s;
@@ -442,7 +442,7 @@ async function injectTrailerOverlay(card, movie) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
-    iframe.src = `https://www.youtube.com/embed/${key}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&origin=${location.origin}`;
+    iframe.src = `https:
 
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
@@ -457,13 +457,14 @@ async function injectTrailerOverlay(card, movie) {
 
     const centerBtn = document.createElement('div');
     centerBtn.className = 'trailer-ctrl-btn';
-    centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;';
+    centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;pointer-events:auto;z-index:6;position:relative;';
     centerBtn.innerHTML = PAUSE_SVG;
     controlsOverlay.appendChild(centerBtn);
 
+    
     const zoomBtn = document.createElement('div');
     zoomBtn.className = 'trailer-ctrl-btn';
-    zoomBtn.style.cssText = 'position:absolute;bottom:14px;right:14px;width:36px;height:36px;opacity:0;';
+    zoomBtn.style.cssText = 'position:absolute;top:14px;right:14px;width:36px;height:36px;opacity:0;z-index:5;pointer-events:auto;';
     zoomBtn.innerHTML = MINIMISE_SVG;
     wrapper.appendChild(zoomBtn);
 
@@ -473,7 +474,6 @@ async function injectTrailerOverlay(card, movie) {
     let isCoverFit = true;
     let hideTimer = null;
     let controlsVisible = false;
-    let suppressNextClick = false;
 
     function postToIframe(func) {
         try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: '' }), '*'); } catch (e) {}
@@ -522,19 +522,23 @@ async function injectTrailerOverlay(card, movie) {
         }
     }
 
-    wrapper._onTap = () => {
-        suppressNextClick = true;
-        togglePlayPause();
-        setTimeout(() => { suppressNextClick = false; }, 250);
-    };
-
+    
     controlsOverlay.addEventListener('click', e => {
         e.stopPropagation();
-        if (suppressNextClick) { suppressNextClick = false; return; }
+        
+        
+        showControls();
+    });
+
+    
+    centerBtn.addEventListener('click', e => {
+        e.stopPropagation();
         togglePlayPause();
     });
 
+    
     zoomBtn.addEventListener('pointerdown', e => e.stopPropagation());
+    zoomBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
     zoomBtn.addEventListener('click', e => {
         e.stopPropagation();
         isCoverFit = !isCoverFit;
@@ -604,17 +608,21 @@ function setupSwipeGestures(card, movie) {
         rightIndicator.style.opacity = 0;
         if (Math.abs(currentX) > 100) {
             swipeCard(currentX > 0 ? 'right' : 'left', movie);
-        } else if (Math.abs(currentX) < 8 && Math.abs(currentY) < 8) {
-            if (trailerMode) {
-                const wrapper = card.querySelector('.trailer-wrapper');
-                if (wrapper && wrapper._onTap) wrapper._onTap();
-            }
-            card.style.transition = 'transform 0.3s ease';
-            card.style.transform = '';
         } else {
             card.style.transition = 'transform 0.3s ease';
             card.style.transform = '';
         }
+    };
+
+    
+    const onMouseLeave = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.style.cursor = 'grab';
+        leftIndicator.style.opacity = 0;
+        rightIndicator.style.opacity = 0;
+        card.style.transition = 'transform 0.3s ease';
+        card.style.transform = '';
     };
 
     card.addEventListener('mousedown', onStart);
@@ -623,7 +631,7 @@ function setupSwipeGestures(card, movie) {
     card.addEventListener('touchmove', onMove, { passive: false });
     card.addEventListener('mouseup', onEnd);
     card.addEventListener('touchend', onEnd);
-    card.addEventListener('mouseleave', onEnd);
+    card.addEventListener('mouseleave', onMouseLeave);
 }
 
 function swipeCard(direction, movie) {
