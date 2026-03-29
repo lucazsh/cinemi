@@ -8,6 +8,11 @@ let partyStarted = false;
 let trailerMode = false;
 let trailerCache = {};
 
+const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#e3e3e3"><path d="M295.12-249.56V-715.1q0-20.87 14.56-34.57 14.56-13.69 34.24-13.69 5.5 0 12.2 1.61 6.71 1.62 13.46 5.26l366.17 233.92q11.53 6.86 17.35 17.8 5.81 10.94 5.81 22.84t-6.06 22.77q-6.07 10.87-17.1 17.06L369.58-208.18q-6.75 4.31-13.68 5.74-6.93 1.43-12.34 1.43-19.37 0-33.91-13.43-14.53-13.42-14.53-35.12Z"/></svg>`;
+const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#e3e3e3"><path d="M640-200q-33 0-56.5-23.5T560-280v-400q0-33 23.5-56.5T640-760q33 0 56.5 23.5T720-680v400q0 33-23.5 56.5T640-200Zm-320 0q-33 0-56.5-23.5T240-280v-400q0-33 23.5-56.5T320-760q33 0 56.5 23.5T400-680v400q0 33-23.5 56.5T320-200Z"/></svg>`;
+const MAXIMISE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M203.04-80.09q-51.34 0-87.15-35.8-35.8-35.81-35.8-87.15v-94.05q0-25.95 17.76-43.71 17.76-17.77 43.43-17.77 25.68 0 43.72 17.77 18.04 17.76 18.04 43.71v94.05h94.05q25.95 0 43.71 18.04 17.77 18.04 17.77 43.72 0 25.67-17.77 43.43-17.76 17.76-43.71 17.76h-94.05Zm553.92 0h-94.05q-25.95 0-43.71-17.76-17.77-17.76-17.77-43.43 0-25.68 17.77-43.72 17.76-18.04 43.71-18.04h94.05v-94.05q0-25.95 18.04-43.71 18.04-17.77 43.72-17.77 25.67 0 43.43 17.77 17.76 17.76 17.76 43.71v94.05q0 51.34-35.8 87.15-35.81 35.8-87.15 35.8ZM80.09-662.91v-94.05q0-51.34 35.8-87.15 35.81-35.8 87.15-35.8h94.05q25.95 0 43.71 17.76 17.77 17.76 17.77 43.43 0 25.68-17.77 43.72-17.76 18.04-43.71 18.04h-94.05v94.05q0 25.95-18.04 43.71-18.04 17.77-43.72 17.77-25.67 0-43.43-17.77-17.76-17.76-17.76-43.71Zm676.87 0v-94.05h-94.05q-25.95 0-43.71-18.04-17.77-18.04-17.77-43.72 0-25.67 17.77-43.43 17.76-17.76 43.71-17.76h94.05q51.34 0 87.15 35.8 35.8 35.81 35.8 87.15v94.05q0 25.95-17.76 43.71-17.76 17.77-43.43 17.77-25.68 0-43.72-17.77-18.04-17.76-18.04-43.71Z"/></svg>`;
+const MINIMISE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M208.43-208.43h-67.86q-25.27 0-42.88-18.05-17.6-18.04-17.6-43.79 0-25.74 17.76-43.21 17.76-17.48 43.72-17.48h127.91q25.16 0 43.32 18.16t18.16 43.32v128.91q0 25.27-17.48 42.88-17.47 17.6-43.21 17.6-25.75 0-43.79-17.76-18.05-17.76-18.05-43.72v-66.86Zm543.7 0v67.86q0 25.27-17.47 42.88-17.48 17.6-43.22 17.6t-43.79-17.76q-18.04-17.76-18.04-43.72v-127.91q0-25.16 18.15-43.32 18.16-18.16 43.33-18.16h128.34q25.27 0 42.88 17.48 17.6 17.47 17.6 43.21 0 25.75-17.6 43.79-17.61 18.05-42.88 18.05h-67.3Zm-543.7-543.7v-67.3q0-25.27 18.05-42.88 18.04-17.6 43.79-17.6 25.74 0 43.21 17.6 17.48 17.61 17.48 42.88v128.34q0 25.17-18.16 43.33-18.16 18.15-43.32 18.15H140.57q-25.27 0-42.88-18.04-17.6-18.05-17.6-43.79t17.76-43.22q17.76-17.47 43.72-17.47h66.86Zm543.7 0h67.3q25.27 0 42.88 17.47 17.6 17.48 17.6 43.22t-17.6 43.79q-17.61 18.04-42.88 18.04H691.09q-25.17 0-43.33-18.15-18.15-18.16-18.15-43.33v-128.34q0-25.27 18.04-42.88 18.05-17.6 43.79-17.6t43.22 17.6q17.47 17.61 17.47 42.88v67.3Z"/></svg>`;
+
 (function injectStyles() {
     const s = document.createElement('style');
     s.textContent = `
@@ -28,6 +33,15 @@ let trailerCache = {};
         @keyframes swPanClose {
             0%   { opacity: 1; }
             100% { opacity: 0; }
+        }
+        @keyframes trailerCtrlIn {
+            0%   { opacity: 0; transform: scale(0.75); }
+            60%  { transform: scale(1.08); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes trailerCtrlOut {
+            0%   { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
         }
         .match-overlay { 
             animation: matchPop 0.6s ease forwards, matchFadeOut 2.8s ease forwards; 
@@ -93,9 +107,26 @@ let trailerCache = {};
         .sw-btn-ghost { background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:8px 16px;display:flex;align-items:center;gap:6px; }
         .sw-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;animation:swCenterAppear 0.3s ease-out both; }
         .sw-match-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;border:1.5px solid var(--border-h); }
-        .trailer-iframe-container { transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease; }
-        .trailer-zoom-btn:hover { opacity: 1 !important; }
-        .trailer-play-btn:hover { transform: scale(1.1); }
+        .trailer-ctrl-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: opacity 0.22s ease, transform 0.22s ease, background 0.15s;
+        }
+        .trailer-ctrl-btn:active { background: rgba(0,0,0,0.75); transform: scale(0.9) !important; }
+        .trailer-ctrl-visible {
+            animation: trailerCtrlIn 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .trailer-ctrl-hidden {
+            animation: trailerCtrlOut 0.22s ease forwards;
+        }
     `;
     document.head.appendChild(s);
 })();
@@ -133,9 +164,7 @@ function closePan(panelName) {
     const panel = document.getElementById(`${panelName}-panel`);
     if (panel) {
         const inner = panel.querySelector(':not(.backdrop)');
-        if (inner) {
-            inner.style.animation = 'swPanClose 0.3s ease-out both';
-        }
+        if (inner) inner.style.animation = 'swPanClose 0.3s ease-out both';
         const backdrop = panel.querySelector('.backdrop');
         if (backdrop) backdrop.style.opacity = '0';
         setTimeout(() => {
@@ -234,28 +263,15 @@ async function startParty() {
     if (partyRole !== 'host') return;
     const btn = document.getElementById('start-party-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Starting...'; }
-
     const container = document.getElementById('swipify-container');
     container.innerHTML = `<div class="sw-center"><div style="font-size:16px;color:var(--text-secondary);">Loading movies...</div></div>`;
-
     try {
         const res = await fetchWithAuth(`${baseUrl}/api/content/recommend`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         const movies = (data.content || []).filter(m => m.overview && (m.title || m.name));
-
-        await fetchWithAuth(`${baseUrl}/api/party/set-movies`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: partyCode, movies })
-        });
-
-        await fetchWithAuth(`${baseUrl}/api/party/start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: partyCode })
-        });
-
+        await fetchWithAuth(`${baseUrl}/api/party/set-movies`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode, movies }) });
+        await fetchWithAuth(`${baseUrl}/api/party/start`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: partyCode }) });
         partyStarted = true;
         swipifyMovies = movies;
         currentSwipifyIndex = 0;
@@ -370,7 +386,7 @@ function renderSwipifyCard() {
     card.className = 'swipify-card';
     card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;cursor:grab;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);opacity:0;transform:scale(0.8);overflow:hidden;`;
     const partyBadge = partyCode && partyStarted ? `<div class="swipify-party-badge" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;z-index:6;">${partyCode}</div>` : '';
-    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div class="swipify-info" style="position:absolute;bottom:24px;left:24px;right:24px;z-index:6;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
+    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div class="swipify-info" style="position:absolute;bottom:24px;left:24px;right:24px;z-index:6;pointer-events:none;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
     container.appendChild(card);
     requestAnimationFrame(() => {
         card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
@@ -405,23 +421,24 @@ async function injectTrailerOverlay(card, movie) {
 
     if (!key) {
         const pill = document.createElement('div');
-        pill.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);padding:4px 14px;border-radius:20px;font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap;z-index:6;pointer-events:none;';
+        pill.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);padding:5px 14px;border-radius:20px;font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;z-index:6;pointer-events:none;';
         pill.textContent = 'No trailer available';
         card.appendChild(pill);
         return;
     }
+
+    const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
 
     const wrapper = document.createElement('div');
     wrapper.className = 'trailer-wrapper';
     wrapper.style.cssText = 'position:absolute;inset:0;overflow:hidden;border-radius:18px;background:#000;z-index:1;';
 
     const iframeContainer = document.createElement('div');
-    iframeContainer.className = 'trailer-iframe-container';
-    iframeContainer.style.cssText = 'position:absolute;width:118%;height:118%;top:-9%;left:-9%;';
+    iframeContainer.style.cssText = 'position:absolute;width:118%;height:118%;top:-9%;left:-9%;transition:width 0.35s cubic-bezier(0.22,1,0.36,1),height 0.35s cubic-bezier(0.22,1,0.36,1),top 0.35s cubic-bezier(0.22,1,0.36,1),left 0.35s cubic-bezier(0.22,1,0.36,1);';
 
     const iframe = document.createElement('iframe');
     iframe.className = 'trailer-iframe';
-    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;pointer-events:none;';
     iframe.allow = 'autoplay; encrypted-media';
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('playsinline', '');
@@ -430,29 +447,93 @@ async function injectTrailerOverlay(card, movie) {
     iframeContainer.appendChild(iframe);
     wrapper.appendChild(iframeContainer);
 
-    const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
     const cover = document.createElement('div');
-    cover.className = 'trailer-cover';
-    cover.style.cssText = `position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}') center/cover no-repeat;opacity:0;transition:opacity 0.25s ease;z-index:2;pointer-events:none;`;
+    cover.style.cssText = `position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(0,0,0,0.8)),url('${backdropUrl}') center/cover no-repeat;opacity:0;transition:opacity 0.3s ease;z-index:3;pointer-events:none;`;
     wrapper.appendChild(cover);
 
-    const pauseIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white"><path d="M640-200q-33 0-56.5-23.5T560-280v-400q0-33 23.5-56.5T640-760q33 0 56.5 23.5T720-680v400q0 33-23.5 56.5T640-200Zm-320 0q-33 0-56.5-23.5T240-280v-400q0-33 23.5-56.5T320-760q33 0 56.5 23.5T400-680v400q0 33-23.5 56.5T320-200Z"/></svg>`;
-    const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="white"><path d="M320-200v-560l440 280-440 280Z"/></svg>`;
+    const controlsOverlay = document.createElement('div');
+    controlsOverlay.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+    wrapper.appendChild(controlsOverlay);
 
-    const playBtn = document.createElement('div');
-    playBtn.className = 'trailer-play-btn';
-    playBtn.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:4;transition:transform 0.15s ease;pointer-events:none;';
-    playBtn.innerHTML = playIcon;
-    wrapper.appendChild(playBtn);
+    const centerBtn = document.createElement('div');
+    centerBtn.className = 'trailer-ctrl-btn';
+    centerBtn.style.cssText = 'width:72px;height:72px;opacity:0;';
+    centerBtn.innerHTML = PAUSE_SVG;
+    controlsOverlay.appendChild(centerBtn);
 
-    const zoomOutSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M340-280H200q-17 0-28.5-11.5T160-320v-140q0-17 11.5-28.5T200-500q17 0 28.5 11.5T240-460v100h100q17 0 28.5 11.5T380-320q0 17-11.5 28.5T340-280Zm480 0H680q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360h100v-100q0-17 11.5-28.5T820-500q17 0 28.5 11.5T860-460v140q0 17-11.5 28.5T800-280ZM200-460q-17 0-28.5-11.5T160-500v-140q0-17 11.5-28.5T200-680h140q17 0 28.5 11.5T380-640q0 17-11.5 28.5T340-600H240v100q0 17-11.5 28.5T200-460Zm620 0q-17 0-28.5-11.5T780-500v-100H680q-17 0-28.5-11.5T640-640q0-17 11.5-28.5T680-680h140q17 0 28.5 11.5T860-640v140q0 17-11.5 28.5T820-460Z"/></svg>`;
-    const zoomInSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="white"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>`;
+    const zoomBtn = document.createElement('div');
+    zoomBtn.className = 'trailer-ctrl-btn';
+    zoomBtn.style.cssText = 'position:absolute;bottom:14px;right:14px;width:36px;height:36px;opacity:0;';
+    zoomBtn.innerHTML = MINIMISE_SVG;
+    wrapper.appendChild(zoomBtn);
 
-    const zoomBtn = document.createElement('button');
-    zoomBtn.className = 'trailer-zoom-btn';
-    zoomBtn.style.cssText = 'position:absolute;top:12px;right:12px;z-index:5;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.75;';
+    card.insertBefore(wrapper, card.firstChild);
+
+    let paused = false;
     let isCoverFit = true;
-    zoomBtn.innerHTML = zoomOutSvg;
+    let hideTimer = null;
+    let controlsVisible = false;
+    let suppressNextClick = false;
+
+    function postToIframe(func) {
+        try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: '' }), '*'); } catch (e) {}
+    }
+
+    function setControlsVisible(visible) {
+        controlsVisible = visible;
+        if (visible) {
+            centerBtn.style.animation = 'none';
+            centerBtn.offsetHeight;
+            centerBtn.style.animation = 'trailerCtrlIn 0.28s cubic-bezier(0.34,1.56,0.64,1) both';
+            centerBtn.style.opacity = '1';
+            zoomBtn.style.animation = 'none';
+            zoomBtn.offsetHeight;
+            zoomBtn.style.animation = 'trailerCtrlIn 0.28s cubic-bezier(0.34,1.56,0.64,1) 0.04s both';
+            zoomBtn.style.opacity = '0.9';
+        } else {
+            centerBtn.style.animation = 'trailerCtrlOut 0.22s ease forwards';
+            zoomBtn.style.animation = 'trailerCtrlOut 0.22s ease forwards';
+        }
+    }
+
+    function scheduleHide() {
+        clearTimeout(hideTimer);
+        if (!paused) hideTimer = setTimeout(() => setControlsVisible(false), 2400);
+    }
+
+    function showControls() {
+        setControlsVisible(true);
+        scheduleHide();
+    }
+
+    function togglePlayPause() {
+        paused = !paused;
+        if (paused) {
+            postToIframe('pauseVideo');
+            cover.style.opacity = '1';
+            centerBtn.innerHTML = PLAY_SVG;
+            clearTimeout(hideTimer);
+            setControlsVisible(true);
+        } else {
+            postToIframe('playVideo');
+            cover.style.opacity = '0';
+            centerBtn.innerHTML = PAUSE_SVG;
+            showControls();
+        }
+    }
+
+    wrapper._onTap = () => {
+        suppressNextClick = true;
+        togglePlayPause();
+        setTimeout(() => { suppressNextClick = false; }, 250);
+    };
+
+    controlsOverlay.addEventListener('click', e => {
+        e.stopPropagation();
+        if (suppressNextClick) { suppressNextClick = false; return; }
+        togglePlayPause();
+    });
+
     zoomBtn.addEventListener('pointerdown', e => e.stopPropagation());
     zoomBtn.addEventListener('click', e => {
         e.stopPropagation();
@@ -462,32 +543,18 @@ async function injectTrailerOverlay(card, movie) {
             iframeContainer.style.height = '118%';
             iframeContainer.style.top = '-9%';
             iframeContainer.style.left = '-9%';
-            zoomBtn.innerHTML = zoomOutSvg;
+            zoomBtn.innerHTML = MINIMISE_SVG;
         } else {
             iframeContainer.style.width = '100%';
             iframeContainer.style.height = '100%';
             iframeContainer.style.top = '0';
             iframeContainer.style.left = '0';
-            zoomBtn.innerHTML = zoomInSvg;
+            zoomBtn.innerHTML = MAXIMISE_SVG;
         }
+        showControls();
     });
-    wrapper.appendChild(zoomBtn);
 
-    wrapper._paused = false;
-    wrapper._togglePause = () => {
-        wrapper._paused = !wrapper._paused;
-        if (wrapper._paused) {
-            cover.style.opacity = '1';
-            playBtn.style.display = 'flex';
-            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
-        } else {
-            cover.style.opacity = '0';
-            playBtn.style.display = 'none';
-            try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch (e) {}
-        }
-    };
-
-    card.insertBefore(wrapper, card.firstChild);
+    setTimeout(() => showControls(), 1200);
 }
 
 function toggleTrailerMode() {
@@ -505,6 +572,7 @@ function setupSwipeGestures(card, movie) {
     let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false;
     const leftIndicator = card.querySelector('.swipe-left');
     const rightIndicator = card.querySelector('.swipe-right');
+
     const onStart = (e) => {
         isDragging = true;
         const p = e.touches ? e.touches[0] : e;
@@ -513,6 +581,7 @@ function setupSwipeGestures(card, movie) {
         card.style.cursor = 'grabbing';
         card.style.transition = 'none';
     };
+
     const onMove = (e) => {
         if (!isDragging) return;
         e.preventDefault();
@@ -526,17 +595,19 @@ function setupSwipeGestures(card, movie) {
         else if (currentX > 50) { rightIndicator.style.opacity = Math.min(currentX / 150, 1); leftIndicator.style.opacity = 0; }
         else { leftIndicator.style.opacity = 0; rightIndicator.style.opacity = 0; }
     };
+
     const onEnd = () => {
         if (!isDragging) return;
         isDragging = false;
         card.style.cursor = 'grab';
-        leftIndicator.style.opacity = 0; rightIndicator.style.opacity = 0;
+        leftIndicator.style.opacity = 0;
+        rightIndicator.style.opacity = 0;
         if (Math.abs(currentX) > 100) {
             swipeCard(currentX > 0 ? 'right' : 'left', movie);
         } else if (Math.abs(currentX) < 8 && Math.abs(currentY) < 8) {
             if (trailerMode) {
                 const wrapper = card.querySelector('.trailer-wrapper');
-                if (wrapper && wrapper._togglePause) wrapper._togglePause();
+                if (wrapper && wrapper._onTap) wrapper._onTap();
             }
             card.style.transition = 'transform 0.3s ease';
             card.style.transform = '';
@@ -545,6 +616,7 @@ function setupSwipeGestures(card, movie) {
             card.style.transform = '';
         }
     };
+
     card.addEventListener('mousedown', onStart);
     card.addEventListener('touchstart', onStart, { passive: false });
     card.addEventListener('mousemove', onMove);
@@ -599,11 +671,7 @@ function showMatchAnimation(title) {
     const overlay = document.createElement('div');
     overlay.className = 'match-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-primary);pointer-events:none;';
-    overlay.innerHTML = `
-        <div class="match-small">It's a</div>
-        <div class="match-title">MATCH</div>
-        <div class="match-subtitle" style="margin-top: 30px;">${escapeHtml(title)}</div>
-    `;
+    overlay.innerHTML = `<div class="match-small">It's a</div><div class="match-title">MATCH</div><div class="match-subtitle" style="margin-top:30px;">${escapeHtml(title)}</div>`;
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2900);
 }
