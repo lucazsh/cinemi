@@ -217,7 +217,7 @@
         ...(useMultiThread ? {} : { n_threads: 1 })
       });
 
-      history = [];
+      history = [{ role: 'system', content: SYSTEM_RULE }];
       setInputEnabled(true);
 
     } catch (err) {
@@ -264,6 +264,7 @@
       await wllama.createCompletion(prompt, {
         nPredict: 512,
         sampling: { temp: 0.7, top_k: 40, top_p: 0.9 },
+        stop: ['<|im_end|>', '<|im_start|>'],
         onNewToken(_tok, _piece, current) {
           output = current;
           aiEl.textContent = current;
