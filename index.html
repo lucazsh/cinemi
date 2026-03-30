@@ -6609,6 +6609,23 @@
                 <div class="color-swatches" id="color-swatches"></div>
             </div>
             <div class="edit-block">
+                <span class="edit-block-label">Profile Background</span>
+                <div class="layout-options" id="profile-bg-options">
+                    <div class="layout-opt" data-bg="auto" onclick="setProfileBgMode('auto',this)">
+                        <div class="layout-icon">
+                            <span style="width:100%;height:100%;background:linear-gradient(to bottom,rgba(200,80,80,0.5),transparent);border-radius:4px;"></span>
+                        </div>
+                        <span class="layout-opt-label">Auto</span>
+                    </div>
+                    <div class="layout-opt active" data-bg="static" onclick="setProfileBgMode('static',this)">
+                        <div class="layout-icon">
+                            <span style="width:100%;height:100%;background:linear-gradient(to bottom,rgba(31,31,31,0.8),transparent);border-radius:4px;"></span>
+                        </div>
+                        <span class="layout-opt-label">Static</span>
+                    </div>
+                </div>
+            </div>
+            <div class="edit-block">
                 <div class="per-section-toggle-row">
                     <div>
                         <div class="per-section-toggle-label">Individual title colors</div>
@@ -8304,6 +8321,7 @@
             customColor: "#ff3b30",
             layout: "scroll",
             perSectionEnabled: false,
+            profileBgMode: "static",
             quoteText: "Get busy living, or get busy dying.",
             quoteSource: "The Shawshank Redemption, 1994",
             quoteTextColor: "auto",
@@ -8441,6 +8459,9 @@
             renderSectionRows();
             renderAddGrid();
             document.getElementById("per-section-toggle").checked = state.perSectionEnabled;
+            document.querySelectorAll('#profile-bg-options .layout-opt').forEach(o => {
+                o.classList.toggle('active', o.dataset.bg === state.profileBgMode);
+            });
         }
 
         function makeSwatches(containerId, currentVal, currentCustom, onChange) {
@@ -8490,6 +8511,44 @@
                 document.documentElement.style.setProperty("--title-color", getColor(state.titleColor, state.customColor));
                 if (!state.perSectionEnabled) renderSpace();
             });
+        }
+
+        function applyProfileGradient() {
+            const el = document.getElementById('profile-gradient-bg');
+            if (!el) return;
+            if (state.profileBgMode === 'static') {
+                el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
+                return;
+            }
+            const img = document.getElementById('profileImg');
+            if (!img || !img.complete || !img.naturalWidth) {
+                el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
+                return;
+            }
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 50; canvas.height = 50;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 50, 50);
+                const data = ctx.getImageData(0, 0, 50, 50).data;
+                let r = 0, g = 0, b = 0, count = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+                }
+                r = Math.round(r / count);
+                g = Math.round(g / count);
+                b = Math.round(b / count);
+                el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.2) 0%, transparent 110%)`;
+            } catch (e) {
+                el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
+            }
+        }
+
+        function setProfileBgMode(mode, el) {
+            state.profileBgMode = mode;
+            document.querySelectorAll('#profile-bg-options .layout-opt').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
+            applyProfileGradient();
         }
 
         function togglePerSection(enabled) {
@@ -8797,6 +8856,7 @@
         });
 
         renderSpace();
+        applyProfileGradient();
         let cpHue = 0, cpSat = 1, cpVal = 1;
         let cpOnConfirm = null, cpOnCancel = null;
         const CP_RECENTS_KEY = "cinemi_recent_colors";
