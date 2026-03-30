@@ -7463,6 +7463,16 @@
             <div>
                 <div class="status-section-label">Pick one</div>
                 <div class="status-all-grid" id="status-all-grid"></div>
+                <div id="status-custom-row" class="status-custom-chip">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+                        <path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120Z" />
+                    </svg>
+                    <span class="status-custom-label">Custom</span>
+                    <div class="status-custom-input-wrap">
+                        <input type="text" id="status-custom-input" maxlength="25" placeholder="write..." oninput="onStatusCustomInput(this)">
+                        <span id="status-char-count" class="status-char-count">25</span>
+                    </div>
+            </div>
             </div>
         </div>
         <div class="status-apply-bar">
