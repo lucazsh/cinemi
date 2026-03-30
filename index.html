@@ -7543,6 +7543,11 @@
             document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
             selectedPreset = null;
             var chip = document.getElementById('status-custom-chip');
+            var grid = document.getElementById('status-all-grid');
+            var w = grid.clientWidth - 16;
+            chip.style.minWidth = w + 'px';
+            chip.style.width = w + 'px';
+            grid.scrollLeft = 0;
             chip.classList.add('expanded');
             setTimeout(function(){
                 var inp = document.getElementById('status-custom-input');
@@ -7554,18 +7559,28 @@
             customExpanded = false;
             var chip = document.getElementById('status-custom-chip');
             if (chip) {
+                chip.style.minWidth = '';
+                chip.style.width = '';
                 chip.classList.remove('expanded', 'selected');
                 var inp = document.getElementById('status-custom-input');
-                if (inp) { inp.value = ''; document.getElementById('status-char-count').textContent = '25'; }
+                if (inp) { 
+                    inp.value = ''; 
+                    var cc = document.getElementById('status-char-count');
+                    if (cc) { cc.textContent = '25'; cc.classList.remove('warn'); }
+                }
             }
         }
 
         document.addEventListener('click', function(e) {
             if (!customExpanded) return;
             var chip = document.getElementById('status-custom-chip');
-            if (chip && !chip.contains(e.target)) {
-                var inp = document.getElementById('status-custom-input');
-                if (!inp || !inp.value.trim()) collapseCustom();
+            var inp = document.getElementById('status-custom-input');
+            if (inp && !inp.contains(e.target)) {
+                var hasText = inp.value.trim().length > 0;
+                collapseCustom();
+                if (hasText) {
+                    selectedPreset = inp.value.trim();
+                }
             }
         });
 
