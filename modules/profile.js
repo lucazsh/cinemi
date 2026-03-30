@@ -45,9 +45,14 @@ if (img_input) {
 
                         const result = await response.json();
 
+                        profileImg.onload = function () {
+                            profileImg.style.opacity = '1';
+                            if (typeof applyProfileGradient === 'function') {
+                                applyProfileGradient._cachedRgb = null;
+                                applyProfileGradient();
+                            }
+                        };
                         profileImg.src = result.photoUrl;
-                        profileImg.onload = function () { if (typeof applyProfileGradient === 'function') applyProfileGradient(); };
-                        profileImg.style.opacity = '1';
 
                         updateAllProfilePhotos(username, result.photoUrl);
 
@@ -74,7 +79,12 @@ if (img_input) {
         const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
         if (savedPhotoUrl) {
             const pImg = document.getElementById('profileImg');
-            pImg.onload = function () { if (typeof applyProfileGradient === 'function') applyProfileGradient(); };
+            pImg.onload = function () {
+                if (typeof applyProfileGradient === 'function') {
+                    applyProfileGradient._cachedRgb = null;
+                    applyProfileGradient();
+                }
+            };
             pImg.src = savedPhotoUrl;
             console.log('Loaded saved profile photo for', username);
         }
@@ -624,5 +634,8 @@ window.showView = function (view) {
         if (view === 'profile') fab.classList.remove('hidden');
         else fab.classList.add('hidden');
     }
-    if (view === 'profile') loadSpaceTab();
+    if (view === 'profile') {
+        loadSpaceTab();
+        if (typeof applyProfileGradient === 'function') applyProfileGradient();
+    }
 };
