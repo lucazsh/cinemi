@@ -7575,12 +7575,11 @@
             if (!customExpanded) return;
             var chip = document.getElementById('status-custom-chip');
             var inp = document.getElementById('status-custom-input');
-            if (inp && !inp.contains(e.target)) {
-                var hasText = inp.value.trim().length > 0;
-                collapseCustom();
-                if (hasText) {
-                    selectedPreset = inp.value.trim();
-                }
+            if (chip && chip.contains(e.target)) return;
+            var hasText = inp && inp.value.trim().length > 0;
+            collapseCustom();
+            if (hasText) {
+                selectedPreset = inp.value.trim();
             }
         });
 
