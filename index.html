@@ -1885,10 +1885,18 @@
             border: 3px solid var(--border-light);
         }
 
+        .p-emoji svg {
+            fill: rgba(253, 246, 227, 0.8);
+        }
+        .p-emoji {
+            cursor: pointer;
+            transition: border-color 0.3s, padding 0.35s cubic-bezier(0.34,1.56,0.64,1), gap 0.3s;
+        }
+        
         .p-emoji {
             position: absolute;
             bottom: -5px;
-            right: -5px;
+            left: calc(100% - 32px);
             background: var(--bg-secondary);
             padding: 6px;
             border: 2px solid var(--border-medium);
@@ -1897,12 +1905,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .p-emoji svg {
-            fill: rgba(253, 246, 227, 0.8);
-        }
-        .p-emoji {
             cursor: pointer;
             transition: border-color 0.3s, padding 0.35s cubic-bezier(0.34,1.56,0.64,1), gap 0.3s;
         }
@@ -2011,32 +2013,42 @@
             font-size: 13px; font-weight: 700;
             color: rgba(255,255,255,0.5); cursor: pointer;
             display: flex; align-items: center; gap: 6px;
-            transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+            max-width: 160px;
+            transition: max-width 0.45s cubic-bezier(0.22,1,0.36,1),
+                        background 0.18s, border-color 0.18s, color 0.18s;
             overflow: hidden; position: relative;
+            flex-shrink: 0;
         }
         .status-custom-chip.selected {
             background: rgba(255,255,255,0.13);
             border-color: rgba(255,255,255,0.26);
             color: #fff;
         }
+        .status-custom-chip.expanded {
+            max-width: 400px;
+            cursor: default;
+        }
         .status-custom-chip svg { flex-shrink: 0; transition: opacity 0.2s; }
         .status-custom-label { transition: all 0.2s; white-space: nowrap; }
         .status-custom-input-wrap {
             display: flex; align-items: center; gap: 5px;
             max-width: 0; overflow: hidden; opacity: 0;
-            transition: max-width 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
+            transition: max-width 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.25s 0.1s;
         }
-        .status-custom-chip.expanded .status-custom-input-wrap {
-            max-width: 180px; opacity: 1;
-        }
+        .status-custom-chip.expanded .status-custom-input-wrap { max-width: 220px; opacity: 1; }
         .status-custom-chip.expanded .status-custom-label { max-width: 0; opacity: 0; overflow: hidden; }
-        .status-custom-chip.expanded { cursor: default; }
         .status-custom-chip input {
             background: none; border: none; outline: none;
             font-size: 13px; font-weight: 700;
-            color: #fff; width: 110px; min-width: 0;
+            color: #fff; width: 140px; min-width: 0;
         }
         .status-custom-chip input::placeholder { color: rgba(255,255,255,0.25); }
+        .status-char-count {
+            font-size: 10px; font-weight: 800;
+            color: rgba(255,255,255,0.25); min-width: 18px; text-align: right;
+            transition: color 0.15s;
+        }
+        .status-char-count.warn { color: rgba(255,100,100,0.7); }
         .status-char-count {
             font-size: 10px; font-weight: 800;
             color: rgba(255,255,255,0.25); min-width: 18px; text-align: right;
@@ -7544,27 +7556,22 @@
             selectedPreset = null;
             var chip = document.getElementById('status-custom-chip');
             var grid = document.getElementById('status-all-grid');
-            var w = grid.clientWidth - 16;
-            chip.style.minWidth = w + 'px';
-            chip.style.width = w + 'px';
             grid.scrollLeft = 0;
             chip.classList.add('expanded');
             setTimeout(function(){
                 var inp = document.getElementById('status-custom-input');
                 if (inp) inp.focus();
-            }, 200);
+            }, 480);
         }
-
+        
         function collapseCustom() {
             customExpanded = false;
             var chip = document.getElementById('status-custom-chip');
             if (chip) {
-                chip.style.minWidth = '';
-                chip.style.width = '';
                 chip.classList.remove('expanded', 'selected');
                 var inp = document.getElementById('status-custom-input');
-                if (inp) { 
-                    inp.value = ''; 
+                if (inp) {
+                    inp.value = '';
                     var cc = document.getElementById('status-char-count');
                     if (cc) { cc.textContent = '25'; cc.classList.remove('warn'); }
                 }
