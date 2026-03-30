@@ -1905,11 +1905,10 @@
         .p-emoji {
             cursor: pointer;
             transition: border-color 0.3s, padding 0.35s cubic-bezier(0.34,1.56,0.64,1), gap 0.3s;
-            overflow: visible;
         }
         .p-emoji.has-status {
             border-color: rgba(140,140,140,0.55) !important;
-            padding: 5px 9px;
+            padding: 5px 10px;
             gap: 6px;
             animation: statusBadgePop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
         }
@@ -1924,18 +1923,9 @@
             transition: max-width 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s 0.05s;
             letter-spacing: -0.2px;
         }
-        .p-emoji.has-status .p-emoji-text {
-            max-width: 160px;
-            opacity: 1;
-        }
-        .p-emoji .p-emoji-icon-plus {
-            transition: transform 0.25s, opacity 0.2s;
-            display: flex;
-            align-items: center;
-        }
-        .p-emoji.has-status .p-emoji-icon-plus {
-            display: none;
-        }
+        .p-emoji.has-status .p-emoji-text { max-width: 160px; opacity: 1; }
+        .p-emoji-icon-plus { display: flex; align-items: center; transition: opacity 0.2s; }
+        .p-emoji.has-status .p-emoji-icon-plus { display: none; }
         @keyframes statusBadgePop {
             0%   { transform: scale(0.65); opacity: 0; }
             70%  { transform: scale(1.08); opacity: 1; }
@@ -1943,196 +1933,151 @@
         }
 
         #status-panel-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 9998;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 9998;
         }
         #status-panel-backdrop.open { display: block; }
         #status-panel {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 9999;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
             background: var(--bg-secondary,#18191e);
             border-radius: 26px 26px 0 0;
             border: 1px solid rgba(255,255,255,0.1);
             padding: 20px 20px 0;
             transform: translateY(100%);
             transition: transform 0.36s cubic-bezier(0.22,1,0.36,1);
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
+            max-height: 80vh; display: flex; flex-direction: column;
         }
         #status-panel.open { transform: translateY(0); }
-        #status-panel-inner {
-            overflow-y: auto;
-            flex: 1;
-            min-height: 0;
-            padding-bottom: 8px;
-        }
+        #status-panel-inner { overflow-y: auto; flex: 1; min-height: 0; padding-bottom: 8px; }
         .status-panel-header {
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            margin-bottom: 3px;
+            font-size: 18px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 3px;
         }
         .status-panel-sub {
-            font-size: 12px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.3);
-            margin-bottom: 20px;
-            letter-spacing: 0.2px;
+            font-size: 12px; font-weight: 600;
+            color: rgba(255,255,255,0.3); margin-bottom: 20px;
         }
         .status-section-label {
-            font-size: 10px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 9px;
+            font-size: 10px; font-weight: 800;
+            color: rgba(255,255,255,0.3); text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 9px;
         }
         .status-dur-row { margin-bottom: 20px; }
         .status-dur-btns { display: flex; gap: 6px; flex-wrap: wrap; }
         .status-dur-btn {
-            padding: 7px 13px;
+            flex: 1; padding: 9px 6px;
             border-radius: 12px;
             background: rgba(255,255,255,0.06);
             border: 1.5px solid rgba(255,255,255,0.08);
-            font-size: 12px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: all 0.15s;
+            font-size: 12px; font-weight: 700;
+            color: rgba(255,255,255,0.4); cursor: pointer;
+            transition: all 0.15s; text-align: center;
         }
         .status-dur-btn.active {
             background: rgba(255,255,255,0.14);
             border-color: rgba(255,255,255,0.22);
             color: rgba(255,255,255,0.9);
         }
-        .status-presets-row { margin-bottom: 18px; }
-        .status-presets-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+
+        .status-all-grid {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 4px;
         }
         .status-preset-chip {
-            padding: 8px 13px;
-            border-radius: 13px;
+            padding: 8px 13px; border-radius: 13px;
             background: rgba(255,255,255,0.06);
             border: 1.5px solid rgba(255,255,255,0.08);
-            font-size: 13px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.5);
-            cursor: pointer;
+            font-size: 13px; font-weight: 700;
+            color: rgba(255,255,255,0.5); cursor: pointer;
             transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
             user-select: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         .status-preset-chip:active { transform: scale(0.93); }
         .status-preset-chip.selected {
             background: rgba(255,255,255,0.13);
             border-color: rgba(255,255,255,0.26);
-            color: #fff;
-            transform: scale(1.04);
+            color: #fff; transform: scale(1.04);
         }
-        .status-custom-wrap { margin-bottom: 4px; }
-        .status-custom-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .status-custom-chip {
+            padding: 8px 13px; border-radius: 13px;
             background: rgba(255,255,255,0.06);
             border: 1.5px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 10px 14px;
-            transition: border-color 0.2s;
+            font-size: 13px; font-weight: 700;
+            color: rgba(255,255,255,0.5); cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+            transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+            overflow: hidden; position: relative;
         }
-        .status-custom-row.selected { border-color: rgba(255,255,255,0.28); }
-        .status-custom-row svg { flex-shrink: 0; opacity: 0.55; }
-        .status-custom-row input {
-            flex: 1;
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary,#fff);
+        .status-custom-chip.selected {
+            background: rgba(255,255,255,0.13);
+            border-color: rgba(255,255,255,0.26);
+            color: #fff;
         }
-        .status-custom-row input::placeholder { color: rgba(255,255,255,0.22); }
+        .status-custom-chip svg { flex-shrink: 0; transition: opacity 0.2s; }
+        .status-custom-label { transition: all 0.2s; white-space: nowrap; }
+        .status-custom-input-wrap {
+            display: flex; align-items: center; gap: 5px;
+            max-width: 0; overflow: hidden; opacity: 0;
+            transition: max-width 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
+        }
+        .status-custom-chip.expanded .status-custom-input-wrap {
+            max-width: 180px; opacity: 1;
+        }
+        .status-custom-chip.expanded .status-custom-label { max-width: 0; opacity: 0; overflow: hidden; }
+        .status-custom-chip.expanded { cursor: default; }
+        .status-custom-chip input {
+            background: none; border: none; outline: none;
+            font-size: 13px; font-weight: 700;
+            color: #fff; width: 110px; min-width: 0;
+        }
+        .status-custom-chip input::placeholder { color: rgba(255,255,255,0.25); }
         .status-char-count {
-            font-size: 11px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.25);
-            min-width: 24px;
-            text-align: right;
+            font-size: 10px; font-weight: 800;
+            color: rgba(255,255,255,0.25); min-width: 18px; text-align: right;
             transition: color 0.15s;
         }
         .status-char-count.warn { color: rgba(255,100,100,0.7); }
+
         .status-apply-bar {
             padding: 12px 0 calc(20px + env(safe-area-inset-bottom,0px));
-            background: var(--bg-secondary,#18191e);
-            flex-shrink: 0;
+            background: var(--bg-secondary,#18191e); flex-shrink: 0;
         }
         .status-apply-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 16px;
+            width: 100%; padding: 14px; border-radius: 16px;
             background: rgba(255,255,255,0.09);
             border: 1.5px solid rgba(255,255,255,0.13);
-            font-size: 15px;
-            font-weight: 800;
-            color: #fff;
-            cursor: pointer;
-            letter-spacing: -0.2px;
-            transition: all 0.15s;
+            font-size: 15px; font-weight: 800; color: #fff; cursor: pointer;
+            letter-spacing: -0.2px; transition: all 0.15s;
         }
         .status-apply-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.15); }
 
         .status-action-pop {
-            position: absolute;
-            bottom: calc(100% + 10px);
-            right: 0;
+            position: fixed;
             background: var(--bg-secondary,#18191e);
             border: 1.5px solid rgba(255,255,255,0.12);
-            border-radius: 14px;
-            padding: 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            z-index: 200;
-            min-width: 140px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+            border-radius: 14px; padding: 5px;
+            display: flex; flex-direction: column; gap: 1px;
+            z-index: 10000; min-width: 150px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.55);
             animation: sPopIn 0.22s cubic-bezier(0.34,1.56,0.64,1) both;
         }
         @keyframes sPopIn {
-            from { opacity:0; transform: scale(0.8) translateY(8px); transform-origin: bottom right; }
-            to   { opacity:1; transform: scale(1) translateY(0); transform-origin: bottom right; }
+            from { opacity:0; transform: scale(0.8) translateY(6px); }
+            to   { opacity:1; transform: scale(1) translateY(0); }
         }
         .status-action-btn {
-            padding: 9px 12px;
-            border-radius: 10px;
-            background: none;
-            border: none;
-            font-size: 13px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.75);
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.1s;
+            padding: 9px 12px; border-radius: 10px;
+            background: none; border: none;
+            font-size: 13px; font-weight: 700;
+            color: rgba(255,255,255,0.75); cursor: pointer;
+            text-align: left; display: flex; align-items: center;
+            gap: 8px; transition: background 0.1s;
         }
         .status-action-btn:active { background: rgba(255,255,255,0.07); }
         .status-action-btn.del { color: #ff5858; }
         .status-countdown {
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 10px; font-weight: 700;
             color: rgba(255,255,255,0.28);
-            padding: 0 12px 8px;
-            letter-spacing: 0.2px;
+            padding: 4px 12px 6px; letter-spacing: 0.2px;
         }
         .p-name {
             font-size: 24px;
@@ -7503,8 +7448,8 @@
     <div id="status-panel">
         <div class="coll-panel-drag"></div>
         <div id="status-panel-inner">
-            <div class="status-panel-header">Still breathing?</div>
-            <div class="status-panel-sub">let everyone know what's going on</div>
+            <div class="status-panel-header">What's up?!</div>
+            <div class="status-panel-sub">visible on your profile for a limited time</div>
             <div class="status-dur-row">
                 <div class="status-section-label">Visible for</div>
                 <div class="status-dur-btns" id="status-dur-btns">
@@ -7515,17 +7460,9 @@
                     <button class="status-dur-btn" data-dur="0">Forever</button>
                 </div>
             </div>
-            <div class="status-presets-row">
-                <div class="status-section-label">Presets</div>
-                <div class="status-presets-grid" id="status-presets-grid"></div>
-            </div>
-            <div class="status-custom-wrap">
-                <div class="status-section-label">Custom</div>
-                <div class="status-custom-row" id="status-custom-row">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M141.24-84.65q-23.67 0-40.13-16.46t-16.46-40.13v-112.35q0-22.4 8.53-43.25 8.52-20.85 24.62-37.01l519.91-519.9q11.4-11.64 25.85-16.62 14.45-4.98 29.42-4.98 14.89 0 28.5 4.6t25.56 16.08l107.87 107.39q11.72 11.71 16.2 25.79 4.48 14.07 4.48 29.26 0 14.97-4.98 29.05-4.98 14.07-16.7 25.55L334.33-117.8q-16.16 16.1-37.01 24.62-20.85 8.53-43.25 8.53H141.24ZM692.7-635.7l57-56.52-57.24-56.48-57 56 57.24 57Z"/></svg>
-                    <input id="status-custom-input" maxlength="25" placeholder="Something on your mind..." autocomplete="off">
-                    <span class="status-char-count" id="status-char-count">25</span>
-                </div>
+            <div>
+                <div class="status-section-label">Pick one</div>
+                <div class="status-all-grid" id="status-all-grid"></div>
             </div>
         </div>
         <div class="status-apply-bar">
