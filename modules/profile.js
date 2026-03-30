@@ -46,6 +46,7 @@ if (img_input) {
                         const result = await response.json();
 
                         profileImg.src = result.photoUrl;
+                        profileImg.onload = function () { if (typeof applyProfileGradient === 'function') applyProfileGradient(); };
                         profileImg.style.opacity = '1';
 
                         updateAllProfilePhotos(username, result.photoUrl);
@@ -72,7 +73,9 @@ if (img_input) {
         const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
         const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
         if (savedPhotoUrl) {
-            document.getElementById('profileImg').src = savedPhotoUrl;
+            const pImg = document.getElementById('profileImg');
+            pImg.onload = function () { if (typeof applyProfileGradient === 'function') applyProfileGradient(); };
+            pImg.src = savedPhotoUrl;
             console.log('Loaded saved profile photo for', username);
         }
     } catch (err) {
