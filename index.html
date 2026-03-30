@@ -7463,16 +7463,6 @@
             <div>
                 <div class="status-section-label">Pick one</div>
                 <div class="status-all-grid" id="status-all-grid"></div>
-                <div id="status-custom-row" class="status-custom-chip">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
-                        <path d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120Z" />
-                    </svg>
-                    <span class="status-custom-label">Custom</span>
-                    <div class="status-custom-input-wrap">
-                        <input type="text" id="status-custom-input" maxlength="25" placeholder="write..." oninput="onStatusCustomInput(this)">
-                        <span id="status-char-count" class="status-char-count">25</span>
-                    </div>
-            </div>
             </div>
         </div>
         <div class="status-apply-bar">
@@ -7482,62 +7472,92 @@
     <script>
     (function(){
         var STATUS_PRESETS = [
-            { label: 'vibing rn' },
-            { label: 'in the zone' },
-            { label: 'do not disturb' },
-            { label: 'touch grass' },
-            { label: 'skill issue' },
-            { label: 'out here' },
-            { label: 'afk' },
-            { label: 'lurking' },
-            { label: '🎬 cinema mode' },
-            { label: '🍿 snack time' },
-            { label: '✈️ traveling' },
-            { label: '💀 dead inside' },
-            { label: '🎮 gaming' },
-            { label: '🎵 music mode' },
-            { label: '📚 studying' },
-            { label: '🔥 on fire' },
-            { label: '💤 zzz' },
-            { label: '🤙 chilling' },
+            'vibing rn','in the zone','do not disturb','touch grass',
+            'skill issue','out here','afk','lurking',
+            'cinema mode','snack time','traveling','dead inside',
+            'gaming','music mode','studying','on fire','zzz','chilling'
         ];
 
         var selectedPreset = null;
         var selectedDur = 3600;
         var statusCountdownTimer = null;
+        var customExpanded = false;
 
-        function buildPresets() {
-            var grid = document.getElementById('status-presets-grid');
+        function buildGrid() {
+            var grid = document.getElementById('status-all-grid');
             if (!grid) return;
             grid.innerHTML = '';
-            STATUS_PRESETS.forEach(function(p) {
+            STATUS_PRESETS.forEach(function(label) {
                 var chip = document.createElement('button');
                 chip.className = 'status-preset-chip';
-                chip.textContent = p.label;
-                chip.onclick = function() { selectPreset(p.label, chip); };
+                chip.textContent = label;
+                chip.onclick = function() {
+                    collapseCustom();
+                    document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
+                    chip.classList.add('selected');
+                    selectedPreset = label;
+                };
                 grid.appendChild(chip);
             });
+
+            var customChip = document.createElement('div');
+            customChip.className = 'status-custom-chip';
+            customChip.id = 'status-custom-chip';
+            customChip.innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#e3e3e3"><path d="M141.24-84.65q-23.67 0-40.13-16.46t-16.46-40.13v-112.35q0-22.4 8.53-43.25 8.52-20.85 24.62-37.01l519.91-519.9q11.4-11.64 25.85-16.62 14.45-4.98 29.42-4.98 14.89 0 28.5 4.6t25.56 16.08l107.87 107.39q11.72 11.71 16.2 25.79 4.48 14.07 4.48 29.26 0 14.97-4.98 29.05-4.98 14.07-16.7 25.55L334.33-117.8q-16.16 16.1-37.01 24.62-20.85 8.53-43.25 8.53H141.24ZM692.7-635.7l57-56.52-57.24-56.48-57 56 57.24 57Z"/></svg>' +
+                '<span class="status-custom-label">Custom</span>' +
+                '<div class="status-custom-input-wrap">' +
+                    '<input id="status-custom-input" maxlength="25" placeholder="type here..." autocomplete="off">' +
+                    '<span class="status-char-count" id="status-char-count">25</span>' +
+                '</div>';
+            customChip.onclick = function(e) {
+                if (customExpanded) return;
+                expandCustom();
+            };
+            grid.appendChild(customChip);
+
+            document.getElementById('status-custom-input').addEventListener('input', function(){
+                var rem = 25 - this.value.length;
+                var cc = document.getElementById('status-char-count');
+                cc.textContent = rem;
+                cc.classList.toggle('warn', rem <= 5);
+                document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
+                selectedPreset = null;
+                document.getElementById('status-custom-chip').classList.toggle('selected', this.value.length > 0);
+            });
+            document.getElementById('status-custom-input').addEventListener('click', function(e){ e.stopPropagation(); });
         }
 
-        function selectPreset(label, el) {
-            selectedPreset = label;
-            document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
-            document.getElementById('status-custom-row').classList.remove('selected');
-            document.getElementById('status-custom-input').value = '';
-            document.getElementById('status-char-count').textContent = '25';
-            el.classList.add('selected');
-        }
-
-        window.onStatusCustomInput = function(inp) {
-            var rem = 25 - inp.value.length;
-            var cc = document.getElementById('status-char-count');
-            cc.textContent = rem;
-            cc.classList.toggle('warn', rem <= 5);
+        function expandCustom() {
+            customExpanded = true;
             document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
             selectedPreset = null;
-            var row = document.getElementById('status-custom-row');
-            row.classList.toggle('selected', inp.value.length > 0);
-        };
+            var chip = document.getElementById('status-custom-chip');
+            chip.classList.add('expanded');
+            setTimeout(function(){
+                var inp = document.getElementById('status-custom-input');
+                if (inp) inp.focus();
+            }, 200);
+        }
+
+        function collapseCustom() {
+            customExpanded = false;
+            var chip = document.getElementById('status-custom-chip');
+            if (chip) {
+                chip.classList.remove('expanded', 'selected');
+                var inp = document.getElementById('status-custom-input');
+                if (inp) { inp.value = ''; document.getElementById('status-char-count').textContent = '25'; }
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!customExpanded) return;
+            var chip = document.getElementById('status-custom-chip');
+            if (chip && !chip.contains(e.target)) {
+                var inp = document.getElementById('status-custom-input');
+                if (!inp || !inp.value.trim()) collapseCustom();
+            }
+        });
 
         document.getElementById('status-dur-btns').addEventListener('click', function(e) {
             var btn = e.target.closest('.status-dur-btn');
@@ -7550,11 +7570,9 @@
         window.openStatusPanel = function() {
             dismissStatusPop();
             selectedPreset = null;
+            customExpanded = false;
             document.querySelectorAll('.status-preset-chip').forEach(function(c){ c.classList.remove('selected'); });
-            document.getElementById('status-custom-row').classList.remove('selected');
-            document.getElementById('status-custom-input').value = '';
-            document.getElementById('status-char-count').textContent = '25';
-            document.getElementById('status-char-count').classList.remove('warn');
+            collapseCustom();
             document.getElementById('status-panel').classList.add('open');
             document.getElementById('status-panel-backdrop').classList.add('open');
         };
@@ -7565,12 +7583,11 @@
         };
 
         window.applyStatus = function() {
-            var custom = document.getElementById('status-custom-input').value.trim();
+            var custom = (document.getElementById('status-custom-input') || {}).value;
+            custom = custom ? custom.trim() : '';
             var text = selectedPreset || custom;
             if (!text) return;
-            var now = Date.now();
-            var statusData = { text: text, setAt: now, dur: selectedDur };
-            localStorage.setItem('cinemi_status', JSON.stringify(statusData));
+            localStorage.setItem('cinemi_status', JSON.stringify({ text: text, setAt: Date.now(), dur: selectedDur }));
             closeStatusPanel();
             renderStatus(text);
         };
@@ -7611,17 +7628,24 @@
             openStatusPanel();
             if (saved) {
                 setTimeout(function(){
-                    document.getElementById('status-custom-input').value = saved.text;
-                    var rem = 25 - saved.text.length;
-                    document.getElementById('status-char-count').textContent = rem;
-                    document.getElementById('status-custom-row').classList.add('selected');
-                    var durBtn = document.querySelector('.status-dur-btn[data-dur="' + saved.dur + '"]');
-                    if (durBtn) {
-                        document.querySelectorAll('.status-dur-btn').forEach(function(b){ b.classList.remove('active'); });
-                        durBtn.classList.add('active');
-                        selectedDur = saved.dur;
-                    }
-                }, 50);
+                    expandCustom();
+                    setTimeout(function(){
+                        var inp = document.getElementById('status-custom-input');
+                        if (inp) {
+                            inp.value = saved.text;
+                            var rem = 25 - saved.text.length;
+                            var cc = document.getElementById('status-char-count');
+                            if (cc) { cc.textContent = rem; cc.classList.toggle('warn', rem <= 5); }
+                            document.getElementById('status-custom-chip').classList.add('selected');
+                        }
+                        var durBtn = document.querySelector('.status-dur-btn[data-dur="' + saved.dur + '"]');
+                        if (durBtn) {
+                            document.querySelectorAll('.status-dur-btn').forEach(function(b){ b.classList.remove('active'); });
+                            durBtn.classList.add('active');
+                            selectedDur = saved.dur;
+                        }
+                    }, 250);
+                }, 60);
             }
         };
 
@@ -7633,10 +7657,7 @@
             if (statusCountdownTimer) clearInterval(statusCountdownTimer);
             statusCountdownTimer = setInterval(function(){
                 var s = getSavedStatus();
-                if (!s) { clearStatusUI(); return; }
-                if (s.dur === 0) return;
-                var elapsed = (Date.now() - s.setAt) / 1000;
-                if (elapsed >= s.dur) {
+                if (!s || (s.dur !== 0 && (Date.now() - s.setAt) / 1000 >= s.dur)) {
                     clearStatusUI();
                     localStorage.removeItem('cinemi_status');
                 }
@@ -7646,9 +7667,8 @@
         function loadSavedStatus() {
             var s = getSavedStatus();
             if (!s) return;
-            if (s.dur !== 0) {
-                var elapsed = (Date.now() - s.setAt) / 1000;
-                if (elapsed >= s.dur) { localStorage.removeItem('cinemi_status'); return; }
+            if (s.dur !== 0 && (Date.now() - s.setAt) / 1000 >= s.dur) {
+                localStorage.removeItem('cinemi_status'); return;
             }
             renderStatus(s.text);
         }
@@ -7663,15 +7683,10 @@
             var s = getSavedStatus();
             var dur = s ? s.dur : 0;
             var setAt = s ? s.setAt : Date.now();
-            var timeLeftStr = '';
-            if (dur !== 0) {
-                var secsLeft = Math.max(0, dur - (Date.now() - setAt) / 1000);
-                if (secsLeft > 3600) timeLeftStr = Math.ceil(secsLeft / 3600) + 'h left';
-                else if (secsLeft > 60) timeLeftStr = Math.ceil(secsLeft / 60) + 'm left';
-                else timeLeftStr = 'expiring soon';
-            } else {
-                timeLeftStr = 'set forever';
-            }
+            var secsLeft = dur !== 0 ? Math.max(0, dur - (Date.now() - setAt) / 1000) : Infinity;
+            var timeLeftStr = dur === 0 ? 'set forever' :
+                secsLeft > 3600 ? Math.ceil(secsLeft / 3600) + 'h left' :
+                secsLeft > 60 ? Math.ceil(secsLeft / 60) + 'm left' : 'expiring soon';
 
             var pop = document.createElement('div');
             pop.className = 'status-action-pop';
@@ -7679,22 +7694,31 @@
                 '<div class="status-countdown">' + timeLeftStr + '</div>' +
                 '<button class="status-action-btn" onclick="editStatus()"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#e3e3e3"><path d="M141.24-84.65q-23.67 0-40.13-16.46t-16.46-40.13v-112.35q0-22.4 8.53-43.25 8.52-20.85 24.62-37.01l519.91-519.9q11.4-11.64 25.85-16.62 14.45-4.98 29.42-4.98 14.89 0 28.5 4.6t25.56 16.08l107.87 107.39q11.72 11.71 16.2 25.79 4.48 14.07 4.48 29.26 0 14.97-4.98 29.05-4.98 14.07-16.7 25.55L334.33-117.8q-16.16 16.1-37.01 24.62-20.85 8.53-43.25 8.53H141.24ZM692.7-635.7l57-56.52-57.24-56.48-57 56 57.24 57Z"/></svg>Edit</button>' +
                 '<button class="status-action-btn del" onclick="deleteStatus()"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#ff5858"><path d="M292-120q-45 0-75.5-30.5T186-226v-514H152q-19.15 0-31.57-12.42Q108-764.83 108-784q0-19.15 12.43-31.58Q132.85-828 152-828h178v-14q0-18.83 12.63-31.42Q355.25-886 374.4-886h211.2q19.14 0 31.77 12.58Q630-860.83 630-842v14h178q19.15 0 31.58 12.42Q852-803.15 852-784q0 19.17-12.42 31.58Q827.15-740 808-740h-34v514q0 45-30.5 75.5T668-120H292Z"/></svg>Delete</button>';
-            anchor.style.position = 'relative';
-            anchor.appendChild(pop);
+
+            document.body.appendChild(pop);
             statusPopEl = pop;
 
+            var rect = anchor.getBoundingClientRect();
+            var popW = 160;
+            var left = rect.right - popW;
+            if (left < 8) left = 8;
+            pop.style.left = left + 'px';
+            pop.style.top = (rect.top - 10) + 'px';
+            pop.style.transform = 'translateY(-100%)';
+
             setTimeout(function(){
-                document.addEventListener('click', function onDoc(e){
+                function onDoc(e){
                     if (!pop.contains(e.target) && e.target !== anchor) {
                         dismissStatusPop();
                         document.removeEventListener('click', onDoc);
                     }
-                });
+                }
+                document.addEventListener('click', onDoc);
             }, 10);
         }
 
         document.addEventListener('DOMContentLoaded', function(){
-            buildPresets();
+            buildGrid();
             loadSavedStatus();
 
             var pEmoji = document.querySelector('.p-emoji');
@@ -7708,11 +7732,8 @@
                 }
                 pEmoji.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (pEmoji.classList.contains('has-status')) {
-                        showStatusPop(pEmoji);
-                    } else {
-                        openStatusPanel();
-                    }
+                    if (pEmoji.classList.contains('has-status')) showStatusPop(pEmoji);
+                    else openStatusPanel();
                 });
             }
         });
