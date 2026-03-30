@@ -3317,6 +3317,8 @@
             z-index: 0;
             pointer-events: none;
             background: linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%);
+            transition: background 0.5s ease;
+            will-change: background;
         }
 
         #profile .nt {
@@ -8520,29 +8522,45 @@
                 el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
                 return;
             }
-            const img = document.getElementById('profileImg');
-            if (!img || !img.complete || !img.naturalWidth) {
-                el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
-                return;
+            if (applyProfileGradient._cachedRgb) {
+                const [r, g, b] = applyProfileGradient._cachedRgb;
+                el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.25) 0%, transparent 110%)`;
             }
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = 50; canvas.height = 50;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, 50, 50);
-                const data = ctx.getImageData(0, 0, 50, 50).data;
-                let r = 0, g = 0, b = 0, count = 0;
-                for (let i = 0; i < data.length; i += 4) {
-                    r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+            const img = document.getElementById('profileImg');
+            if (!img) return;
+
+            function sample() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 50; canvas.height = 50;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 50, 50);
+                    const data = ctx.getImageData(0, 0, 50, 50).data;
+                    let r = 0, g = 0, b = 0, count = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+                    }
+                    r = Math.round(r / count);
+                    g = Math.round(g / count);
+                    b = Math.round(b / count);
+                    applyProfileGradient._cachedRgb = [r, g, b];
+                    if (state.profileBgMode === 'auto') {
+                        el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.25) 0%, transparent 110%)`;
+                    }
+                } catch (e) {
+                    if (!applyProfileGradient._cachedRgb) {
+                        el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
+                    }
                 }
-                r = Math.round(r / count);
-                g = Math.round(g / count);
-                b = Math.round(b / count);
-                el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.2) 0%, transparent 110%)`;
-            } catch (e) {
-                el.style.background = 'linear-gradient(to bottom, rgba(31, 31, 31) 0%, transparent 100%)';
+            }
+
+            if (img.complete && img.naturalWidth) {
+                sample();
+            } else {
+                img.addEventListener('load', sample, { once: true });
             }
         }
+        applyProfileGradient._cachedRgb = null;
 
         function setProfileBgMode(mode, el) {
             state.profileBgMode = mode;
