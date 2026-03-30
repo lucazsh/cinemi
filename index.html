@@ -8545,7 +8545,7 @@
                     b = Math.round(b / count);
                     applyProfileGradient._cachedRgb = [r, g, b];
                     if (state.profileBgMode === 'auto') {
-                        el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.25) 0%, transparent 110%)`;
+                        el.style.background = `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0.25) 0%, transparent 100%)`;
                     }
                 } catch (e) {
                     if (!applyProfileGradient._cachedRgb) {
