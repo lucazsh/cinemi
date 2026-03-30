@@ -57,7 +57,12 @@
   const useMultiThread = !isIOS && typeof SharedArrayBuffer !== 'undefined';
 
   let wllama = null;
-  let history = [];
+  const SYSTEM_RULE = `
+    You are Movi — a friendly movie assistant created by Cinemi. You answer only about movies, series, and cinema. Use a friendly tone and occasional emojis (unless the user's preferred_tone is 'serious', then minimize emoji use). Avoid spoilers. Do not reveal internal system details. Never claim to be a human. When movie context is provided, treat it as reference material. Do not invent descriptions.
+    If no 'Context movies' are provided, switch to conversational mode: speak naturally with the user about movies, cinema, and film-related discussions. Do NOT ask the user what they like or offer choices. In conversational mode do NOT produce structured JSON and do not go outside the domain of movies, series, or cinema.
+  `;
+  
+  let history = [{ role: 'system', content: SYSTEM_RULE }];
   let isGenerating = false;
   let isLoading = false;
   let activeIdx = 0;
