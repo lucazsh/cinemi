@@ -265,18 +265,7 @@ async function viewUserProfile(username) {
 
         document.getElementById('userFriendsCount').textContent = `${totalFriends} friend${totalFriends !== 1 ? 's' : ''}`;
 
-        const followBtn = document.getElementById('followBtn');
-        if (followData.isFollowing) {
-            followBtn.textContent = 'Unfollow';
-            followBtn.style.background = 'var(--iconbox-bg)';
-            followBtn.style.color = 'var(--text-primary)';
-            followBtn.style.border = '1px solid var(--border-dark-alpha-2)';
-        } else {
-            followBtn.textContent = 'Follow';
-            followBtn.style.background = 'var(--button-bg)';
-            followBtn.style.color = 'var(--button-text)';
-            followBtn.style.border = 'none';
-        }
+        _setUserProfileFollowState(followData.isFollowing);
 
         showView('user-profile');
     } catch (err) {
@@ -284,39 +273,138 @@ async function viewUserProfile(username) {
     }
 }
 
-document.getElementById('followBtn').onclick = async function () {
-    if (!currentViewedUser) return;
+function _setUserProfileFollowState(isFollowing) {
+    const addFriendState = document.getElementById('upAddFriendState');
+    const tabsState = document.getElementById('upTabsState');
+    const msgBtn = document.getElementById('upMsgBtn');
+    const sep = document.getElementById('upNavSep');
 
-    const isFollowing = this.textContent === 'Unfollow';
+    if (isFollowing) {
+        addFriendState.style.display = 'none';
+        addFriendState.classList.remove('morphing-out');
+        tabsState.style.display = 'block';
+        requestAnimationFrame(() => requestAnimationFrame(() => tabsState.classList.add('visible')));
+        msgBtn.classList.add('visible');
+        sep.classList.add('visible');
+        document.getElementById('up-tab-space').style.display = 'block';
+        document.getElementById('up-tab-others').style.display = 'none';
+        const btns = document.querySelectorAll('#upTabsState .tab-btn');
+        btns.forEach((b, i) => b.classList.toggle('active', i === 0));
+    } else {
+        addFriendState.style.display = 'block';
+        addFriendState.classList.remove('morphing-out');
+        tabsState.classList.remove('visible');
+        tabsState.style.display = 'none';
+        msgBtn.classList.remove('visible');
+        sep.classList.remove('visible');
+    }
+}
+
+async function addFriendAndMorph() {
+    if (!currentViewedUser) return;
+    const btn = document.getElementById('addFriendBtn');
+    btn.disabled = true;
 
     try {
-        const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, {
-            method: isFollowing ? 'DELETE' : 'POST'
-        });
-
+        const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, { method: 'POST' });
         if (!res.ok) throw new Error('Failed');
 
-        if (isFollowing) {
-            this.textContent = 'Follow';
-            this.style.background = 'var(--button-bg)';
-            this.style.color = 'var(--button-text)';
-            this.style.border = 'none';
-        } else {
-            this.textContent = 'Unfollow';
-            this.style.background = 'var(--iconbox-bg)';
-            this.style.color = 'var(--text-primary)';
-            this.style.border = '1px solid var(--border-dark-alpha-2)';
-        }
+        const addFriendState = document.getElementById('upAddFriendState');
+        const tabsState = document.getElementById('upTabsState');
+        const msgBtn = document.getElementById('upMsgBtn');
+        const sep = document.getElementById('upNavSep');
+
+        addFriendState.classList.add('morphing-out');
+
+        setTimeout(() => {
+            msgBtn.classList.add('visible');
+            sep.classList.add('visible');
+        }, 180);
+
+        setTimeout(() => {
+            addFriendState.style.display = 'none';
+            tabsState.style.display = 'block';
+            requestAnimationFrame(() => requestAnimationFrame(() => tabsState.classList.add('visible')));
+        }, 320);
 
         _otherCache.friends = null;
     } catch (err) {
-        console.error('Follow error:', err);
+        console.error('Add friend error:', err);
+        btn.disabled = false;
     }
-};
+}
 
-document.getElementById('messageBtn').onclick = function () {
-    alert('Messaging feature coming soon!');
-};
+function switchUserTab(tab, btn) {
+    document.querySelectorAll('#upTabsState .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('up-tab-space').style.display = tab === 'space' ? 'block' : 'none';
+    document.getElementById('up-tab-others').style.display = tab === 'others' ? 'block' : 'none';
+}
+
+function openChatWithCurrentUser() {
+    if (!currentViewedUser) return;
+    const photo = document.getElementById('userProfileImg')?.src || '';
+    if (typeof openChatsWithUser === 'function') openChatsWithUser(currentViewedUser, photo);
+}
+
+let _upMoreOpen = false;
+
+function toggleUserMoreMenu() {
+    const menu = document.getElementById('upMoreDropdown');
+    _upMoreOpen = !_upMoreOpen;
+    menu.classList.toggle('open', _upMoreOpen);
+    if (_upMoreOpen) {
+        setTimeout(() => document.addEventListener('click', _closeUserMoreOnOutside, { once: true }), 10);
+    }
+}
+
+function _closeUserMoreOnOutside(e) {
+    const menu = document.getElementById('upMoreDropdown');
+    if (!menu.contains(e.target)) {
+        menu.classList.remove('open');
+        _upMoreOpen = false;
+    }
+}
+
+async function unfollowCurrentUser() {
+    const menu = document.getElementById('upMoreDropdown');
+    menu.classList.remove('open');
+    _upMoreOpen = false;
+    if (!currentViewedUser) return;
+
+    try {
+        const res = await fetchWithAuth(`${baseUrl}/api/user/${currentViewedUser}/follow`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed');
+
+        const tabsState = document.getElementById('upTabsState');
+        const addFriendState = document.getElementById('upAddFriendState');
+        const msgBtn = document.getElementById('upMsgBtn');
+        const sep = document.getElementById('upNavSep');
+
+        tabsState.classList.remove('visible');
+        msgBtn.classList.remove('visible');
+        sep.classList.remove('visible');
+
+        setTimeout(() => {
+            tabsState.style.display = 'none';
+            addFriendState.style.display = 'block';
+            addFriendState.classList.remove('morphing-out');
+            const btn = document.getElementById('addFriendBtn');
+            if (btn) btn.disabled = false;
+        }, 310);
+
+        _otherCache.friends = null;
+    } catch (err) {
+        console.error('Unfollow error:', err);
+    }
+}
+
+function reportCurrentUser() {
+    const menu = document.getElementById('upMoreDropdown');
+    menu.classList.remove('open');
+    _upMoreOpen = false;
+    reportUser(currentViewedUser);
+}
 
 async function openUserPanel(panelType) {
     if (!currentViewedUser) return;
