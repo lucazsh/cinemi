@@ -3363,6 +3363,123 @@
             gap: 6px;
         }
 
+        .up-nav-group {
+            display: flex;
+            align-items: center;
+            background: var(--user-p-btn);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .up-nav-group button {
+            background: transparent !important;
+            border-radius: 0 !important;
+            padding: 6px 7px !important;
+            transition: background 0.15s;
+        }
+        .up-nav-group button:active {
+            background: rgba(255,255,255,0.1) !important;
+        }
+        .up-nav-sep {
+            width: 0;
+            height: 18px;
+            background: rgba(127,127,127,0.25);
+            transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            flex-shrink: 0;
+        }
+        .up-nav-sep.visible { width: 1px; }
+        #upMsgBtn {
+            width: 0;
+            padding: 6px 0 !important;
+            overflow: hidden;
+            transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1), padding 0.35s ease;
+        }
+        #upMsgBtn.visible {
+            width: 38px;
+            padding: 6px 7px !important;
+        }
+
+        .up-more-dropdown {
+            position: absolute;
+            top: 54px;
+            right: 16px;
+            background: var(--bg-secondary, #1c1c1e);
+            border: 1px solid var(--border-dark-alpha-2);
+            border-radius: 14px;
+            overflow: hidden;
+            z-index: 200;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            min-width: 170px;
+            opacity: 0;
+            transform: scale(0.88) translateY(-6px);
+            transform-origin: top right;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+        .up-more-dropdown.open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+        }
+        .up-more-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.12s;
+            font-family: inherit;
+        }
+        .up-more-item:not(:last-child) { border-bottom: 1px solid var(--border-dark-alpha-2); }
+        .up-more-item:active { background: var(--iconbox-bg); }
+        .up-more-item.up-more-danger { color: #ff4d4d; }
+        #addFriendBtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px 20px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+        #addFriendBtn:active { transform: scale(0.97); }
+        #upAddFriendState {
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), max-height 0.35s ease;
+            max-height: 80px;
+            overflow: hidden;
+        }
+        #upAddFriendState.morphing-out {
+            opacity: 0;
+            transform: scale(0.85);
+            max-height: 0;
+            margin-top: 0 !important;
+        }
+        #upTabsState {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        #upTabsState.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
         #profile .p-user {
             position: relative;
             z-index: 1;
@@ -7059,12 +7176,24 @@
                         d="m376-412 152 153q20 20 20.5 48.5T528-162q-20 20-48.5 20T431-163L162-431q-9-10-14.5-22.5t-5.5-26q0-13.5 5.5-26T162-528l271-270q20-21 48-21t48 21q21 20 21 48.5T529-701L376-548h402q29 0 48.5 20t19.5 48.5q0 28.5-19.5 48T778-412H376Z" />
                 </svg>
             </button>
-            <button onclick="reportUser(currentViewedUser)">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="var(--text-primary)">
-                    <path
-                        d="M479.82-250Q505-250 522-266.82q17-16.83 17-42Q539-334 522.18-351q-16.83-17-42-17-24.18 0-41.68 16.82-17.5 16.83-17.5 42Q421-284 438.32-267q17.33 17 41.5 17Zm37.68-180.5Q533-446 533-468v-181q0-22-15.5-37.5T480-702q-22 0-37.5 15T427-649v181q0 21 15.5 37t37.5 16q22 0 37.5-15.5ZM367-74q-27.43 0-52.35-10.09Q289.73-94.17 271-114L114-271q-19.83-18.73-29.91-43.65Q74-339.57 74-367v-226q0-27.43 10.09-52.35Q94.17-670.27 114-689l157-157q18.73-19.83 43.65-29.91Q339.57-886 367-886h226q27.43 0 52.35 10.09Q670.27-865.83 689-846l157 157q19.83 18.73 29.91 43.65Q886-620.43 886-593v226q0 27.43-10.09 52.35Q865.83-289.73 846-271L689-114q-18.73 19.83-43.65 29.91Q620.43-74 593-74H367Z" />
-                </svg>
+            <div class="up-nav-group" id="upNavGroup">
+                <button id="upMsgBtn" onclick="openChatWithCurrentUser()" aria-label="Message">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="m204-200-54 54q-32 32-74 15.22T34-194v-601q0-57.13 39.44-96.56Q112.88-931 170-931h620q57.13 0 96.56 39.44Q926-852.13 926-795v459q0 57.12-39.44 96.56Q847.13-200 790-200H204Zm70-200h251q17 0 28.5-11.5T565-440q0-17-11.5-28.5T525-480H274q-17 0-28.5 11.5T234-440q0 17 11.5 28.5T274-400Zm0-126h412q17 0 28.5-11.3t11.5-28q0-16.7-11.5-28.7T686-606H274q-17 0-28.5 12T234-565.3q0 16.7 11.5 28T274-526Zm0-126h412q17 0 28.5-11.3t11.5-28q0-16.7-11.5-28.7T686-732H274q-17 0-28.5 12T234-691.3q0 16.7 11.5 28T274-652Z"/></svg>
+                </button>
+                <div class="up-nav-sep" id="upNavSep"></div>
+                <button id="upMoreBtn" onclick="toggleUserMoreMenu()" aria-label="More options">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)"><path d="M480.34-95Q438-95 409-124.42t-29-70.74q0-42.14 29.07-71.99Q438.13-297 479.66-297 522-297 551-267.26t29 71.5q0 41.76-29.02 71.26Q521.97-95 480.34-95Zm0-285Q438-380 409-409.07q-29-29.06-29-70.59Q380-522 409.07-551q29.06-29 70.59-29Q522-580 551-550.98q29 29.01 29 70.64Q580-438 550.98-409q-29.01 29-70.64 29Zm0-283Q438-663 409-692.95q-29-29.94-29-72Q380-807 409.07-836q29.06-29 70.59-29Q522-865 551-835.98q29 29.01 29 70.86 0 42.25-29.02 72.19Q521.97-663 480.34-663Z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="up-more-dropdown" id="upMoreDropdown">
+            <button class="up-more-item" onclick="unfollowCurrentUser()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="var(--text-primary)"><path d="M640-520q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM320-240v-28q0-20 9.5-38.5T358-337q42-26 91-39.5t101-13.5q52 0 101 13.5t91 39.5q19 12 28.5 30.5T780-268v28H320ZM160-400v-80h160v80H160Zm0-160v-80h160v80H160Z"/></svg>
+                Unfollow
+            </button>
+            <button class="up-more-item up-more-danger" onclick="reportCurrentUser()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M479.82-250Q505-250 522-266.82q17-16.83 17-42Q539-334 522.18-351q-16.83-17-42-17-24.18 0-41.68 16.82-17.5 16.83-17.5 42Q421-284 438.32-267q17.33 17 41.5 17Zm37.68-180.5Q533-446 533-468v-181q0-22-15.5-37.5T480-702q-22 0-37.5 15T427-649v181q0 21 15.5 37t37.5 16q22 0 37.5-15.5ZM367-74q-27.43 0-52.35-10.09Q289.73-94.17 271-114L114-271q-19.83-18.73-29.91-43.65Q74-339.57 74-367v-226q0-27.43 10.09-52.35Q94.17-670.27 114-689l157-157q18.73-19.83 43.65-29.91Q339.57-886 367-886h226q27.43 0 52.35 10.09Q670.27-865.83 689-846l157 157q19.83 18.73 29.91 43.65Q886-620.43 886-593v226q0 27.43-10.09 52.35Q865.83-289.73 846-271L689-114q-18.73 19.83-43.65 29.91Q620.43-74 593-74H367Z"/></svg>
+                Report
             </button>
         </div>
         <div class="p-user">
@@ -7073,48 +7202,47 @@
             </div>
             <span class="p-name" id="userProfileName">Loading...</span>
             <span class="p-tag" id="userProfileTag">@loading</span>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button id="followBtn"
-                    style="flex: 1; padding: 10px 20px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 12px; font-weight: 600; cursor: pointer;">Follow</button>
-                <button id="messageBtn"
-                    style="flex: 1; padding: 10px 20px; background: var(--iconbox-bg); color: var(--text-primary); border: 1px solid var(--border-dark-alpha-2); border-radius: 12px; font-weight: 600; cursor: pointer;">Message</button>
+            <div id="upAddFriendState" style="margin-top:15px; width:100%;">
+                <button id="addFriendBtn" onclick="addFriendAndMorph()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor"><path d="M412-412H222q-29 0-48.5-20T154-480.5q0-28.5 19.5-48T222-548h190v-191q0-28 20-48t48-20q28 0 48 20t20 48v191h190q29 0 48.5 19.5t19.5 48q0 28.5-19.5 48.5T738-412H548v190q0 28-20 48t-48 20q-28 0-48-20t-20-48v-190Z"/></svg>
+                    Add friend
+                </button>
             </div>
         </div>
-        <section class="grid">
-            <button class="card" onclick="openUserPanel('friends')">
-                <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
-                        width="24px" fill="#000000">
-                        <path
-                            d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z" />
-                    </svg></div>
-                <div class="meta">
-                    <div class="title">Friends</div>
-                    <div class="subtitle" id="userFriendsCount">0 friends</div>
+        <div id="upTabsState">
+            <div class="profile-tabs">
+                <div class="tab-toggle">
+                    <button class="tab-btn active" onclick="switchUserTab('space',this)">SPACE</button>
+                    <button class="tab-btn" onclick="switchUserTab('others',this)">OTHERS</button>
                 </div>
-            </button>
-            <button class="card" onclick="openUserPanel('favorites')">
-                <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
-                        width="24px">
-                        <path
-                            d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z" />
-                    </svg></div>
-                <div class="meta">
-                    <div class="title">Favorites</div>
-                    <div class="subtitle">Collection</div>
+                <div class="sp-tab-panel" id="up-tab-space" style="min-height:40px;"></div>
+                <div class="sp-tab-panel" id="up-tab-others" style="display:none;">
+                    <section class="grid">
+                        <button class="card" onclick="openUserPanel('friends')">
+                            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg></div>
+                            <div class="meta">
+                                <div class="title">Friends</div>
+                                <div class="subtitle" id="userFriendsCount">0 friends</div>
+                            </div>
+                        </button>
+                        <button class="card" onclick="openUserPanel('favorites')">
+                            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-128q-14 0-27-4.5T430-147l-60-56Q248-316 156-421.5T64-647q0-96 65-160.5T289-872q54 0 104 25.5t87 74.5q42-49 89-74.5T671-872q95 0 160 64.5T896-647q0 120-92.5 225.5T592-204l-62 57q-10 10-23 14.5t-27 4.5Z"/></svg></div>
+                            <div class="meta">
+                                <div class="title">Favorites</div>
+                                <div class="subtitle">Collection</div>
+                            </div>
+                        </button>
+                        <button class="card" onclick="openUserPanel('watchlist')">
+                            <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Z"/></svg></div>
+                            <div class="meta">
+                                <div class="title">Watch List</div>
+                                <div class="subtitle">Movies to watch</div>
+                            </div>
+                        </button>
+                    </section>
                 </div>
-            </button>
-            <button class="card" onclick="openUserPanel('watchlist')">
-                <div class="iconbox"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
-                        width="24px">
-                        <path
-                            d="M160-80v-800l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v800l-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60-60-60-60 60Z" />
-                    </svg></div>
-                <div class="meta">
-                    <div class="title">Watch List</div>
-                    <div class="subtitle">Movies to watch</div>
-                </div>
-            </button>
-        </section>
+            </div>
+        </div>
     </div>
 
     <div id="user-watchlist-panel" class="panel">
