@@ -318,7 +318,7 @@ async function addFriendAndMorph() {
 
         setTimeout(() => {
             msgBtn.classList.add('visible');
-            sep.classList.add('visible');
+            // sep.classList.add('visible');
         }, 180);
 
         setTimeout(() => {
