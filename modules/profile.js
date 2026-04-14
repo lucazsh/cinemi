@@ -872,14 +872,16 @@ async function loadSpaceTab() {
 
 const _origShowView = window.showView;
 window.showView = function (view) {
-    if (_origShowView) _origShowView(view);
+    if (currentViewedUser !== null && view !== 'user-profile') {
+        closeUserProfileOverlays();
+    }
 
+    if (_origShowView) _origShowView(view);
     const fab = document.getElementById('sp-fab');
     if (fab) {
         if (view === 'profile') fab.classList.remove('hidden');
         else fab.classList.add('hidden');
     }
-
     if (view === 'profile') {
         closeUserProfileOverlays();
         loadSpaceTab();
