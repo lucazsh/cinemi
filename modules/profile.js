@@ -307,7 +307,9 @@ function _setUserProfileFollowState(isFollowing) {
 }
 
 async function addFriendAndMorph() {
-    if (!currentViewedUser) return;
+    const _username = currentViewedUser || document.getElementById('userProfileTag')?.textContent?.replace('@','').trim();
+    if (!_username) return;
+    currentViewedUser = _username;
     const btn = document.getElementById('addFriendBtn');
     btn.disabled = true;
 
