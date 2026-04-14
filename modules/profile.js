@@ -884,6 +884,12 @@ window.showView = function (view) {
     }
     if (view === 'profile') {
         closeUserProfileOverlays();
+        const username = (document.getElementById('addUsername')?.textContent || '').trim();
+        if (username) {
+            const saved = localStorage.getItem(`profilePhotoUrl_${username}`);
+            const pImg = document.getElementById('profileImg');
+            if (pImg && saved) pImg.src = saved;
+        }
         loadSpaceTab();
         if (typeof applyProfileGradient === 'function') applyProfileGradient();
     }
