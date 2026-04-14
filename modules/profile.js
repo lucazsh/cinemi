@@ -576,6 +576,7 @@ async function openUserPanel(panelType) {
     if (panelType === 'friends') {
         const panel = document.getElementById('user-friends-panel');
         const sheet = panel.querySelector('.sheet');
+        panel.style.display = '';
         openPanel('user-friends');
 
         try {
@@ -643,6 +644,7 @@ async function openUserPanel(panelType) {
     const panelId = `user-${panelType}-panel`;
     const panel = document.getElementById(panelId);
     const sheet = panel.querySelector('.sheet');
+    panel.style.display = '';
     openPanel(`user-${panelType}`);
 
     try {
