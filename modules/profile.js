@@ -29,7 +29,7 @@ if (img_input) {
                     const formData = new FormData();
                     formData.append('photo', blob, 'profile.jpg');
 
-                    const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
+                    const username = getMyUsername();
                     formData.append('username', username);
 
                     try {
@@ -75,7 +75,7 @@ if (img_input) {
     });
 
     try {
-        const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
+        const username = getMyUsername();
         const savedPhotoUrl = localStorage.getItem(`profilePhotoUrl_${username}`);
         if (savedPhotoUrl) {
             const pImg = document.getElementById('profileImg');
@@ -98,7 +98,9 @@ const _otherCache = {
     favorites: null,
     watchlist: null
 };
-
+function getMyUsername() {
+    return (document.getElementById('addUsername')?.textContent || '').trim();
+}
 async function prefetchOtherTab() {
     const username = (document.getElementById('addUsername')?.textContent || 'user_tag').trim();
 
