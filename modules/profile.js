@@ -890,16 +890,16 @@ window.showView = function (view) {
         if (username) {
             const pImg = document.getElementById('profileImg');
             const saved = localStorage.getItem(`profilePhotoUrl_${username}`);
-            if (pImg && saved) pImg.src = saved;
-            fetchWithAuth(`${baseUrl}/api/profile/photo/${username}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.photoUrl && pImg) {
-                        pImg.src = data.photoUrl;
-                        localStorage.setItem(`profilePhotoUrl_${username}`, data.photoUrl);
-                    }
-                })
-                .catch(() => {});
+            if (pImg && saved) {
+                const current = pImg.src || '';
+                const normalizedSaved = saved.startsWith('http') 
+                    ? saved 
+                    : new URL(saved, window.location.origin).href;
+    
+                if (current !== normalizedSaved) {
+                    pImg.src = saved;
+                }
+            }
         }
         loadSpaceTab();
         if (typeof applyProfileGradient === 'function') applyProfileGradient();
