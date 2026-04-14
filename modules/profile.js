@@ -601,7 +601,7 @@ async function openUserPanel(panelType) {
                     <h3 style="font-size:16px; margin-bottom:10px;">Followers (${followers.length})</h3>
                     ${followers.map(f => `
                     <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('user-friends'); viewUserProfile('${f.username}')">
-                        <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                        <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:14.4px; object-fit:cover;">
                         <div style="flex:1;">
                         <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
                         <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
@@ -615,7 +615,7 @@ async function openUserPanel(panelType) {
                     <h3 style="font-size:16px; margin-bottom:10px;">Following (${following.length})</h3>
                     ${following.map(f => `
                     <div style="display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--border-dark-alpha-2); align-items:center; cursor:pointer;" onclick="closePanel('user-friends'); viewUserProfile('${f.username}')">
-                        <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                        <img src="${f.photoUrl}" style="width:40px; height:40px; border-radius:14.4px; object-fit:cover;">
                         <div style="flex:1;">
                         <div style="font-weight:600; font-size:14px;">${escapeHtml(f.displayName)}</div>
                         <div style="font-size:12px; color:var(--text-subtle);">@${escapeHtml(f.username)}</div>
