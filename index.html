@@ -6798,7 +6798,7 @@
                 <span class="edit-block-label">Add Section</span>
                 <div class="add-section-grid" id="add-section-grid"></div>
             </div>
-            <button class="btn-close" onclick="closePanel('spaceedit')">Done</button>
+            <button class="btn-close" onclick="saveAndCloseSpace()">Done</button>
         </div>
     </div>
 
@@ -8921,6 +8921,30 @@
                 if (custom) state.quoteCustomColor = custom;
                 renderSpace();
             });
+        }
+
+        async function saveAndCloseSpace() {
+            closePanel('spaceedit');
+            try {
+                const username = document.getElementById('addUsername')?.textContent?.trim();
+                if (!username) return;
+                await fetchWithAuth(`${baseUrl}/api/space-config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state)
+                });
+            } catch (e) {}
+        }
+
+        async function loadSpaceStateFromServer(username) {
+            if (!username) return;
+            try {
+                const res = await fetch(`${baseUrl}/api/space-config/${username}`, { headers: ngrokHeaders });
+                const data = await res.json();
+                if (data.config) {
+                    Object.assign(state, data.config);
+                }
+            } catch (e) {}
         }
 
         function saveAndCloseQuote() {
