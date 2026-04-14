@@ -3444,18 +3444,22 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            width: 100%;
-            padding: 13px 20px;
+            width: 85%;
+            max-width: 350px;
+            padding: 15px 20px;
+            margin: 10px auto 10px;
             background: #ffffff;
             color: #000000;
             border: none;
-            border-radius: 14px;
+            border-radius: 30px;
             font-weight: 700;
             font-size: 15px;
             cursor: pointer;
             box-sizing: border-box;
             transition: transform 0.18s ease, opacity 0.18s ease;
         }
+        #addFriendBtn svg 
+        { fill: #000000; }
         #addFriendBtn:active { transform: scale(0.97); }
         #upAddFriendState {
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), max-height 0.35s ease;
