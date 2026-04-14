@@ -767,6 +767,24 @@ function switchProfileTab(tab, btn) {
     if (tab === 'other') prefetchOtherTab();
 }
 
+function closeUserProfileOverlays() {
+    currentViewedUser = null;
+
+    document.getElementById('upMoreDropdown')?.classList.remove('open');
+    document.getElementById('upTabsState')?.classList.remove('visible');
+    document.getElementById('upMsgBtn')?.classList.remove('visible');
+    document.getElementById('upAddFriendState')?.classList.remove('morphing-out');
+
+    ['user-favorites-panel', 'user-watchlist-panel', 'user-friends-panel', 'report-panel'].forEach(id => {
+        const panel = document.getElementById(id);
+        if (!panel) return;
+        panel.classList.remove('open', 'closing');
+        panel.style.display = 'none';
+    });
+
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
+}
 async function loadSpaceTab() {
     const IMG = 'https://image.tmdb.org/t/p/w300';
     const username = (document.getElementById('addUsername')?.textContent || '').trim();
@@ -855,12 +873,15 @@ async function loadSpaceTab() {
 const _origShowView = window.showView;
 window.showView = function (view) {
     if (_origShowView) _origShowView(view);
+
     const fab = document.getElementById('sp-fab');
     if (fab) {
         if (view === 'profile') fab.classList.remove('hidden');
         else fab.classList.add('hidden');
     }
+
     if (view === 'profile') {
+        closeUserProfileOverlays();
         loadSpaceTab();
         if (typeof applyProfileGradient === 'function') applyProfileGradient();
     }
