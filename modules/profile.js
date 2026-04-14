@@ -886,9 +886,18 @@ window.showView = function (view) {
         closeUserProfileOverlays();
         const username = (document.getElementById('addUsername')?.textContent || '').trim();
         if (username) {
-            const saved = localStorage.getItem(`profilePhotoUrl_${username}`);
             const pImg = document.getElementById('profileImg');
+            const saved = localStorage.getItem(`profilePhotoUrl_${username}`);
             if (pImg && saved) pImg.src = saved;
+            fetchWithAuth(`${baseUrl}/api/profile/photo/${username}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.photoUrl && pImg) {
+                        pImg.src = data.photoUrl;
+                        localStorage.setItem(`profilePhotoUrl_${username}`, data.photoUrl);
+                    }
+                })
+                .catch(() => {});
         }
         loadSpaceTab();
         if (typeof applyProfileGradient === 'function') applyProfileGradient();
