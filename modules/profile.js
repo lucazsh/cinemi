@@ -285,7 +285,7 @@ function _setUserProfileFollowState(isFollowing) {
         tabsState.style.display = 'block';
         requestAnimationFrame(() => requestAnimationFrame(() => tabsState.classList.add('visible')));
         msgBtn.classList.add('visible');
-        sep.classList.add('visible');
+        // sep.classList.add('visible');
         document.getElementById('up-tab-space').style.display = 'block';
         document.getElementById('up-tab-others').style.display = 'none';
         const btns = document.querySelectorAll('#upTabsState .tab-btn');
@@ -296,7 +296,7 @@ function _setUserProfileFollowState(isFollowing) {
         tabsState.classList.remove('visible');
         tabsState.style.display = 'none';
         msgBtn.classList.remove('visible');
-        sep.classList.remove('visible');
+        // sep.classList.remove('visible');
     }
 }
 
@@ -383,7 +383,7 @@ async function unfollowCurrentUser() {
 
         tabsState.classList.remove('visible');
         msgBtn.classList.remove('visible');
-        sep.classList.remove('visible');
+        // sep.classList.remove('visible');
 
         setTimeout(() => {
             tabsState.style.display = 'none';
