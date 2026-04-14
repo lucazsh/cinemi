@@ -361,21 +361,24 @@ async function loadUserSpace(username) {
 
         const cfg = cfgData.config || {
             titleColor: 'auto', customColor: '#ff3b30', layout: 'scroll',
-            perSectionEnabled: false, quoteText: '...', quoteSource: '',
+            perSectionEnabled: false,
+            quoteText: 'Get busy living, or get busy dying.',
+            quoteSource: 'The Shawshank Redemption, 1994',
             quoteTextColor: 'auto', quoteCustomColor: '#ff3b30',
             sections: [
                 { id: 'favs', label: 'My Favs', visible: true, core: true, titleColor: 'auto', customColor: '#ff3b30', titleAlign: 'left' },
+                { id: 'genres', label: 'My Genres', visible: true, core: true, titleColor: 'auto', customColor: '#ff3b30', titleAlign: 'left' },
                 { id: 'quote', label: 'Quote', visible: true, core: true, titleColor: 'auto', customColor: '#ff3b30', titleAlign: 'left' }
             ]
         };
 
-        renderUserSpace(cfg, Array.isArray(favsData) ? favsData : [], Array.isArray(wlData) ? wlData : [], container);
+        await renderUserSpace(cfg, Array.isArray(favsData) ? favsData : [], Array.isArray(wlData) ? wlData : [], container);
     } catch (err) {
         if (container) container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">Could not load space</div>';
     }
 }
 
-function renderUserSpace(cfg, favs, wl, container) {
+async function renderUserSpace(cfg, favs, wl, container) {
     const IMG = 'https://image.tmdb.org/t/p/w300';
 
     function getC(c, custom) {
@@ -385,6 +388,8 @@ function renderUserSpace(cfg, favs, wl, container) {
     }
 
     const globalTitleColor = getC(cfg.titleColor, cfg.customColor);
+    const titleCssVal = cfg.titleColor === 'auto' ? 'var(--text-primary)' : (cfg.titleColor === 'custom' ? cfg.customColor : cfg.titleColor);
+    container.style.setProperty('--title-color', titleCssVal);
 
     function makeTitle(sec) {
         const tc = cfg.perSectionEnabled ? getC(sec.titleColor, sec.customColor) : globalTitleColor;
@@ -393,30 +398,27 @@ function renderUserSpace(cfg, favs, wl, container) {
         return `<div class="sp-title-wrap" style="text-align:${align}"><span class="sp-title" style="color:${tc};transform-origin:${origins[align]}">${escapeHtml(sec.label)}</span></div>`;
     }
 
-    let rowWrap, imgStyle;
-    if (cfg.layout === 'grid') {
-        rowWrap = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;';
-        imgStyle = 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;cursor:pointer;';
-    } else if (cfg.layout === 'large') {
-        rowWrap = 'padding:0 14px 10px;display:flex;flex-direction:column;gap:10px;';
-        imgStyle = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;display:block;margin-bottom:10px;cursor:pointer;';
-    } else {
-        rowWrap = 'display:flex;gap:8px;padding:0 15px 10px;overflow-x:auto;';
-        imgStyle = 'height:140px;width:auto;border-radius:10px;flex-shrink:0;object-fit:cover;cursor:pointer;';
-    }
-
     function makePosterRow(items) {
-        const limit = cfg.layout === 'large' ? 1 : items.length;
         if (!items.length) return '<div style="padding:0 15px 10px;color:var(--text-subtle);font-size:13px;">Nothing here yet</div>';
-        return `<div style="${rowWrap}">${items.slice(0, limit).map(m =>
-            `<img src="${IMG}${m.posterPath}" style="${imgStyle}" onclick="showMovieDetails('${String(m.movieId)}')" onerror="this.style.display='none'">`
+        if (cfg.layout === 'grid') {
+            return `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;">${items.map(m =>
+                `<img src="${IMG}${m.posterPath}" style="width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;cursor:pointer;" onclick="showMovieDetails('${String(m.movieId)}')" onerror="this.style.display='none'">`
+            ).join('')}</div>`;
+        }
+        if (cfg.layout === 'large') {
+            return `<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:10px;">${items.slice(0, 1).map(m =>
+                `<img src="${IMG}${m.posterPath}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;display:block;cursor:pointer;" onclick="showMovieDetails('${String(m.movieId)}')" onerror="this.style.display='none'">`
+            ).join('')}</div>`;
+        }
+        return `<div class="sp-mov-row">${items.map(m =>
+            `<img src="${IMG}${m.posterPath}" onclick="showMovieDetails('${String(m.movieId)}')" onerror="this.style.display='none'">`
         ).join('')}</div>`;
     }
 
     container.innerHTML = '';
 
-    (cfg.sections || []).forEach(sec => {
-        if (!sec.visible) return;
+    for (const sec of (cfg.sections || [])) {
+        if (!sec.visible) continue;
         const el = document.createElement('div');
         el.className = 'sp-section';
 
@@ -424,20 +426,40 @@ function renderUserSpace(cfg, favs, wl, container) {
             el.innerHTML = makeTitle(sec) + makePosterRow(favs);
         } else if (sec.id === 'watchlistprev') {
             el.innerHTML = makeTitle(sec) + makePosterRow(wl);
+        } else if (sec.id === 'genres') {
+            el.innerHTML = makeTitle(sec) + `<div class="sp-genres-list">
+                <div class="sp-genre-row"><span class="sp-genre-name scifi">Sci-Fi</span><div class="sp-mov-row" id="usp-genre-878"></div></div>
+                <div class="sp-genre-row"><span class="sp-genre-name drama">Drama</span><div class="sp-mov-row" id="usp-genre-18"></div></div>
+                <div class="sp-genre-row"><span class="sp-genre-name thriller">Thriller</span><div class="sp-mov-row" id="usp-genre-53"></div></div>
+            </div>`;
+            container.appendChild(el);
+            [878, 18, 53].forEach(async (genreId) => {
+                try {
+                    const res = await fetch(`${baseUrl}/api/tmdb/discover/genre/${genreId}`, { headers: ngrokHeaders });
+                    const data = await res.json();
+                    const row = document.getElementById(`usp-genre-${genreId}`);
+                    if (!row) return;
+                    const movies = (data.results || []).filter(m => m.poster_path).slice(0, 6);
+                    row.innerHTML = movies.map(m =>
+                        `<img src="${IMG}${m.poster_path}" onclick="showMovieDetails('${m.id}')" onerror="this.style.display='none'">`
+                    ).join('');
+                } catch {}
+            });
+            continue;
         } else if (sec.id === 'quote') {
             const qColor = getC(cfg.quoteTextColor, cfg.quoteCustomColor);
-            el.innerHTML = makeTitle(sec) + `<div class="sp-quote-wrap" style="pointer-events:none">
-                <p class="sp-quote-text" style="color:${qColor}">"${escapeHtml(cfg.quoteText || '')}"</p>
-                <span class="sp-quote-source">&mdash; ${escapeHtml(cfg.quoteSource || '')}</span>
+            const quoteText = cfg.quoteText || 'Get busy living, or get busy dying.';
+            const quoteSource = cfg.quoteSource || 'The Shawshank Redemption, 1994';
+            el.innerHTML = makeTitle(sec) + `<div class="sp-quote-wrap" style="pointer-events:none;cursor:default;">
+                <p class="sp-quote-text" style="color:${qColor}">"${escapeHtml(quoteText)}"</p>
+                <span class="sp-quote-source">&mdash; ${escapeHtml(quoteSource)}</span>
             </div>`;
-        } else if (sec.id === 'genres') {
-            el.innerHTML = makeTitle(sec) + `<div style="padding:0 15px 10px;color:var(--text-subtle);font-size:13px;">Genre rows</div>`;
         } else {
             el.innerHTML = makeTitle(sec) + `<div style="margin:0 15px;background:var(--bg-secondary);border-radius:20px;padding:20px;border:1px solid var(--border-dark-alpha-2);"><span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Coming soon...</span></div>`;
         }
 
         container.appendChild(el);
-    });
+    }
 
     if (!container.children.length) {
         container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">No space yet</div>';
