@@ -267,6 +267,10 @@ async function viewUserProfile(username) {
 
         _setUserProfileFollowState(followData.isFollowing);
 
+        if (followData.isFollowing) {
+            loadUserSpace(username);
+        }
+
         showView('user-profile');
     } catch (err) {
         console.error('Failed to load user profile:', err);
@@ -325,12 +329,118 @@ async function addFriendAndMorph() {
             addFriendState.style.display = 'none';
             tabsState.style.display = 'block';
             requestAnimationFrame(() => requestAnimationFrame(() => tabsState.classList.add('visible')));
+            document.getElementById('up-tab-space').style.display = 'block';
+            document.getElementById('up-tab-others').style.display = 'none';
+            const btns = document.querySelectorAll('#upTabsState .tab-btn');
+            btns.forEach((b, i) => b.classList.toggle('active', i === 0));
+            loadUserSpace(currentViewedUser);
         }, 320);
 
         _otherCache.friends = null;
     } catch (err) {
         console.error('Add friend error:', err);
         btn.disabled = false;
+    }
+}
+
+async function loadUserSpace(username) {
+    const container = document.getElementById('up-tab-space');
+    if (!container) return;
+    container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">Loading...</div>';
+
+    try {
+        const [cfgRes, favsRes, wlRes] = await Promise.allSettled([
+            fetch(`${baseUrl}/api/space-config/${username}`, { headers: ngrokHeaders }),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/favorites`),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/watchlist`)
+        ]);
+
+        const cfgData = cfgRes.status === 'fulfilled' ? await cfgRes.value.json() : { config: null };
+        const favsData = favsRes.status === 'fulfilled' ? await favsRes.value.json() : [];
+        const wlData = wlRes.status === 'fulfilled' ? await wlRes.value.json() : [];
+
+        const cfg = cfgData.config || {
+            titleColor: 'auto', customColor: '#ff3b30', layout: 'scroll',
+            perSectionEnabled: false, quoteText: '...', quoteSource: '',
+            quoteTextColor: 'auto', quoteCustomColor: '#ff3b30',
+            sections: [
+                { id: 'favs', label: 'My Favs', visible: true, core: true, titleColor: 'auto', customColor: '#ff3b30', titleAlign: 'left' },
+                { id: 'quote', label: 'Quote', visible: true, core: true, titleColor: 'auto', customColor: '#ff3b30', titleAlign: 'left' }
+            ]
+        };
+
+        renderUserSpace(cfg, Array.isArray(favsData) ? favsData : [], Array.isArray(wlData) ? wlData : [], container);
+    } catch (err) {
+        if (container) container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">Could not load space</div>';
+    }
+}
+
+function renderUserSpace(cfg, favs, wl, container) {
+    const IMG = 'https://image.tmdb.org/t/p/w300';
+
+    function getC(c, custom) {
+        if (c === 'auto') return 'var(--text-primary)';
+        if (c === 'custom') return custom;
+        return c;
+    }
+
+    const globalTitleColor = getC(cfg.titleColor, cfg.customColor);
+
+    function makeTitle(sec) {
+        const tc = cfg.perSectionEnabled ? getC(sec.titleColor, sec.customColor) : globalTitleColor;
+        const align = sec.titleAlign || 'left';
+        const origins = { left: 'top left', center: 'top center', right: 'top right' };
+        return `<div class="sp-title-wrap" style="text-align:${align}"><span class="sp-title" style="color:${tc};transform-origin:${origins[align]}">${escapeHtml(sec.label)}</span></div>`;
+    }
+
+    let rowWrap, imgStyle;
+    if (cfg.layout === 'grid') {
+        rowWrap = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;';
+        imgStyle = 'width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;cursor:pointer;';
+    } else if (cfg.layout === 'large') {
+        rowWrap = 'padding:0 14px 10px;display:flex;flex-direction:column;gap:10px;';
+        imgStyle = 'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;display:block;margin-bottom:10px;cursor:pointer;';
+    } else {
+        rowWrap = 'display:flex;gap:8px;padding:0 15px 10px;overflow-x:auto;';
+        imgStyle = 'height:140px;width:auto;border-radius:10px;flex-shrink:0;object-fit:cover;cursor:pointer;';
+    }
+
+    function makePosterRow(items) {
+        const limit = cfg.layout === 'large' ? 1 : items.length;
+        if (!items.length) return '<div style="padding:0 15px 10px;color:var(--text-subtle);font-size:13px;">Nothing here yet</div>';
+        return `<div style="${rowWrap}">${items.slice(0, limit).map(m =>
+            `<img src="${IMG}${m.posterPath}" style="${imgStyle}" onclick="showMovieDetails('${String(m.movieId)}')" onerror="this.style.display='none'">`
+        ).join('')}</div>`;
+    }
+
+    container.innerHTML = '';
+
+    (cfg.sections || []).forEach(sec => {
+        if (!sec.visible) return;
+        const el = document.createElement('div');
+        el.className = 'sp-section';
+
+        if (sec.id === 'favs') {
+            el.innerHTML = makeTitle(sec) + makePosterRow(favs);
+        } else if (sec.id === 'watchlistprev') {
+            el.innerHTML = makeTitle(sec) + makePosterRow(wl);
+        } else if (sec.id === 'quote') {
+            const qColor = getC(cfg.quoteTextColor, cfg.quoteCustomColor);
+            el.innerHTML = makeTitle(sec) + `<div class="sp-quote-wrap" style="pointer-events:none">
+                <p class="sp-quote-text" style="color:${qColor}">"${escapeHtml(cfg.quoteText || '')}"</p>
+                <span class="sp-quote-source">&mdash; ${escapeHtml(cfg.quoteSource || '')}</span>
+            </div>`;
+        } else if (sec.id === 'genres') {
+            el.innerHTML = makeTitle(sec) + `<div style="padding:0 15px 10px;color:var(--text-subtle);font-size:13px;">Genre rows</div>`;
+        } else {
+            el.innerHTML = makeTitle(sec) + `<div style="margin:0 15px;background:var(--bg-secondary);border-radius:20px;padding:20px;border:1px solid var(--border-dark-alpha-2);"><span style="font-size:13px;font-weight:600;color:var(--text-secondary);">Coming soon...</span></div>`;
+        }
+
+        container.appendChild(el);
+    });
+
+    if (!container.children.length) {
+        container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">No space yet</div>';
     }
 }
 
@@ -637,8 +747,14 @@ function switchProfileTab(tab, btn) {
 
 async function loadSpaceTab() {
     const IMG = 'https://image.tmdb.org/t/p/w300';
-    const savedQuote = localStorage.getItem('space_quote') || 'Get busy living, or get busy dying.';
-    const savedSource = localStorage.getItem('space_quote_source') || 'The Shawshank Redemption, 1994';
+    const username = (document.getElementById('addUsername')?.textContent || '').trim();
+
+    if (username && typeof loadSpaceStateFromServer === 'function') {
+        await loadSpaceStateFromServer(username);
+    }
+
+    const savedQuote = localStorage.getItem('space_quote') || state.quoteText || 'Get busy living, or get busy dying.';
+    const savedSource = localStorage.getItem('space_quote_source') || state.quoteSource || 'The Shawshank Redemption, 1994';
     state.quoteText = savedQuote;
     state.quoteSource = savedSource;
     renderSpace();
