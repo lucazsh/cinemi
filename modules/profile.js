@@ -272,13 +272,41 @@ async function viewUserProfile(username) {
         if (followData.isFollowing) {
             loadUserSpace(username);
         }
-
+        applyUserProfileGradient(data.user.photoUrl, data.user.profileBgMode || 'auto');
         showView('user-profile');
     } catch (err) {
         console.error('Failed to load user profile:', err);
     }
 }
-
+function applyUserProfileGradient(photoUrl, mode) {
+    const el = document.getElementById('user-profile-gradient-bg');
+    if (!el) return;
+    if (mode === 'static') {
+        el.style.background = 'linear-gradient(to bottom, var(--profile-bg) 0%, transparent 100%)';
+        return;
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function () {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 50; canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 50, 50);
+            const d = ctx.getImageData(0, 0, 50, 50).data;
+            let r = 0, g = 0, b = 0, c = 0;
+            for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; c++; }
+            r = Math.round(r/c); g = Math.round(g/c); b = Math.round(b/c);
+            el.style.background = `linear-gradient(to bottom, rgba(${r},${g},${b},0.25) 0%, transparent 100%)`;
+        } catch(e) {
+            el.style.background = 'linear-gradient(to bottom, rgba(31,31,31,0.8) 0%, transparent 100%)';
+        }
+    };
+    img.onerror = function () {
+        el.style.background = 'linear-gradient(to bottom, rgba(31,31,31,0.8) 0%, transparent 100%)';
+    };
+    img.src = photoUrl;
+}
 function _setUserProfileFollowState(isFollowing) {
     const addFriendState = document.getElementById('upAddFriendState');
     const tabsState = document.getElementById('upTabsState');
