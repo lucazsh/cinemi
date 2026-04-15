@@ -992,18 +992,22 @@ function initReactCarousel(targetUsername) {
             const span = document.createElement('span');
             span.className = 'react-emoji-inner';
             if (item.type === 'custom-emoji') {
+                el.classList.add('react-item-custom-text');
                 span.textContent = item.text;
                 span.style.color = item.textColor || '#fff';
                 span.style.fontSize = item.text.length > 2 ? '13px' : '24px';
                 span.style.fontWeight = '800';
                 const bc = item.borderColor || '#ffffff';
                 span.style.textShadow = `-1px -1px 0 ${bc}, 1px -1px 0 ${bc}, -1px 1px 0 ${bc}, 1px 1px 0 ${bc}, 0 0 6px ${bc}`;
+                const style = { textShadow: span.style.textShadow, color: item.textColor || '#fff', fontSize: span.style.fontSize };
+                el.appendChild(span);
+                _attachHoldReact(el, badge, item.text, targetUsername, style);
             } else {
                 span.textContent = item.value;
                 span.style.textShadow = '0 0 4px rgba(0,0,0,0.95), -1px -1px 2px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.8)';
+                el.appendChild(span);
+                _attachHoldReact(el, badge, item.value, targetUsername, null);
             }
-            el.appendChild(span);
-            _attachHoldReact(el, badge, item.type === 'custom-emoji' ? item.text : item.value, targetUsername);
         }
 
         track.appendChild(el);
@@ -1016,7 +1020,7 @@ let _holdTimer = null;
 let _holdCount = 0;
 let _holdActive = false;
 
-function _attachHoldReact(el, badge, emoji, targetUsername) {
+function _attachHoldReact(el, badge, emoji, targetUsername, style) {
     let holding = false;
 
     const onStart = (e) => {
@@ -1048,7 +1052,7 @@ function _attachHoldReact(el, badge, emoji, targetUsername) {
         badge.classList.remove('show');
         el.style.transform = '';
         const count = Math.min(_holdCount + 1, 100);
-        _sendReaction(emoji, count, targetUsername);
+        _sendReaction(emoji, count, targetUsername, style);
         _trackReactUsage(emoji);
     };
 
@@ -1066,7 +1070,7 @@ function _trackReactUsage(emoji) {
     _saveReactData(data);
 }
 
-function _sendReaction(emoji, count, targetUsername) {
+function _sendReaction(emoji, count, targetUsername, style) {
     const imgEl = document.getElementById('userProfileImg');
     if (!imgEl) return;
     const rect = imgEl.getBoundingClientRect();
@@ -1074,23 +1078,23 @@ function _sendReaction(emoji, count, targetUsername) {
     const cy = rect.top + rect.height / 2;
     const spawns = Math.min(count, 18);
     for (let i = 0; i < spawns; i++) {
-        setTimeout(() => _spawnFloatEmoji(emoji, cx, cy), i * 55);
+        setTimeout(() => _spawnFloatEmoji(emoji, cx, cy, style), i * 55);
     }
-    _placeReactionOnProfile(emoji);
+    _placeReactionOnProfile(emoji, style);
 }
 
 const _PERSIST_POSITIONS = [
-    { top: '-20px', right: '-20px' },
-    { bottom: '-20px', right: '-20px' },
-    { bottom: '-20px', left: '-20px' },
-    { top: '-20px', left: '-20px' },
-    { top: '50%', right: '-26px', transform: 'translateY(-50%)' },
-    { top: '50%', left: '-26px', transform: 'translateY(-50%)' },
-    { top: '-10px', right: '8px' },
-    { bottom: '-10px', left: '8px' },
+    { top: '8px', right: '8px' },
+    { bottom: '8px', right: '8px' },
+    { bottom: '8px', left: '8px' },
+    { top: '8px', left: '8px' },
+    { top: '50%', right: '10px', transform: 'translateY(-50%)' },
+    { top: '50%', left: '10px', transform: 'translateY(-50%)' },
+    { top: '10px', left: '50%', transform: 'translateX(-50%)' },
+    { bottom: '10px', left: '50%', transform: 'translateX(-50%)' },
 ];
 
-function _placeReactionOnProfile(emoji) {
+function _placeReactionOnProfile(emoji, style) {
     const imgEl = document.getElementById('userProfileImg');
     if (!imgEl) return;
     const wrap = imgEl.closest('.p-img-wrap');
@@ -1098,6 +1102,20 @@ function _placeReactionOnProfile(emoji) {
 
     const existing = wrap.querySelector('.profile-reaction-persist');
     const pos = _PERSIST_POSITIONS[Math.floor(Math.random() * _PERSIST_POSITIONS.length)];
+
+    function applyStyle(el) {
+        if (style && style.textShadow) {
+            el.style.textShadow = style.textShadow;
+            el.style.color = style.color || '#fff';
+            el.style.fontSize = style.fontSize || '28px';
+            el.style.fontWeight = '800';
+        } else {
+            el.style.textShadow = '';
+            el.style.color = '';
+            el.style.fontSize = '36px';
+            el.style.fontWeight = '';
+        }
+    }
 
     if (existing) {
         const cur = existing.style.transform || '';
@@ -1111,6 +1129,7 @@ function _placeReactionOnProfile(emoji) {
             existing.style.left = '';
             existing.style.transform = pos.transform || '';
             Object.keys(pos).forEach(k => { existing.style[k] = pos[k]; });
+            applyStyle(existing);
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 existing.style.opacity = '1';
             }));
@@ -1120,6 +1139,7 @@ function _placeReactionOnProfile(emoji) {
         el.className = 'profile-reaction-persist';
         el.textContent = emoji;
         Object.keys(pos).forEach(k => { el.style[k] = pos[k]; });
+        applyStyle(el);
         wrap.appendChild(el);
         requestAnimationFrame(() => requestAnimationFrame(() => {
             el.style.opacity = '1';
@@ -1127,10 +1147,16 @@ function _placeReactionOnProfile(emoji) {
     }
 }
 
-function _spawnFloatEmoji(emoji, cx, cy) {
+function _spawnFloatEmoji(emoji, cx, cy, style) {
     const el = document.createElement('span');
     el.className = 'float-react-emoji';
     el.textContent = emoji;
+    if (style && style.textShadow) {
+        el.style.textShadow = style.textShadow;
+        el.style.color = style.color || '#fff';
+        el.style.fontSize = style.fontSize || '22px';
+        el.style.fontWeight = '800';
+    }
     const angle = Math.random() * Math.PI * 2;
     const dist = 70 + Math.random() * 90;
     el.style.setProperty('--fx', (Math.cos(angle) * dist) + 'px');
