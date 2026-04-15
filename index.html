@@ -3535,12 +3535,15 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            padding: 25px 18px 18px;
+            padding: 30px 18px 18px;
             align-items: flex-end;
             max-width: 100%;
             overflow-y: visible;
             touch-action: pan-x;
             scroll-behavior: smooth;
+            touch-action: pan-x;
+            overscroll-behavior-y: none;
+            overscroll-behavior-x: contain;
         }
         #react-carousel-track::-webkit-scrollbar { display: none; }
         .react-item {
