@@ -1102,10 +1102,29 @@ function _sendReaction(emoji, count, targetUsername, style) {
     const rect = imgEl.getBoundingClientRect();
     const spawns = Math.min(count, 18);
     for (let i = 0; i < spawns; i++) {
-        const offsetX = (Math.random() - 0.5) * rect.width * 1.4;
-        const offsetY = (Math.random() - 0.5) * rect.height * 1.4;
-        const cx = rect.left + rect.width / 2 + offsetX;
-        const cy = rect.top + rect.height / 2 + offsetY;
+        const side = Math.floor(Math.random() * 4);
+        let cx, cy;
+        switch (side) {
+            case 0:
+                cx = rect.left + Math.random() * rect.width;
+                cy = rect.top;
+                break;
+            case 1:
+                cx = rect.right;
+                cy = rect.top + Math.random() * rect.height;
+                break;
+            case 2:
+                cx = rect.left + Math.random() * rect.width;
+                cy = rect.bottom;
+                break;
+            case 3:
+                cx = rect.left;
+                cy = rect.top + Math.random() * rect.height;
+                break;
+        }
+        cx += (Math.random() - 0.5) * 8;
+        cy += (Math.random() - 0.5) * 8;
+
         setTimeout(() => _spawnFloatEmoji(emoji, cx, cy, style), i * 55);
     }
     _placeReactionOnProfile(emoji, style);
