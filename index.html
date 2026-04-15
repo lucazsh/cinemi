@@ -3502,6 +3502,217 @@
             pointer-events: all;
         }
 
+        #react-carousel-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 14px 0 4px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        #react-carousel-wrap.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+        #react-carousel-track {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 12px 14px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.08);
+            max-width: calc(100% - 32px);
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-items: flex-end;
+        }
+        #react-carousel-track::-webkit-scrollbar { display: none; }
+        .react-item {
+            scroll-snap-align: center;
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.13);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            transition: transform 0.12s ease, border-color 0.15s;
+        }
+        .react-item:active { transform: scale(0.88); }
+        .react-item .react-emoji-inner {
+            font-size: 22px;
+            display: block;
+            line-height: 1;
+            pointer-events: none;
+        }
+        .react-item-custom svg { pointer-events: none; }
+        .react-hold-badge {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.5);
+            background: rgba(0,0,0,0.88);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            letter-spacing: 0.5px;
+            z-index: 10;
+        }
+        .react-hold-badge.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+        .float-react-emoji {
+            position: fixed;
+            pointer-events: none;
+            font-size: 26px;
+            z-index: 9999;
+            will-change: transform, opacity;
+            animation: floatReact 1s ease-out forwards;
+        }
+        @keyframes floatReact {
+            0% { transform: translate(0,0) scale(1.2); opacity: 1; }
+            40% { opacity: 1; }
+            100% { transform: translate(var(--fx), var(--fy)) scale(0.3); opacity: 0; }
+        }
+        #custom-react-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            display: flex;
+            align-items: flex-end;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        #custom-react-modal.open { pointer-events: all; opacity: 1; }
+        .crm-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+        }
+        .crm-sheet {
+            position: relative;
+            width: 100%;
+            background: var(--bg-secondary);
+            border-radius: 24px 24px 0 0;
+            padding: 20px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+            box-sizing: border-box;
+            transform: translateY(50px);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #custom-react-modal.open .crm-sheet { transform: translateY(0); }
+        .crm-handle {
+            width: 36px;
+            height: 4px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 4px;
+            margin: 0 auto 18px;
+        }
+        .crm-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        .crm-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 18px;
+            border: 3px solid #fff;
+            box-sizing: border-box;
+            transition: border-color 0.2s, color 0.2s;
+            font-family: inherit;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .crm-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-subtle);
+            margin-bottom: 7px;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+        .crm-input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 13px;
+            padding: 13px 14px;
+            font-size: 22px;
+            color: var(--text-primary);
+            font-family: inherit;
+            box-sizing: border-box;
+            margin-bottom: 14px;
+            text-align: center;
+            outline: none;
+        }
+        .crm-row { display: flex; gap: 12px; margin-bottom: 16px; }
+        .crm-color-wrap { flex: 1; }
+        .crm-color-swatch {
+            width: 100%;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+            padding: 0;
+            cursor: pointer;
+            position: relative;
+        }
+        .crm-color-swatch input[type="color"] {
+            position: absolute;
+            inset: -4px;
+            width: calc(100% + 8px);
+            height: calc(100% + 8px);
+            border: none;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+        .crm-save-btn {
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s;
+        }
+        .crm-save-btn:active { opacity: 0.7; }
+
         #profile .p-user {
             position: relative;
             z-index: 1;
@@ -7225,6 +7436,9 @@
             </div>
             <span class="p-name" id="userProfileName">Loading...</span>
             <span class="p-tag" id="userProfileTag">@loading</span>
+            <div id="react-carousel-wrap">
+                <div id="react-carousel-track"></div>
+            </div>
             <div id="upAddFriendState" style="margin-top:15px; width:100%;">
                 <button id="addFriendBtn" onclick="addFriendAndMorph()">
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M412-412H222q-29 0-48.5-20T154-480.5q0-28.5 19.5-48T222-548h190v-191q0-28 20-48t48-20q28 0 48 20t20 48v191h190q29 0 48.5 19.5t19.5 48q0 28.5-19.5 48.5T738-412H548v190q0 28-20 48t-48 20q-28 0-48-20t-20-48v-190Z"/></svg>
@@ -7292,6 +7506,32 @@
             <h2>Friends</h2>
             <p>Loading...</p>
             <button class="btn-close" onclick="closePanel('user-friends')">Close</button>
+        </div>
+    </div>
+
+    <div id="custom-react-modal">
+        <div class="crm-backdrop" onclick="closeCrmModal()"></div>
+        <div class="crm-sheet">
+            <div class="crm-handle"></div>
+            <div class="crm-title">Custom Reaction</div>
+            <div class="crm-preview" id="crm-preview-item">?</div>
+            <span class="crm-label">Emoji or text</span>
+            <input class="crm-input" id="crm-emoji-input" type="text" maxlength="6" placeholder="🎭" oninput="_updateCrmPreview()">
+            <div class="crm-row">
+                <div class="crm-color-wrap">
+                    <span class="crm-label">Border color</span>
+                    <div class="crm-color-swatch" id="crm-border-swatch">
+                        <input type="color" id="crm-border-color" value="#ffffff" oninput="_updateCrmPreview()">
+                    </div>
+                </div>
+                <div class="crm-color-wrap">
+                    <span class="crm-label">Text color</span>
+                    <div class="crm-color-swatch" id="crm-text-swatch">
+                        <input type="color" id="crm-text-color" value="#ffffff" oninput="_updateCrmPreview()">
+                    </div>
+                </div>
+            </div>
+            <button class="crm-save-btn" onclick="saveCrmReact()">Add Reaction</button>
         </div>
     </div>
     <div id="chats" class="view">
