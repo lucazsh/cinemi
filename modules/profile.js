@@ -1148,7 +1148,11 @@ function _placeReactionOnProfile(emoji, style) {
     if (!wrap) return;
 
     const existing = wrap.querySelector('.profile-reaction-persist');
-    const pos = _PERSIST_POSITIONS[Math.floor(Math.random() * _PERSIST_POSITIONS.length)];
+
+    const angle = (Math.random() * Math.PI * 1.4) + Math.PI * 0.3;
+    const r = 47;
+    const cx = 50 + r * Math.cos(angle);
+    const cy = 50 + r * Math.sin(angle);
 
     function applyStyle(el) {
         if (style && style.textShadow) {
@@ -1165,17 +1169,15 @@ function _placeReactionOnProfile(emoji, style) {
     }
 
     if (existing) {
-        const cur = existing.style.transform || '';
-        existing.style.transform = cur + ' scale(0) rotate(25deg)';
+        existing.style.transform = (existing.style.transform || 'translate(-50%, -50%)') + ' scale(0) rotate(25deg)';
         existing.style.opacity = '0';
         setTimeout(() => {
             existing.textContent = emoji;
-            existing.style.top = '';
+            existing.style.top = cy + '%';
+            existing.style.left = cx + '%';
             existing.style.right = '';
             existing.style.bottom = '';
-            existing.style.left = '';
-            existing.style.transform = pos.transform || '';
-            Object.keys(pos).forEach(k => { existing.style[k] = pos[k]; });
+            existing.style.transform = 'translate(-50%, -50%)';
             applyStyle(existing);
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 existing.style.opacity = '1';
@@ -1185,7 +1187,9 @@ function _placeReactionOnProfile(emoji, style) {
         const el = document.createElement('span');
         el.className = 'profile-reaction-persist';
         el.textContent = emoji;
-        Object.keys(pos).forEach(k => { el.style[k] = pos[k]; });
+        el.style.left = cx + '%';
+        el.style.top = cy + '%';
+        el.style.transform = 'translate(-50%, -50%)';
         applyStyle(el);
         wrap.appendChild(el);
         requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -1193,7 +1197,6 @@ function _placeReactionOnProfile(emoji, style) {
         }));
     }
 }
-
 function _spawnFloatEmoji(emoji, cx, cy, style) {
     const el = document.createElement('span');
     el.className = 'float-react-emoji';
