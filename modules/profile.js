@@ -972,12 +972,10 @@ function initReactCarousel(targetUsername) {
     ];
 
     track.innerHTML = '';
-    const arcOffsets = [10, 5, 2, 0, 2, 5, 10];
 
-    allItems.forEach((item, idx) => {
+    allItems.forEach((item) => {
         const el = document.createElement('div');
         el.className = 'react-item';
-        if (idx < arcOffsets.length) el.style.marginBottom = arcOffsets[idx] + 'px';
 
         const badge = document.createElement('span');
         badge.className = 'react-hold-badge';
@@ -991,6 +989,7 @@ function initReactCarousel(targetUsername) {
         } else {
             const span = document.createElement('span');
             span.className = 'react-emoji-inner';
+
             if (item.type === 'custom-emoji') {
                 el.classList.add('react-item-custom-text');
                 span.textContent = item.text;
@@ -1013,7 +1012,34 @@ function initReactCarousel(targetUsername) {
         track.appendChild(el);
     });
 
-    requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('visible')));
+    const updateArc = () => {
+        const trackRect = track.getBoundingClientRect();
+        const centerX = trackRect.left + trackRect.width / 2;
+
+        [...track.children].forEach((el) => {
+            const r = el.getBoundingClientRect();
+            const itemCenter = r.left + r.width / 2;
+            const dist = Math.abs(itemCenter - centerX);
+            const t = Math.min(dist / (trackRect.width * 0.38), 1);
+            const lift = Math.round(18 * Math.pow(t, 1.7));
+            const scale = (1.42 - t * 0.26).toFixed(2);
+
+            el.style.setProperty('--lift', `${lift}px`);
+            el.style.setProperty('--scale', scale);
+            el.style.zIndex = String(Math.round((1 - t) * 100));
+        });
+    };
+
+    if (!track.dataset.arcBound) {
+        track.dataset.arcBound = '1';
+        track.addEventListener('scroll', () => requestAnimationFrame(updateArc), { passive: true });
+        window.addEventListener('resize', () => requestAnimationFrame(updateArc));
+    }
+
+    requestAnimationFrame(() => {
+        updateArc();
+        requestAnimationFrame(() => wrap.classList.add('visible'));
+    });
 }
 
 let _holdTimer = null;
