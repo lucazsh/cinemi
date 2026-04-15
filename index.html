@@ -3535,7 +3535,7 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            padding: 50px 18px 18px;
+            padding: 30px 18px 18px;
             align-items: flex-end;
             max-width: 100%;
             overflow-y: visible;
@@ -3544,8 +3544,6 @@
             touch-action: pan-x;
             overscroll-behavior-y: none;
             overscroll-behavior-x: contain;
-            pointer-events: none;
-            touch-action: none;
         }
         #react-carousel-track::-webkit-scrollbar { display: none; }
         .react-item {
@@ -3570,8 +3568,6 @@
             will-change: transform;
             user-select: none;
             -webkit-user-drag: none;
-            pointer-events: auto;
-            touch-action: auto;
         }
         .react-item:hover {
             transform: translateY(calc(var(--lift, 0px) - 4px)) scale(calc(var(--scale, 1) + 0.08));
