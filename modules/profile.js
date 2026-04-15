@@ -994,7 +994,7 @@ function initReactCarousel(targetUsername) {
                 el.classList.add('react-item-custom-text');
                 span.textContent = item.text;
                 span.style.color = item.textColor || '#fff';
-                span.style.fontSize = item.text.length > 2 ? '13px' : '24px';
+                span.style.fontSize = item.text.length > 2 ? '40px' : '50px';
                 span.style.fontWeight = '800';
                 const bc = item.borderColor || '#ffffff';
                 span.style.textShadow = `-1px -1px 0 ${bc}, 1px -1px 0 ${bc}, -1px 1px 0 ${bc}, 1px 1px 0 ${bc}, 0 0 6px ${bc}`;
