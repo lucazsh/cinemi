@@ -3505,14 +3505,20 @@
         }
 
         #react-carousel-wrap {
+            position: sticky;
+            bottom: 0;
+            z-index: 500;
             width: 100%;
             display: flex;
             justify-content: center;
-            padding: 14px 0 6px;
+            padding: 10px 0 14px;
             opacity: 0;
             transform: translateY(10px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             pointer-events: none;
+            background: linear-gradient(to top, var(--bg-primary) 60%, transparent 100%);
+            margin: 0 -20px;
+            width: calc(100% + 40px);
         }
         #react-carousel-wrap.visible {
             opacity: 1;
@@ -3533,9 +3539,10 @@
         .react-item {
             scroll-snap-align: center;
             flex-shrink: 0;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
+            min-width: 52px;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             background: rgba(255,255,255,0.09);
             display: flex;
             align-items: center;
@@ -3602,13 +3609,22 @@
         }
         .profile-reaction-persist {
             position: absolute;
-            font-size: 50px;
-            z-index: 0;
+            font-size: 36px;
+            z-index: 2;
             pointer-events: none;
             opacity: 0;
             line-height: 1;
             transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.28s ease;
-            filter: drop-shadow(0 3px 10px rgba(0,0,0,0.65));
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.55));
+        }
+        .react-item.react-item-custom-text {
+            width: auto;
+            min-width: 44px;
+            height: 52px;
+            padding: 0 12px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
         }
         #custom-react-modal {
             position: fixed;
@@ -7456,9 +7472,9 @@
                     Add friend
                 </button>
             </div>
-            <div id="react-carousel-wrap">
-                <div id="react-carousel-track"></div>
-            </div>
+        </div>
+        <div id="react-carousel-wrap">
+            <div id="react-carousel-track"></div>
         </div>
         <div id="upTabsState">
             <div class="profile-tabs">
