@@ -812,6 +812,11 @@ function closeUserProfileOverlays() {
     const rcw = document.getElementById('react-carousel-wrap');
     if (rcw) rcw.classList.remove('visible');
 
+    const pImgWrap = document.getElementById('userProfileImg')?.closest('.p-img-wrap');
+    if (pImgWrap) {
+        pImgWrap.querySelectorAll('.profile-reaction-persist').forEach(el => el.remove());
+    }
+
     ['user-favorites-panel', 'user-watchlist-panel', 'user-friends-panel', 'report-panel'].forEach(id => {
         const panel = document.getElementById(id);
         if (!panel) return;
@@ -989,13 +994,13 @@ function initReactCarousel(targetUsername) {
             if (item.type === 'custom-emoji') {
                 span.textContent = item.text;
                 span.style.color = item.textColor || '#fff';
-                span.style.fontSize = (item.text.length > 2 ? '13px' : '22px');
+                span.style.fontSize = item.text.length > 2 ? '13px' : '24px';
                 span.style.fontWeight = '800';
-                el.style.border = `2px solid ${item.borderColor || '#fff'}`;
+                const bc = item.borderColor || '#ffffff';
+                span.style.textShadow = `-1px -1px 0 ${bc}, 1px -1px 0 ${bc}, -1px 1px 0 ${bc}, 1px 1px 0 ${bc}, 0 0 6px ${bc}`;
             } else {
                 span.textContent = item.value;
-                el.style.border = '2px solid rgba(255,255,255,0.22)';
-                if (idx === 1) el.style.border = '2px solid rgba(255,255,255,0.5)';
+                span.style.textShadow = '0 0 4px rgba(0,0,0,0.95), -1px -1px 2px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.8)';
             }
             el.appendChild(span);
             _attachHoldReact(el, badge, item.type === 'custom-emoji' ? item.text : item.value, targetUsername);
@@ -1021,13 +1026,17 @@ function _attachHoldReact(el, badge, emoji, targetUsername) {
         _holdCount = 0;
         badge.textContent = 'x1';
         badge.classList.add('show');
-        let tick = 0;
+        el.style.transform = 'scale(0.92)';
         _holdTimer = setInterval(() => {
             if (!holding) return;
             _holdCount++;
-            badge.textContent = `x${Math.min(_holdCount + 1, 100)}`;
-            tick++;
-            el.style.transform = `scale(${0.9 + 0.1 * Math.abs(Math.sin(tick * 0.4))})`;
+            const c = Math.min(_holdCount + 1, 100);
+            badge.textContent = `x${c}`;
+            if (c === 100) {
+                badge.classList.remove('pulse');
+                void badge.offsetWidth;
+                badge.classList.add('pulse');
+            }
         }, 80);
     };
 
@@ -1066,6 +1075,55 @@ function _sendReaction(emoji, count, targetUsername) {
     const spawns = Math.min(count, 18);
     for (let i = 0; i < spawns; i++) {
         setTimeout(() => _spawnFloatEmoji(emoji, cx, cy), i * 55);
+    }
+    _placeReactionOnProfile(emoji);
+}
+
+const _PERSIST_POSITIONS = [
+    { top: '-20px', right: '-20px' },
+    { bottom: '-20px', right: '-20px' },
+    { bottom: '-20px', left: '-20px' },
+    { top: '-20px', left: '-20px' },
+    { top: '50%', right: '-26px', transform: 'translateY(-50%)' },
+    { top: '50%', left: '-26px', transform: 'translateY(-50%)' },
+    { top: '-10px', right: '8px' },
+    { bottom: '-10px', left: '8px' },
+];
+
+function _placeReactionOnProfile(emoji) {
+    const imgEl = document.getElementById('userProfileImg');
+    if (!imgEl) return;
+    const wrap = imgEl.closest('.p-img-wrap');
+    if (!wrap) return;
+
+    const existing = wrap.querySelector('.profile-reaction-persist');
+    const pos = _PERSIST_POSITIONS[Math.floor(Math.random() * _PERSIST_POSITIONS.length)];
+
+    if (existing) {
+        const cur = existing.style.transform || '';
+        existing.style.transform = cur + ' scale(0) rotate(25deg)';
+        existing.style.opacity = '0';
+        setTimeout(() => {
+            existing.textContent = emoji;
+            existing.style.top = '';
+            existing.style.right = '';
+            existing.style.bottom = '';
+            existing.style.left = '';
+            existing.style.transform = pos.transform || '';
+            Object.keys(pos).forEach(k => { existing.style[k] = pos[k]; });
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                existing.style.opacity = '1';
+            }));
+        }, 230);
+    } else {
+        const el = document.createElement('span');
+        el.className = 'profile-reaction-persist';
+        el.textContent = emoji;
+        Object.keys(pos).forEach(k => { el.style[k] = pos[k]; });
+        wrap.appendChild(el);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.opacity = '1';
+        }));
     }
 }
 
