@@ -273,6 +273,7 @@ async function viewUserProfile(username) {
             loadUserSpace(username);
         }
         applyUserProfileGradient(data.user.photoUrl, data.user.profileBgMode || 'auto');
+        initReactCarousel(username);
         showView('user-profile');
     } catch (err) {
         console.error('Failed to load user profile:', err);
@@ -808,6 +809,8 @@ function closeUserProfileOverlays() {
     document.getElementById('upTabsState')?.classList.remove('visible');
     document.getElementById('upMsgBtn')?.classList.remove('visible');
     document.getElementById('upAddFriendState')?.classList.remove('morphing-out');
+    const rcw = document.getElementById('react-carousel-wrap');
+    if (rcw) rcw.classList.remove('visible');
 
     ['user-favorites-panel', 'user-watchlist-panel', 'user-friends-panel', 'report-panel'].forEach(id => {
         const panel = document.getElementById(id);
@@ -937,3 +940,190 @@ window.showView = function (view) {
         if (typeof applyProfileGradient === 'function') applyProfileGradient();
     }
 };
+
+const _REACT_DEFAULT_EMOJIS = ['🔥','❤️','😂','👏','😮','🎬','⭐','🤩','💀'];
+
+function _getReactData() {
+    try { return JSON.parse(localStorage.getItem('cinemi_reactData') || '{}'); } catch { return {}; }
+}
+function _saveReactData(d) {
+    try { localStorage.setItem('cinemi_reactData', JSON.stringify(d)); } catch {}
+}
+
+function initReactCarousel(targetUsername) {
+    const wrap = document.getElementById('react-carousel-wrap');
+    const track = document.getElementById('react-carousel-track');
+    if (!wrap || !track) return;
+
+    const data = _getReactData();
+    const mostUsed = data.mostUsed || {};
+    const customItems = data.customItems || [];
+
+    const sorted = [..._REACT_DEFAULT_EMOJIS].sort((a, b) => (mostUsed[b] || 0) - (mostUsed[a] || 0));
+    const allItems = [
+        { type: 'custom' },
+        ...sorted.map(e => ({ type: 'emoji', value: e })),
+        ...customItems.map(c => ({ type: 'custom-emoji', ...c }))
+    ];
+
+    track.innerHTML = '';
+    const arcOffsets = [10, 5, 2, 0, 2, 5, 10];
+
+    allItems.forEach((item, idx) => {
+        const el = document.createElement('div');
+        el.className = 'react-item';
+        if (idx < arcOffsets.length) el.style.marginBottom = arcOffsets[idx] + 'px';
+
+        const badge = document.createElement('span');
+        badge.className = 'react-hold-badge';
+        badge.textContent = 'x1';
+        el.appendChild(badge);
+
+        if (item.type === 'custom') {
+            el.classList.add('react-item-custom');
+            el.insertAdjacentHTML('beforeend', `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M142-74q-29 0-48.5-19.5T74-142v-123q0-26.86 10.2-52.01Q94.39-342.16 114-362l497.32-497.32Q624-873 641.47-879.5 658.93-886 677-886q17.74 0 34.87 6.5T744-860l117 115q14 14 20 31.48 6 17.49 6 36.47 0 18.05-6.5 35.55Q874-624 860-611L364-114q-19.84 19.61-44.99 29.8Q293.86-74 267-74H142Zm537-548 57-55-58-58-57 56 58 57Z"/></svg>`);
+            el.addEventListener('pointerdown', e => { e.stopPropagation(); openCustomReactModal(); });
+        } else {
+            const span = document.createElement('span');
+            span.className = 'react-emoji-inner';
+            if (item.type === 'custom-emoji') {
+                span.textContent = item.text;
+                span.style.color = item.textColor || '#fff';
+                span.style.fontSize = (item.text.length > 2 ? '13px' : '22px');
+                span.style.fontWeight = '800';
+                el.style.border = `2px solid ${item.borderColor || '#fff'}`;
+            } else {
+                span.textContent = item.value;
+                el.style.border = '2px solid rgba(255,255,255,0.22)';
+                if (idx === 1) el.style.border = '2px solid rgba(255,255,255,0.5)';
+            }
+            el.appendChild(span);
+            _attachHoldReact(el, badge, item.type === 'custom-emoji' ? item.text : item.value, targetUsername);
+        }
+
+        track.appendChild(el);
+    });
+
+    requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('visible')));
+}
+
+let _holdTimer = null;
+let _holdCount = 0;
+let _holdActive = false;
+
+function _attachHoldReact(el, badge, emoji, targetUsername) {
+    let holding = false;
+
+    const onStart = (e) => {
+        e.preventDefault();
+        holding = true;
+        _holdActive = true;
+        _holdCount = 0;
+        badge.textContent = 'x1';
+        badge.classList.add('show');
+        let tick = 0;
+        _holdTimer = setInterval(() => {
+            if (!holding) return;
+            _holdCount++;
+            badge.textContent = `x${Math.min(_holdCount + 1, 100)}`;
+            tick++;
+            el.style.transform = `scale(${0.9 + 0.1 * Math.abs(Math.sin(tick * 0.4))})`;
+        }, 80);
+    };
+
+    const onEnd = () => {
+        if (!holding) return;
+        holding = false;
+        _holdActive = false;
+        clearInterval(_holdTimer);
+        badge.classList.remove('show');
+        el.style.transform = '';
+        const count = Math.min(_holdCount + 1, 100);
+        _sendReaction(emoji, count, targetUsername);
+        _trackReactUsage(emoji);
+    };
+
+    el.addEventListener('pointerdown', onStart);
+    el.addEventListener('pointerup', onEnd);
+    el.addEventListener('pointercancel', onEnd);
+    el.addEventListener('pointerleave', onEnd);
+    el.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+function _trackReactUsage(emoji) {
+    const data = _getReactData();
+    if (!data.mostUsed) data.mostUsed = {};
+    data.mostUsed[emoji] = (data.mostUsed[emoji] || 0) + 1;
+    _saveReactData(data);
+}
+
+function _sendReaction(emoji, count, targetUsername) {
+    const imgEl = document.getElementById('userProfileImg');
+    if (!imgEl) return;
+    const rect = imgEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const spawns = Math.min(count, 18);
+    for (let i = 0; i < spawns; i++) {
+        setTimeout(() => _spawnFloatEmoji(emoji, cx, cy), i * 55);
+    }
+}
+
+function _spawnFloatEmoji(emoji, cx, cy) {
+    const el = document.createElement('span');
+    el.className = 'float-react-emoji';
+    el.textContent = emoji;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 70 + Math.random() * 90;
+    el.style.setProperty('--fx', (Math.cos(angle) * dist) + 'px');
+    el.style.setProperty('--fy', (Math.sin(angle) * dist - 30) + 'px');
+    el.style.left = (cx - 13) + 'px';
+    el.style.top = (cy - 13) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+}
+
+function openCustomReactModal() {
+    const modal = document.getElementById('custom-react-modal');
+    if (!modal) return;
+    document.getElementById('crm-emoji-input').value = '';
+    document.getElementById('crm-border-color').value = '#ffffff';
+    document.getElementById('crm-text-color').value = '#ffffff';
+    document.getElementById('crm-border-swatch').style.background = '#ffffff';
+    document.getElementById('crm-text-swatch').style.background = '#ffffff';
+    _updateCrmPreview();
+    modal.classList.add('open');
+}
+
+function closeCrmModal() {
+    document.getElementById('custom-react-modal')?.classList.remove('open');
+}
+
+function _updateCrmPreview() {
+    const text = document.getElementById('crm-emoji-input').value || '?';
+    const borderColor = document.getElementById('crm-border-color').value;
+    const textColor = document.getElementById('crm-text-color').value;
+    const preview = document.getElementById('crm-preview-item');
+    if (!preview) return;
+    preview.textContent = text;
+    preview.style.borderColor = borderColor;
+    preview.style.color = textColor;
+    preview.style.fontSize = text.length > 2 ? '16px' : '28px';
+    document.getElementById('crm-border-swatch').style.background = borderColor;
+    document.getElementById('crm-text-swatch').style.background = textColor;
+}
+
+function saveCrmReact() {
+    const text = document.getElementById('crm-emoji-input').value.trim();
+    if (!text) return;
+    const borderColor = document.getElementById('crm-border-color').value;
+    const textColor = document.getElementById('crm-text-color').value;
+    const data = _getReactData();
+    if (!data.customItems) data.customItems = [];
+    data.customItems = data.customItems.filter(c => c.text !== text);
+    data.customItems.unshift({ text, borderColor, textColor });
+    if (data.customItems.length > 5) data.customItems.pop();
+    _saveReactData(data);
+    closeCrmModal();
+    initReactCarousel(currentViewedUser);
+}
