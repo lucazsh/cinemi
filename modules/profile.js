@@ -1253,11 +1253,11 @@ function _placeReactionOnProfile(emoji, style) {
             el.style.fontWeight = '800';
             el.style.filter = '';
         } else {
-            el.style.textShadow = '';
+            el.style.textShadow = '-1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff, 0 2px 10px rgba(0,0,0,0.65)';
             el.style.color = '';
             el.style.fontSize = '43px';
             el.style.fontWeight = '';
-            el.style.filter = 'drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(1.5px 1.5px 0 #fff) drop-shadow(-1.5px -1.5px 0 #fff) drop-shadow(1.5px -1.5px 0 #fff) drop-shadow(-1.5px 1.5px 0 #fff) drop-shadow(0 3px 8px rgba(0,0,0,0.6))';
+            el.style.filter = '';
         }
     }
 
