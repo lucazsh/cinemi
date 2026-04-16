@@ -3317,6 +3317,76 @@
             pointer-events: none;
         }
 
+        #react-fab {
+            position: fixed;
+            bottom: 105px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            z-index: 999;
+            white-space: nowrap;
+            touch-action: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s;
+        }
+        #react-fab span {
+            color: var(--bg-primary);
+        }
+        #react-fab::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 32px;
+            background: repeating-linear-gradient(90deg,
+                    var(--border-light) 0px,
+                    var(--border-light) 6px,
+                    transparent 6px,
+                    transparent 12px);
+            background-size: 12px 100%;
+            animation: dashSlide .6s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #react-fab::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 28px;
+            background: var(--text-primary);
+            z-index: 1;
+            pointer-events: none;
+        }
+        #react-fab * {
+            position: relative;
+            z-index: 1000;
+        }
+        #react-fab svg {
+            fill: var(--bg-primary);
+            color: var(--bg-primary);
+            width: 18px;
+            height: 18px;
+        }
+        #react-fab.hidden {
+            transform: translateX(-50%) translateY(80px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #react-fab.carousel-open {
+            transform: translateX(-50%) scale(0.65);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+
         @keyframes dashSlide {
             from {
                 background-position: 0 0;
@@ -3582,6 +3652,9 @@
             line-height: 1;
             pointer-events: none;
         }
+        .react-item:not(.react-item-custom-text) .react-emoji-inner {
+            filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(1.5px 1.5px 0 #fff) drop-shadow(-1.5px -1.5px 0 #fff) drop-shadow(1.5px -1.5px 0 #fff) drop-shadow(-1.5px 1.5px 0 #fff);
+        }
         .react-item-custom svg { pointer-events: none; }
         .react-hold-badge {
             position: absolute;
@@ -3713,9 +3786,9 @@
         }
         .crm-input {
             width: 100%;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 13px;
+            background: var(--card);
+            border: none;
+            border-radius: 12px;
             padding: 13px 14px;
             font-size: 22px;
             color: var(--text-primary);
@@ -7140,6 +7213,21 @@
                 d="M209-210h58l315-315-56-57-317 318v54ZM142-74q-29 0-48.5-19.5T74-142v-123q0-26.86 10.2-52.01Q94.39-342.16 114-362l497.32-497.32Q624-873 641.47-879.5 658.93-886 677-886q17.74 0 34.87 6.5T744-860l117 115q14 14 20 31.48 6 17.49 6 36.47 0 18.05-6.5 35.55Q874-624 860-611L364-114q-19.84 19.61-44.99 29.8Q293.86-74 267-74H142Zm594-603-58-58 58 58ZM554-554l-28-28 56 57-28-29Z" />
         </svg>
         <span>Edit Space</span>
+    </div>
+    <div class="hidden" id="react-fab" onclick="showReactCarousel()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+            <defs>
+                <mask id="face-cutout-react-fab">
+                    <rect x="0" y="-960" width="960" height="960" fill="white" />
+                    <circle cx="840" cy="-800" r="160" fill="black" />
+                    <path d="M480-260q58 0 107-28t79-76q6-12-1-24t-21-12H316q-14 0-21 12t-1 24q30 48 79.5 76T480-260Z" fill="black" />
+                    <path d="M340-520q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm280 0q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Z" fill="black" />
+                </mask>
+            </defs>
+            <rect x="80" y="-880" width="800" height="800" rx="240" fill="currentColor" mask="url(#face-cutout-react-fab)" />
+            <path d="M800-760h-40q-17 0-28.5-11.5T720-800q0-17 11.5-28.5T760-840h40v-40q0-17 11.5-28.5T840-920q17 0 28.5 11.5T880-880v40h40q17 0 28.5 11.5T960-800q0 17-11.5 28.5T920-760h-40v40q0 17-11.5 28.5T840-680q-17 0-28.5-11.5T800-720v-40Z" fill="currentColor"/>
+        </svg>
+        <span>React</span>
     </div>
     <div id="settings" class="view">
         <div class="nt">
