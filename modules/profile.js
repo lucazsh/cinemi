@@ -936,6 +936,18 @@ window.showView = function (view) {
             reactFab.classList.remove('hidden');
             reactFab.classList.remove('carousel-open');
             _initReactFabGestures();
+            const upView = document.getElementById('user-profile');
+            if (upView && !upView.dataset.reactScrollBound) {
+                upView.dataset.reactScrollBound = '1';
+                let _upLastScroll = 0;
+                upView.addEventListener('scroll', () => {
+                    if (_reactCarouselOpen) return;
+                    const cur = upView.scrollTop;
+                    const rf = document.getElementById('react-fab');
+                    if (rf) rf.classList.toggle('hidden', cur > _upLastScroll && cur > 40);
+                    _upLastScroll = cur;
+                }, { passive: true });
+            }
         } else {
             reactFab.classList.add('hidden');
             reactFab.classList.remove('carousel-open');
@@ -1239,11 +1251,13 @@ function _placeReactionOnProfile(emoji, style) {
             el.style.color = style.color || '#fff';
             el.style.fontSize = style.fontSize || '28px';
             el.style.fontWeight = '800';
+            el.style.filter = '';
         } else {
             el.style.textShadow = '';
             el.style.color = '';
             el.style.fontSize = '43px';
             el.style.fontWeight = '';
+            el.style.filter = 'drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(1.5px 1.5px 0 #fff) drop-shadow(-1.5px -1.5px 0 #fff) drop-shadow(1.5px -1.5px 0 #fff) drop-shadow(-1.5px 1.5px 0 #fff) drop-shadow(0 3px 8px rgba(0,0,0,0.6))';
         }
     }
 
@@ -1268,11 +1282,12 @@ function _placeReactionOnProfile(emoji, style) {
         el.textContent = emoji;
         el.style.left = cx + '%';
         el.style.top = cy + '%';
-        el.style.transform = 'translate(-50%, -50%)';
+        el.style.transform = 'translate(-50%, -50%) scale(0)';
         applyStyle(el);
         wrap.appendChild(el);
         requestAnimationFrame(() => requestAnimationFrame(() => {
             el.style.opacity = '1';
+            el.style.transform = 'translate(-50%, -50%) scale(1)';
         }));
     }
 }
