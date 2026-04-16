@@ -1163,7 +1163,7 @@ function _placeReactionOnProfile(emoji, style) {
         } else {
             el.style.textShadow = '';
             el.style.color = '';
-            el.style.fontSize = '36px';
+            el.style.fontSize = '43px';
             el.style.fontWeight = '';
         }
     }
