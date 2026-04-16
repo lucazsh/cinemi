@@ -3655,6 +3655,13 @@
         .react-item:not(.react-item-custom-text) .react-emoji-inner {
             filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(1.5px 1.5px 0 #fff) drop-shadow(-1.5px -1.5px 0 #fff) drop-shadow(1.5px -1.5px 0 #fff) drop-shadow(-1.5px 1.5px 0 #fff);
         }
+        .react-item-custom-text .react-emoji-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            white-space: nowrap;
+        }
         .react-item-custom svg { pointer-events: none; }
         .react-hold-badge {
             position: absolute;
@@ -3712,11 +3719,8 @@
         .react-item.react-item-custom-text {
             width: auto;
             min-width: 44px;
-            height: 52px;
+            height: 44px;
             padding: 0 12px;
-            background: transparent;
-            border: none;
-            box-shadow: none;
         }
         #custom-react-modal {
             position: fixed;
