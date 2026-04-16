@@ -811,6 +811,12 @@ function closeUserProfileOverlays() {
     document.getElementById('upAddFriendState')?.classList.remove('morphing-out');
     const rcw = document.getElementById('react-carousel-wrap');
     if (rcw) rcw.classList.remove('visible');
+    _reactCarouselOpen = false;
+    const reactFab = document.getElementById('react-fab');
+    if (reactFab) {
+        reactFab.classList.remove('carousel-open');
+        reactFab.classList.add('hidden');
+    }
 
     const pImgWrap = document.getElementById('userProfileImg')?.closest('.p-img-wrap');
     if (pImgWrap) {
@@ -924,6 +930,17 @@ window.showView = function (view) {
         if (view === 'profile') fab.classList.remove('hidden');
         else fab.classList.add('hidden');
     }
+    const reactFab = document.getElementById('react-fab');
+    if (reactFab) {
+        if (view === 'user-profile') {
+            reactFab.classList.remove('hidden');
+            reactFab.classList.remove('carousel-open');
+            _initReactFabGestures();
+        } else {
+            reactFab.classList.add('hidden');
+            reactFab.classList.remove('carousel-open');
+        }
+    }
     if (view === 'profile') {
         closeUserProfileOverlays();
         const username = (document.getElementById('addUsername')?.textContent || '').trim();
@@ -953,6 +970,67 @@ function _getReactData() {
 }
 function _saveReactData(d) {
     try { localStorage.setItem('cinemi_reactData', JSON.stringify(d)); } catch {}
+}
+
+let _reactCarouselOpen = false;
+
+function showReactCarousel() {
+    const fab = document.getElementById('react-fab');
+    const wrap = document.getElementById('react-carousel-wrap');
+    if (!wrap) return;
+    _reactCarouselOpen = true;
+    if (fab) fab.classList.add('carousel-open');
+    setTimeout(() => {
+        wrap.classList.add('visible');
+        const track = document.getElementById('react-carousel-track');
+        if (track) requestAnimationFrame(() => {
+            const trackRect = track.getBoundingClientRect();
+            const centerX = trackRect.left + trackRect.width / 2;
+            [...track.children].forEach(el => {
+                const r = el.getBoundingClientRect();
+                const dist = Math.abs((r.left + r.width / 2) - centerX);
+                const t = Math.min(dist / (trackRect.width * 0.38), 1);
+                el.style.setProperty('--lift', `${Math.round(18 * Math.pow(t, 1.7))}px`);
+                el.style.setProperty('--scale', (1.42 - t * 0.26).toFixed(2));
+            });
+        });
+    }, 160);
+}
+
+function hideReactCarousel(restoreButton) {
+    const wrap = document.getElementById('react-carousel-wrap');
+    const fab = document.getElementById('react-fab');
+    _reactCarouselOpen = false;
+    if (wrap) wrap.classList.remove('visible');
+    if (fab) {
+        fab.classList.remove('carousel-open');
+        if (restoreButton === false) {
+            fab.classList.add('hidden');
+        }
+    }
+}
+
+function _initReactFabGestures() {
+    const wrap = document.getElementById('react-carousel-wrap');
+    const fab = document.getElementById('react-fab');
+
+    if (wrap && !wrap.dataset.swipeBound) {
+        wrap.dataset.swipeBound = '1';
+        let startY = 0;
+        wrap.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+        wrap.addEventListener('touchend', e => {
+            if (e.changedTouches[0].clientY - startY > 55) hideReactCarousel(true);
+        }, { passive: true });
+    }
+
+    if (fab && !fab.dataset.swipeBound) {
+        fab.dataset.swipeBound = '1';
+        let startY = 0;
+        fab.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+        fab.addEventListener('touchend', e => {
+            if (e.changedTouches[0].clientY - startY > 35) hideReactCarousel(false);
+        }, { passive: true });
+    }
 }
 
 function initReactCarousel(targetUsername) {
@@ -1003,7 +1081,6 @@ function initReactCarousel(targetUsername) {
                 _attachHoldReact(el, badge, item.text, targetUsername, style);
             } else {
                 span.textContent = item.value;
-                span.style.textShadow = '0 0 4px rgba(0,0,0,0.95), -1px -1px 2px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.8)';
                 el.appendChild(span);
                 _attachHoldReact(el, badge, item.value, targetUsername, null);
             }
@@ -1038,7 +1115,9 @@ function initReactCarousel(targetUsername) {
 
     requestAnimationFrame(() => {
         updateArc();
-        requestAnimationFrame(() => wrap.classList.add('visible'));
+        if (_reactCarouselOpen) {
+            requestAnimationFrame(() => wrap.classList.add('visible'));
+        }
     });
 }
 
@@ -1259,5 +1338,6 @@ function saveCrmReact() {
     if (data.customItems.length > 5) data.customItems.pop();
     _saveReactData(data);
     closeCrmModal();
+    _reactCarouselOpen = true;
     initReactCarousel(currentViewedUser);
 }
