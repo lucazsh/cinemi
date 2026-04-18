@@ -4839,7 +4839,7 @@
             align-items: center;
             gap: 18px;
             width: 100%;
-            max-width: 340px;
+            max-width: 380px;
             padding: 0 20px;
             transform: translateY(40px) scale(0.92);
             transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
@@ -4849,7 +4849,7 @@
         }
         .share-card {
             width: 100%;
-            min-height: 420px;
+            min-height: 460px;
             border-radius: 28px;
             background: linear-gradient(145deg, #0d0d1a 0%, #302b63 50%, #0d0d1a 100%);
             position: relative;
@@ -4871,29 +4871,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 28px 24px 32px;
+            padding: 30px 28px 34px;
             gap: 0;
         }
         .sc-logo-row {
             display: flex;
             align-items: center;
-            gap: 8px;
             margin-bottom: 22px;
         }
-        .sc-logo-icon {
-            font-size: 22px;
-        }
         .sc-logo-text {
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 800;
-            letter-spacing: 0.04em;
-            color: rgba(255,255,255,0.95);
+            letter-spacing: 0.06em;
+            color: rgba(255,255,255,0.92);
             font-family: 'Inter', system-ui, sans-serif;
+            background: rgba(0,0,0,0.38);
+            padding: 5px 14px;
+            border-radius: 10px;
+            text-transform: uppercase;
         }
         .sc-pfp-wrap {
-            width: 82px;
-            height: 82px;
-            border-radius: 50%;
+            width: 88px;
+            height: 88px;
+            border-radius: 29px;
             overflow: hidden;
             border: 3px solid rgba(255,255,255,0.2);
             box-shadow: 0 0 0 2px rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.4);
@@ -4906,40 +4906,42 @@
             object-fit: cover;
             display: block;
         }
-        .sc-name {
-            font-size: 22px;
-            font-weight: 800;
-            color: #fff;
-            text-align: center;
-            letter-spacing: -0.02em;
-            margin-bottom: 4px;
-            font-family: 'Inter', system-ui, sans-serif;
-        }
         .sc-tag {
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.88);
             text-align: center;
             margin-bottom: 22px;
             font-family: 'Inter', system-ui, sans-serif;
+            letter-spacing: -0.01em;
         }
         .sc-qr-outer {
             background: #fff;
-            border-radius: 18px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             margin-bottom: 18px;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
         }
         .sc-qr-wrap {
-            border-radius: 10px;
+            border-radius: 4px;
             overflow: hidden;
             line-height: 0;
             display: block;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
         .sc-qr-wrap canvas,
         .sc-qr-wrap img {
             display: block;
-            border-radius: 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
         .sc-join-text {
             font-size: 11px;
@@ -4964,9 +4966,9 @@
             flex-wrap: nowrap;
         }
         .sc-preset-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             cursor: pointer;
             flex-shrink: 0;
             border: 2.5px solid transparent;
@@ -4979,7 +4981,7 @@
         .sc-preset-btn:active { transform: scale(0.88); }
         .sc-preset-btn.active {
             border-color: rgba(255,255,255,0.85);
-            transform: scale(1.08);
+            transform: scale(1.1);
         }
         .sc-preset-custom {
             background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
@@ -4992,33 +4994,42 @@
             background: rgba(255,255,255,0.1);
         }
         .sc-shuffle-btn svg {
-            width: 15px;
-            height: 15px;
-            color: rgba(255,255,255,0.7);
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+        }
+        .sc-btns-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
         }
         .sc-save-btn {
-            width: 100%;
-            padding: 15px;
+            flex: 1;
+            padding: 15px 12px;
             border-radius: 16px;
             background: #fff;
             color: #0d0d1a;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
             font-family: 'Inter', system-ui, sans-serif;
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
-        .sc-save-btn:active { transform: scale(0.97); opacity: 0.85; }
-        .sc-save-btn svg {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
+        .sc-save-btn.sc-insta-btn {
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: #fff;
         }
+        .sc-save-btn.sc-more-btn {
+            background: rgba(255,255,255,0.13);
+            color: #fff;
+            border: 1.5px solid rgba(255,255,255,0.15);
+        }
+        .sc-save-btn:active { transform: scale(0.97); opacity: 0.85; }
         @keyframes scStickerIn {
             from { opacity:0; transform: var(--sc-rot) scale(0.4); }
             to   { opacity:1; transform: var(--sc-rot) scale(var(--sc-scale)); }
@@ -10347,13 +10358,11 @@
             <div id="share-card" class="share-card">
                 <div class="sc-content">
                     <div class="sc-logo-row">
-                        <span class="sc-logo-icon">🎬</span>
                         <span class="sc-logo-text">Cinemi</span>
                     </div>
                     <div class="sc-pfp-wrap">
                         <img id="sc-pfp" class="sc-pfp" src="" crossorigin="anonymous">
                     </div>
-                    <div class="sc-name" id="sc-name">User Name</div>
                     <div class="sc-tag" id="sc-tag">@username</div>
                     <div class="sc-qr-outer">
                         <div id="sc-qr-wrap" class="sc-qr-wrap"></div>
@@ -10370,17 +10379,22 @@
                     <div class="sc-preset-btn" data-preset="4" onclick="setSharePreset(4,this)" style="background:linear-gradient(135deg,#0a1a0a,#1e7e34)"></div>
                     <div class="sc-preset-btn" data-preset="5" onclick="setSharePreset(5,this)" style="background:linear-gradient(135deg,#1a1000,#7d5200)"></div>
                     <label class="sc-preset-btn sc-preset-custom" title="Custom color">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                         <input type="color" id="sc-custom-color" onchange="setShareCustomColor(this.value)" style="opacity:0;position:absolute;width:0;height:0;">
                     </label>
                     <div class="sc-preset-btn sc-shuffle-btn" onclick="shuffleShareStickers()" title="Shuffle stickers">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#e3e3e3"><path d="M613-114q-24 0-40.5-17T556-171.5q0-23.5 17-40.5t41-17h34l-73-73q-17-17-16.5-41t17.5-41q17-16 40-16t40 16l74 72v-33q0-25 17-41t42-16q25 0 41 16t16 41v163q0 29-19.5 48.5T778-114H613Zm-483-16q-17-17-16.5-40.5T131-211l517-519h-35q-24 0-40.5-17T556-789q0-25 17-41t42-16h163q29 0 48.5 19.5T846-778v164q0 24-16 40.5T789-557q-25 0-42-17t-17-42v-33L211-130q-17 17-40.5 17T130-130Zm1-619q-16-17-16-39.5t16-40.5q17-17 40-17.5t41 16.5l177 177q18 18 17.5 41T389-572q-17 17-40 17.5T308-572L131-749Z"/></svg>
                     </div>
                 </div>
-                <button class="sc-save-btn" onclick="exportShareCard()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Save & Share
-                </button>
+                <div class="sc-btns-row">
+                    <button class="sc-save-btn sc-insta-btn" onclick="shareToInstagram()">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        Story
+                    </button>
+                    <button class="sc-save-btn sc-more-btn" onclick="shareMore()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="17" height="17"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        More
+                    </button>
+                </div>
             </div>
         </div>
     </div>
