@@ -1479,11 +1479,9 @@ function openShareCard() {
     const overlay = document.getElementById('share-card-overlay');
     if (!overlay) return;
 
-    const displayName = document.querySelector('#profile .p-name')?.textContent?.trim() || 'User';
     const username = (document.getElementById('addUsername')?.textContent || '').trim();
     const pfpSrc = document.getElementById('profileImg')?.src || '';
 
-    document.getElementById('sc-name').textContent = displayName;
     document.getElementById('sc-tag').textContent = '@' + username;
 
     const scPfp = document.getElementById('sc-pfp');
@@ -1500,46 +1498,67 @@ function openShareCard() {
     document.body.style.overflow = 'hidden';
 }
 
+async function _buildShareBlob() {
+    const card = document.getElementById('share-card');
+    const canvas = await html2canvas(card, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: null,
+        logging: false,
+    });
+    return new Promise(res => canvas.toBlob(res, 'image/png', 1));
+}
+
+async function shareToInstagram() {
+    const username = (document.getElementById('addUsername')?.textContent || 'user').trim();
+    const btn = document.querySelector('.sc-insta-btn');
+    if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
+    try {
+        const blob = await _buildShareBlob();
+        const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'My Cinemi Profile' });
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cinemi-${username}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    } catch (err) { console.error(err); }
+    if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+}
+
+async function shareMore() {
+    const username = (document.getElementById('addUsername')?.textContent || 'user').trim();
+    const appUrl = window.location.origin;
+    const text = `Join me on Cinemi 🎬\nDiscover and share movies with friends!\n${appUrl}`;
+    const btn = document.querySelector('.sc-more-btn');
+    if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
+    try {
+        const blob = await _buildShareBlob();
+        const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'Join me on Cinemi', text });
+        } else if (navigator.share) {
+            await navigator.share({ title: 'Join me on Cinemi', text, url: appUrl });
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cinemi-${username}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    } catch (err) { console.error(err); }
+    if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+}
+
 function closeShareCard() {
     const overlay = document.getElementById('share-card-overlay');
     if (!overlay) return;
     overlay.classList.remove('open');
     document.body.style.overflow = '';
-}
-
-async function exportShareCard() {
-    const card = document.getElementById('share-card');
-    if (!card) return;
-    const btn = document.querySelector('.sc-save-btn');
-    if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
-
-    try {
-        const canvas = await html2canvas(card, {
-            scale: 3,
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: null,
-            logging: false,
-        });
-
-        const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 1));
-        const url = URL.createObjectURL(blob);
-
-        const username = (document.getElementById('addUsername')?.textContent || 'user').trim();
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], `cinemi-${username}.png`, { type: 'image/png' })] })) {
-            const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
-            await navigator.share({ files: [file], title: 'Cinemi Profile' });
-        } else {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `cinemi-${username}.png`;
-            a.click();
-        }
-        URL.revokeObjectURL(url);
-    } catch (err) {
-        console.error('Export error:', err);
-    }
-
-    if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
