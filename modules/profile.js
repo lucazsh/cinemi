@@ -1356,3 +1356,190 @@ function saveCrmReact() {
     _reactCarouselOpen = true;
     initReactCarousel(currentViewedUser);
 }
+
+const _SC_PRESETS = [
+    { grad: 'linear-gradient(145deg, #0d0d1a 0%, #302b63 50%, #0d0d1a 100%)', qrFg: '#302b63' },
+    { grad: 'linear-gradient(145deg, #1a0000 0%, #c0392b 50%, #1a0000 100%)', qrFg: '#c0392b' },
+    { grad: 'linear-gradient(145deg, #000428 0%, #004e92 50%, #000428 100%)', qrFg: '#004e92' },
+    { grad: 'linear-gradient(145deg, #1a0010 0%, #8e0057 50%, #1a0010 100%)', qrFg: '#8e0057' },
+    { grad: 'linear-gradient(145deg, #0a1a0a 0%, #1e7e34 50%, #0a1a0a 100%)', qrFg: '#1e7e34' },
+    { grad: 'linear-gradient(145deg, #1a1000 0%, #7d5200 50%, #1a1000 100%)', qrFg: '#7d5200' },
+];
+
+const _SC_STICKER_POOL = [
+    '🎬','🎥','🍿','⭐','🌟','✨','🔥','❤️','🎞️','🎭','🎦','📽️',
+    '🎨','🌙','💫','🪐','🌈','🦋','💎','🎶','🎵','🎸','🏆','🎖️',
+    '🌺','🍭','🦄','🌊','⚡','🎃','👾','🤖','🪄','💥','🌸','🦊',
+];
+
+let _scCurrentPreset = 0;
+let _scCustomColor = null;
+let _scStickers = [];
+
+function _scRandBetween(a, b) { return a + Math.random() * (b - a); }
+
+function _generateStickers(count) {
+    const card = document.getElementById('share-card');
+    if (!card) return;
+    card.querySelectorAll('.sc-sticker').forEach(el => el.remove());
+
+    const pool = [..._SC_STICKER_POOL].sort(() => Math.random() - 0.5);
+    const chosen = pool.slice(0, count);
+    _scStickers = [];
+
+    const zones = [
+        { xMin: 2, xMax: 20, yMin: 2, yMax: 45 },
+        { xMin: 78, xMax: 96, yMin: 2, yMax: 45 },
+        { xMin: 2, xMax: 20, yMin: 55, yMax: 96 },
+        { xMin: 78, xMax: 96, yMin: 55, yMax: 96 },
+        { xMin: 25, xMax: 75, yMin: 2, yMax: 12 },
+        { xMin: 25, xMax: 75, yMin: 88, yMax: 96 },
+    ];
+
+    chosen.forEach((emoji, i) => {
+        const zone = zones[i % zones.length];
+        const x = _scRandBetween(zone.xMin, zone.xMax);
+        const y = _scRandBetween(zone.yMin, zone.yMax);
+        const rot = _scRandBetween(-28, 28);
+        const scale = _scRandBetween(0.72, 1.18);
+        const delay = i * 45;
+
+        const el = document.createElement('span');
+        el.className = 'sc-sticker';
+        el.textContent = emoji;
+        el.style.left = x + '%';
+        el.style.top = y + '%';
+        el.style.setProperty('--sc-rot', `rotate(${rot}deg)`);
+        el.style.setProperty('--sc-scale', scale);
+        el.style.transform = `rotate(${rot}deg) scale(${scale})`;
+        el.style.opacity = '0';
+        el.style.animationDelay = delay + 'ms';
+
+        card.appendChild(el);
+        _scStickers.push({ el, rot, scale });
+
+        setTimeout(() => {
+            el.classList.add('animate');
+            el.style.opacity = '1';
+        }, delay);
+    });
+}
+
+function _applyPresetToCard(preset) {
+    const card = document.getElementById('share-card');
+    if (!card) return;
+    card.style.background = preset.grad;
+
+    const qrWrap = document.getElementById('sc-qr-wrap');
+    if (qrWrap) {
+        qrWrap.innerHTML = '';
+        const username = (document.getElementById('addUsername')?.textContent || '').trim();
+        const url = `${window.location.origin}?u=${encodeURIComponent(username)}`;
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(qrWrap, {
+                text: url,
+                width: 100,
+                height: 100,
+                colorDark: preset.qrFg,
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    }
+}
+
+function setSharePreset(idx, btn) {
+    _scCurrentPreset = idx;
+    _scCustomColor = null;
+    document.querySelectorAll('.sc-preset-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    _applyPresetToCard(_SC_PRESETS[idx]);
+}
+
+function setShareCustomColor(hex) {
+    _scCustomColor = hex;
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    const dark = `rgba(${Math.round(r*0.15)},${Math.round(g*0.15)},${Math.round(b*0.15)},1)`;
+    const mid = hex;
+    const customPreset = {
+        grad: `linear-gradient(145deg, ${dark} 0%, ${mid} 50%, ${dark} 100%)`,
+        qrFg: hex
+    };
+    document.querySelectorAll('.sc-preset-btn').forEach(b => b.classList.remove('active'));
+    _applyPresetToCard(customPreset);
+}
+
+function shuffleShareStickers() {
+    _generateStickers(12);
+}
+
+function openShareCard() {
+    const overlay = document.getElementById('share-card-overlay');
+    if (!overlay) return;
+
+    const displayName = document.querySelector('#profile .p-name')?.textContent?.trim() || 'User';
+    const username = (document.getElementById('addUsername')?.textContent || '').trim();
+    const pfpSrc = document.getElementById('profileImg')?.src || '';
+
+    document.getElementById('sc-name').textContent = displayName;
+    document.getElementById('sc-tag').textContent = '@' + username;
+
+    const scPfp = document.getElementById('sc-pfp');
+    scPfp.src = pfpSrc;
+
+    _scCurrentPreset = 0;
+    _scCustomColor = null;
+    document.querySelectorAll('.sc-preset-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+
+    _applyPresetToCard(_SC_PRESETS[0]);
+    _generateStickers(12);
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeShareCard() {
+    const overlay = document.getElementById('share-card-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+async function exportShareCard() {
+    const card = document.getElementById('share-card');
+    if (!card) return;
+    const btn = document.querySelector('.sc-save-btn');
+    if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
+
+    try {
+        const canvas = await html2canvas(card, {
+            scale: 3,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: null,
+            logging: false,
+        });
+
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 1));
+        const url = URL.createObjectURL(blob);
+
+        const username = (document.getElementById('addUsername')?.textContent || 'user').trim();
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], `cinemi-${username}.png`, { type: 'image/png' })] })) {
+            const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
+            await navigator.share({ files: [file], title: 'Cinemi Profile' });
+        } else {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cinemi-${username}.png`;
+            a.click();
+        }
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error('Export error:', err);
+    }
+
+    if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+}
