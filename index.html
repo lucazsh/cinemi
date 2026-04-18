@@ -4809,6 +4809,223 @@
             opacity: 0.85;
         }
 
+        .sc-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease;
+        }
+        .sc-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .sc-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .sc-shell {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            width: 100%;
+            max-width: 340px;
+            padding: 0 20px;
+            transform: translateY(40px) scale(0.92);
+            transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .sc-overlay.open .sc-shell {
+            transform: translateY(0) scale(1);
+        }
+        .share-card {
+            width: 100%;
+            min-height: 420px;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #0d0d1a 0%, #302b63 50%, #0d0d1a 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
+        }
+        .sc-sticker {
+            position: absolute;
+            font-size: 32px;
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+            transition: opacity 0.2s ease;
+        }
+        .sc-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 28px 24px 32px;
+            gap: 0;
+        }
+        .sc-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+        .sc-logo-icon {
+            font-size: 22px;
+        }
+        .sc-logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: rgba(255,255,255,0.95);
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .sc-pfp-wrap {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.4);
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+        .sc-pfp {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .sc-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .sc-tag {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            margin-bottom: 22px;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .sc-qr-outer {
+            background: #fff;
+            border-radius: 18px;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 18px;
+        }
+        .sc-qr-wrap {
+            border-radius: 10px;
+            overflow: hidden;
+            line-height: 0;
+            display: block;
+        }
+        .sc-qr-wrap canvas,
+        .sc-qr-wrap img {
+            display: block;
+            border-radius: 10px;
+        }
+        .sc-join-text {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            text-align: center;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .sc-controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sc-presets-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        .sc-preset-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 2.5px solid transparent;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .sc-preset-btn:active { transform: scale(0.88); }
+        .sc-preset-btn.active {
+            border-color: rgba(255,255,255,0.85);
+            transform: scale(1.08);
+        }
+        .sc-preset-custom {
+            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+            cursor: pointer;
+        }
+        .sc-preset-custom svg {
+            display: none;
+        }
+        .sc-shuffle-btn {
+            background: rgba(255,255,255,0.1);
+        }
+        .sc-shuffle-btn svg {
+            width: 15px;
+            height: 15px;
+            color: rgba(255,255,255,0.7);
+        }
+        .sc-save-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            background: #fff;
+            color: #0d0d1a;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', system-ui, sans-serif;
+            transition: transform 0.12s ease, opacity 0.12s ease;
+        }
+        .sc-save-btn:active { transform: scale(0.97); opacity: 0.85; }
+        .sc-save-btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        @keyframes scStickerIn {
+            from { opacity:0; transform: var(--sc-rot) scale(0.4); }
+            to   { opacity:1; transform: var(--sc-rot) scale(var(--sc-scale)); }
+        }
+        .sc-sticker.animate {
+            animation: scStickerIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
         .report-panel {
             position: fixed;
             inset: 0;
@@ -6976,7 +7193,7 @@
     <div id="profile" class="view">
         <div id="profile-gradient-bg"></div>
         <div class="nt">
-            <button>
+            <button onclick="openShareCard()">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                     fill="#e3e3e3">
                     <path
@@ -10123,5 +10340,52 @@
             document.head.appendChild(ks);
         })();
     </script>
+
+    <div id="share-card-overlay" class="sc-overlay">
+        <div class="sc-backdrop" onclick="closeShareCard()"></div>
+        <div class="sc-shell">
+            <div id="share-card" class="share-card">
+                <div class="sc-content">
+                    <div class="sc-logo-row">
+                        <span class="sc-logo-icon">🎬</span>
+                        <span class="sc-logo-text">Cinemi</span>
+                    </div>
+                    <div class="sc-pfp-wrap">
+                        <img id="sc-pfp" class="sc-pfp" src="" crossorigin="anonymous">
+                    </div>
+                    <div class="sc-name" id="sc-name">User Name</div>
+                    <div class="sc-tag" id="sc-tag">@username</div>
+                    <div class="sc-qr-outer">
+                        <div id="sc-qr-wrap" class="sc-qr-wrap"></div>
+                    </div>
+                    <div class="sc-join-text">Discover movies together</div>
+                </div>
+            </div>
+            <div class="sc-controls">
+                <div class="sc-presets-row">
+                    <div class="sc-preset-btn active" data-preset="0" onclick="setSharePreset(0,this)" style="background:linear-gradient(135deg,#0d0d1a,#302b63)"></div>
+                    <div class="sc-preset-btn" data-preset="1" onclick="setSharePreset(1,this)" style="background:linear-gradient(135deg,#1a0000,#c0392b)"></div>
+                    <div class="sc-preset-btn" data-preset="2" onclick="setSharePreset(2,this)" style="background:linear-gradient(135deg,#000428,#004e92)"></div>
+                    <div class="sc-preset-btn" data-preset="3" onclick="setSharePreset(3,this)" style="background:linear-gradient(135deg,#1a0010,#8e0057)"></div>
+                    <div class="sc-preset-btn" data-preset="4" onclick="setSharePreset(4,this)" style="background:linear-gradient(135deg,#0a1a0a,#1e7e34)"></div>
+                    <div class="sc-preset-btn" data-preset="5" onclick="setSharePreset(5,this)" style="background:linear-gradient(135deg,#1a1000,#7d5200)"></div>
+                    <label class="sc-preset-btn sc-preset-custom" title="Custom color">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                        <input type="color" id="sc-custom-color" onchange="setShareCustomColor(this.value)" style="opacity:0;position:absolute;width:0;height:0;">
+                    </label>
+                    <div class="sc-preset-btn sc-shuffle-btn" onclick="shuffleShareStickers()" title="Shuffle stickers">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6"/></svg>
+                    </div>
+                </div>
+                <button class="sc-save-btn" onclick="exportShareCard()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Save & Share
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
