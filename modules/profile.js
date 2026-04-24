@@ -1388,20 +1388,18 @@ function _generateStickers(count) {
     _scStickers = [];
 
     const zones = [
-        { xMin: 2, xMax: 20, yMin: 2, yMax: 45 },
-        { xMin: 78, xMax: 96, yMin: 2, yMax: 45 },
-        { xMin: 2, xMax: 20, yMin: 55, yMax: 96 },
-        { xMin: 78, xMax: 96, yMin: 55, yMax: 96 },
-        { xMin: 25, xMax: 75, yMin: 2, yMax: 12 },
-        { xMin: 25, xMax: 75, yMin: 88, yMax: 96 },
+        { xMin: 3, xMax: 18, yMin: 5, yMax: 35 },
+        { xMin: 80, xMax: 95, yMin: 5, yMax: 35 },
+        { xMin: 3, xMax: 18, yMin: 62, yMax: 85 },
+        { xMin: 80, xMax: 95, yMin: 62, yMax: 85 },
     ];
 
     chosen.forEach((emoji, i) => {
         const zone = zones[i % zones.length];
         const x = _scRandBetween(zone.xMin, zone.xMax);
         const y = _scRandBetween(zone.yMin, zone.yMax);
-        const rot = _scRandBetween(-28, 28);
-        const scale = _scRandBetween(0.72, 1.18);
+        const rot = _scRandBetween(-22, 22);
+        const scale = _scRandBetween(0.6, 0.88);
         const delay = i * 45;
 
         const el = document.createElement('span');
@@ -1472,7 +1470,7 @@ function setShareCustomColor(hex) {
 }
 
 function shuffleShareStickers() {
-    _generateStickers(12);
+    _generateStickers(6);
 }
 
 function openShareCard() {
@@ -1492,7 +1490,7 @@ function openShareCard() {
     document.querySelectorAll('.sc-preset-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
 
     _applyPresetToCard(_SC_PRESETS[0]);
-    _generateStickers(12);
+    _generateStickers(6);
 
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1517,7 +1515,11 @@ async function shareToInstagram() {
     try {
         const blob = await _buildShareBlob();
         const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if ((isAndroid || isIOS) && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'My Cinemi Profile' });
+        } else if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({ files: [file], title: 'My Cinemi Profile' });
         } else {
             const url = URL.createObjectURL(blob);
@@ -1527,7 +1529,7 @@ async function shareToInstagram() {
             a.click();
             URL.revokeObjectURL(url);
         }
-    } catch (err) { console.error(err); }
+    } catch (err) { if (err.name !== 'AbortError') console.error(err); }
     if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
 
@@ -1552,7 +1554,7 @@ async function shareMore() {
             a.click();
             URL.revokeObjectURL(url);
         }
-    } catch (err) { console.error(err); }
+    } catch (err) { if (err.name !== 'AbortError') console.error(err); }
     if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
 
