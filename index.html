@@ -4858,11 +4858,11 @@
         }
         .sc-sticker {
             position: absolute;
-            font-size: 32px;
+            font-size: 26px;
             line-height: 1;
             pointer-events: none;
             user-select: none;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
             transition: opacity 0.2s ease;
         }
         .sc-content {
@@ -4871,31 +4871,31 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 28px 34px;
+            padding: 36px 28px 28px;
             gap: 0;
         }
-        .sc-logo-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-        .sc-logo-text {
-            font-size: 15px;
+        .sc-logo-watermark {
+            position: absolute;
+            bottom: 13px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.06em;
-            color: rgba(255,255,255,0.92);
+            letter-spacing: 0.16em;
+            color: rgba(255,255,255,0.22);
+            text-transform: uppercase;
             font-family: 'Inter', system-ui, sans-serif;
-            background: rgba(0,0,0,0.38);
-            padding: 5px 14px;
-            border-radius: 10px;
+            z-index: 3;
+            pointer-events: none;
         }
         .sc-pfp-wrap {
-            width: 88px;
-            height: 88px;
-            border-radius: 29px;
+            width: 96px;
+            height: 96px;
+            border-radius: 32px;
             overflow: hidden;
-            border: 3px solid rgba(255,255,255,0.2);
-            box-shadow: 0 0 0 2px rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.22);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.07), 0 10px 28px rgba(0,0,0,0.45);
             margin-bottom: 14px;
             flex-shrink: 0;
         }
@@ -4906,11 +4906,11 @@
             display: block;
         }
         .sc-tag {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
-            color: rgba(255,255,255,0.88);
+            color: rgba(255,255,255,0.92);
             text-align: center;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             font-family: 'Inter', system-ui, sans-serif;
             letter-spacing: -0.01em;
         }
@@ -4943,13 +4943,14 @@
             -webkit-touch-callout: none;
         }
         .sc-join-text {
-            font-size: 11px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.35);
-            letter-spacing: 0.06em;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.62);
+            letter-spacing: 0.07em;
             text-transform: uppercase;
             text-align: center;
             font-family: 'Inter', system-ui, sans-serif;
+            margin-top: 2px;
         }
         .sc-controls {
             width: 100%;
@@ -10356,9 +10357,6 @@
         <div class="sc-shell">
             <div id="share-card" class="share-card">
                 <div class="sc-content">
-                    <div class="sc-logo-row">
-                        <span class="sc-logo-text">Cinemi</span>
-                    </div>
                     <div class="sc-pfp-wrap">
                         <img id="sc-pfp" class="sc-pfp" src="" crossorigin="anonymous">
                     </div>
@@ -10368,6 +10366,7 @@
                     </div>
                     <div class="sc-join-text">Discover movies together</div>
                 </div>
+                <div class="sc-logo-watermark">Cinemi</div>
             </div>
             <div class="sc-controls">
                 <div class="sc-presets-row">
