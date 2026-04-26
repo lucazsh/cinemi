@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://smithsonian-performs-stick-vernon.trycloudflare.com';
+const SERVER_URL = 'https://recovery-favourites-leasing-eagle.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
