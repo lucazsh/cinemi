@@ -4858,7 +4858,7 @@
         }
         .sc-sticker {
             position: absolute;
-            font-size: 26px;
+            font-size: 40px;
             line-height: 1;
             pointer-events: none;
             user-select: none;
@@ -4880,11 +4880,9 @@
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 800;
-            letter-spacing: 0.16em;
             color: rgba(255,255,255,0.22);
-            text-transform: uppercase;
             font-family: 'Inter', system-ui, sans-serif;
             z-index: 3;
             pointer-events: none;
@@ -4920,6 +4918,7 @@
             padding: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             margin-bottom: 18px;
+            margin-top: 6px;
             user-select: none;
             -webkit-user-select: none;
             pointer-events: none;
@@ -4943,7 +4942,7 @@
             -webkit-touch-callout: none;
         }
         .sc-join-text {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: rgba(255,255,255,0.62);
             letter-spacing: 0.07em;
@@ -4966,8 +4965,8 @@
             flex-wrap: nowrap;
         }
         .sc-preset-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             cursor: pointer;
             flex-shrink: 0;
@@ -4977,6 +4976,10 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            border-color: rgb(30, 30, 30);
+        }
+        .sc-preset-btn::before {
+            inset: -55%;
         }
         .sc-preset-btn:active { transform: scale(0.88); }
         .sc-preset-btn.active {
@@ -10375,7 +10378,7 @@
                     <div class="sc-preset-btn" data-preset="2" onclick="setSharePreset(2,this)" style="background:linear-gradient(135deg,#000428,#004e92)"></div>
                     <div class="sc-preset-btn" data-preset="3" onclick="setSharePreset(3,this)" style="background:linear-gradient(135deg,#1a0010,#8e0057)"></div>
                     <div class="sc-preset-btn" data-preset="4" onclick="setSharePreset(4,this)" style="background:linear-gradient(135deg,#0a1a0a,#1e7e34)"></div>
-                    <div class="sc-preset-btn" data-preset="5" onclick="setSharePreset(5,this)" style="background:linear-gradient(135deg,#1a1000,#7d5200)"></div>
+                    
                     <label class="sc-preset-btn sc-preset-custom" title="Custom color">
                         <input type="color" id="sc-custom-color" onchange="setShareCustomColor(this.value)" style="opacity:0;position:absolute;width:0;height:0;">
                     </label>
