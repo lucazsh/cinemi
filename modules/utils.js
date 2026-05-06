@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://horses-complicated-cats-causing.trycloudflare.com';
+const SERVER_URL = 'https://serious-witch-florists-involving.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
