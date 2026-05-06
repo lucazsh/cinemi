@@ -1367,9 +1367,10 @@ const _SC_PRESETS = [
 ];
 
 const _SC_STICKER_POOL = [
-    '🎬','🎥','🍿','⭐','🌟','✨','🔥','❤️','🎞️','🎭','🎦','📽️',
-    '🎨','🌙','💫','🪐','🌈','🦋','💎','🎶','🎵','🎸','🏆','🎖️',
-    '🌺','🍭','🦄','🌊','⚡','🎃','👾','🤖','🪄','💥','🌸','🦊',
+  '🎬','🎥','🍿','🎞️','🎭','📽️','🎦','🎟️',
+  '⭐','🌟','✨','💫','🔥','❤️','💔','😍',
+  '😢','😱','😂','😎','😡','😮',
+  '🏆','🎖️','👏','🎯'
 ];
 
 let _scCurrentPreset = 0;
@@ -1381,6 +1382,7 @@ function _scRandBetween(a, b) { return a + Math.random() * (b - a); }
 function _generateStickers(count) {
     const card = document.getElementById('share-card');
     if (!card) return;
+
     card.querySelectorAll('.sc-sticker').forEach(el => el.remove());
 
     const pool = [..._SC_STICKER_POOL].sort(() => Math.random() - 0.5);
@@ -1388,18 +1390,43 @@ function _generateStickers(count) {
     _scStickers = [];
 
     const zones = [
-        { xMin: 3, xMax: 18, yMin: 5, yMax: 35 },
-        { xMin: 80, xMax: 95, yMin: 5, yMax: 35 },
-        { xMin: 3, xMax: 18, yMin: 62, yMax: 85 },
-        { xMin: 80, xMax: 95, yMin: 62, yMax: 85 },
+        { xMin: 3,  xMax: 22, yMin: 5,  yMax: 35 },
+        { xMin: 78, xMax: 90, yMin: 5,  yMax: 35 },
+        { xMin: 3,  xMax: 22, yMin: 62, yMax: 88 },
+        { xMin: 78, xMax: 96, yMin: 62, yMax: 88 },
     ];
+
+    const placed = [];
+    const minDist = 20;
+    const maxAttempts = 30;
+
+    function isFarEnough(x, y) {
+        for (const p of placed) {
+            const dx = x - p.x;
+            const dy = y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < minDist) return false;
+        }
+        return true;
+    }
 
     chosen.forEach((emoji, i) => {
         const zone = zones[i % zones.length];
-        const x = _scRandBetween(zone.xMin, zone.xMax);
-        const y = _scRandBetween(zone.yMin, zone.yMax);
-        const rot = _scRandBetween(-22, 22);
-        const scale = _scRandBetween(0.6, 0.88);
+
+        let x = 0;
+        let y = 0;
+        let attempts = 0;
+
+        do {
+            x = _scRandBetween(zone.xMin, zone.xMax);
+            y = _scRandBetween(zone.yMin, zone.yMax);
+            attempts++;
+        } while (!isFarEnough(x, y) && attempts < maxAttempts);
+
+        placed.push({ x, y });
+
+        const rot = _scRandBetween(-18, 18);
+        const scale = _scRandBetween(0.68, 0.82);
         const delay = i * 45;
 
         const el = document.createElement('span');
