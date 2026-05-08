@@ -154,7 +154,7 @@ function openPan(panelName) {
         const upBtn = document.getElementById('swipe-up-btn');
         if (leftBtn) leftBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('left', swipifyMovies[currentSwipifyIndex]);
         if (rightBtn) rightBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('right', swipifyMovies[currentSwipifyIndex]);
-        if (upBtn) upBtn.onclick = () => { const card = document.querySelector('#swipify-container .swipify-card'); if (card && swipifyMovies[currentSwipifyIndex]) completeVerticalSwipe(card, swipifyMovies[currentSwipifyIndex]); };
+        if (upBtn) upBtn.onclick = () => swipifyMovies[currentSwipifyIndex] && swipeCard('up', swipifyMovies[currentSwipifyIndex]);
     } else if (panelName === 'watchlist') {
         showWatchlistPanel();
     } else if (panelName === 'favorites') {
@@ -361,36 +361,13 @@ function startMatchPolling() {
     }, 3000);
 }
 
-function buildSwipifyCard(movie, isCurrent) {
-    const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
-    const title = movie.title || movie.name || 'Unknown';
-    const releaseDate = movie.release_date || movie.first_air_date || '';
-    const rating = movie.vote_average || 0;
-    const overview = movie.overview || '';
-    const card = document.createElement('div');
-    card.className = 'swipify-card';
-    card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);overflow:hidden;`;
-    const partyBadge = partyCode && partyStarted ? `<div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;z-index:6;">${partyCode}</div>` : '';
-    const indicators = isCurrent ? `
-        <div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div>
-        <div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div>
-    ` : '';
-    card.innerHTML = `${partyBadge}${indicators}<div class="swipify-info" style="position:absolute;bottom:24px;left:24px;right:24px;z-index:6;pointer-events:none;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
-    return card;
-}
-
 function renderSwipifyCard() {
     const container = document.getElementById('swipify-container');
-    container.innerHTML = '';
-    container.style.overflow = 'hidden';
-
     if (!swipifyMovies || swipifyMovies.length === 0 || currentSwipifyIndex >= swipifyMovies.length) {
-        setSwipeButtonsVisible(false);
         if (partyCode && partyStarted) { showPartyWaiting(); return; }
         container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No more movies!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Load More</button></div>`;
         return;
     }
-
     let movie = swipifyMovies[currentSwipifyIndex];
     let attempts = 0;
     while ((!movie || !movie.overview || (!movie.title && !movie.name)) && attempts < swipifyMovies.length) {
@@ -403,32 +380,24 @@ function renderSwipifyCard() {
         container.innerHTML = `<div class="sw-center"><div style="font-size:18px;font-weight:600;color:var(--text-primary);">No valid movies!</div><button class="sw-btn-primary" onclick="loadSwipifyMovies(false)">Retry</button></div>`;
         return;
     }
-
-    for (let i = Math.min(currentSwipifyIndex + 4, swipifyMovies.length - 1); i > currentSwipifyIndex; i--) {
-        const m = swipifyMovies[i];
-        if (!m || (!m.title && !m.name)) continue;
-        const nc = buildSwipifyCard(m, false);
-        nc.dataset.nextCard = String(i - currentSwipifyIndex);
-        nc.style.transform = 'translateY(100%)';
-        nc.style.zIndex = String(i - currentSwipifyIndex);
-        container.appendChild(nc);
-    }
-
-    const card = buildSwipifyCard(movie, true);
-    card.style.opacity = '0';
-    card.style.transform = 'scale(0.88)';
-    card.style.zIndex = '10';
+    container.innerHTML = '';
+    const backdropUrl = movie.backdrop_path ? `${IMG_BACKDROP}${movie.backdrop_path}` : (movie.poster_path ? `${IMG_W500}${movie.poster_path}` : '');
+    const title = movie.title || movie.name || 'Unknown';
+    const releaseDate = movie.release_date || movie.first_air_date || '';
+    const rating = movie.vote_average || 0;
+    const overview = movie.overview || '';
+    const card = document.createElement('div');
+    card.className = 'swipify-card';
+    card.style.cssText = `position:absolute;inset:0;border-radius:20px;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.75)),url('${backdropUrl}');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;color:white;cursor:grab;user-select:none;touch-action:none;border:2px solid var(--border-h);box-shadow:0 10px 40px rgba(0,0,0,0.35);opacity:0;transform:scale(0.8);overflow:hidden;`;
+    const partyBadge = partyCode && partyStarted ? `<div class="swipify-party-badge" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:3px;z-index:6;">${partyCode}</div>` : '';
+    card.innerHTML = `${partyBadge}<div class="swipe-indicator swipe-left" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(255,68,68,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #ff4444;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></div></div><div class="swipe-indicator swipe-right" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:rgba(70,211,105,0.92);display:flex;align-items:center;justify-content:center;border:4px solid #46d369;"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></div></div><div class="swipe-indicator swipe-up" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.15s ease;pointer-events:none;z-index:6;"><div style="width:110px;height:110px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;border:4px solid var(--border-light);"><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="white"><path d="M682-230v-500q0-28 19.5-48t48-20q28.5 0 48.5 20t20 48v500q0 28-20 48t-48.5 20q-28.5 0-48-20T682-230Zm-540-60v-380q0-30 20.5-49t47.5-19q10 0 19.5 2.5T248-727l287 191q15 9 22 24.5t7 31.5q0 16-7 31.5T535-424L248-233q-9 6-18.5 8.5T210-222q-27 0-47.5-19T142-290Z"/></svg></div></div><div class="swipify-info" style="position:absolute;bottom:24px;left:24px;right:24px;z-index:6;pointer-events:none;"><div style="font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.15;">${escapeHtml(title)}</div><div style="font-size:13px;opacity:0.85;margin-bottom:10px;">${releaseDate ? releaseDate.split('-')[0] : 'N/A'} &bull; ${rating.toFixed(1)}</div><div style="font-size:13px;line-height:1.45;opacity:0.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(overview)}</div></div>`;
     container.appendChild(card);
-
     requestAnimationFrame(() => {
-        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
         card.style.opacity = '1';
-        card.style.transform = 'translateY(0) scale(1)';
-        setTimeout(() => { card.style.transition = ''; }, 320);
+        card.style.transform = 'scale(1)';
     });
-
     if (trailerMode) injectTrailerOverlay(card, movie);
-    setSwipeButtonsVisible(true);
     setupSwipeGestures(card, movie);
 }
 
@@ -595,78 +564,62 @@ function toggleTrailerMode() {
 }
 
 function setupSwipeGestures(card, movie) {
-    let startX = 0, startY = 0, isDragging = false, lockDir = null;
-    const container = document.getElementById('swipify-container');
+    let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false;
     const leftIndicator = card.querySelector('.swipe-left');
     const rightIndicator = card.querySelector('.swipe-right');
-
-    function getNextCard() { return container.querySelector('[data-next-card="1"]'); }
+    const upIndicator = card.querySelector('.swipe-up');
 
     const onStart = (e) => {
         isDragging = true;
-        lockDir = null;
         const p = e.touches ? e.touches[0] : e;
-        startX = p.clientX;
-        startY = p.clientY;
+        startX = p.clientX; startY = p.clientY;
+        currentX = 0; currentY = 0;
+        card.style.cursor = 'grabbing';
         card.style.transition = 'none';
-        const nc = getNextCard();
-        if (nc) nc.style.transition = 'none';
     };
 
     const onMove = (e) => {
         if (!isDragging) return;
         e.preventDefault();
         const p = e.touches ? e.touches[0] : e;
-        const dx = p.clientX - startX;
-        const dy = p.clientY - startY;
+        currentX = p.clientX - startX;
+        currentY = p.clientY - startY;
+        const lx = Math.max(-150, Math.min(150, currentX));
+        const ly = Math.max(-150, Math.min(150, currentY));
+        card.style.transform = `translateX(${lx}px) translateY(${ly}px) rotate(${lx / 20}deg)`;
+        if (currentY < -50 && Math.abs(currentY) > Math.abs(currentX)) { upIndicator.style.opacity = Math.min(Math.abs(currentY) / 150, 1); leftIndicator.style.opacity = 0; rightIndicator.style.opacity = 0; }
+        else if (currentX < -50) { leftIndicator.style.opacity = Math.min(Math.abs(currentX) / 150, 1); rightIndicator.style.opacity = 0; upIndicator.style.opacity = 0; }
+        else if (currentX > 50) { rightIndicator.style.opacity = Math.min(currentX / 150, 1); leftIndicator.style.opacity = 0; upIndicator.style.opacity = 0; }
+        else { leftIndicator.style.opacity = 0; rightIndicator.style.opacity = 0; upIndicator.style.opacity = 0; }
+    };
 
-        if (!lockDir && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
-            lockDir = (dy < 0 && Math.abs(dy) > Math.abs(dx)) ? 'v' : 'h';
-        }
-        if (!lockDir) return;
-
-        if (lockDir === 'v') {
-            const clamped = Math.min(0, dy);
-            card.style.transform = `translateY(${clamped}px)`;
-            const nc = getNextCard();
-            if (nc) nc.style.transform = `translateY(calc(100% + ${clamped}px))`;
-            if (leftIndicator) leftIndicator.style.opacity = '0';
-            if (rightIndicator) rightIndicator.style.opacity = '0';
+    const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.style.cursor = 'grab';
+        leftIndicator.style.opacity = 0;
+        rightIndicator.style.opacity = 0;
+        upIndicator.style.opacity = 0;
+        if (currentY < -100 && Math.abs(currentY) > Math.abs(currentX)) {
+            swipeCard('up', movie);
+        } else if (Math.abs(currentX) > 100) {
+            swipeCard(currentX > 0 ? 'right' : 'left', movie);
         } else {
-            const lx = Math.max(-150, Math.min(150, dx));
-            card.style.transform = `translateX(${lx}px) rotate(${lx / 20}deg)`;
-            if (leftIndicator) leftIndicator.style.opacity = lx < -50 ? String(Math.min(Math.abs(lx) / 150, 1)) : '0';
-            if (rightIndicator) rightIndicator.style.opacity = lx > 50 ? String(Math.min(lx / 150, 1)) : '0';
+            card.style.transition = 'transform 0.3s ease';
+            card.style.transform = '';
         }
     };
 
-    const onEnd = (e) => {
+    
+    const onMouseLeave = () => {
         if (!isDragging) return;
         isDragging = false;
-        if (leftIndicator) leftIndicator.style.opacity = '0';
-        if (rightIndicator) rightIndicator.style.opacity = '0';
-        const p = e.changedTouches ? e.changedTouches[0] : e;
-        const dx = p.clientX - startX;
-        const dy = p.clientY - startY;
-
-        if (lockDir === 'v') {
-            if (dy < -(container.offsetHeight * 0.28)) {
-                completeVerticalSwipe(card, movie);
-            } else {
-                card.style.transition = 'transform 0.35s cubic-bezier(0.22,1,0.36,1)';
-                card.style.transform = 'translateY(0)';
-                const nc = getNextCard();
-                if (nc) { nc.style.transition = 'transform 0.35s cubic-bezier(0.22,1,0.36,1)'; nc.style.transform = 'translateY(100%)'; }
-            }
-        } else {
-            if (Math.abs(dx) > 100) {
-                swipeCard(dx > 0 ? 'right' : 'left', movie);
-            } else {
-                card.style.transition = 'transform 0.3s ease';
-                card.style.transform = '';
-            }
-        }
-        lockDir = null;
+        card.style.cursor = 'grab';
+        leftIndicator.style.opacity = 0;
+        rightIndicator.style.opacity = 0;
+        upIndicator.style.opacity = 0;
+        card.style.transition = 'transform 0.3s ease';
+        card.style.transform = '';
     };
 
     card.addEventListener('mousedown', onStart);
@@ -675,36 +628,7 @@ function setupSwipeGestures(card, movie) {
     card.addEventListener('touchmove', onMove, { passive: false });
     card.addEventListener('mouseup', onEnd);
     card.addEventListener('touchend', onEnd);
-    card.addEventListener('mouseleave', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (lockDir === 'h') { card.style.transition = 'transform 0.3s ease'; card.style.transform = ''; }
-        lockDir = null;
-    });
-}
-
-function completeVerticalSwipe(card, movie) {
-    const container = document.getElementById('swipify-container');
-    const nc = container.querySelector('[data-next-card="1"]');
-    const containerH = container.offsetHeight;
-
-    card.style.transition = 'transform 0.32s cubic-bezier(0.55,0,1,0.8)';
-    card.style.transform = `translateY(-${containerH}px)`;
-
-    if (nc) {
-        nc.style.transition = 'transform 0.32s cubic-bezier(0.55,0,1,0.8)';
-        nc.style.transform = 'translateY(0)';
-    }
-
-    const iframe = card.querySelector('.trailer-iframe');
-    if (iframe) {
-        try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'stopVideo', args: '' }), '*'); } catch (e) {}
-        setTimeout(() => { iframe.src = 'about:blank'; }, 50);
-    }
-
-    currentSwipifyIndex++;
-    sendAIFeedback(movie, 'swipe_up').catch(() => {});
-    setTimeout(() => renderSwipifyCard(), 320);
+    card.addEventListener('mouseleave', onMouseLeave);
 }
 
 function swipeCard(direction, movie) {
@@ -718,14 +642,16 @@ function swipeCard(direction, movie) {
     }
     card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
     card.style.opacity = '0';
-    card.style.transform = direction === 'right' ? 'translateX(60px) scale(0.8)' : 'translateX(-60px) scale(0.8)';
+    card.style.transform = direction === 'right' ? 'translateX(60px) scale(0.8)' : direction === 'up' ? 'translateY(-80px) scale(0.8)' : 'translateX(-60px) scale(0.8)';
     currentSwipifyIndex++;
     setTimeout(() => renderSwipifyCard(), 280);
     if (direction === 'right') {
         addToFavorites(movie).catch(() => {});
         if (partyCode && partyStarted) sendPartySwipe(movie).catch(() => {});
     }
-    sendAIFeedback(movie, direction === 'right' ? 'swipe_right' : 'swipe_left').catch(() => {});
+    if (direction !== 'up') {
+        sendAIFeedback(movie, direction === 'right' ? 'swipe_right' : 'swipe_left').catch(() => {});
+    }
 }
 
 async function sendPartySwipe(movie) {
