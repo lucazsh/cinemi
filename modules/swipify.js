@@ -732,17 +732,10 @@ async function sendAIFeedback(movie, action) {
 function swSetActionBar(visible) {
     const bar = document.getElementById('sw-action-bar');
     if (!bar) return;
-    if (visible) {
-        bar.style.opacity = '1';
-        bar.style.pointerEvents = 'auto';
-        bar.style.transform = 'translateX(-50%) translateY(0)';
-    } else {
-        bar.style.opacity = '0';
-        bar.style.pointerEvents = 'none';
-        bar.style.transform = 'translateX(-50%) translateY(16px)';
-    }
+    bar.style.opacity = visible ? '1' : '0';
+    bar.style.transform = visible ? 'translateY(0)' : 'translateY(10px)';
+    bar.style.pointerEvents = visible ? 'auto' : 'none';
 }
-
 function swActTrailer(btn) {
     trailerMode = !trailerMode;
     const svg = btn.querySelector('svg');
