@@ -140,6 +140,7 @@ function setSwipeButtonsVisible(visible) {
     if (leftBtn) leftBtn.style.display = visible ? '' : 'none';
     if (rightBtn) rightBtn.style.display = visible ? '' : 'none';
     if (upBtn) upBtn.style.display = visible ? '' : 'none';
+    if (!visible) swSetActionBar(false);
 }
 
 function openPan(panelName) {
@@ -396,6 +397,7 @@ function renderSwipifyCard() {
         card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
         card.style.opacity = '1';
         card.style.transform = 'scale(1)';
+        swSetActionBar(true);
     });
     if (trailerMode) injectTrailerOverlay(card, movie);
     setupSwipeGestures(card, movie);
@@ -726,4 +728,67 @@ async function sendAIFeedback(movie, action) {
             body: JSON.stringify({ movieId, action, profile, reviews: [], favorites: favorites.map(f => f.movieId), watchlist: watchlist.map(w => w.movieId) })
         });
     } catch (e) {}
+}
+function swSetActionBar(visible) {
+    const bar = document.getElementById('sw-action-bar');
+    if (!bar) return;
+    if (visible) {
+        bar.style.opacity = '1';
+        bar.style.pointerEvents = 'auto';
+        bar.style.transform = 'translateX(-50%) translateY(0)';
+    } else {
+        bar.style.opacity = '0';
+        bar.style.pointerEvents = 'none';
+        bar.style.transform = 'translateX(-50%) translateY(16px)';
+    }
+}
+
+function swActTrailer(btn) {
+    trailerMode = !trailerMode;
+    const svg = btn.querySelector('svg');
+    if (svg) svg.style.fill = trailerMode ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.65)';
+    btn.style.background = trailerMode ? 'rgba(255,255,255,0.12)' : 'transparent';
+    const container = document.getElementById('swipify-container');
+    if (container && container.querySelector('.swipify-card')) {
+        const iframe = container.querySelector('.trailer-iframe');
+        if (iframe) iframe.src = 'about:blank';
+        renderSwipifyCard();
+    }
+}
+
+function swActOpenYT() {
+    const movie = swipifyMovies[currentSwipifyIndex];
+    if (!movie) return;
+    const type = movie.media_type === 'tv' ? 'tv' : 'movie';
+    const cacheKey = `${type}-${movie.id}`;
+    const key = trailerCache[cacheKey];
+    if (key) {
+        window.open(`https://www.youtube.com/watch?v=${key}`, '_blank');
+        return;
+    }
+    fetchTrailerKey(movie).then(k => {
+        if (k) window.open(`https://www.youtube.com/watch?v=${k}`, '_blank');
+        else showToastMsg('No trailer found');
+    });
+}
+
+function swActShare() {
+    const movie = swipifyMovies[currentSwipifyIndex];
+    if (!movie) return;
+    const title = movie.title || movie.name || '';
+    const text = `${title} — check this out on Cinemi`;
+    if (navigator.share) {
+        navigator.share({ title, text }).catch(() => {});
+    } else {
+        navigator.clipboard?.writeText(text).then(() => showToastMsg('Copied to clipboard'));
+    }
+}
+
+function swActReport() {
+    const panel = document.getElementById('report-panel');
+    if (panel) {
+        panel.classList.add('open');
+        const title = document.querySelector('.report-sheet-title');
+        if (title) title.textContent = 'Report movie';
+    }
 }
