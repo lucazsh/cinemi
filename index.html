@@ -10412,5 +10412,29 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+    (function () {
+        const navh = document.querySelector('.navh');
+    
+        const _openPan = window.openPan;
+        window.openPan = function (name) {
+            if (name === 'swipify' && navh) navh.style.zIndex = '10002';
+            _openPan(name);
+        };
+    
+        const _closePan = window.closePan;
+        window.closePan = function (name) {
+            if (name === 'swipify' && navh) navh.style.zIndex = '';
+            _closePan(name);
+        };
+    
+        const _showView = window.showView;
+        window.showView = function (view) {
+            const panel = document.getElementById('swipify-panel');
+            if (panel && panel.classList.contains('open')) closePan('swipify');
+            _showView(view);
+        };
+    })();
+    </script>
 </body>
 </html>
