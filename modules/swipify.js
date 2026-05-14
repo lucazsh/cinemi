@@ -733,14 +733,17 @@ function swSetActionBar(visible) {
     const bar = document.getElementById('sw-action-bar');
     if (!bar) return;
     bar.style.opacity = visible ? '1' : '0';
-    bar.style.transform = visible ? 'translateY(0)' : 'translateY(10px)';
     bar.style.pointerEvents = visible ? 'auto' : 'none';
 }
-function swActTrailer(btn) {
+
+function swActTrailer() {
     trailerMode = !trailerMode;
-    const svg = btn.querySelector('svg');
-    if (svg) svg.style.fill = trailerMode ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.65)';
-    btn.style.background = trailerMode ? 'rgba(255,255,255,0.12)' : 'transparent';
+    const btn = document.getElementById('sw-trailer-btn');
+    if (btn) {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.style.fill = trailerMode ? 'var(--icon-fill-primary)' : 'var(--icon-fill-secondary)';
+        btn.style.background = trailerMode ? 'rgba(var(--op-var),0.1)' : 'var(--card)';
+    }
     const container = document.getElementById('swipify-container');
     if (container && container.querySelector('.swipify-card')) {
         const iframe = container.querySelector('.trailer-iframe');
