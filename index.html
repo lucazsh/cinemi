@@ -7714,8 +7714,12 @@
                 </button>
             </div>
 
-            <div class="btn-sw" style="position: absolute; top: 15px; right: 15px; z-index: 10001; display:flex; align-items:center; gap:8px;">
-                <button onclick="showPartyOptions()" style="background-color:#18191ef0; border:1px solid var(--border-light); padding:9px 16px; border-radius:14px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
+            <div class="btn-sw" style="position: absolute; top: 16.5px; right: 15px; z-index: 10001; display:flex; align-items:center; gap:8px;">
+                <button id="sw-trailer-btn" onclick="swActTrailer()" style="background-color:#18191ef0; margin-right: 3px; border:1px solid var(--border-light); padding: 10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
+                    Trailer
+                    <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="var(--icon-fill-secondary)"><path d="m153.13-839.04 73.48 148.39q6.95 14 19.85 22 12.91 8 28.47 8 31.11 0 46.83-25.87 15.72-25.88 2.28-53.57l-49.47-98.95h80.87l73.47 148.39q6.97 14 19.9 22t28.52 8q31.18 0 47.1-25.87 15.92-25.88 1.92-53.57l-49.48-98.95h81.43l73.48 148.39q6.95 14 19.86 22 12.9 8 28.46 8 31.12 0 46.84-25.87 15.71-25.88 2.28-53.57l-49.48-98.95h117.22q51.3 0 87.12 36.22 35.83 36.23 35.83 86.73v472.18q0 50.5-35.83 86.73-35.82 36.22-87.12 36.22H163.04q-51.3 0-87.12-35.26-35.83-35.26-35.83-86v-473.87q0-50.78 32.28-84.28t80.76-38.67Z"/></svg>
+                </button>
+                <button onclick="showPartyOptions()" style="background-color:#18191ef0; border:1px solid var(--border-light); padding:10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
                     Party Mode
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3"><path d="m73-134 169-477q8-22 26.5-33.5T307-656q13 0 25 4.5t22 14.5l308 309q11 10 15.5 22t4.5 25q0 20-11.5 37.5T637-217L159-48q-22 7-40 2.5T88-64Q75-77 70.5-95t2.5-39Zm888-521q-10 10-25.5 10T910-655h-1q-14-14-33-14t-33 14L662-474q-13 12-30 11.5T602-475q-13-13-13-31t13-31l180-180q39-39 94.5-39t95.5 39v1q11 10 9.5 26.5T961-655ZM398-842q11-12 27.5-11.5T453-842l-2-2q38 38 38 92t-38 92l2-1q-8 7-22 4.5T391-685q-8-8-7.5-19.5T392-724l-1 1q12-12 12-29.5T391-782l1 1q-11-11-10.5-28.5T398-842Zm173-62q13-13 31-12t31 14l35 35q40 39 40 94t-40 95L563-573q-12 12-30 12t-31-12q-13-13-13-31.5t13-31.5l105-104q13-14 13-33t-13-33l-36-36q-13-12-13-30.5t13-31.5Zm391 534q-13 13-31.5 13T900-370l-41-40q-13-13-31-13t-31 13l-35 35q-13 12-31 12t-31-13q-13-13-12.5-31t13.5-31l35-35q38-38 92-38t93 38l41 41q13 13 12.5 31T962-370Z"/></svg>
                 </button>
@@ -7730,6 +7734,8 @@
                     </div>
                 </div>
             </div>
+            <!--
+            I'm trying smth....
             <div id="sw-action-bar" style="position: absolute; right: 8px; top: 61%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; align-items: center; opacity: 1; transition: opacity 0.3s; pointer-events: auto; z-index: 10001;">
                 <div style="width:50px;height:74px;border-radius:25px;background:var(--card);border:1px solid var(--border-dark-alpha-2);display:flex;align-items:center;justify-content:center;cursor:default;flex-shrink:0;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="var(--icon-fill-secondary)"><path d="M480-492q-76 0-129-53t-53-129q0-76 53-129t129-53q76 0 129 53t53 129q0 76-53 129t-129 53ZM130-205v-37q0-41 19.5-74t52.5-50q66-34 136-51t142-17q72 0 142 17t136 51q33 17 52.5 50t19.5 74v37q0 45-30.5 75.5T724-99H236q-45 0-75.5-30.5T130-205Z"/></svg>
@@ -7744,6 +7750,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="var(--icon-fill-secondary)"><path d="M479.61-270Q503-270 519-285.61q16-15.62 16-39Q535-348 519.39-364q-15.62-16-39-16-22.39 0-38.89 15.61-16.5 15.62-16.5 39Q425-302 441.11-286q16.12 16 38.5 16Zm34.89-151.35Q529-435.7 529-456v-189q0-20.3-14.29-34.65Q500.42-694 480.21-694t-34.71 13.85Q431-666.3 431-645v189q0 19.3 14.29 34.15Q459.58-407 479.79-407t34.71-14.35ZM375-98q-25.65 0-48.96-9.09Q302.73-116.17 284-136L136-285q-18.87-17.91-28.43-41.74Q98-350.57 98-376v-209q0-25.65 9.09-48.96Q116.17-657.27 136-676l148-148q18.73-19.83 42.04-28.91Q349.35-862 375-862h210q25.65 0 48.96 9.09Q657.27-843.83 676-824l148 148q19.83 18.73 28.91 42.04Q862-610.65 862-585v210q0 25.65-9.09 48.96Q843.83-302.73 824-284L675-136q-17.91 18.87-41.74 28.43Q609.43-98 584-98H375Z"/></svg>
                 </div>
             </div>
+            -->
         </div>
     </div>
 
