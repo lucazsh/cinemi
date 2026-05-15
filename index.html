@@ -1684,6 +1684,14 @@
             transform: scale(0.9);
         }
 
+        #swipify-panel .backdrop {
+            z-index: 10002;
+        }
+
+        #swipify-panel > div:last-of-type {
+            z-index: 10003;
+        }
+
         .btn-sw svg {
             fill: white;
         }
@@ -10422,19 +10430,19 @@
     <script>
     (function () {
         const navh = document.querySelector('.navh');
-    
+
         const _openPan = window.openPan;
         window.openPan = function (name) {
-            if (name === 'swipify' && navh) navh.style.zIndex = '999';
+            if (name === 'swipify' && navh) navh.style.zIndex = '10001';
             _openPan(name);
         };
-    
+
         const _closePan = window.closePan;
         window.closePan = function (name) {
             if (name === 'swipify' && navh) navh.style.zIndex = '';
             _closePan(name);
         };
-    
+
         const _showView = window.showView;
         window.showView = function (view) {
             const panel = document.getElementById('swipify-panel');
