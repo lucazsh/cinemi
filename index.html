@@ -10425,7 +10425,7 @@
     
         const _openPan = window.openPan;
         window.openPan = function (name) {
-            if (name === 'swipify' && navh) navh.style.zIndex = '10002';
+            if (name === 'swipify' && navh) navh.style.zIndex = '999';
             _openPan(name);
         };
     
