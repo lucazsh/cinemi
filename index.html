@@ -10430,19 +10430,26 @@
     <script>
     (function () {
         const navh = document.querySelector('.navh');
-
+        const swInner = document.querySelector('#swipify-panel > div:not(.backdrop)');
+    
         const _openPan = window.openPan;
         window.openPan = function (name) {
-            if (name === 'swipify' && navh) navh.style.zIndex = '10001';
+            if (name === 'swipify') {
+                if (navh) navh.style.zIndex = '10001';
+                if (swInner) swInner.style.zIndex = '10002';
+            }
             _openPan(name);
         };
-
+    
         const _closePan = window.closePan;
         window.closePan = function (name) {
-            if (name === 'swipify' && navh) navh.style.zIndex = '';
+            if (name === 'swipify') {
+                if (navh) navh.style.zIndex = '';
+                if (swInner) swInner.style.zIndex = '';
+            }
             _closePan(name);
         };
-
+    
         const _showView = window.showView;
         window.showView = function (view) {
             const panel = document.getElementById('swipify-panel');
