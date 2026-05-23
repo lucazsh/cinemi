@@ -479,7 +479,7 @@ async function _renderTasteWidget(compat, container) {
     scoreEl.innerHTML = `${compat.score}% <span style="font-size:18px;font-weight:800;opacity:0.7;letter-spacing:-1px;">similar</span>`;
 
     const row = document.createElement('div');
-    row.style.cssText = 'display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; -webkit-overflow-scrolling: touch;';
+    row.style.cssText = 'display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; -webkit-overflow-scrolling: touch; -webkit-mask-image: linear-gradient(to right, black 0%, black 75%, transparent 100%); mask-image: linear-gradient(to right, black 0%, black 75%, transparent 100%);';
 
     if (allItems.length === 0) {
         const empty = document.createElement('span');
@@ -489,7 +489,7 @@ async function _renderTasteWidget(compat, container) {
     } else {
         allItems.forEach((item, i) => {
             const pill = document.createElement('div');
-            pill.style.cssText = `display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:5px 12px 5px 5px;flex-shrink:0;max-width:145px;overflow:hidden;-webkit-mask-image:linear-gradient(to right, black 0%, black 65%, transparent 100%);mask-image:linear-gradient(to right, black 0%, black 65%, transparent 100%);background:${colors[i] || 'rgba(255,255,255,0.08)'};`;
+            pill.style.cssText = `display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:5px 12px 5px 5px;flex-shrink:0;background:${colors[i] || 'rgba(255,255,255,0.08)'};`;
             if (item.kind === 'movie') {
                 const img = document.createElement('img');
                 img.src = 'https://image.tmdb.org/t/p/w92' + item.poster;
