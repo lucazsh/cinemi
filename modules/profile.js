@@ -332,6 +332,8 @@ function _setUserProfileFollowState(isFollowing) {
         tabsState.style.display = 'none';
         msgBtn.classList.remove('visible');
         // sep.classList.remove('visible');
+        const btn = document.getElementById('addFriendBtn');
+        if (btn) btn.disabled = false;
     }
 }
 
