@@ -384,15 +384,17 @@ async function loadUserSpace(username) {
     container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">Loading...</div>';
 
     try {
-        const [cfgRes, favsRes, wlRes] = await Promise.allSettled([
+        const [cfgRes, favsRes, wlRes, compatRes] = await Promise.allSettled([
             fetch(`${baseUrl}/api/space-config/${username}`, { headers: ngrokHeaders }),
             fetchWithAuth(`${baseUrl}/api/user/${username}/favorites`),
-            fetchWithAuth(`${baseUrl}/api/user/${username}/watchlist`)
+            fetchWithAuth(`${baseUrl}/api/user/${username}/watchlist`),
+            fetchWithAuth(`${baseUrl}/api/user/${username}/compatibility`)
         ]);
 
         const cfgData = cfgRes.status === 'fulfilled' ? await cfgRes.value.json() : { config: null };
         const favsData = favsRes.status === 'fulfilled' ? await favsRes.value.json() : [];
         const wlData = wlRes.status === 'fulfilled' ? await wlRes.value.json() : [];
+        const compatData = compatRes.status === 'fulfilled' ? await compatRes.value.json() : null;
 
         const cfg = cfgData.config || {
             titleColor: 'auto', customColor: '#ff3b30', layout: 'scroll',
@@ -408,9 +410,116 @@ async function loadUserSpace(username) {
         };
 
         await renderUserSpace(cfg, Array.isArray(favsData) ? favsData : [], Array.isArray(wlData) ? wlData : [], container);
+
+        if (compatData && compatData.ok) {
+            await _renderTasteWidget(compatData, container);
+        }
     } catch (err) {
         if (container) container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-subtle);font-size:13px;">Could not load space</div>';
     }
+}
+
+async function _extractMutedColor(posterPath) {
+    return new Promise(resolve => {
+        if (!posterPath) return resolve('rgba(255,255,255,0.08)');
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const c = document.createElement('canvas');
+                c.width = 8; c.height = 12;
+                const ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0, 8, 12);
+                const d = ctx.getImageData(0, 0, 8, 12).data;
+                let r = 0, g = 0, b = 0, n = 0;
+                for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; n++; }
+                r /= n*255; g /= n*255; b /= n*255;
+                const max = Math.max(r,g,b), min = Math.min(r,g,b), l = (max+min)/2;
+                let h = 0, s = 0;
+                if (max !== min) {
+                    const dv = max - min;
+                    s = l > 0.5 ? dv/(2-max-min) : dv/(max+min);
+                    if (max === r) h = ((g-b)/dv + (g<b?6:0))/6;
+                    else if (max === g) h = ((b-r)/dv+2)/6;
+                    else h = ((r-g)/dv+4)/6;
+                }
+                resolve(`hsl(${Math.round(h*360)},${Math.round(Math.min(s,0.65)*100)}%,28%)`);
+            } catch { resolve('rgba(255,255,255,0.08)'); }
+        };
+        img.onerror = () => resolve('rgba(255,255,255,0.08)');
+        img.src = 'https://image.tmdb.org/t/p/w92' + posterPath;
+    });
+}
+
+const _GENRE_LABELS = {
+    action:'Action', horror:'Horror', comedy:'Comedy', psychological_thriller:'Thriller',
+    romantic_drama:'Romance', romantic_comedy:'Rom-Com', fantasy:'Fantasy',
+    science_fiction:'Sci-Fi', superheroes:'Superheroes', melancholic:'Melancholic',
+    crime_detective:'Crime'
+};
+
+async function _renderTasteWidget(compat, container) {
+    const allItems = [
+        ...compat.sharedFavorites.map(m => ({ kind:'movie', ...m })),
+        ...compat.sharedGenres.map(g => ({ kind:'genre', id:g }))
+    ].slice(0, 7);
+
+    const colors = await Promise.all(
+        allItems.map(item => item.kind === 'movie' ? _extractMutedColor(item.poster) : Promise.resolve(null))
+    );
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'margin: 10px 14px 0; background: var(--bg-secondary); border: 1px solid var(--border-dark-alpha-2); border-radius: 20px; padding: 18px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent;';
+
+    const left = document.createElement('div');
+    left.style.cssText = 'flex: 1; min-width: 0;';
+
+    const scoreEl = document.createElement('div');
+    scoreEl.style.cssText = 'font-size: 29.5px; font-family: Nunito, sans-serif; font-weight: 900; color: var(--text-primary); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%); letter-spacing: -1.8px; line-height: 1; margin-bottom: 10px;';
+    scoreEl.innerHTML = `${compat.score}% <span style="font-size:18px;font-weight:800;opacity:0.7;letter-spacing:-1px;">similar</span>`;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; -webkit-overflow-scrolling: touch;';
+
+    if (allItems.length === 0) {
+        const empty = document.createElement('span');
+        empty.style.cssText = 'font-size: 12px; color: var(--text-subtle); font-weight: 600;';
+        empty.textContent = 'No overlap yet';
+        row.appendChild(empty);
+    } else {
+        allItems.forEach((item, i) => {
+            const pill = document.createElement('div');
+            pill.style.cssText = `display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:5px 12px 5px 5px;flex-shrink:0;background:${colors[i] || 'rgba(255,255,255,0.08)'};`;
+            if (item.kind === 'movie') {
+                const img = document.createElement('img');
+                img.src = 'https://image.tmdb.org/t/p/w92' + item.poster;
+                img.style.cssText = 'width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);flex-shrink:0;';
+                const title = document.createElement('span');
+                title.style.cssText = 'font-size:13px;font-weight:700;color:#fff;white-space:nowrap;';
+                title.textContent = item.title;
+                pill.appendChild(img);
+                pill.appendChild(title);
+            } else {
+                const icon = document.createElement('div');
+                icon.style.cssText = 'width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;';
+                icon.textContent = '🎭';
+                const label = document.createElement('span');
+                label.style.cssText = 'font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;';
+                label.textContent = _GENRE_LABELS[item.id] || item.id;
+                pill.appendChild(icon);
+                pill.appendChild(label);
+            }
+            row.appendChild(pill);
+        });
+    }
+
+    const arrow = `<svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" style="fill:var(--border-dark-alpha-1);flex-shrink:0;"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>`;
+
+    left.appendChild(scoreEl);
+    left.appendChild(row);
+    wrap.appendChild(left);
+    wrap.insertAdjacentHTML('beforeend', arrow);
+    container.insertBefore(wrap, container.firstChild);
 }
 
 async function renderUserSpace(cfg, favs, wl, container) {
