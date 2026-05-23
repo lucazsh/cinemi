@@ -496,7 +496,7 @@ async function _renderTasteWidget(compat, container) {
                 img.style.cssText = 'width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--placeholder-bg);flex-shrink:0;';
                 const title = document.createElement('span');
                 title.style.cssText = 'font-size:13px;font-weight:700;color:#fff;white-space:nowrap;';
-                title.textContent = item.title;
+                title.textContent = item.title.split(' ').slice(0, 3).join(' ');
                 pill.appendChild(img);
                 pill.appendChild(title);
             } else {
