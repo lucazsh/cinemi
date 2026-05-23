@@ -280,7 +280,7 @@ async function _applyCompatBadge(wrapper, username) {
     const score = await _fetchCompatScore(username);
     if (score === null) return;
     wrapper.querySelectorAll(`.compat-badge[data-for="${username}"]`).forEach(el => {
-        el.innerHTML = `<span style="font-size:13px;font-family:'Nunito',sans-serif;font-weight:900;color:#d9d9d9e4;letter-spacing:-1px;display:inline-flex;align-items:center;gap:2px;">${score}%<svg xmlns="http://www.w3.org/2000/svg" viewBox="98 105 310 315" width="14" height="14" style="margin-top:4px;margin-left:0.4px;margin-right:2px;"><g fill="#d9d9d9e4" stroke="#d9d9d9e4" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M 105 245 L 380 205 Q 395 203 395 218 L 395 330 Q 395 360 365 360 L 210 360 L 145 410 L 160 360 L 135 360 Q 105 360 105 330 Z"></path><g transform="translate(105, 243) rotate(-16)"><rect x="0" y="-45" width="300" height="45" rx="14"></rect></g></g></svg></span>`;
+        el.innerHTML = `<span style="font-size:13px;font-family:'Nunito',sans-serif;font-weight:900;color:#d9d9d9e4;letter-spacing:-1px;display:inline-flex;align-items:center;gap:2px;">${score}% <svg xmlns="http://www.w3.org/2000/svg" viewBox="98 105 310 315" width="14" height="14" style="margin-top:4px;margin-left:0.4px;margin-right:2px;"><g fill="#d9d9d9e4" stroke="#d9d9d9e4" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M 105 245 L 380 205 Q 395 203 395 218 L 395 330 Q 395 360 365 360 L 210 360 L 145 410 L 160 360 L 135 360 Q 105 360 105 330 Z"></path><g transform="translate(105, 243) rotate(-16)"><rect x="0" y="-45" width="300" height="45" rx="14"></rect></g></g></svg></span>`;
     });
 }
 
@@ -321,7 +321,7 @@ function createPostWrapper(username, displayName, contentHtml, files, timeLabel,
                 <img src="${imgSrc}" alt="${escapeHtml(username)} profile image">
             </div>
             <div style="display:block;min-width:0;flex:1;">
-                <span class="usr usr-post" data-username="${escapeHtml(username)}">${escapeHtml(username)}</span><span class="compat-badge" data-for="${escapeHtml(username)}"></span>
+                <span class="usr usr-post" data-username="${escapeHtml(username)}">${escapeHtml(username)} <span class="compat-badge" data-for="${escapeHtml(username)}"></span></span>
                 <span class="time">${timeLabel}</span>
                 <div class="cnt">${contentHtml}</div>
                 ${filesHtml}
