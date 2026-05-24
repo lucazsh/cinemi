@@ -680,10 +680,14 @@ async function showDetails(item) {
             <img src="${backdrop}" class="modal-header-img" id="backdrop-img">
             <div class="modal-body">
                 <h2 class="modal-title">${escapeHtml(title)}</h2>
-                <div class="modal-meta" id="modal-meta-container">
-                    <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
-                    <span style="color:#46d369;">⭐ ${item.vote_average.toFixed(1)}</span>
-                    <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11px;">${isTV ? 'TV' : 'HD'}</span>
+                <div class="modal-meta" id="modal-meta-container" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+                        <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
+                        <span style="color:#46d369;">⭐ ${item.vote_average.toFixed(1)}</span>
+                        <span style="border:1px solid; padding:0 4px; border-radius:3px; font-size:11.2px; margin-right:12px;">${isTV ? 'TV' : 'HD'}</span>
+                        <button id="watch-trailer-btn" style="padding:6px 12px; background:var(--button-bg); color:var(--button-text); border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:12px; display:none; align-items:center; gap:4px;"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="black"><path d="M275-248v-464q0-29.85 20.64-48.92Q316.29-780 343.48-780q8.68 0 18.1 2.5Q371-775 380-770l365 233q16.5 9 24.25 24.84T777-480q0 16.32-8 32.16Q761-432 745-423L380-190q-9 5-18.64 7.5t-18.22 2.5q-26.85 0-47.5-19.08Q275-218.15 275-248Z"/></svg> Watch Trailer</button>
+                        <button id="close-trailer-btn" style="padding:6px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; display:none;">✕ Close Trailer</button>
+                    </div>
                 </div>
                 <p class="modal-overview">${escapeHtml(item.overview)}</p>
                 <div id="modal-providers-list" style="margin-top:20px;"></div>
@@ -775,9 +779,13 @@ async function showDetails(item) {
     fetch(`${baseUrl}/api/tmdb/${endpoint}/${item.id}/videos`, { headers: ngrokHeaders })
         .then(res => res.json())
         .then(data => {
-            const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+        const trailerBtn = overlay.querySelector('#watch-trailer-btn');
+        const closeTrailerBtn = overlay.querySelector('#close-trailer-btn');
+        
+        if (trailer) {
+            trailerBtn.style.display = 'flex';
             
-            if (trailer) {
+            trailerBtn.onclick = async () => {
                 const trailerBtn = document.createElement('button');
                 trailerBtn.id = 'watch-trailer-btn';
                 trailerBtn.innerHTML = '▶ Watch Trailer';
