@@ -283,7 +283,7 @@ async function _applyCompatBadge(wrapper, username) {
     if (!usrSpan) return;
     const badge = document.createElement('span');
     badge.style.cssText = "font-size:13px;font-family:'Nunito',sans-serif;font-weight:900;color:#d9d9d9e4;letter-spacing:-1px;";
-    badge.innerHTML = `${score}% <svg xmlns="http://www.w3.org/2000/svg" viewBox="98 105 310 315" width="14" height="14" style="margin-top:4px;margin-left:0.4px;margin-right:0.3px;"><g fill="#d9d9d9e4" stroke="#d9d9d9e4" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M 105 245 L 380 205 Q 395 203 395 218 L 395 330 Q 395 360 365 360 L 210 360 L 145 410 L 160 360 L 135 360 Q 105 360 105 330 Z"></path><g transform="translate(105, 243) rotate(-16)"><rect x="0" y="-45" width="300" height="45" rx="14"></rect></g></g></svg>`;
+    badge.innerHTML = `${score}% <svg xmlns="http://www.w3.org/2000/svg" viewBox="98 105 310 315" width="14" height="14" style="margin-top:4px;margin-left:0.4px;margin-right:1px;"><g fill="#d9d9d9e4" stroke="#d9d9d9e4" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M 105 245 L 380 205 Q 395 203 395 218 L 395 330 Q 395 360 365 360 L 210 360 L 145 410 L 160 360 L 135 360 Q 105 360 105 330 Z"></path><g transform="translate(105, 243) rotate(-16)"><rect x="0" y="-45" width="300" height="45" rx="14"></rect></g></g></svg>`;
     usrSpan.appendChild(badge);
 }
 
