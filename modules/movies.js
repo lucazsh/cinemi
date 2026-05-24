@@ -655,7 +655,7 @@ async function showDetails(item) {
     
     overlay.innerHTML = `
         <div class="modal-content">
-            <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></button>
+            <button class="modal-close-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3" style="display:flex;align-items:center;justify-content:center;"><path d="M480-385 302-207q-20 20-48 20t-47-20q-20-20-20-47.5t20-47.5l178-178-178-179q-20-20-20-47.5t20-47.5q19-20 47-20t48 20l178 178 178-178q20-20 48-20t47 20q20 20 20 47.5T753-659L575-480l178 178q20 20 20 47.5T753-207q-19 20-47 20t-48-20L480-385Z"/></svg></button>
             <div id="trailer-container" style="position: relative; width: 100%; height: 280px; background: #000; display: none;">
                 <div id="youtube-player"></div>
                 <div id="youtube-blocker" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: auto;"></div>
