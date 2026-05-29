@@ -21,7 +21,7 @@
         } else {
             document.getElementById('setup').classList.add('active');
         }
-    }, 2000);
+    }, 3000);
 
     async function _splashPrefetch() {
         try {
