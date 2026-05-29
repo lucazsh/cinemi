@@ -123,6 +123,8 @@ async function prefetchOtherTab() {
 
         const fc = document.getElementById('friendsCount');
         if (fc) fc.textContent = `${total} friend${total !== 1 ? 's' : ''}`;
+        localStorage.setItem('cinemi_others_friendCount', total);
+        localStorage.setItem('cinemi_others_ts', Date.now());
     } catch (e) {}
 
     try {
@@ -131,6 +133,7 @@ async function prefetchOtherTab() {
 
         const favSubtitle = document.querySelector('#profile-tab-other .card[onclick*="favorites"] .subtitle');
         if (favSubtitle) favSubtitle.textContent = `${_otherCache.favorites.length} movie${_otherCache.favorites.length !== 1 ? 's' : ''}`;
+        localStorage.setItem('cinemi_others_favCount', _otherCache.favorites.length);
     } catch (e) {}
 
     try {
@@ -139,6 +142,7 @@ async function prefetchOtherTab() {
 
         const wlSubtitle = document.querySelector('#profile-tab-other .card[onclick*="watchlist"] .subtitle');
         if (wlSubtitle) wlSubtitle.textContent = `${_otherCache.watchlist.length} movie${_otherCache.watchlist.length !== 1 ? 's' : ''}`;
+        localStorage.setItem('cinemi_others_wlCount', _otherCache.watchlist.length);
     } catch (e) {}
 }
 
@@ -958,6 +962,7 @@ async function loadSpaceTab() {
     }
 
     if (typeof prefetchOtherTab === 'function') prefetchOtherTab();
+    if (typeof window._applyOthersCounts === 'function') window._applyOthersCounts();
 
     const savedQuote = localStorage.getItem('space_quote') || state.quoteText || 'Get busy living, or get busy dying.';
     const savedSource = localStorage.getItem('space_quote_source') || state.quoteSource || 'The Shawshank Redemption, 1994';
