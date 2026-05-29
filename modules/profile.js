@@ -952,6 +952,13 @@ async function loadSpaceTab() {
         await loadSpaceStateFromServer(username);
     }
 
+    if (typeof applyProfileGradient === 'function') {
+        applyProfileGradient._cachedRgb = null;
+        applyProfileGradient();
+    }
+
+    if (typeof prefetchOtherTab === 'function') prefetchOtherTab();
+
     const savedQuote = localStorage.getItem('space_quote') || state.quoteText || 'Get busy living, or get busy dying.';
     const savedSource = localStorage.getItem('space_quote_source') || state.quoteSource || 'The Shawshank Redemption, 1994';
     state.quoteText = savedQuote;
