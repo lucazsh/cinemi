@@ -1082,14 +1082,12 @@ window.showView = function (view) {
                 const normalizedSaved = saved.startsWith('http') 
                     ? saved 
                     : new URL(saved, window.location.origin).href;
-    
                 if (current !== normalizedSaved) {
                     pImg.src = saved;
                 }
             }
         }
         loadSpaceTab();
-        if (typeof applyProfileGradient === 'function') applyProfileGradient();
     }
 };
 
