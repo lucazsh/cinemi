@@ -14,7 +14,6 @@ if (localStorage.getItem('guestMode') === 'true') {
 }
 
 if (urlSessionToken) {
-    console.log('Received session token from Google login');
     sessionToken = urlSessionToken;
     localStorage.setItem('sessionToken', sessionToken);
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -22,22 +21,12 @@ if (urlSessionToken) {
 
 async function fetchWithAuth(url, options = {}) {
     if (!options.headers) options.headers = {};
-    
     if (sessionToken) {
         options.headers['X-Session-Token'] = sessionToken;
     }
-    
     Object.assign(options.headers, ngrokHeaders);
     options.credentials = 'include';
-    
     return fetch(url, options);
-}
-
-if (urlSessionToken) {
-    console.log('Received session token from Google login');
-    sessionToken = urlSessionToken;
-    localStorage.setItem('sessionToken', sessionToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 async function checkAuthStatus() {
@@ -46,34 +35,33 @@ async function checkAuthStatus() {
         return false;
     }
     const loginScreen = document.getElementById('login-screen');
-    
+
     if (sessionToken && localStorage.getItem('isAuthenticated') === 'true') {
         if (loginScreen) loginScreen.style.display = 'none';
     }
-    
+
     try {
         const res = await fetchWithAuth(baseUrl + '/auth/user');
-        
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        
+
         const data = await res.json();
-        
+
         if (data.ok && data.user) {
             localStorage.setItem('isAuthenticated', 'true');
-            
             if (loginScreen) loginScreen.style.display = 'none';
-            
+
             if (!data.user.username) {
                 showUsernameSetup();
                 return false;
             }
-            
+
             const usernameField = document.getElementById('addUsername');
-            if (usernameField) {
-                usernameField.textContent = data.user.username;
-            }
+            if (usernameField) usernameField.textContent = data.user.username;
+
             const addAvatar = document.getElementById('addAvatar');
             if (addAvatar && data.user.photoUrl) addAvatar.src = data.user.photoUrl;
+
             if (data.user.photoUrl) {
                 const profileImg = document.getElementById('profileImg');
                 if (profileImg) profileImg.src = data.user.photoUrl;
@@ -81,39 +69,42 @@ async function checkAuthStatus() {
                     localStorage.setItem(`profilePhotoUrl_${data.user.username}`, data.user.photoUrl);
                 } catch(e) {}
             }
+
             const replyAvatar = document.getElementById('replyAvatar');
             if (replyAvatar && data.user.photoUrl) replyAvatar.src = data.user.photoUrl;
+
             document.querySelectorAll('.p-name').forEach(el => {
                 el.textContent = data.user.displayName || data.user.username;
             });
-            
             document.querySelectorAll('.p-tag').forEach(el => {
                 el.textContent = '@' + data.user.username;
             });
-            
+
             return true;
         } else {
+            const wasAuth = localStorage.getItem('isAuthenticated') === 'true';
             localStorage.removeItem('sessionToken');
             localStorage.removeItem('isAuthenticated');
             sessionToken = null;
-            if (loginScreen) loginScreen.style.display = 'flex';
+            if (!wasAuth && loginScreen) loginScreen.style.display = 'flex';
             return false;
         }
     } catch (err) {
         console.error("Auth check failed:", err);
+        const wasAuth = localStorage.getItem('isAuthenticated') === 'true';
         localStorage.removeItem('sessionToken');
         localStorage.removeItem('isAuthenticated');
         sessionToken = null;
-        if (loginScreen) loginScreen.style.display = 'flex';
+        if (!wasAuth && loginScreen) loginScreen.style.display = 'flex';
         return false;
     }
 }
+
 if (googleSigninBtn) {
     googleSigninBtn.addEventListener('click', function() {
         window.location.href = baseUrl + '/auth/google';
     });
 }
-
 
 logoutBtn.addEventListener('click', logout);
 logoutBtn.addEventListener('keydown', e => {
@@ -145,36 +136,36 @@ async function showUsernameSetup() {
     const input = document.getElementById('username-input');
     const error = document.getElementById('username-error');
     const btn = document.getElementById('username-submit');
-    
+
     setup.style.display = 'flex';
     setTimeout(() => input.focus(), 100);
-    
+
     input.addEventListener('input', () => {
         error.textContent = '';
         input.style.borderColor = 'var(--border-light)';
     });
-    
+
     const submit = async () => {
         const username = input.value.trim();
-        
+
         if (username.length < 3) {
             error.textContent = 'Username must be at least 3 characters';
             input.style.borderColor = '#ff4444';
             return;
         }
-        
+
         btn.disabled = true;
         btn.textContent = 'Checking...';
-        
+
         try {
             const res = await fetchWithAuth(`${baseUrl}/auth/set-username`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username })
             });
-            
+
             const data = await res.json();
-            
+
             if (!res.ok) {
                 error.textContent = data.error || 'Username taken or invalid';
                 input.style.borderColor = '#ff4444';
@@ -182,23 +173,21 @@ async function showUsernameSetup() {
                 btn.textContent = 'Continue';
                 return;
             }
-            
+
             setup.style.display = 'none';
-            
             document.getElementById('addUsername').textContent = data.username;
             document.querySelectorAll('.p-tag').forEach(el => {
                 el.textContent = '@' + data.username;
             });
-            
+
             await checkQuizStatus();
-            
         } catch (err) {
             error.textContent = 'Network error. Please try again.';
             btn.disabled = false;
             btn.textContent = 'Continue';
         }
     };
-    
+
     btn.addEventListener('click', submit);
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') submit();
@@ -215,8 +204,4 @@ function logout() {
             window.location.reload();
         })
         .catch(err => console.error(err));
-
 }
-
-
-
