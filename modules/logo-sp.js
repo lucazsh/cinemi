@@ -11,7 +11,7 @@
         localStorage.getItem('isAuthenticated') === 'true' ||
         localStorage.getItem('guestMode') === 'true';
 
-    const minWait = new Promise(res => setTimeout(res, 1000));
+    const minWait = new Promise(res => setTimeout(res, 1800));
     const maxWait = new Promise(res => setTimeout(res, 4000));
 
     const prefetch = setupDone ? _splashPrefetch() : Promise.resolve();
