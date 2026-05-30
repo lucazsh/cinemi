@@ -6445,7 +6445,14 @@
         <!-- <span style="position:fixed; bottom:42px; font-size:13px; color:var(--text-primary); letter-spacing:0.12em; font-weight:500; opacity:0.45; text-transform:lowercase;">from lucazsh</span> -->
     </div>
     <div id="login-screen"
-        style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+            style="position: fixed; inset: 0; background: var(--bg-log); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: 'Inter', sans-serif; perspective: 1000px;">
+            <script>
+                (function(){
+                    var a = localStorage.getItem('isAuthenticated') === 'true';
+                    var g = localStorage.getItem('guestMode') === 'true';
+                    if (a || g) document.currentScript.parentElement.style.display = 'none';
+                })();
+            </script>
         <div id="ticker-container"
             style="position: absolute; inset: -20%; display: flex; flex-direction: column; gap: 10px; transform: rotate(-35deg); transition: transform 0.2s ease-out;">
 
@@ -7266,6 +7273,17 @@
                         <div class="meta">
                             <div class="title">Friends</div>
                             <div class="subtitle" id="friendsCount">0 friends</div>
+                            <script>
+                                (function(){
+                                    var n = parseInt(localStorage.getItem('cinemi_others_friendCount') || '0');
+                                    var f = parseInt(localStorage.getItem('cinemi_others_favCount') || '0');
+                                    var w = parseInt(localStorage.getItem('cinemi_others_wlCount') || '0');
+                                    document.getElementById('friendsCount').textContent = n + ' friend' + (n !== 1 ? 's' : '');
+                                    window._cachedOtherCounts = { f: f, w: w };
+                                    if (f > 0) { var fe = document.getElementById('favsCount'); if(fe) fe.textContent = f + ' movie' + (f !== 1 ? 's' : ''); }
+                                    if (w > 0) { var we = document.getElementById('wlCount'); if(we) we.textContent = w + ' movie' + (w !== 1 ? 's' : ''); }
+                                })();
+                            </script>
                         </div>
                     </button>
                     <button class="card" onclick="openPanel('favorites')">
@@ -7276,7 +7294,7 @@
                             </svg></div>
                         <div class="meta">
                             <div class="title">Favorites</div>
-                            <div class="subtitle">Collection</div>
+                            <div class="subtitle" id="favsCount">Collection</div>
                         </div>
                     </button>
                     <button class="card" onclick="openPanel('stats')">
@@ -7298,7 +7316,7 @@
                             </svg></div>
                         <div class="meta">
                             <div class="title">Watch List</div>
-                            <div class="subtitle">Movies to watch</div>
+                            <div class="subtitle" id="wlCount">Movies to watch</div>
                         </div>
                     </button>
                     <button class="card wide" onclick="openPanel('swipify')">
