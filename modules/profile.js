@@ -131,7 +131,7 @@ async function prefetchOtherTab() {
         const favs = favsRes.status === 'fulfilled' ? await favsRes.value.json() : [];
         _otherCache.favorites = Array.isArray(favs) ? favs : [];
 
-        const favSubtitle = document.querySelector('#profile-tab-other .card[onclick*="favorites"] .subtitle');
+        const favSubtitle = document.getElementById('favsCount');
         if (favSubtitle) favSubtitle.textContent = `${_otherCache.favorites.length} movie${_otherCache.favorites.length !== 1 ? 's' : ''}`;
         localStorage.setItem('cinemi_others_favCount', _otherCache.favorites.length);
     } catch (e) {}
@@ -140,7 +140,7 @@ async function prefetchOtherTab() {
         const wl = wlRes.status === 'fulfilled' ? await wlRes.value.json() : [];
         _otherCache.watchlist = Array.isArray(wl) ? wl : [];
 
-        const wlSubtitle = document.querySelector('#profile-tab-other .card[onclick*="watchlist"] .subtitle');
+        const wlSubtitle = document.getElementById('wlCount');
         if (wlSubtitle) wlSubtitle.textContent = `${_otherCache.watchlist.length} movie${_otherCache.watchlist.length !== 1 ? 's' : ''}`;
         localStorage.setItem('cinemi_others_wlCount', _otherCache.watchlist.length);
     } catch (e) {}
