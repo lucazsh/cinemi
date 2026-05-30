@@ -9652,8 +9652,8 @@
             target.style.animation = "none";
             target.offsetHeight;
             target.style.animation = "FadeIn 0.3s ease-out both";
+            if (tab === "other" && typeof prefetchOtherTab === "function") prefetchOtherTab();
         }
-
         function openPanel(name) {
             if (name === 'swipify') { if (typeof openPan === 'function') openPan('swipify'); return; }
             if (name === 'spaceedit') renderEditPanel();
