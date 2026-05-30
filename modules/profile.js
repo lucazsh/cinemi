@@ -909,14 +909,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-function switchProfileTab(tab, btn) {
-    document.querySelectorAll('#profile .tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('profile-tab-space').style.display = tab === 'space' ? 'block' : 'none';
-    document.getElementById('profile-tab-other').style.display = tab === 'other' ? 'block' : 'none';
-    if (tab === 'other') prefetchOtherTab();
-}
-
 function closeUserProfileOverlays() {
     currentViewedUser = null;
 
