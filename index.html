@@ -344,6 +344,30 @@
             transform: translateX(0);
         }
 
+        @supports (padding: env(safe-area-inset-top)) {
+            body::before {
+                content: '';
+                z-index: 9999;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: env(safe-area-inset-top);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                mask: linear-gradient(to bottom, black, black 50%, rgba(0, 0, 0, 0.7) 75%, rgba(0, 0, 0, 0) 100%);
+                -webkit-mask: linear-gradient(to bottom, black, black 50%, rgba(0, 0, 0, 0.7) 75%, rgba(0, 0, 0, 0) 100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.19s ease;
+            }
+
+            body:has(#profile.active)::before,
+            body:has(#user-profile.active)::before {
+                opacity: 1;
+            }
+        }
+
         .nt {
             display: flex;
             justify-content: space-between;
