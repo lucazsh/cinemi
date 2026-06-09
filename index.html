@@ -357,13 +357,12 @@
                 -webkit-backdrop-filter: blur(10px);
                 mask: linear-gradient(to bottom, black, black 50%, rgba(0, 0, 0, 0.7) 75%, rgba(0, 0, 0, 0) 100%);
                 -webkit-mask: linear-gradient(to bottom, black, black 50%, rgba(0, 0, 0, 0.7) 75%, rgba(0, 0, 0, 0) 100%);
-                opacity: 0;
                 pointer-events: none;
                 transition: opacity 0.19s ease;
+                opacity: 0;
             }
 
-            body:has(#profile.active)::before,
-            body:has(#user-profile.active)::before {
+            body.status-blur::before {
                 opacity: 1;
             }
         }
