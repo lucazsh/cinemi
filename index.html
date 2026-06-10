@@ -1,23 +1,56 @@
 <!DOCTYPE html>
 <html class="inverted">
 <head>
+<head>
     <title>Cinemi</title>
     <meta charset='utf-8'>
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="Find your people through film. Cinemi is the social app where film lovers share hot takes, discover what to watch next, and find friends who actually get their taste.">
+    <meta name="keywords" content="movie recommendation app, film discovery, AI movies, personality movie match, swipe movies, social movie app, what to watch, film taste, movie finder">
+    <meta name="author" content="Cinemi">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://cinemi.space">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cinemi.space">
+    <meta property="og:title" content="Cinemi">
+    <meta property="og:description" content="Find your people through film. Cinemi is the social app where film lovers share hot takes, discover what to watch next, and find friends who actually get their taste.">
+    <meta property="og:site_name" content="Cinemi">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://cinemi.space">
+    <meta name="twitter:title" content="Cinemi">
+    <meta name="twitter:description" content="Find your people through film. Cinemi is the social app where film lovers share hot takes, discover what to watch next, and find friends who actually get their taste.">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Cinemi",
+      "url": "https://cinemi.space",
+      "description": "Find your people through film. The social app where film lovers share hot takes, discover what to watch next, and find friends who actually get their taste.",
+      "applicationCategory": "EntertainmentApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "RON"
+      },
+      "featureList": [
+        "Personality-based movie recommendations",
+        "Swipe to discover films",
+        "Party mode with friends",
+        "Social posts and reviews",
+        "AI movie chat assistant",
+        "Taste compatibility with friends"
+      ]
+    }
+    </script>
     <link rel="manifest" href="/manifest.json">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" href="/icons/icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0b" media="(prefers-color-scheme: dark)" id="theme-color-dark">
     <meta name="theme-color" content="#f9faff" media="(prefers-color-scheme: light)" id="theme-color-light">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-    eruda.init();
-    </script> -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js', { scope: '/' })
