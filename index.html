@@ -71,7 +71,7 @@
             -ms-overflow-style: none;
             -webkit-user-select: none;
             -ms-user-select: none;
-            height: 100vh;
+            min-height: calc(100% + env(safe-area-inset-top));
         }
 
         .is-android {
