@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://lit-horse-tip-char.trycloudflare.com';
+const SERVER_URL = 'https://occurrence-changes-bob-sodium.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
