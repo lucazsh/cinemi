@@ -4,6 +4,21 @@ const progress = document.getElementById('progressFill');
 const inputAge = document.querySelector('.q-input[type="text"]');
 const total = questions.length;
 
+const nextBtn = document.querySelector('.next');
+
+function pressOn() {
+    nextBtn.classList.add('pressed');
+}
+
+function pressOff() {
+    nextBtn.classList.remove('pressed');
+}
+
+nextBtn.addEventListener('pointerdown', pressOn);
+nextBtn.addEventListener('pointerup', pressOff);
+nextBtn.addEventListener('pointercancel', pressOff);
+nextBtn.addEventListener('pointerleave', pressOff);
+nextBtn.addEventListener('blur', pressOff);
 
 document.querySelectorAll('#genreQ input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => {
