@@ -1,37 +1,79 @@
 function showView(id) {
+    const settings = document.getElementById('settings');
     const add = document.getElementById('add');
-    if (id === 'replies') {
-        const replies = document.getElementById('replies');
-        replies.classList.add('active');
-        setTimeout(() => {
-            document.getElementById('replyTextarea')?.focus();
-        }, 120);
+    const replies = document.getElementById('replies');
+
+    if (id === 'settings') {
+        settings.classList.add('active');
         return;
     }
+
     if (id === 'add') {
         add.classList.add('active');
-        setTimeout(() => {
-            const ta = document.getElementById('postTextarea');
-            if (ta) ta.focus();
-        }, 120);
-        updateNavActive(id);
         return;
     }
-    add.classList.remove('active');
-    document.querySelectorAll('.view').forEach(v => {
-        if (v.id !== 'add') v.classList.remove('active');
+
+    if (id === 'replies') {
+        replies.classList.add('active');
+        return;
+    }
+
+    document.querySelectorAll('.view, #settings, #add, #replies').forEach(v => {
+        v.classList.remove('active');
     });
+
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+
     const safeBar = document.getElementById('safe-area-bar');
     if (safeBar) safeBar.style.opacity = '0';
-    
-    document.getElementById('replies')?.classList.remove('active')
-    document.getElementById(id).classList.add('active');
-    if (id === 'home') {
-        initHomeFeed();
-    }
-    
+
+    if (id === 'home') initHomeFeed();
     updateNavActive(id);
 }
+
+function closeSettings() {
+    const settings = document.getElementById('settings');
+    settings.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+    settings.style.transform = 'translateY(110%)';
+    setTimeout(() => {
+        settings.classList.remove('active');
+        settings.style.transition = '';
+        settings.style.transform = '';
+    }, 280);
+}
+
+(function() {
+    const el = document.getElementById('settings');
+    let startY = 0, currentY = 0, active = false;
+
+    el.addEventListener('touchstart', e => {
+        if (e.touches[0].clientY - el.getBoundingClientRect().top > 80) return;
+        startY = e.touches[0].clientY;
+        active = true;
+        el.style.transition = 'none';
+    }, { passive: true });
+
+    el.addEventListener('touchmove', e => {
+        if (!active) return;
+        currentY = e.touches[0].clientY;
+        const dy = Math.max(0, currentY - startY);
+        el.style.transform = `translateY(${dy}px)`;
+    }, { passive: false });
+
+    el.addEventListener('touchend', e => {
+        if (!active) return;
+        active = false;
+        const dy = e.changedTouches[0].clientY - startY;
+        if (dy > 120) {
+            closeSettings();
+        } else {
+            el.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+            el.style.transform = 'translateY(0)';
+        }
+    });
+})();
+
 const homeEl = document.getElementById('home');
 if (homeEl) {
     const nt = homeEl.querySelector('.nt');
