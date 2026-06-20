@@ -112,6 +112,7 @@
             --card: #ffffff;
             --muted: #8e8e93;
             --text: #000000;
+            --settings: #2b2b2d;
             --radius: 24px;
             --inner-radius: 14px;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -144,6 +145,7 @@
                 --text-primary: #f0f0f0;
                 --film-col: #0d0d0f;
                 --svg-li: #e3e3e3;
+                --settings: #2b2b2d;
                 --user-p-btn: #272727;
                 --p-emoji: rgba(253, 246, 227, 0.8);
                 --op-var: 225, 225, 225;
@@ -493,7 +495,16 @@
             padding: 30px;
             flex-direction: column;
             gap: 30px;
-            background: var(--bg-primary);
+
+            background: linear-gradient(
+                to bottom,
+                #2c2c2c 0%,
+                #2c2c2c 10%,
+                color-mix(in srgb, #2c2c2c 75%, var(--bg-primary)) 18%,
+                color-mix(in srgb, #2c2c2c 40%, var(--bg-primary)) 25%,
+                var(--bg-primary) 40%
+            );
+
             color: var(--text-primary);
         }
 
@@ -538,14 +549,66 @@
         }
 
         .next {
-            align-self: flex-end;
-            padding: 10px 20px;
-            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #f0f0f0;
+            color: #0d0d0f;
+            font-size: 15px;
+            font-weight: 800;
             border: none;
-            background: var(--text-primary);
-            color: var(--bg-primary);
             cursor: pointer;
-            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0 14px;
+            height: 50px;
+            isolation: isolate;
+        }
+
+        .next *{
+            position: relative;
+            color: var(--bg-primary);
+            z-index: 4;
+        }
+
+        .next::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(13, 13, 15, 0.563) 0px,
+                rgba(13,13,15,0.9) 6px,
+                transparent 6px,
+                transparent 14px
+            );
+            background-size: 14px 100%;
+            animation: dashMove 0.67s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .next::after {
+            content: "";
+            position: absolute;
+            inset: 1.67px;
+            border-radius: 16px;
+            background: #f0f0f0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes dashMove {
+            from { background-position: 0 0; }
+            to { background-position: 14px 0; }
+        }
+
+        .next.pressed {
+            opacity: 0.9;
+            transform: scale(0.98);
         }
 
         .q-input {
@@ -666,6 +729,7 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
 
         #settings {
@@ -697,21 +761,21 @@
             position: relative;
         }
 
-        #settings .st::before {
-            content: "";
-            position: sticky;
-            top: -1px;
-            display: block;
-            height: 30px;
-            margin: 0 -20px;
-            background: linear-gradient(
+        #settings .st {
+            mask-image: linear-gradient(
                 to bottom,
-                var(--card) 0%,
-                var(--card) 60%,
+                transparent 0%,
+                black 15%,
+                black 85%,
                 transparent 100%
             );
-            z-index: 100;
-            pointer-events: none;
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 15%,
+                black 85%,
+                transparent 100%
+            );
         }
         #add.active,
         #replies.active {
@@ -1151,28 +1215,41 @@
         }
 
         .sub-s {
-            font-size: 14px;
-            font-weight: 600;
-            padding-left: 5px;
-            color: rgba(128, 128, 128, 0.877);
+            font-size: 15.6px;
+            font-weight: 700;
+            padding-left: 10px;
+            color: rgba(222, 222, 222);
         }
 
         .wrap {
-            border: 1px solid var(--border-dark-alpha-2);
-            border-radius: 20px;
-            margin-top: 9px;
-            margin-bottom: 14px;
+            border-radius: 30px;
+            margin-top: 10px;
+            margin-bottom: 20px;
             padding: 15px 15px;
-            background-color: var(--bg-secondary);
+            background-color: var(--settings);
+            overflow: none;
         }
 
         .sp-wrap {
             display: flex;
             align-items: center;
-            padding: 0 15px 6px;
+            padding: 0 18px 10px;
             font-weight: 500;
             margin: 0 -15px;
             line-height: 1;
+            color: rgba(222, 222, 222, 0.914);
+            position: relative;
+        }
+
+        .sp-wrap::after{
+            content: "";
+            position: absolute;
+            left: 63px;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background: #414143;
+            opacity: 0.67;
         }
 
         .sp-wrap svg {
@@ -1180,12 +1257,19 @@
             fill: var(--svg-settings);
         }
 
+        .sp-wrap.end::after {
+            opacity: 0;
+        }
+
+        .sp-wrap.end {
+            padding-bottom: 7px;
+        }
+
         #not-t {
             margin-top: 12px;
         }
 
         .wrap .sp-wrap:not(:last-of-type) {
-            border-bottom: 1px solid var(--border-dark-alpha-2);
             padding-bottom: 12px;
         }
 
@@ -1211,6 +1295,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
 
         #replies.active {
@@ -3453,6 +3538,28 @@
             animation: dashSlide .6s linear infinite;
             z-index: 0;
             pointer-events: none;
+        }
+
+        .set-btn{
+            position: relative;
+            overflow: visible;
+            animation: btn-tilt 2.67s ease-in-out infinite;
+        }
+
+        .set-btn::before{
+            content: "";
+            position: absolute;
+            inset: -3px;
+            border: 1.6px dashed #f0f0f0d6;
+            border-radius: 18px;
+            pointer-events: none;
+        }
+
+        @keyframes btn-tilt{
+            0%   { transform: rotate(0deg); }
+            25%  { transform: rotate(5.67deg); }
+            55%  { transform: rotate(-5.67deg); }
+            100% { transform: rotate(0deg); }
         }
         #react-fab::after {
             content: "";
@@ -6675,17 +6782,128 @@
         </div>
     </div>
     <div id="setup" class="view">
-        <div class="progress-container">
+        <div class="progress-container" style="margin-top: env(safe-area-inset-top);">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
         <div class="questions">
-            <div class="question active"
-                style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                <h1>How old are you?</h1>
-                <input class="q-input" type="text" placeholder="e.g., 16" />
+            <div class="question active" id="q-birthday" style="display: flex; align-items: center; justify-content: center; flex-direction: column; width: 100%;">
+                <h1 style="font-size: 28px; margin-bottom: 60px; margin-top: -60px; font-weight: 800; opacity: 0.967">What's your birthday?</h1>
+                
+                <div onclick="actAll()" style="display: flex; gap: 15px; align-items: flex-start; justify-content: center; width: 100%;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="c-day" style="width: 75px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                            <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
+                            <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
+                        </div>
+                        <div class="line-st" style="width: 40px; height: 2px; background: var(--text-primary); opacity: 0.1; margin: 5.67px 0; transition: opacity 0.3s;"></div>
+                        <span class="lbl-st" style="font-size: 0.65rem; font-weight: 600; color: #8e8e93; opacity: 0.6; transition: opacity 0.3s;">Day</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="c-month" style="width: 75px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                            <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
+                            <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
+                        </div>
+                        <div class="line-st" style="width: 40px; height: 2px; background: var(--text-primary); opacity: 0.1; margin: 5.67px 0; transition: opacity 0.3s;"></div>
+                        <span class="lbl-st" style="font-size: 0.65rem; font-weight: 600; color: #8e8e93; opacity: 0.6; transition: opacity 0.3s;">Month</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="c-year" style="width: 90px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                            <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
+                            <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
+                        </div>
+                        <div class="line-st" style="width:60px; height: 2px; background: var(--text-primary); opacity: 0.1; margin: 5.67px 0; transition: opacity 0.3s;"></div>
+                        <span class="lbl-st" style="font-size: 0.65rem; font-weight: 600; color: #8e8e93; opacity: 0.6; transition: opacity 0.3s;">Year</span>
+                    </div>
+                </div>
+                <input type="hidden" class="q-input" id="b-res">
             </div>
+
+            <script>
+                const bStore = {
+                    day: { range: [1, 31], cur: new Date().getDate() },
+                    month: { range: [1, 12], cur: new Date().getMonth() + 1 },
+                    year: { range: [1950, new Date().getFullYear()], cur: new Date().getFullYear() }
+                };
+
+                function setupWheels() {
+                    ['day', 'month', 'year'].forEach(k => {
+                        const box = document.getElementById(`c-${k}`);
+                        const wheel = box.querySelector('.w-el');
+                        const staticVal = box.querySelector('.v-st');
+                        staticVal.textContent = k === 'year' ? bStore[k].cur : (bStore[k].cur < 10 ? '0' + bStore[k].cur : bStore[k].cur);
+                        let html = '<div style="height:40px;"></div>';
+                        if (k === 'year') {
+                            for (let i = bStore[k].range[1]; i >= bStore[k].range[0]; i--) {
+                                html += `<div class="p-item" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${i}</div>`;
+                            }
+                        } else {
+                            for (let i = bStore[k].range[0]; i <= bStore[k].range[1]; i++) {
+                                html += `<div class="p-item" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${i < 10 ? '0' + i : i}</div>`;
+                            }
+                        }
+                        html += '<div style="height:40px;"></div>';
+                        wheel.innerHTML = html;
+                        wheel.addEventListener('scroll', () => {
+                            const idx = Math.round(wheel.scrollTop / 40);
+                            const items = wheel.querySelectorAll('.p-item');
+                            if (items[idx]) {
+                                bStore[k].cur = parseInt(items[idx].textContent);
+                                updateBInput();
+                            }
+                        });
+                    });
+                }
+
+                function actAll() {
+                    ['day', 'month', 'year'].forEach(k => {
+                        const box = document.getElementById(`c-${k}`);
+                        const parent = box.parentElement;
+                        const wheel = box.querySelector('.w-el');
+                        const staticVal = box.querySelector('.v-st');
+                        const line = parent.querySelector('.line-st');
+                        const label = parent.querySelector('.lbl-st');
+                        if (wheel.style.display === 'block') return;
+                        box.style.height = '145px';
+                        box.style.background = 'var(--bg-secondary)';
+                        box.style.border = '2px dashed var(--border-medium)';
+                        box.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+                        staticVal.style.opacity = '0';
+                        staticVal.style.transform = 'scale(0.7)';
+                        if(line) line.style.opacity = '0';
+                        if(label) label.style.opacity = '0';
+                        setTimeout(() => {
+                            staticVal.style.display = 'none';
+                            wheel.style.display = 'block';
+                            requestAnimationFrame(() => {
+                                wheel.style.transition = 'all 0.6s cubic-bezier(0.2, 1, 0.3, 1)';
+                                wheel.style.opacity = '1';
+                                const items = Array.from(wheel.querySelectorAll('.p-item'));
+                                const target = items.find(it => parseInt(it.textContent) === bStore[k].cur);
+                                if (target) wheel.scrollTop = items.indexOf(target) * 40;
+                            });
+                        }, 150);
+                    });
+                }
+
+                function updateBInput() {
+                    const d = String(bStore.day.cur).padStart(2, '0');
+                    const m = String(bStore.month.cur).padStart(2, '0');
+                    const y = bStore.year.cur;
+                    const res = document.getElementById('b-res');
+                    if(res) res.value = `${d}/${m}/${y}`;
+                }
+
+                setupWheels();
+                updateBInput();
+            </script>
+
+            <style>
+                .w-el::-webkit-scrollbar { display: none; }
+            </style>
             <div class="question">
                 <h1>What's your gender?</h1>
                 <div class="q-yn">
@@ -6852,7 +7070,7 @@
                 </div>
             </div>
         </div>
-        <button class="next" onclick="nextQuestion()">Next</button>
+        <button class="next" onclick="nextQuestion()"><span>Next</span></button>
     </div>
     <div id="home" class="view">
         <div class="nt">
@@ -7150,7 +7368,7 @@
                 Search
             </span>
             <button onclick="showView('ai-chat')"
-                style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px;">
+                style="background-color: #272727b3; padding: 3px 5.5px; border-radius: 10px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                     fill="#FFFFFF">
                     <path
@@ -7175,10 +7393,7 @@
                 <button id="posts-menu-btn"
                     style="display: flex; align-items: center; gap: 8px; font-size: 26px; font-weight: bold; background: none; border: none; cursor: pointer; padding: 0;">
                     <span id="current-feed-label">Posts</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
-                        fill="currentColor">
-                        <path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M456-325.5q-12-5.5-21-14.5L244-530q-19-20-18.5-45t20-45q19.5-20 45-20t44.5 20l145 146 146-146q20-20 45.5-19.5t45 20.5q19.5 20 19.5 45t-20 45L526-340q-9 9-21 14.5t-24.5 5.5q-12.5 0-24.5-5.5Z"/></svg>
                 </button>
 
                 <div id="feed-menu"
@@ -7198,8 +7413,8 @@
                 </div>
             </span>
             <button onclick="showView('add')"
-                style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                style="background-color: #272727b3; padding: 3px 5.5px; border-radius: 10px; padding-top: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="padding-top:1.4px;"
                     fill="#000000">
                     <path
                         d="M440-440v120q0 17 11.5 28.5T480-280q17 0 28.5-11.5T520-320v-120h120q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H520v-120q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v120H320q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440h120ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z" />
@@ -7583,38 +7798,49 @@
     <div id="settings">
         <div class="drag-pill"></div>
         <div class="st" style="margin-top: 20px;">
+            <div class="p-user" style="margin-bottom: 34px; margin-top: 40px">
+                <div class="p-img-wrap">
+                    <label for="img_input" style="cursor:pointer;">
+                        <img class="p-img" id="profileImg" crossorigin="anonymous" src="https://i.imgflip.com/1ickup.jpg">
+                    </label>
+                    <span class="p-emoji"><span class="p-emoji-icon-plus"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M412-412H222q-29 0-48.5-20T154-480.5q0-28.5 19.5-48T222-548h190v-191q0-28 20-48t48-20q28 0 48 20t20 48v191h190q29 0 48.5 19.5t19.5 48q0 28.5-19.5 48.5T738-412H548v190q0 28-20 48t-48 20q-28 0-48-20t-20-48v-190Z"></path></svg></span></span>
+                </div>
+                <span class="p-name" style="font-weight: 800; font-size: 30px;">user_name</span>
+                <input type="file" id="img_input" accept="image/*" style="display:none;">
+                <button class="set-btn" style="font-size:13px; font-weight:700; padding:8px 18px; border-radius: 15px; background:var(--text-primary); color:var(--bg-primary); border:none; margin-top: 13.67px;">edit profile</button>
+            </div>
             <div class="st-pre">
                 <span class="sub-s">PREFERENCES</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M440-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v160q0 17-11.5 28.5T840-520q-17 0-28.5-11.5T800-560v-160H160v480h280q17 0 28.5 11.5T480-200q0 17-11.5 28.5T440-160Zm-60-195v-250q0-18 15.5-26.5T426-630l195 125q14 9 14 25t-14 25L426-330q-15 10-30.5 1.5T380-355ZM711-56l-9-44q-12-5-22.5-10.5T658-124l-43 13q-7 2-13-.5t-10-8.5l-24-40q-4-6-2-13t7-12l33-29q-2-14-2-26t2-26l-33-29q-5-5-7-12t2-13l24-40q4-6 10-8.5t13-.5l43 13q11-8 21.5-13.5T702-380l9-44q2-7 6.5-11.5T730-440h48q8 0 12.5 4.5T797-424l9 44q12 5 22.5 11t21.5 15l42-15q7-2 13.5.5T916-360l24 42q4 6 2.5 13t-6.5 12l-34 29q2 12 2 25t-2 25l33 29q5 5 7 12t-2 13l-24 40q-4-6-10-8.5t-13-.5l43-13q-11 8-21.5 13.5T806-100l-9 44q-2 7-6.5 11.5T778-40h-48q-8 0-12.5-4.5T711-56Zm43-104q33 0 56.5-23.5T834-240q0-33-23.5-56.5T754-320q-33 0-56.5 23.5T674-240q0 33 23.5 56.5T754-160Z"/></svg>Streaming services</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M460-360q64 0 113.5-39.5T637-500q2-6-3-10.5t-11-2.5l-282 79q-8 2-9.5 9.5T335-412q25 24 57 38t68 14ZM294-510l106-30q4-28-14-49t-46-21q-25 0-42.5 17.5T280-550q0 11 4 21t10 19Zm240-70 106-30q5-28-13.5-49T580-680q-25 0-42.5 17.5T520-620q0 11 4 21t10 19ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v407q0 16-6 30.5T817-297L663-143q-11 11-25.5 17t-30.5 6H200Zm400-80 160-160h-80q-33 0-56.5 23.5T600-280v80Z"/></svg>Personality</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M360-400v-160q0-17 11.5-28.5T400-600h160q17 0 28.5 11.5T600-560v160q0 17-11.5 28.5T560-360H400q-17 0-28.5-11.5T360-400Zm0 240v-40h-80q-33 0-56.5-23.5T200-280v-80h-40q-17 0-28.5-11.5T120-400q0-17 11.5-28.5T160-440h40v-80h-40q-17 0-28.5-11.5T120-560q0-17 11.5-28.5T160-600h40v-80q0-33 23.5-56.5T280-760h80v-40q0-17 11.5-28.5T400-840q17 0 28.5 11.5T440-800v40h80v-40q0-17 11.5-28.5T560-840q17 0 28.5 11.5T600-800v40h80q33 0 56.5 23.5T760-680v80h40q17 0 28.5 11.5T840-560q0 17-11.5 28.5T800-520h-40v80h40q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360h-40v80q0 33-23.5 56.5T680-200h-80v40q0 17-11.5 28.5T560-120q-17 0-28.5-11.5T520-160v-40h-80v40q0 17-11.5 28.5T400-120q-17 0-28.5-11.5T360-160Zm320-120v-400H280v400h400Z"/></svg>AI Memory</span>
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#666666"><path d="m440-375 167-108q25-15.86 25-43.93T607-571L440-679q-25-17-52.5-2.07Q360-666.13 360-635v216q0 31.13 27.5 46.07Q415-358 440-375ZM172-157q-57.12 0-96.56-39.44Q36-235.88 36-293v-457q0-57.13 39.44-96.56Q114.88-886 172-886h616q57.13 0 96.56 39.44Q924-807.13 924-750v457q0 57.12-39.44 96.56Q845.13-157 788-157H669v15q0 29-20.2 48.5T601-74H359q-27.6 0-47.8-19.5Q291-113 291-142v-15H172Z"/></svg>Streaming services</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><defs><mask id="face-cutout-react-fab"><rect x="0" y="-960" width="960" height="960" fill="white" /><circle cx="840" cy="-800" r="160" fill="black" /><path d="M480-260q58 0 107-28t79-76q6-12-1-24t-21-12H316q-14 0-21 12t-1 24q30 48 79.5 76T480-260Z" fill="black" /><path d="M340-520q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm280 0q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Z" fill="black" /></mask></defs><rect x="80" y="-880" width="800" height="800" rx="240" mask="url(#face-cutout-react-fab)" /><path d="M800-760h-40q-17 0-28.5-11.5T720-800q0-17 11.5-28.5T760-840h40v-40q0-17 11.5-28.5T840-920q17 0 28.5 11.5T880-880v40h40q17 0 28.5 11.5T960-800q0 17-11.5 28.5T920-760h-40v40q0 17-11.5 28.5T840-680q-17 0-28.5-11.5T800-720v-40Z"/></svg>Personality</span>
+                    <span class="sp-wrap end" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>AI Memory</span>
                 </div>
             </div>
             <div class="st-app">
                 <span class="sub-s">APP SETTINGS</span>
                 <div class="wrap">
                     <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80ZM260-440q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120-160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm200 0q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120 160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Z"/></svg>Theme</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/></svg>Notifications</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q83 0 155.5 31.5t127 86q54.5 54.5 86 127T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Zm0-82q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z"/></svg>Language</span>
-                    <span class="sp-wrap" id="not-t" data-action="reset-localstorage"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M120-280v-80h560v80H120Zm80-160v-80h560v80H200Zm80-160v-80h560v80H280Z"/></svg>Clean localStorage</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3"><path d="M210-74q-57.12 0-96.56-39.44Q74-152.88 74-210v-540q0-57.13 39.44-96.56Q152.88-886 210-886h540q57.13 0 96.56 39.44Q886-807.13 886-750v540q0 57.12-39.44 96.56Q807.13-74 750-74H210Zm270.5-257q30.5 0 57-13t42.5-37q9.23-13.6 23.43-21.8Q617.64-411 635-411h115v-339H210v339h115q17.36 0 31.57 8.2 14.2 8.2 23.43 21.8 17.32 24.9 43.66 37.45Q450-331 480.5-331Z"/></svg>Notifications</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M307-69q-81-35-142-96T69-307q-35-81-35-173t35-173q35-81 96-142t142-96q81-35 173-35t173 35q81 35 142 96t96 142q35 81 35 173t-35 173q-35 81-96 142T653-69q-81 35-173 35T307-69Zm171-102q21-33 39.5-72t30.5-80H411q12 41 29 80t38 72Zm-103-17q-19-30-30.5-64.5T324-323H214q26 46 67.5 82.5T375-188Zm207 0q52-16 94.5-52.5T745-323H635q-9 36-21.5 70.5T582-188ZM179-404h129q-3-19-4.5-37.5T302-480q0-21 1.5-39t4.5-37H179q-4 18-6.5 36.5T170-480q0 20 2.5 39t6.5 37Zm213 0h175q3-19 3.5-37.5t.5-38.5q0-21-.5-39t-3.5-37H392q-3 19-4.5 37t-1.5 39q0 20 1.5 38.5T392-404Zm259 0h128q4-18 6.5-37t2.5-39q0-21-2.5-39.5T779-556H651q2 19 3 37t1 39q0 20-1 38.5t-3 37.5Zm-16-234h110q-26-46-68.5-82T582-772q19 30 31.5 64t21.5 70Zm-224 0h137q-10-40-28.5-78.5T478-791q-21 36-38 74.5T411-638Zm-197 0h110q9-36 20.5-70t30.5-64q-52 16-93.5 52T214-638Z"/></svg>Language</span>
+                    <span class="sp-wrap end" id="not-t" data-action="reset-localstorage"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M140-209q-27.45 0-46.73-20Q74-249 74-277.82q0-28.81 18.77-47.5Q111.55-344 140-344h472q28.45 0 47.72 19.43Q679-305.14 679-276.32q0 28.81-18.78 48.07Q641.45-209 612-209H140Zm104-215q-27.35 0-47.18-19.5Q177-463 177-491.75q0-28.74 19.32-48Q215.65-559 244-559h472q27.35 0 47.17 20Q783-519 783-490.25q0 28.74-19.33 47.5Q744.35-424 716-424H244Zm104-215q-28.45 0-47.73-19.5Q281-678 281-706.82q0-28.81 18.77-47.5Q318.55-773 348-773h472q27.45 0 46.72 19.43Q886-734.14 886-705.32q0 28.81-18.78 47.57Q848.45-639 820-639H348Z"/></svg>Clear app data</span>
                 </div>
             </div>
             <div class="st-acc">
                 <span class="sub-s">ACCOUNT</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-440q58 0 99-41t41-99q0-58-41-99t-99-41q-58 0-99 41t-41 99q0 58 41 99t99 41ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-46q-54-53-125.5-83.5T480-360q-83 0-154.5 30.5T200-246v46Z"/></svg>Profile</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-164q97-30 162-118.5T718-480H480v-315l-240 90v207q0 7 2 18h238v316Zm0 80q-7 0-13-1t-12-3q-135-45-215-166.5T160-516v-189q0-25 14.5-45t37.5-29l240-90q14-5 28-5t28 5l240 90q23 9 37.5 29t14.5 45v189q0 140-80 261.5T505-88q-6 2-12 3t-13 1Z"/></svg>Security</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M160-80q-33 0-56.5-23.5T80-160v-400q0-33 23.5-56.5T160-640h640q33 0 56.5 23.5T880-560v400q0 33-23.5 56.5T800-80H160Zm271-141 184-122q9-6 9-17t-9-17L431-499q-10-7-20.5-1.5T400-483v246q0 12 10.5 17.5T431-221ZM200-680q-17 0-28.5-11.5T160-720q0-17 11.5-28.5T200-760h560q17 0 28.5 11.5T800-720q0 17-11.5 28.5T760-680H200Zm120-120q-17 0-28.5-11.5T280-840q0-17 11.5-28.5T320-880h320q17 0 28.5 11.5T680-840q0 17-11.5 28.5T640-800H320Z"/></svg>Subscription</span>
-                    <span class="sp-wrap" id="not-t" data-action="logout" role="button" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h240q17 0 28.5 11.5T480-800q0 17-11.5 28.5T440-760H200v560h240q17 0 28.5 11.5T480-160q0 17-11.5 28.5T440-120H200Zm487-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h287l-75-75q-11-11-11-27t11-28q11-12 28-12.5t29 11.5l143 143q12 12 12 28t-12 28L669-309q-12 12-28.5 11.5T612-310q-11-12-10.5-28.5T613-366l74-74Z"/></svg>Log out</span>
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z"/></svg>Profile</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M445.44-346h69.16q16.4 0 26.4-12.25t8-27.75l-17-96q19-13 30.5-33.5T574-560q0-39.29-27.3-66.64Q519.41-654 480.2-654q-39.2 0-66.7 27.36Q386-599.29 386-560q0 24 11.5 44.5T428-482l-17 96q-2 15.5 8.02 27.75T445.44-346Zm13.64 305q-11.04-2-22.08-5-146-47-234.5-183.5T114-516v-182q0-42.62 24.5-77.31Q163-810 203-825l230-86q22-9 47-9t47 9l230 86q40 15 64.5 49.69T846-698v182q0 150-88.5 286.5T523-46q-11.04 3-22.08 5T480-39q-9.88 0-20.92-2Z"/></svg>Security</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M170-41q-57.4 0-96.7-39.3Q34-119.6 34-177v-379q0-57.4 39.3-96.7Q112.6-692 170-692h620q57.4 0 96.7 39.3Q926-613.4 926-556v379q0 57.4-39.3 96.7Q847.4-41 790-41H170Zm283-198 149-99q15-9.93 15-27.96Q617-384 602-394L453-494q-17-11-35-1.5T400-465v198q0 20.39 18 30.2 18 9.8 35-2.2ZM198-725q-18.6 0-31.8-13.08t-13.2-31.5q0-18.42 13.2-31.92T198-815h564q18.6 0 31.8 13.28t13.2 32Q807-751 793.8-738T762-725H198Zm121-123q-18.6 0-31.8-13.08t-13.2-31.5q0-18.42 13.2-31.92T319-938h322q18.6 0 31.8 13.28t13.2 32Q686-874 672.8-861T641-848H319Z"/></svg>Subscription</span>
+                    <span class="sp-wrap end" id="not-t" data-action="logout" role="button" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M210-74q-57 0-96.5-39.5T74-210v-540q0-57 39.5-96.5T210-886h210q28 0 48 19.5t20 48q0 28.5-20 48.5t-48 20H210v540h210q28 0 48 20t20 48.5q0 28.5-20 48T420-74H210Zm417-338H418q-29 0-48.5-20T350-480.5q0-28.5 19.5-48T418-548h209l-51-51q-20-20-20-48.5t20-47.5q20-21 47.5-20.5T671-695l168 168q19 20 19 47t-19 47L672-265q-20 20-48 20t-48-20q-20-20-20-48t20-48l51-51Z"/></svg>Log out</span>
                 </div>
             </div>
             <div class="st-help">
                 <span class="sub-s">NEED HELP?</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-120q-65 0-120.5-32T272-240h-72q-17 0-28.5-11.5T160-280q0-17 11.5-28.5T200-320h44q-3-20-3.5-40t-.5-40h-40q-17 0-28.5-11.5T160-440q0-17 11.5-28.5T200-480h40q0-20 .5-40t3.5-40h-44q-17 0-28.5-11.5T160-600q0-17 11.5-28.5T200-640h72q14-23 31.5-43t40.5-35l-37-38q-11-11-11-27.5t12-28.5q11-11 28-11t28 11l58 58q28-9 57-9t57 9l60-59q11-11 27.5-11t28.5 12q11 11 11 28t-11 28l-38 38q23 15 41.5 34.5T688-640h72q17 0 28.5 11.5T800-600q0 17-11.5 28.5T760-560h-44q3 20 3.5 40t.5 40h40q17 0 28.5-11.5T800-440q0 17-11.5 28.5T760-400h-40q0 20-.5 40t-3.5 40h44q17 0 28.5-11.5T800-280q0 17-11.5 28.5T760-240h-72q-32 56-87.5 88T480-120Zm-40-200h80q17 0 28.5-11.5T560-360q0-17-11.5-28.5T520-400h-80q-17 0-28.5 11.5T400-360q0 17 11.5 28.5T440-320Zm0-160h80q17 0 28.5-11.5T560-520q0-17-11.5-28.5T520-560h-80q-17 0-28.5 11.5T400-520q0 17 11.5 28.5T440-480Z"/></svg>Report a bug</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-240q21 0 35.5-14.5T530-290q0-21-14.5-35.5T480-340q-21 0-35.5 14.5T430-290q0 21 14.5 35.5T480-240Zm144-362q0-54-36.5-86T491-720q-45 0-79.5 18.5T357-648q-7 11-.5 24t20.5 19q12 5 25 .5t22-16.5q11-15 27.5-23t35.5-8q28 0 45.5 15t17.5 38q0 18-12 38t-36 40q-26 23-39 43t-17 47q-2 14 8.5 25.5T481-394q14 0 25.5-9.5T521-429q3-16 11-28.5t28-32.5q38-38 51-61t13-51ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/></svg>Help center</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M470-200h-10q-142 0-241-99t-99-241q0-142 99-241t241-99q71 0 132.5 26.5t108 73q46.5 46.5 73 108T800-540q0 134-75.5 249T534-111q-10 5-20 5.5t-18-4.5q-8-5-14-13t-7-19l-5-58Zm-11-121q17 0 29-12t12-29q0-17-12-29t-29-12q-17 0-29 12t-12 29q0 17 12 29t29 12Zm-87-304q11 5 22 .5t18-14.5q9-12 21-18.5t27-6.5q24 0 39 13.5t15 34.5q0 13-7.5 26T480-558q-25 22-37 41.5T431-477q0 12 8.5 20.5T460-448q12 0 20-9t12-21q5-17 18-31t24-25q21-21 31.5-42t10.5-42q0-46-31.5-74T460-720q-32 0-59 15.5T357-662q-6 11-1.5 21.5T372-625Z"/></svg>Contact support</span>
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-74q-79 0-146.5-40.5T228-225h-61q-22 0-37.5-15.5T114-278q0-22 15-37.5t38-15.5h30q-1-14-2-27.5t-1-28.5h-27q-22 0-37.5-15T114-439.5q0-22.5 15-38t38-15.5h27q0-14 1-27.5t2-26.5h-30q-22 0-37.5-15.5t-15.5-38q0-22.5 15-37.5t38-15h66q10-28 28.5-49.5T303-741l-27-28q-16-16-15.5-37.5T277-844q16-16 37.5-16t37.5 16l49 49q35-16 73.5-17t74.5 14l52-51q16-16 38-16t37 15q16 16 16 37.5T676-775l-25 26q27 20 48 46t34 58h64q20 0 34.5 14t14.5 34.5q0 20.5-14.5 35T797-547h-34q1 13 2 26.5t1 27.5h27q22 0 37.5 15.5t15.5 38q0 22.5-15 37.5t-38 15h-27q0 15-1 28.5t-3 27.5h31q22 0 37.5 15.5T846-278q0 22-15 37.5T793-225h-61q-38 70-105.5 110.5T480-74Zm-31-232h62q21 0 37-15t16-37.5q0-22.5-15.5-38T511-412h-62q-21 0-37 15.5t-16 38q0 22.5 15.5 37.5t37.5 15Zm0-161h62q21 0 37-15.5t16-38q0-22.5-15.5-37.5T511-573h-62q-21 0-37 15t-16 37.5q0 22.5 15.5 38T449-467Z"/></svg>Report a bug</span>
+                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M520-251q19-19 19-45.5t-19-45Q501-360 474.5-360T429-341.5q-19 18.5-19 45t19 45.5q19 19 45.5 19t45.5-19Zm107-354q0-57-39.5-91.5T484-731q-44 0-81 20.5T342-652q-11 17-2.5 35.5T369-590q17 7 35.5.5T438-613q10-10 20.5-15t22.5-5q17 0 29 11.5t12 26.5q0 12-9.5 27.5T489-540q-38 35-49.5 53T425-440q-2 20 13 34.5t37 14.5q19 0 34-13t23-35q5-14 15-27.5t27-29.5q28-27 40.5-53t12.5-56ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Z"/></svg>Help center</span>
+                    <span class="sp-wrap end" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M307.5-69q-81.5-35-142-95.5T70-306.5Q35-388 35-480t35-173.5q35-81.5 95.5-142t142-95.5Q389-926 481-926t173 35q81 35 141.5 95.5t95.5 142Q926-572 926-480t-35 173.5q-35 81.5-95.5 142T654-69q-81 35-173 35T307.5-69ZM368-191l34-78q-46-17-81-51.5T268-401l-79 31q24 63 70 109.5T368-191ZM268-559q15-49 51-82.5t83-51.5l-34-78q-63 24-109 71t-70 110l79 31Zm276 143q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Zm48 225q62-22 109-69t70-109l-80-32q-16 46-50.5 80T560-268l32 77Zm100-369 79-32q-23-62-70-109t-109-70l-32 81q47 16 80.5 50t51.5 80Z"/></svg>Contact support</span>
                 </div>
             </div>
         </div>
@@ -7757,17 +7983,17 @@
         <div
             style="position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; margin-top: env(safe-area-inset-top);">
             <div class="btn-sw" style="position: absolute; top: 15px; left: 15px; z-index: 10001;">
-                <button onclick="closePanel('swipify')" style="background-color: #18191ef0; border: 1px solid var(--border-light); border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding:10px;">
+                <button onclick="closePanel('swipify')" style="background-color: var(--user-p-btn); border: 1px solid var(--border-light); border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding:10px;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480.76-400.98 292.87-212.33q-16.96 16.96-40.39 16.58-23.44-.38-40.15-17.34-16.2-16.95-15.82-39.51.38-22.55 16.58-39.51L400.22-480 212.33-669.65q-16.2-16.96-16.2-39.51 0-22.56 16.2-39.51 16.71-16.96 40.15-17.34 23.43-.38 40.39 16.58l187.89 188.65 186.37-188.65q16.96-16.96 40.39-16.58 23.44.38 40.15 17.34 16.2 16.95 15.82 39.51-.38 22.55-16.58 39.51L559.78-480l187.13 187.89q16.2 16.2 16.58 39.13.38 22.94-15.82 39.89-16.71 16.96-40.15 17.34-23.43.38-40.39-16.58L480.76-400.98Z"/></svg>
                 </button>
             </div>
 
             <div class="btn-sw" style="position: absolute; top: 16.5px; right: 15px; z-index: 10001; display:flex; align-items:center; gap:8px;">
-                <button id="sw-trailer-btn" onclick="swActTrailer()" style="background-color:#18191ef0; margin-right: 3px; border:1px solid var(--border-light); padding: 10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
+                <button id="sw-trailer-btn" onclick="swActTrailer()" style="background-color: var(--user-p-btn); margin-right: 3px; border:1px solid var(--border-light); padding: 10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
                     Trailer
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="var(--icon-fill-secondary)"><path d="m153.13-839.04 73.48 148.39q6.95 14 19.85 22 12.91 8 28.47 8 31.11 0 46.83-25.87 15.72-25.88 2.28-53.57l-49.47-98.95h80.87l73.47 148.39q6.97 14 19.9 22t28.52 8q31.18 0 47.1-25.87 15.92-25.88 1.92-53.57l-49.48-98.95h81.43l73.48 148.39q6.95 14 19.86 22 12.9 8 28.46 8 31.12 0 46.84-25.87 15.71-25.88 2.28-53.57l-49.48-98.95h117.22q51.3 0 87.12 36.22 35.83 36.23 35.83 86.73v472.18q0 50.5-35.83 86.73-35.82 36.22-87.12 36.22H163.04q-51.3 0-87.12-35.26-35.83-35.26-35.83-86v-473.87q0-50.78 32.28-84.28t80.76-38.67Z"/></svg>
                 </button>
-                <button onclick="showPartyOptions()" style="background-color:#18191ef0; border:1px solid var(--border-light); padding:10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
+                <button onclick="showPartyOptions()" style="background-color: var(--user-p-btn); border:1px solid var(--border-light); padding:10.2px 16px; border-radius:15px; cursor:pointer; display:flex; align-items:center; gap:8px; color:white; font-weight:600; font-size:14px;">
                     Party Mode
                     <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3"><path d="m73-134 169-477q8-22 26.5-33.5T307-656q13 0 25 4.5t22 14.5l308 309q11 10 15.5 22t4.5 25q0 20-11.5 37.5T637-217L159-48q-22 7-40 2.5T88-64Q75-77 70.5-95t2.5-39Zm888-521q-10 10-25.5 10T910-655h-1q-14-14-33-14t-33 14L662-474q-13 12-30 11.5T602-475q-13-13-13-31t13-31l180-180q39-39 94.5-39t95.5 39v1q11 10 9.5 26.5T961-655ZM398-842q11-12 27.5-11.5T453-842l-2-2q38 38 38 92t-38 92l2-1q-8 7-22 4.5T391-685q-8-8-7.5-19.5T392-724l-1 1q12-12 12-29.5T391-782l1 1q-11-11-10.5-28.5T398-842Zm173-62q13-13 31-12t31 14l35 35q40 39 40 94t-40 95L563-573q-12 12-30 12t-31-12q-13-13-13-31.5t13-31.5l105-104q13-14 13-33t-13-33l-36-36q-13-12-13-30.5t13-31.5Zm391 534q-13 13-31.5 13T900-370l-41-40q-13-13-31-13t-31 13l-35 35q-13 12-31 12t-31-13q-13-13-12.5-31t13.5-31l35-35q38-38 92-38t93 38l41 41q13 13 12.5 31T962-370Z"/></svg>
                 </button>
