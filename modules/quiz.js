@@ -31,7 +31,7 @@ async function nextQuestion() {
     const currentQuestion = questions[current];
     let answer = null;
 
-    if (current === 4) {
+    if (current === 2) {
         questions[current].classList.remove('active');
         questions[current].style.display = 'none';
         current++;
@@ -42,21 +42,21 @@ async function nextQuestion() {
     }
 
     if (current === 0) {
-        answer = currentQuestion.querySelector('.q-input').value;
-    } else if (current === 10) {
+        answer = document.getElementById('b-res').value;
+        if (!answer) { alert('Please select your birthday'); return; }
+    } else if (current === 7) {
         const checked = currentQuestion.querySelectorAll('input[type="checkbox"]:checked');
         if (checked.length === 0) { alert('Please select at least one genre'); return; }
         answer = Array.from(checked).map(c => c.value);
-    } else if (current === 11) {
+    } else if (current === 8) {
         const checked = currentQuestion.querySelectorAll('input[type="checkbox"]:checked');
         if (checked.length === 0) { alert('Please select at least one platform'); return; }
         answer = Array.from(checked).map(c => c.value);
     } else {
         const selected = currentQuestion.querySelector('input[type="radio"]:checked');
         if (selected) answer = selected.value || selected.id;
+        if (!answer) { alert('Please answer the question'); return; }
     }
-
-    if (!answer) { alert('Please answer the question'); return; }
 
     questions[current].classList.remove('active');
     questions[current].style.display = 'none';
@@ -69,19 +69,17 @@ async function nextQuestion() {
     } else {
         progress.style.width = '100%';
 
-        const movieGenres = Array.from(questions[10].querySelectorAll('input:checked')).map(c => c.value);
-        const streamingPlatforms = Array.from(questions[11].querySelectorAll('input:checked')).map(c => c.value);
+        const movieGenres = Array.from(questions[7].querySelectorAll('input:checked')).map(c => c.value);
+        const streamingPlatforms = Array.from(questions[8].querySelectorAll('input:checked')).map(c => c.value);
 
         const quizAnswers = {
-            age: questions[0].querySelector('.q-input').value,
+            age: document.getElementById('b-res').value,
             gender: questions[1].querySelector('input:checked')?.id,
-            personality: questions[2].querySelector('input:checked')?.id,
-            movieOrigin: questions[3].querySelector('input:checked')?.id,
-            teamwork: questions[5].querySelector('input:checked')?.id,
-            friends: questions[6].querySelector('input:checked')?.id,
-            family: questions[7].querySelector('input:checked')?.id,
-            adrenaline: questions[8].querySelector('input:checked')?.id,
-            sports: questions[9].querySelector('input:checked')?.id,
+            personality: questions[1].querySelector('input:checked')?.id,
+            movieOrigin: questions[6].querySelector('input:checked')?.id,
+            teamwork: questions[3].querySelector('input:checked')?.id,
+            friends: questions[4].querySelector('input:checked')?.id,
+            adrenaline: questions[5].querySelector('input:checked')?.id,
             movieGenres,
             movieGenre: movieGenres[0],
             streamingPlatforms,
@@ -100,6 +98,23 @@ async function nextQuestion() {
             console.error('Quiz submit error:', err);
         }
         showView('home');
+    }
+}
+
+document.querySelector('.sp svg').addEventListener('click', previousQuestion);
+document.querySelector('.sp svg').addEventListener('touchend', function(e) {
+    e.preventDefault();
+    previousQuestion();
+});
+
+function previousQuestion() {
+    if (current > 0) {
+        questions[current].classList.remove('active');
+        questions[current].style.display = 'none';
+        current--;
+        questions[current].classList.add('active');
+        questions[current].style.display = 'block';
+        updateProgress();
     }
 }
 
