@@ -490,7 +490,7 @@
 
         #setup {
             height: 100vh;
-            display: flex;
+            display: none !important;
             z-index: 1200;
             padding: 30px;
             flex-direction: column;
@@ -505,11 +505,8 @@
 
             color: var(--text-primary);
         }
-        #setup {
-            pointer-events: none !important;
-        }
         #setup.active {
-            pointer-events: auto !important;
+            display: flex !important;
             opacity: 1;
         }
         .sp svg {
