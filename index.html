@@ -495,19 +495,20 @@
             padding: 30px;
             flex-direction: column;
             gap: 30px;
-
+            overflow: hidden !important; 
             background: linear-gradient(
-                to bottom,
-                #2c2c2c 0%,
-                #2c2c2c 10%,
-                color-mix(in srgb, #2c2c2c 75%, var(--bg-primary)) 18%,
-                color-mix(in srgb, #2c2c2c 40%, var(--bg-primary)) 25%,
-                var(--bg-primary) 40%
+            to bottom,
+            #2c2c2c 0%,
+            color-mix(in srgb, #2c2c2c 55%, var(--bg-primary)) 35%,
+            var(--bg-primary) 80%
             );
 
             color: var(--text-primary);
         }
 
+        .sp svg {
+            fill: #606060;
+        }
         .progress-bar {
             width: 100%;
             height: 16px;
@@ -529,16 +530,39 @@
         .questions {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-height: 300px;
+            margin-top: 40px;
+        }
+
+        .question.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            width: 100%;
+            padding: 20px 0;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 11%,
+                black 60%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 11%,
+                black 60%,
+                transparent 100%
+            );
+            overflow-y: auto;
         }
 
         .question {
             display: none;
-        }
-
-        .question.active {
-            display: block;
         }
 
         .questions .question:first-child.active {
@@ -547,16 +571,22 @@
             justify-content: center;
             flex-direction: column;
         }
-
+        
         .next {
-            position: relative;
+            position: absolute;
             overflow: hidden;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
             border-radius: 18px;
-            background: #f0f0f0;
+            backdrop-filter: blur(10px);
             color: #0d0d0f;
             font-size: 15px;
             font-weight: 800;
-            border: none;
+            box-shadow: 0 10px 40px rgba(150, 150, 150, 0.222);
+            background: linear-gradient(180deg,#ffffffee,#8e8e8e);
+            outline: 2px dashed rgba(255, 255, 255, 0.301);
+            outline-offset: 2px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -565,6 +595,7 @@
             padding: 0 14px;
             height: 50px;
             isolation: isolate;
+            transition: transform 0.2s ease, border-radius 0.2s ease, opacity 0.2s ease, outline-offset 0.2s ease;
         }
 
         .next *{
@@ -572,7 +603,7 @@
             color: var(--bg-primary);
             z-index: 4;
         }
-
+/*
         .next::before {
             content: "";
             position: absolute;
@@ -605,10 +636,12 @@
             from { background-position: 0 0; }
             to { background-position: 14px 0; }
         }
-
+*/
         .next.pressed {
             opacity: 0.9;
             transform: scale(0.98);
+            border-radius: 30px;
+            outline-offset: 0px;
         }
 
         .q-input {
@@ -634,18 +667,30 @@
         }
         
         .q-yn {
-            margin-top: 20px;
+            margin-top: 90px;
             color: var(--text-primary);
             display: flex;
             flex-direction: column;
             gap: 12px;
             -webkit-tap-highlight-color: transparent;
-            max-height: 60vh;
-            overflow-y: auto;
-            overflow-x: hidden;
+            max-height: 40vh;
             padding-right: 8px;
+            padding-left: 8px;
         }
 
+        #q4a:checked + label,
+        #q4b:checked + label,
+        #q4c:checked + label,
+        #q4d:checked + label,
+        #q4e:checked + label {
+            background: var(--button-bg) !important;
+            color: var(--button-text) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            outline: 2px dashed white;
+            outline-offset: 2px;
+            transform: scale(0.7);
+        }
+        
         .q-yn::-webkit-scrollbar {
             width: 6px;
             display: block !important;
@@ -671,11 +716,11 @@
 
         .q-yn label {
             padding: 14px 24px;
-            border-radius: 14px;
+            border-radius: 15px;
             border: 1px solid var(--border-dark-alpha-2);
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            transition: all 0.2s ease;
+            transition: all 0.2s ease-in-out;
             user-select: none;
             width: 100%;
             box-sizing: border-box;
@@ -684,6 +729,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            background-color: #333333;
         }
 
         .q-yn label:hover {
@@ -702,8 +748,6 @@
             width: 40px;
             height: 40px;
             object-fit: contain;
-            filter: brightness(var(--emoji-br)) saturate(0.7);
-            transition: filter 0.2s ease;
         }
 
         .q-yn input:checked+label .streaming-logo {
@@ -6560,6 +6604,44 @@
         input[type="search"]::-webkit-search-cancel-button {
             display: none;
         }
+        .questions {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .question {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            visibility: hidden;
+            padding: 20px 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .question.active {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+            position: relative;
+        }
+        .question.exit-left,
+        .question.exit-right,
+        .question.enter-from-right,
+        .question.enter-from-left {
+            opacity: 0;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -6795,18 +6877,23 @@
         </div>
     </div>
     <div id="setup" class="view">
-        <div class="progress-container" style="margin-top: env(safe-area-inset-top);">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+        <div class="sp" style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: env(safe-area-inset-top);">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="position: absolute; left: 0px; top: 50%; transform: translateY(-50%); flex-shrink: 0;">
+                <path d="m213-480 278 277q22 23 22.5 55T491-94q-22 22-54.5 22T381-94L90-384q-20-21-30-45.5t-10-51q0-26.5 10-51T90-576l291-292q23-22 55.5-22t54.5 22q22 22 22 55t-22 55L213-480Z"/>
+            </svg>
+            <div style="width: 200px; flex-shrink: 0; display: flex; justify-content: center;">
+                <div class="progress-bar" style="width: 200px; flex-shrink: 0;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
             </div>
         </div>
         <div class="questions">
             <div class="question active" id="q-birthday" style="display: flex; align-items: center; justify-content: center; flex-direction: column; width: 100%;">
-                <h1 style="font-size: 28px; margin-bottom: 60px; margin-top: -60px; font-weight: 800; opacity: 0.967">What's your birthday?</h1>
+                <h1 style="font-size: 28px; margin-bottom: 60px; margin-top: -110px; font-weight: 800; opacity: 0.967">What's your birthday?</h1>
                 
                 <div onclick="actAll()" style="display: flex; gap: 15px; align-items: flex-start; justify-content: center; width: 100%;">
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div id="c-day" style="width: 75px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                        <div id="c-day" style="width: 75px; height: 65px; background: var(--border-medium); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
                             <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
                             <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
                         </div>
@@ -6815,7 +6902,7 @@
                     </div>
 
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div id="c-month" style="width: 75px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                        <div id="c-month" style="width: 75px; height: 65px; background: var(--border-medium); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
                             <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
                             <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
                         </div>
@@ -6824,7 +6911,7 @@
                     </div>
 
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div id="c-year" style="width: 90px; height: 65px; background: var(--placeholder-bg); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
+                        <div id="c-year" style="width: 90px; height: 65px; background: var(--border-medium); border-radius: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; position: relative;">
                             <span class="v-st" style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); transition: all 0.4s ease;"></span>
                             <div class="w-el" style="display: none; height: 120px; opacity: 0; overflow-y: scroll; scroll-snap-type: y mandatory; width: 100%; text-align: center; -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); scrollbar-width: none;"></div>
                         </div>
@@ -6834,125 +6921,315 @@
                 </div>
                 <input type="hidden" class="q-input" id="b-res">
             </div>
-
             <script>
-                const bStore = {
-                    day: { range: [1, 31], cur: new Date().getDate() },
-                    month: { range: [1, 12], cur: new Date().getMonth() + 1 },
-                    year: { range: [1950, new Date().getFullYear()], cur: new Date().getFullYear() }
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                let wheelsExpanded = false;
+
+                const monthDays = {
+                    1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30,
+                    7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
                 };
 
-                function setupWheels() {
-                    ['day', 'month', 'year'].forEach(k => {
-                        const box = document.getElementById(`c-${k}`);
-                        const wheel = box.querySelector('.w-el');
-                        const staticVal = box.querySelector('.v-st');
-                        staticVal.textContent = k === 'year' ? bStore[k].cur : (bStore[k].cur < 10 ? '0' + bStore[k].cur : bStore[k].cur);
-                        let html = '<div style="height:40px;"></div>';
-                        if (k === 'year') {
-                            for (let i = bStore[k].range[1]; i >= bStore[k].range[0]; i--) {
-                                html += `<div class="p-item" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${i}</div>`;
-                            }
-                        } else {
-                            for (let i = bStore[k].range[0]; i <= bStore[k].range[1]; i++) {
-                                html += `<div class="p-item" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${i < 10 ? '0' + i : i}</div>`;
-                            }
+                const bStore = {
+                    day: { cur: new Date().getDate(), max: 31 },
+                    month: { cur: new Date().getMonth() + 1 },
+                    year: { cur: new Date().getFullYear(), min: 1950, max: new Date().getFullYear() }
+                };
+
+                const wheelState = {
+                    day: { selectedIndex: null, timer: null, syncing: false },
+                    month: { selectedIndex: null, timer: null, syncing: false },
+                    year: { selectedIndex: null, timer: null, syncing: false }
+                };
+
+                function pad2(n) { return String(n).padStart(2, '0'); }
+                function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+                function getDaysInMonth(m, y) { return m === 2 ? (isLeapYear(y) ? 29 : 28) : (monthDays[m] || 30); }
+
+                function updateBInput() {
+                    const res = document.getElementById('b-res');
+                    if (res) res.value = `${pad2(bStore.day.cur)}/${pad2(bStore.month.cur)}/${bStore.year.cur}`;
+                }
+
+                function setStaticValue(k) {
+                    const box = document.getElementById(`c-${k}`);
+                    if (!box) return;
+                    const v = box.querySelector('.v-st');
+                    if (!v) return;
+                    if (k === 'day') v.textContent = pad2(bStore.day.cur);
+                    else if (k === 'month') v.textContent = monthNames[bStore.month.cur - 1];
+                    else v.textContent = bStore.year.cur;
+                }
+
+                function buildWheelHtml(k, animateNew = false, oldMax = 31) {
+                    let html = '<div style="height:40px;"></div>';
+                    if (k === 'day') {
+                        const max = getDaysInMonth(bStore.month.cur, bStore.year.cur);
+                        for (let i = 1; i <= max; i++) {
+                            const cls = (animateNew && i > oldMax) ? ' day-new' : '';
+                            html += `<div class="p-item${cls}" data-value="${i}" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${pad2(i)}</div>`;
                         }
-                        html += '<div style="height:40px;"></div>';
-                        wheel.innerHTML = html;
-                        wheel.addEventListener('scroll', () => {
-                            const idx = Math.round(wheel.scrollTop / 40);
-                            const items = wheel.querySelectorAll('.p-item');
-                            if (items[idx]) {
-                                bStore[k].cur = parseInt(items[idx].textContent);
-                                updateBInput();
-                            }
-                        });
+                    } else if (k === 'month') {
+                        for (let i = 1; i <= 12; i++) {
+                            html += `<div class="p-item" data-value="${i}" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${monthNames[i-1]}</div>`;
+                        }
+                    } else if (k === 'year') {
+                        for (let i = bStore.year.max; i >= bStore.year.min; i--) {
+                            html += `<div class="p-item" data-value="${i}" style="height:40px; line-height:40px; font-size:1.4rem; font-weight:800; color:var(--text-primary); scroll-snap-align:center;">${i}</div>`;
+                        }
+                    }
+                    html += '<div style="height:40px;"></div>';
+                    return html;
+                }
+
+                function getSelectedIndex(wheel) {
+                    return Math.round(wheel.scrollTop / 40);
+                }
+
+                function setWheelToIndex(k, index) {
+                    const box = document.getElementById(`c-${k}`);
+                    if (!box) return;
+                    const wheel = box.querySelector('.w-el');
+                    if (!wheel) return;
+                    wheelState[k].syncing = true;
+                    wheel.scrollTop = index * 40;
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => { wheelState[k].syncing = false; });
                     });
                 }
 
-                function actAll() {
-                    ['day', 'month', 'year'].forEach(k => {
+                function scrollToCurrent(k) {
+                    if (k === 'day') setWheelToIndex('day', bStore.day.cur - 1);
+                    else if (k === 'month') setWheelToIndex('month', bStore.month.cur - 1);
+                    else setWheelToIndex('year', bStore.year.max - bStore.year.cur);
+                }
+
+                function refreshDayWheel(animate = false) {
+                    const box = document.getElementById('c-day');
+                    if (!box) return;
+                    const wheel = box.querySelector('.w-el');
+                    if (!wheel) return;
+                    const oldMax = bStore.day.max;
+                    const newMax = getDaysInMonth(bStore.month.cur, bStore.year.cur);
+                    const wasAtBottom = wheel.scrollTop + wheel.clientHeight >= wheel.scrollHeight - 3;
+                    bStore.day.max = newMax;
+                    if (bStore.day.cur > newMax) bStore.day.cur = newMax;
+                    wheel.innerHTML = buildWheelHtml('day', animate && newMax > oldMax, oldMax);
+                    setStaticValue('day');
+                    updateBInput();
+                    requestAnimationFrame(() => {
+                        if (animate && newMax > oldMax) {
+                            wheel.classList.remove('day-grow');
+                            void wheel.offsetWidth;
+                            wheel.classList.add('day-grow');
+                            setTimeout(() => wheel.classList.remove('day-grow'), 220);
+                        }
+                        if (wasAtBottom && newMax > oldMax) {
+                            wheel.scrollTop = Math.max(0, wheel.scrollHeight - wheel.clientHeight);
+                        } else {
+                            scrollToCurrent('day');
+                        }
+                    });
+                }
+
+                function scheduleDayRefresh() {
+                    clearTimeout(wheelState.month.timer);
+                    clearTimeout(wheelState.year.timer);
+                    wheelState.month.timer = setTimeout(() => refreshDayWheel(true), 120);
+                }
+
+                function handleWheelScroll(k) {
+                    const box = document.getElementById(`c-${k}`);
+                    if (!box) return;
+                    const wheel = box.querySelector('.w-el');
+                    const v = box.querySelector('.v-st');
+                    if (!wheel || !v) return;
+                    if (wheelState[k].syncing) return;
+                    const items = Array.from(wheel.querySelectorAll('.p-item'));
+                    const idx = getSelectedIndex(wheel);
+                    if (idx < 0 || idx >= items.length) return;
+                    if (wheelState[k].selectedIndex === idx) return;
+                    wheelState[k].selectedIndex = idx;
+                    const value = parseInt(items[idx].dataset.value || items[idx].textContent, 10);
+                    if (isNaN(value)) return;
+                    if (k === 'month' && value !== bStore.month.cur) {
+                        bStore.month.cur = value;
+                        v.textContent = monthNames[value-1];
+                        updateBInput();
+                        scheduleDayRefresh();
+                    } else if (k === 'year' && value !== bStore.year.cur) {
+                        bStore.year.cur = value;
+                        v.textContent = value;
+                        updateBInput();
+                        scheduleDayRefresh();
+                    } else if (k === 'day' && value !== bStore.day.cur) {
+                        bStore.day.cur = value;
+                        v.textContent = pad2(value);
+                        updateBInput();
+                    }
+                }
+
+                function setupWheels() {
+                    ['day','month','year'].forEach(k => {
                         const box = document.getElementById(`c-${k}`);
+                        if (!box) return;
+                        const wheel = box.querySelector('.w-el');
+                        if (!wheel) return;
+                        wheel.innerHTML = buildWheelHtml(k);
+                        setStaticValue(k);
+                        wheel.addEventListener('scroll', () => requestAnimationFrame(() => handleWheelScroll(k)));
+                    });
+                    bStore.day.max = getDaysInMonth(bStore.month.cur, bStore.year.cur);
+                    requestAnimationFrame(() => {
+                        scrollToCurrent('day');
+                        scrollToCurrent('month');
+                        scrollToCurrent('year');
+                        updateBInput();
+                    });
+                }
+                function actAll(e) {
+                    if (e) e.stopPropagation();
+                    if (wheelsExpanded) return;
+
+                    ['day','month','year'].forEach(k => {
+                        const box = document.getElementById(`c-${k}`);
+                        if (!box) return;
                         const parent = box.parentElement;
                         const wheel = box.querySelector('.w-el');
                         const staticVal = box.querySelector('.v-st');
                         const line = parent.querySelector('.line-st');
                         const label = parent.querySelector('.lbl-st');
-                        if (wheel.style.display === 'block') return;
+
+                        box.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                         box.style.height = '145px';
                         box.style.background = 'var(--bg-secondary)';
-                        box.style.border = '2px dashed var(--border-medium)';
+                        box.style.border = '2px solid var(--border-medium)';
                         box.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+
+                        staticVal.style.transition = 'all 0.3s ease';
                         staticVal.style.opacity = '0';
                         staticVal.style.transform = 'scale(0.7)';
-                        if(line) line.style.opacity = '0';
-                        if(label) label.style.opacity = '0';
+
+                        if (line) { line.style.transition = 'opacity 0.3s'; line.style.opacity = '0'; }
+                        if (label) { label.style.transition = 'opacity 0.3s'; label.style.opacity = '0'; }
+
                         setTimeout(() => {
                             staticVal.style.display = 'none';
                             wheel.style.display = 'block';
                             requestAnimationFrame(() => {
-                                wheel.style.transition = 'all 0.6s cubic-bezier(0.2, 1, 0.3, 1)';
+                                wheel.style.transition = 'opacity 0.45s cubic-bezier(0.2, 1, 0.3, 1)';
                                 wheel.style.opacity = '1';
-                                const items = Array.from(wheel.querySelectorAll('.p-item'));
-                                const target = items.find(it => parseInt(it.textContent) === bStore[k].cur);
-                                if (target) wheel.scrollTop = items.indexOf(target) * 40;
+                                scrollToCurrent(k);
                             });
-                        }, 150);
+                        }, 120);
                     });
+
+                    wheelsExpanded = true;
                 }
 
-                function updateBInput() {
-                    const d = String(bStore.day.cur).padStart(2, '0');
-                    const m = String(bStore.month.cur).padStart(2, '0');
-                    const y = bStore.year.cur;
-                    const res = document.getElementById('b-res');
-                    if(res) res.value = `${d}/${m}/${y}`;
+                function deactAll() {
+                    if (!wheelsExpanded) return;
+
+                    ['day','month','year'].forEach(k => {
+                        const box = document.getElementById(`c-${k}`);
+                        if (!box) return;
+                        const parent = box.parentElement;
+                        const wheel = box.querySelector('.w-el');
+                        const staticVal = box.querySelector('.v-st');
+                        const line = parent.querySelector('.line-st');
+                        const label = parent.querySelector('.lbl-st');
+                        wheel.style.transition = 'opacity 0.3s ease';
+                        wheel.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            wheel.style.display = 'none';
+                            wheel.style.transition = '';
+
+                            staticVal.style.display = '';
+                            staticVal.style.opacity = '1';
+                            staticVal.style.transform = 'scale(1)';
+
+                            if (line) line.style.opacity = '0.1';
+                            if (label) label.style.opacity = '0.6';
+
+                            box.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            box.style.height = '65px';
+                            box.style.background = 'var(--border-medium)';
+                            box.style.border = 'none';
+                            box.style.boxShadow = 'none';
+                        }, 200);
+                    });
+
+                    wheelsExpanded = false;
                 }
+
+                document.addEventListener('click', function(e) {
+                    if (!wheelsExpanded) return;
+                    const clickedOnPicker = e.target.closest('#c-day, #c-month, #c-year');
+                    if (!clickedOnPicker) {
+                        deactAll();
+                    }
+                });
 
                 setupWheels();
                 updateBInput();
             </script>
 
             <style>
+                .w-el::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .w-el {
+                    will-change: transform, opacity;
+                    scroll-behavior: auto;
+                }
+
+                @keyframes dayItemIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(8px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .day-new {
+                    animation: dayItemIn 0.18s ease-out forwards;
+                }
+
+                @keyframes dayGrow {
+                    0% {
+                        opacity: 0.8;
+                        transform: scaleY(0.985);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: scaleY(1);
+                    }
+                }
+
+                .day-grow {
+                    animation: dayGrow 0.22s ease-out;
+                }
+            </style>
+            <style>
                 .w-el::-webkit-scrollbar { display: none; }
             </style>
-            <div class="question">
-                <h1>What's your gender?</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q2a" name="q2">
-                    <label for="q2a">Male</label>
-                    <input type="radio" id="q2b" name="q2">
-                    <label for="q2b">Female</label>
-                </div>
-            </div>
             <div class="question">
                 <h1>What's your personality type?</h1>
                 <div class="q-yn">
                     <input type="radio" id="q3a" name="q3">
                     <label for="q3a">Introvert</label>
                     <input type="radio" id="q3b" name="q3">
-                    <label for="q3b">Ambivert (both introvert and extrovert)</label>
+                    <label for="q3b">Ambivert</label>
                     <input type="radio" id="q3c" name="q3">
                     <label for="q3c">Extrovert</label>
                 </div>
             </div>
-            <div class="question">
-                <h1>What movies do you like?</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q4a" name="q4">
-                    <label for="q4a">American & British</label>
-                    <input type="radio" id="q4b" name="q4">
-                    <label for="q4b">Romanian</label>
-                    <input type="radio" id="q4c" name="q4">
-                    <label for="q4c">Spanish / Italian</label>
-                    <input type="radio" id="q4d" name="q4">
-                    <label for="q4d">Asian</label>
-                    <input type="radio" id="q4e" name="q4">
-                    <label for="q4e">Other</label>
-                </div>
-            </div>
-            <div class="question">
+            <div class="question" style="margin-top: 40px;">
                 <h1>For the next questions, rate each activity.</h1>
                 <h2 style="color: grey;">1 = Not at all, 5 = Love it!</h2>
             </div>
@@ -6987,21 +7264,6 @@
                 </div>
             </div>
             <div class="question">
-                <h1>Spending time with family.</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q7a" name="q7">
-                    <label for="q7a">1</label>
-                    <input type="radio" id="q7b" name="q7">
-                    <label for="q7b">2</label>
-                    <input type="radio" id="q7c" name="q7">
-                    <label for="q7c">3</label>
-                    <input type="radio" id="q7d" name="q7">
-                    <label for="q7d">4</label>
-                    <input type="radio" id="q7e" name="q7">
-                    <label for="q7e">5</label>
-                </div>
-            </div>
-            <div class="question">
                 <h1>Do you like adrenaline?</h1>
                 <div class="q-yn">
                     <input type="radio" id="q8a" name="q8">
@@ -7016,73 +7278,299 @@
                     <label for="q8e">5</label>
                 </div>
             </div>
-            <div class="question">
-                <h1>What sports do you like?</h1>
-                <div class="q-yn">
-                    <input type="radio" id="q9a" name="q9">
-                    <label for="q9a">Ball sports</label>
-                    <input type="radio" id="q9b" name="q9">
-                    <label for="q9b">Contact sports</label>
-                    <input type="radio" id="q9c" name="q9">
-                    <label for="q9c">Extreme sports</label>
-                    <input type="radio" id="q9d" name="q9">
-                    <label for="q9d">Artistic sports</label>
-                    <input type="radio" id="q9e" name="q9">
-                    <label for="q9e">Other</label>
-                    <input type="radio" id="q9f" name="q9">
-                    <label for="q9f">I don't like sports</label>
+            <div class="question" style="overflow-y: auto; -webkit-overflow-scrolling: touch;">
+            <h1>Where are your favorite movies from?</h1>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 360px; margin: 70px auto;">
+                
+                <input type="radio" id="q4a" name="q4" style="display: none;">
+                <label for="q4a" class="answer-btn">American &<br>British</label>
+
+                <input type="radio" id="q4b" name="q4" style="display: none;">
+                <label for="q4b" class="answer-btn">Romanian</label>
+
+                <input type="radio" id="q4c" name="q4" style="display: none;">
+                <label for="q4c" class="answer-btn small">Spanish /<br>Italian</label>
+
+                <input type="radio" id="q4d" name="q4" style="display: none;">
+                <label for="q4d" class="answer-btn">Asian</label>
+
+                <input type="radio" id="q4e" name="q4" style="display: none;">
+                <label for="q4e" class="answer-btn">Other</label>
+            </div>
+            </div>
+
+            <style>
+            .answer-btn{
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                aspect-ratio:1;
+                background:var(--border-medium);
+                border:1px solid var(--border-dark-alpha-2);
+                border-radius:50px;
+                cursor:pointer;
+                font-weight:900;
+                font-size:1.1rem;
+                text-align:center;
+                padding:10px;
+                color:var(--text-primary);
+                letter-spacing:-0.3px;
+                word-break:break-word;
+                transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
+                touch-action: manipulation;
+                user-select: none;
+            }
+
+            .answer-btn.small{
+                font-size:1rem;
+            }
+
+            .answer-btn.pressed{
+                transform: scale(0.95);
+            }
+
+            #q4a:checked + .answer-btn,
+            #q4b:checked + .answer-btn,
+            #q4c:checked + .answer-btn,
+            #q4d:checked + .answer-btn,
+            #q4e:checked + .answer-btn{
+                background: var(--button-bg) !important;
+                color: var(--button-text) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                outline: 2px dashed rgba(255, 255, 255, 0.645);
+                outline-offset: 2px;
+                transform: scale(0.95);
+            }
+            </style>
+            <script>
+            document.querySelectorAll('.answer-btn').forEach((btn) => {
+                btn.addEventListener('pointerdown', () => {
+                btn.classList.add('pressed');
+                });
+
+                const removePressed = () => btn.classList.remove('pressed');
+
+                btn.addEventListener('pointerup', removePressed);
+                btn.addEventListener('pointerleave', removePressed);
+                btn.addEventListener('pointercancel', removePressed);
+            });
+            </script>
+            <style>
+                #genreQ input[type="checkbox"] {
+                    display: none;
+                }
+
+                #genreQ label {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    aspect-ratio: 1;
+                    background: var(--border-medium, #e8e8e8);
+                    border: 1px solid var(--border-dark-alpha-2, rgba(0,0,0,0.12));
+                    border-radius: 50px;
+                    cursor: pointer;
+                    font-weight: 900;
+                    font-size: 1.1rem;
+                    text-align: center;
+                    padding: 10px;
+                    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, outline 0.2s ease;
+                    color: var(--text-primary, #1a1a1a);
+                    letter-spacing: -0.3px;
+                    word-break: break-word;
+                    user-select: none;
+                    touch-action: manipulation;
+                }
+
+                #genreQ label.pressed {
+                    transform: scale(0.95);
+                }
+
+                #genreQ input[type="checkbox"]:checked + label {
+                    background: var(--button-bg) !important;
+                    color: var(--button-text) !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                    outline: 2px dashed rgba(255, 255, 255, 0.645);
+                    outline-offset: 2px;
+                    transform: scale(0.95);
+                }
+
+                #genreQ label:hover {
+                    border-color: var(--text-secondary, #888);
+                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                }
+            </style>
+
+            <div class="question" style="overflow-y: auto; -webkit-overflow-scrolling: touch;">
+                <h1>What kind of movies do you like? <span style="font-size:14px;color:var(--text-secondary);">(pick up to 3)</span></h1>
+
+                <div id="genreQ" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 360px; margin: 0 auto; padding: 0px; margin-top: 70px; margin-bottom: 70px;">
+                    <input type="checkbox" id="q10a" name="q10" value="psychological_thriller">
+                    <label for="q10a">Psychological /<br>Thriller 🧠</label>
+
+                    <input type="checkbox" id="q10b" name="q10" value="action">
+                    <label for="q10b">Action 💥</label>
+
+                    <input type="checkbox" id="q10c" name="q10" value="horror">
+                    <label for="q10c">Horror 👻</label>
+
+                    <input type="checkbox" id="q10d" name="q10" value="romantic_drama">
+                    <label for="q10d">Romantic<br>Drama 💕</label>
+
+                    <input type="checkbox" id="q10e" name="q10" value="romantic_comedy">
+                    <label for="q10e">Romantic<br>Comedy 😍</label>
+
+                    <input type="checkbox" id="q10f" name="q10" value="fantasy">
+                    <label for="q10f">Fantasy 🧙</label>
+
+                    <input type="checkbox" id="q10g" name="q10" value="science_fiction">
+                    <label for="q10g" style="border-radius: 42px;">Science<br>Fiction 🛸</label>
+
+                    <input type="checkbox" id="q10h" name="q10" value="superheroes">
+                    <label for="q10h" style="border-radius: 42px;">Superheroes 🦸</label>
+
+                    <input type="checkbox" id="q10i" name="q10" value="comedy">
+                    <label for="q10i" style="border-radius: 42px;">Comedy 🤣</label>
+
+                    <input type="checkbox" id="q10j" name="q10" value="melancholic">
+                    <label for="q10j" style="border-radius: 42px;">Melancholic 🌧️</label>
+
+                    <input type="checkbox" id="q10k" name="q10" value="crime_detective">
+                    <label for="q10k" style="border-radius: 42px;">Crime /<br>Detective 🕵️</label>
                 </div>
             </div>
-            <div class="question">
-                <h1>What kind of movies do you like? <span style="font-size:14px;color:var(--text-secondary)">(pick up
-                        to 3)</span></h1>
-                <div class="q-yn" id="genreQ">
-                    <input type="checkbox" id="q10a" name="q10" value="psychological_thriller"><label
-                        for="q10a">Psychological / Thriller</label>
-                    <input type="checkbox" id="q10b" name="q10" value="action"><label for="q10b">Action</label>
-                    <input type="checkbox" id="q10c" name="q10" value="horror"><label for="q10c">Horror</label>
-                    <input type="checkbox" id="q10d" name="q10" value="romantic_drama"><label for="q10d">Romantic
-                        Drama</label>
-                    <input type="checkbox" id="q10e" name="q10" value="romantic_comedy"><label for="q10e">Romantic
-                        Comedy</label>
-                    <input type="checkbox" id="q10f" name="q10" value="fantasy"><label for="q10f">Fantasy</label>
-                    <input type="checkbox" id="q10g" name="q10" value="science_fiction"><label for="q10g">Science
-                        Fiction</label>
-                    <input type="checkbox" id="q10h" name="q10" value="superheroes"><label
-                        for="q10h">Superheroes</label>
-                    <input type="checkbox" id="q10i" name="q10" value="comedy"><label for="q10i">Comedy</label>
-                    <input type="checkbox" id="q10j" name="q10" value="melancholic"><label
-                        for="q10j">Melancholic</label>
-                    <input type="checkbox" id="q10k" name="q10" value="crime_detective"><label for="q10k">Crime /
-                        Detective</label>
-                </div>
-            </div>
-            <div class="question">
-                <h1>Which streaming platforms do you use? <span style="font-size:14px;color:var(--text-secondary)">(pick
-                        all that apply)</span></h1>
-                <div class="q-yn" id="platformQ">
-                    <input type="checkbox" id="q11a" name="q11" value="netflix"><label for="q11a"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-                            class="streaming-logo" alt="Netflix">Netflix</label>
-                    <input type="checkbox" id="q11b" name="q11" value="disney_plus"><label for="q11b"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
-                            class="streaming-logo" alt="Disney+">Disney+</label>
-                    <input type="checkbox" id="q11c" name="q11" value="showtime"><label for="q11c"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg"
-                            class="streaming-logo" alt="Showtime">Showtime</label>
-                    <input type="checkbox" id="q11d" name="q11" value="prime_video"><label for="q11d"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png"
-                            class="streaming-logo" alt="Prime Video">Prime Video</label>
-                    <input type="checkbox" id="q11e" name="q11" value="hbo_max"><label for="q11e"><img
-                            src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg"
-                            class="streaming-logo" alt="HBO Max">HBO Max</label>
-                    <input type="checkbox" id="q11f" name="q11" value="apple_tv"><label for="q11f">Apple TV+</label>
-                    <input type="checkbox" id="q11g" name="q11" value="paramount_plus"><label
-                        for="q11g">Paramount+</label>
-                    <input type="checkbox" id="q11h" name="q11" value="other"><label for="q11h">Other</label>
+
+            <script>
+                document.querySelectorAll('#genreQ label').forEach((btn) => {
+                    btn.addEventListener('pointerdown', () => {
+                        btn.classList.add('pressed');
+                    });
+
+                    const release = () => {
+                        btn.classList.remove('pressed');
+                    };
+
+                    btn.addEventListener('pointerup', release);
+                    btn.addEventListener('pointerleave', release);
+                    btn.addEventListener('pointercancel', release);
+                });
+            </script>
+            <style>
+                #platformQ input[type="checkbox"] {
+                    display: none;
+                }
+
+                #platformQ input[type="checkbox"]:checked + label {
+                    background: var(--button-bg) !important;
+                    color: var(--button-text) !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                    outline: 2px dashed rgba(255, 255, 255, 0.645);
+                    outline-offset: 2px;
+                    transform: scale(0.95);
+                }
+
+                #platformQ label {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    aspect-ratio: 1;
+                    background: var(--border-medium, #e8e8e8);
+                    border: 1px solid var(--border-dark-alpha-2, rgba(0,0,0,0.12));
+                    border-radius: 50px;
+                    cursor: pointer;
+                    font-weight: 900;
+                    font-size: 1.1rem;
+                    text-align: center;
+                    padding: 10px;
+                    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, outline 0.2s ease;
+                    color: var(--text-primary, #1a1a1a);
+                    letter-spacing: -0.3px;
+                    word-break: break-word;
+                    user-select: none;
+                    gap: 4px;
+                    touch-action: manipulation;
+                }
+
+                #platformQ label.pressed {
+                    transform: scale(0.95);
+                }
+
+                #platformQ label img.streaming-logo {
+                    max-height: 45px;
+                    width: auto;
+                    max-width: 80%;
+                    object-fit: contain;
+                    display: block;
+                }
+
+                #platformQ label.other-label {
+                    font-size: 1.3rem;
+                    font-weight: 900;
+                    background: var(--border-medium, #e8e8e8);
+                }
+
+                #platformQ input[type="checkbox"]:checked + label.other-label {
+                    background: var(--button-bg) !important;
+                    color: var(--button-text) !important;
+                }
+            </style>
+            <div class="question" style="overflow-y: auto; -webkit-overflow-scrolling: touch;">
+                <h1>Which streaming platforms do you use? <span style="font-size:14px;color:var(--text-secondary);">(pick all that apply)</span></h1>
+                <div id="platformQ" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 360px; margin: 0 auto; padding: 0px; margin-top: 60px; margin-bottom: 70px;">
+                    <input type="checkbox" id="q11a" name="q11" value="netflix">
+                    <label for="q11a">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="streaming-logo" alt="Netflix">
+                    </label>
+
+                    <input type="checkbox" id="q11b" name="q11" value="disney_plus">
+                    <label for="q11b">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" class="streaming-logo" alt="Disney+">
+                    </label>
+
+                    <input type="checkbox" id="q11c" name="q11" value="showtime">
+                    <label for="q11c">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg" class="streaming-logo" alt="Showtime">
+                    </label>
+
+                    <input type="checkbox" id="q11d" name="q11" value="prime_video">
+                    <label for="q11d">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" class="streaming-logo" alt="Prime Video">
+                    </label>
+
+                    <input type="checkbox" id="q11e" name="q11" value="hbo_max">
+                    <label for="q11e">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg" class="streaming-logo" alt="HBO Max">
+                    </label>
+
+                    <input type="checkbox" id="q11f" name="q11" value="apple_tv">
+                    <label for="q11f">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Apple_TV_logo.svg" class="streaming-logo" alt="Apple TV+">
+                    </label>
+
+                    <input type="checkbox" id="q11g" name="q11" value="paramount_plus">
+                    <label for="q11g">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Paramount%2B_logo.svg" class="streaming-logo" alt="Paramount+">
+                    </label>
+
+                    <input type="checkbox" id="q11h" name="q11" value="other">
+                    <label for="q11h" class="other-label">Other</label>
                 </div>
             </div>
         </div>
+        <script>
+            document.querySelectorAll('#platformQ label').forEach((btn) => {
+                btn.addEventListener('pointerdown', () => {
+                    btn.classList.add('pressed');
+                });
+
+                const release = () => btn.classList.remove('pressed');
+
+                btn.addEventListener('pointerup', release);
+                btn.addEventListener('pointerleave', release);
+                btn.addEventListener('pointercancel', release);
+            });
+        </script>
         <button class="next" onclick="nextQuestion()"><span>Next</span></button>
     </div>
     <div id="home" class="view">
