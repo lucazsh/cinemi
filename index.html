@@ -505,7 +505,13 @@
 
             color: var(--text-primary);
         }
-
+        #setup {
+            pointer-events: none !important;
+        }
+        #setup.active {
+            pointer-events: auto !important;
+            opacity: 1;
+        }
         .sp svg {
             fill: #606060;
         }
