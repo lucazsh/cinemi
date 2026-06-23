@@ -7584,11 +7584,67 @@
                 var inp = document.getElementById('tm-search');
                 var res = document.getElementById('tm-results');
                 var sel = document.getElementById('tm-selected');
+                var isAnimating = false;
+                var pendingResults = null;
+
+                var style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideMorphIn {
+                        0% { opacity:0; transform:translateX(40px) scale(0.85); }
+                        60% { opacity:1; transform:translateX(-4px) scale(1.02); }
+                        100% { opacity:1; transform:translateX(0) scale(1); }
+                    }
+                    @keyframes slideMorphOut {
+                        0% { opacity:1; transform:translateX(0) scale(1); }
+                        100% { opacity:0; transform:translateX(40px) scale(0.85); }
+                    }
+                    @keyframes resultMorphIn {
+                        0% { opacity:0; transform:translateY(28px) scale(0.92); }
+                        60% { opacity:1; transform:translateY(-3px) scale(1.01); }
+                        100% { opacity:1; transform:translateY(0) scale(1); }
+                    }
+                    @keyframes resultMorphOut {
+                        0% { opacity:1; transform:translateY(0) scale(1); }
+                        100% { opacity:0; transform:translateY(-20px) scale(0.92); }
+                    }
+                    .tm-selected-item {
+                        animation: slideMorphIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                    }
+                    .tm-selected-item-removing {
+                        animation: slideMorphOut 0.3s cubic-bezier(0.34, 0.34, 0.64, 1) forwards;
+                    }
+                    .tm-result-item {
+                        animation: resultMorphIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                        opacity:0;
+                    }
+                    .tm-result-item-removing {
+                        animation: resultMorphOut 0.25s cubic-bezier(0.34, 0.34, 0.64, 1) forwards;
+                    }
+                    #tm-selected {
+                        transition: min-height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), gap 0.3s ease;
+                        min-height:0;
+                    }
+                    #tm-selected:not(:empty) {
+                        min-height:94px;
+                    }
+                    #tm-results {
+                        transition: min-height 0.25s ease;
+                        min-height:0;
+                    }
+                    .tm-results-loading {
+                        opacity:0.6;
+                        transition: opacity 0.2s;
+                    }
+                `;
+                document.head.appendChild(style);
 
                 function render() {
-                    sel.innerHTML = '';
+                    var items = sel.querySelectorAll('.tm-selected-item, .tm-selected-item-removing');
+                    items.forEach(function(el){ el.remove(); });
+                    var fragment = document.createDocumentFragment();
                     selected.forEach(function(m, i) {
                         var w = document.createElement('div');
+                        w.className = 'tm-selected-item';
                         w.style.cssText = 'position:relative;flex-shrink:0;padding:8px 10px 0 0;';
                         var img = document.createElement('img');
                         img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
@@ -7596,12 +7652,34 @@
                         var x = document.createElement('div');
                         x.classList.add('c-set');
                         x.style.cssText = 'position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--text-primary);border-radius:6.67px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
-                        x.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>`;
-                        x.onclick = function(){ selected.splice(i,1); sync(); render(); renderResults(inp.value); };
+                        x.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>';
+                        x.onclick = function(e){
+                            e.stopPropagation();
+                            var idx = selected.indexOf(m);
+                            if(idx === -1) return;
+                            var elToRemove = this.parentElement;
+                            elToRemove.className = 'tm-selected-item-removing';
+                            elToRemove.style.animation = 'none';
+                            void elToRemove.offsetHeight;
+                            elToRemove.style.animation = '';
+                            setTimeout(function(){
+                                selected.splice(idx, 1);
+                                sync();
+                                render();
+                                var q = inp.value;
+                                if(q && q.length >= 2) renderResults(q);
+                            }, 300);
+                        };
                         w.appendChild(img);
                         w.appendChild(x);
-                        sel.appendChild(w);
+                        fragment.appendChild(w);
                     });
+                    sel.appendChild(fragment);
+                    if(selected.length > 0) {
+                        sel.style.minHeight = '94px';
+                    } else {
+                        sel.style.minHeight = '0';
+                    }
                 }
 
                 function sync(){
@@ -7609,21 +7687,36 @@
                 }
 
                 function renderResults(q){
-                    res.innerHTML = '';
-                    if(!q || q.length < 2) return;
+                    if(!q || q.length < 2) {
+                        res.innerHTML = '';
+                        res.style.minHeight = '0';
+                        return;
+                    }
                     clearTimeout(timer);
+                    res.classList.add('tm-results-loading');
                     timer = setTimeout(function(){
-                        res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;">Searching...</div>';
+                        res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">Searching...</div>';
+                        res.style.minHeight = '80px';
                         fetch(baseUrl + '/api/tmdb/search/multi?query=' + encodeURIComponent(q), { headers: ngrokHeaders })
                             .then(function(r){ return r.json(); })
                             .then(function(data){
-                                res.innerHTML = '';
+                                res.classList.remove('tm-results-loading');
                                 var valid = (data.results || []).filter(function(m){ return m.poster_path; }).slice(0, 20);
-                                if(!valid.length){ res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;">No results.</div>'; return; }
-                                valid.forEach(function(m){
+                                if(!valid.length){
+                                    res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">No results.</div>';
+                                    res.style.minHeight = '60px';
+                                    return;
+                                }
+                                var oldCards = res.querySelectorAll('.tm-result-item');
+                                var oldCount = oldCards.length;
+                                var newFragment = document.createDocumentFragment();
+                                var wrapper = document.createElement('div');
+                                wrapper.style.cssText = 'display:contents;';
+                                valid.forEach(function(m, index){
                                     var alreadySelected = selected.some(function(s){ return s.id === m.id; });
                                     var card = document.createElement('div');
-                                    card.style.cssText = 'cursor:pointer;border-radius:23px;overflow:hidden;border:2px solid ' + (alreadySelected ? 'var(--text-primary)' : 'var(--border-light)') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (alreadySelected ? '0.5' : '1') + ';';
+                                    card.className = 'tm-result-item';
+                                    card.style.cssText = 'cursor:pointer;border-radius:23px;overflow:hidden;border:2px solid ' + (alreadySelected ? 'var(--text-primary)' : 'var(--border-light)') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (alreadySelected ? '0.5' : '1') + ';animation-delay:' + (Math.min(index, 8) * 45) + 'ms;';
                                     var img = document.createElement('img');
                                     img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
                                     img.style.cssText = 'width:100%;aspect-ratio:2/3;object-fit:cover;display:block;';
@@ -7636,14 +7729,78 @@
                                         render();
                                         renderResults(inp.value);
                                     };
-                                    res.appendChild(card);
+                                    wrapper.appendChild(card);
                                 });
+                                newFragment.appendChild(wrapper);
+                                if(oldCount > 0 && valid.length > 0) {
+                                    var oldItems = res.querySelectorAll('.tm-result-item');
+                                    oldItems.forEach(function(el, idx){
+                                        el.className = 'tm-result-item-removing';
+                                        el.style.animationDelay = (Math.min(idx, 8) * 30) + 'ms';
+                                    });
+                                    setTimeout(function(){
+                                        res.innerHTML = '';
+                                        res.appendChild(newFragment);
+                                        res.style.minHeight = 'auto';
+                                        var cards = res.querySelectorAll('.tm-result-item');
+                                        cards.forEach(function(c){
+                                            c.style.animation = 'none';
+                                            void c.offsetHeight;
+                                            c.style.animation = '';
+                                        });
+                                    }, 280);
+                                } else {
+                                    res.innerHTML = '';
+                                    res.appendChild(newFragment);
+                                    res.style.minHeight = 'auto';
+                                    var cards = res.querySelectorAll('.tm-result-item');
+                                    cards.forEach(function(c){
+                                        c.style.animation = 'none';
+                                        void c.offsetHeight;
+                                        c.style.animation = '';
+                                    });
+                                }
                             })
-                            .catch(function(){ res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;">Error.</div>'; });
+                            .catch(function(){
+                                res.classList.remove('tm-results-loading');
+                                res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">Error.</div>';
+                                res.style.minHeight = '60px';
+                            });
                     }, 380);
                 }
 
-                inp.addEventListener('input', function(){ renderResults(this.value); });
+                inp.addEventListener('input', function(){ 
+                    renderResults(this.value); 
+                });
+
+                var origRender = render;
+                render = function(){
+                    origRender();
+                };
+
+                render();
+
+                var origRenderResults = renderResults;
+                renderResults = function(q){
+                    origRenderResults(q);
+                };
+
+                var observer = new MutationObserver(function(){
+                    var val = document.getElementById('tm-res').value;
+                    try {
+                        var parsed = JSON.parse(val);
+                        if(Array.isArray(parsed) && parsed.length !== selected.length) {
+                            selected = parsed.map(function(item){ return { id:item.id, title:item.title, poster_path:item.poster_path }; });
+                            render();
+                        }
+                    } catch(e){}
+                });
+                var tmRes = document.getElementById('tm-res');
+                if(tmRes) observer.observe(tmRes, { attributes:true, attributeFilter:['value'] });
+
+                window.__tmMorphCleanup = function(){
+                    observer.disconnect();
+                };
             })();
             </script>
         </div>
