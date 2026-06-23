@@ -7563,15 +7563,20 @@
             <div class="question" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
                 <h1>Pick your top 3 movies<span style="font-size:14px;color:var(--text-secondary);margin-left:4px;"> (or more)</span></h1>
                 <div style="margin-top:20px;width:100%;max-width:360px;">
-                    <div style="display:flex;align-items:center;gap:10px;background:var(--border-medium);border:1.5px solid var(--border-dark-alpha-2);border-radius:15.6px;padding:10px 14px;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;background:var(--border-medium);border:1.5px solid var(--border-dark-alpha-2);border-radius:15.6px;padding:10px 14px;margin-bottom:4px;">
                         <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M375.03-305q-112.74 0-192.39-79.7Q103-464.41 103-577.2q0-112.8 79.7-192.3Q262.41-849 375.2-849q112.8 0 192.3 79.64Q647-689.71 647-576.97q0 43.39-10 78.18Q627-464 609-435l204 205q19 20 19 44.48 0 24.48-20 44.52-19.8 19-44.9 19-25.1 0-45.1-19L520.47-343q-29.47 17-66.26 27.5-36.79 10.5-79.18 10.5Zm-.44-128q61.59 0 103-41T519-576.59q0-61.59-41.41-103t-103-41.41Q313-721 272-679.59t-41 103Q231-515 272-474t102.59 41Z"/></svg>
                         <input id="tm-search" type="search" placeholder="Search a movie..." autocomplete="off" style="flex:1;background:none;border:none;outline:none;font-size:15px;color:var(--text-primary);font-family:inherit;">
                     </div>
-                    <div id="tm-selected" style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;"></div>
-                    <div id="tm-results" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-height:35vh;overflow-y:auto;scrollbar-width:none;"></div>
+                    <div id="tm-selected" style="display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;"></div>
+                    <div id="tm-results" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-height:65vh;overflow-y:auto;scrollbar-width:none;"></div>
                 </div>
                 <input type="hidden" id="tm-res" value="[]">
             </div>
+            <style>
+                .c-set svg {
+                    fill: black;
+                }
+            </style>
             <script>
             (function(){
                 var selected = [];
@@ -7584,13 +7589,14 @@
                     sel.innerHTML = '';
                     selected.forEach(function(m, i) {
                         var w = document.createElement('div');
-                        w.style.cssText = 'position:relative;flex-shrink:0;';
+                        w.style.cssText = 'position:relative;flex-shrink:0;padding:8px 10px 0 0;';
                         var img = document.createElement('img');
                         img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
-                        img.style.cssText = 'width:60px;height:88px;object-fit:cover;border-radius:10px;display:block;border:2px solid var(--text-primary);';
+                        img.style.cssText = 'width:60px;height:88px;object-fit:cover;border-radius:12px;display:block;border:2px solid var(--text-primary);';
                         var x = document.createElement('div');
-                        x.style.cssText = 'position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:var(--text-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
-                        x.textContent = '×';
+                        x.classList.add('c-set');
+                        x.style.cssText = 'position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--text-primary);border-radius:6.67px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
+                        x.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>`;
                         x.onclick = function(){ selected.splice(i,1); sync(); render(); renderResults(inp.value); };
                         w.appendChild(img);
                         w.appendChild(x);
@@ -7612,19 +7618,19 @@
                             .then(function(r){ return r.json(); })
                             .then(function(data){
                                 res.innerHTML = '';
-                                var valid = (data.results || []).filter(function(m){ return m.poster_path; }).slice(0, 9);
+                                var valid = (data.results || []).filter(function(m){ return m.poster_path; }).slice(0, 20);
                                 if(!valid.length){ res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;">No results.</div>'; return; }
                                 valid.forEach(function(m){
                                     var alreadySelected = selected.some(function(s){ return s.id === m.id; });
                                     var card = document.createElement('div');
-                                    card.style.cssText = 'cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid ' + (alreadySelected ? 'var(--text-primary)' : 'transparent') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (alreadySelected ? '0.5' : '1') + ';';
+                                    card.style.cssText = 'cursor:pointer;border-radius:23px;overflow:hidden;border:2px solid ' + (alreadySelected ? 'var(--text-primary)' : 'var(--border-light)') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (alreadySelected ? '0.5' : '1') + ';';
                                     var img = document.createElement('img');
                                     img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
                                     img.style.cssText = 'width:100%;aspect-ratio:2/3;object-fit:cover;display:block;';
                                     card.appendChild(img);
                                     card.onclick = function(){
                                         if(selected.some(function(s){ return s.id === m.id; })) return;
-                                        if(selected.length >= 3) return;
+                                        if(selected.length >= 20) return;
                                         selected.push(m);
                                         sync();
                                         render();
