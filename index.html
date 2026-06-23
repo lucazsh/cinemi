@@ -7585,6 +7585,7 @@
                 var res = document.getElementById('tm-results');
                 var sel = document.getElementById('tm-selected');
                 var elMap = new Map();
+                var currentResults = [];
 
                 var style = document.createElement('style');
                 style.textContent = `
@@ -7592,26 +7593,13 @@
                         max-height: 0;
                         opacity: 0;
                         overflow: hidden;
-                        transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                        transform: translateY(-20px) scale(0.9);
+                        transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, margin 0.3s ease;
+                        margin-bottom: 0;
                     }
                     #tm-selected.active {
                         max-height: 300px;
                         opacity: 1;
-                        transform: translateY(0) scale(1);
-                    }
-                    #tm-results {
-                        max-height: 65vh;
-                        opacity: 1;
-                        overflow-y: auto;
-                        transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                        transform: translateY(0) scale(1);
-                    }
-                    #tm-results.hidden {
-                        max-height: 0;
-                        opacity: 0;
-                        overflow: hidden;
-                        transform: translateY(20px) scale(0.9);
+                        margin-bottom: 12px;
                     }
                     .tm-selected-item {
                         animation: slideMorphIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -7647,7 +7635,6 @@
                 function updateVisibility(){
                     var has = selected.length > 0;
                     sel.classList.toggle('active', has);
-                    res.classList.toggle('hidden', has);
                 }
 
                 function updateResultStyles(){
@@ -7717,22 +7704,19 @@
                 function renderResults(q){
                     if(!q || q.length < 2) {
                         res.innerHTML = '';
-                        res.style.minHeight = '0';
+                        currentResults = [];
                         return;
                     }
                     clearTimeout(timer);
-                    res.classList.add('tm-results-loading');
                     timer = setTimeout(function(){
                         res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">Searching...</div>';
-                        res.style.minHeight = '80px';
                         fetch(baseUrl + '/api/tmdb/search/multi?query=' + encodeURIComponent(q), { headers: ngrokHeaders })
                             .then(function(r){ return r.json(); })
                             .then(function(data){
-                                res.classList.remove('tm-results-loading');
                                 var valid = (data.results || []).filter(function(m){ return m.poster_path; }).slice(0, 20);
+                                currentResults = valid;
                                 if(!valid.length){
                                     res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">No results.</div>';
-                                    res.style.minHeight = '60px';
                                     return;
                                 }
                                 res.innerHTML = '';
@@ -7753,7 +7737,6 @@
                                     fragment.appendChild(card);
                                 });
                                 res.appendChild(fragment);
-                                res.style.minHeight = 'auto';
                                 var cards = res.querySelectorAll('.tm-result-item');
                                 cards.forEach(function(c){
                                     c.style.animation = 'none';
@@ -7763,9 +7746,7 @@
                                 updateResultStyles();
                             })
                             .catch(function(){
-                                res.classList.remove('tm-results-loading');
                                 res.innerHTML = '<div style="grid-column:1/-1;padding:10px;color:var(--text-secondary);font-size:13px;text-align:center;">Error.</div>';
-                                res.style.minHeight = '60px';
                             });
                     }, 380);
                 }
@@ -7801,6 +7782,9 @@
                             });
                             sync();
                             updateVisibility();
+                            if(selected.length > 0) {
+                                sel.classList.add('active');
+                            }
                         }
                     } catch(e){}
                 }
