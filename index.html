@@ -7584,11 +7584,45 @@
                 var inp = document.getElementById('tm-search');
                 var res = document.getElementById('tm-results');
                 var sel = document.getElementById('tm-selected');
-                var isAnimating = false;
-                var pendingResults = null;
+                var elMap = new Map();
 
                 var style = document.createElement('style');
                 style.textContent = `
+                    #tm-selected {
+                        max-height: 0;
+                        opacity: 0;
+                        overflow: hidden;
+                        transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        transform: translateY(-20px) scale(0.9);
+                    }
+                    #tm-selected.active {
+                        max-height: 300px;
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                    #tm-results {
+                        max-height: 65vh;
+                        opacity: 1;
+                        overflow-y: auto;
+                        transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        transform: translateY(0) scale(1);
+                    }
+                    #tm-results.hidden {
+                        max-height: 0;
+                        opacity: 0;
+                        overflow: hidden;
+                        transform: translateY(20px) scale(0.9);
+                    }
+                    .tm-selected-item {
+                        animation: slideMorphIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                    }
+                    .tm-selected-item-removing {
+                        animation: slideMorphOut 0.3s cubic-bezier(0.34, 0.34, 0.64, 1) forwards;
+                    }
+                    .tm-result-item {
+                        animation: resultMorphIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                        opacity:0;
+                    }
                     @keyframes slideMorphIn {
                         0% { opacity:0; transform:translateX(40px) scale(0.85); }
                         60% { opacity:1; transform:translateX(-4px) scale(1.02); }
@@ -7603,87 +7637,81 @@
                         60% { opacity:1; transform:translateY(-3px) scale(1.01); }
                         100% { opacity:1; transform:translateY(0) scale(1); }
                     }
-                    @keyframes resultMorphOut {
-                        0% { opacity:1; transform:translateY(0) scale(1); }
-                        100% { opacity:0; transform:translateY(-20px) scale(0.92); }
-                    }
-                    .tm-selected-item {
-                        animation: slideMorphIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-                    }
-                    .tm-selected-item-removing {
-                        animation: slideMorphOut 0.3s cubic-bezier(0.34, 0.34, 0.64, 1) forwards;
-                    }
-                    .tm-result-item {
-                        animation: resultMorphIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-                        opacity:0;
-                    }
-                    .tm-result-item-removing {
-                        animation: resultMorphOut 0.25s cubic-bezier(0.34, 0.34, 0.64, 1) forwards;
-                    }
-                    #tm-selected {
-                        transition: min-height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), gap 0.3s ease;
-                        min-height:0;
-                    }
-                    #tm-selected:not(:empty) {
-                        min-height:94px;
-                    }
-                    #tm-results {
-                        transition: min-height 0.25s ease;
-                        min-height:0;
-                    }
-                    .tm-results-loading {
-                        opacity:0.6;
-                        transition: opacity 0.2s;
-                    }
                 `;
                 document.head.appendChild(style);
 
-                function render() {
-                    var items = sel.querySelectorAll('.tm-selected-item, .tm-selected-item-removing');
-                    items.forEach(function(el){ el.remove(); });
-                    var fragment = document.createDocumentFragment();
-                    selected.forEach(function(m, i) {
-                        var w = document.createElement('div');
-                        w.className = 'tm-selected-item';
-                        w.style.cssText = 'position:relative;flex-shrink:0;padding:8px 10px 0 0;';
-                        var img = document.createElement('img');
-                        img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
-                        img.style.cssText = 'width:60px;height:88px;object-fit:cover;border-radius:12px;display:block;border:2px solid var(--text-primary);';
-                        var x = document.createElement('div');
-                        x.classList.add('c-set');
-                        x.style.cssText = 'position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--text-primary);border-radius:6.67px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
-                        x.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>';
-                        x.onclick = function(e){
-                            e.stopPropagation();
-                            var idx = selected.indexOf(m);
-                            if(idx === -1) return;
-                            var elToRemove = this.parentElement;
-                            elToRemove.className = 'tm-selected-item-removing';
-                            elToRemove.style.animation = 'none';
-                            void elToRemove.offsetHeight;
-                            elToRemove.style.animation = '';
-                            setTimeout(function(){
-                                selected.splice(idx, 1);
-                                sync();
-                                render();
-                                var q = inp.value;
-                                if(q && q.length >= 2) renderResults(q);
-                            }, 300);
-                        };
-                        w.appendChild(img);
-                        w.appendChild(x);
-                        fragment.appendChild(w);
-                    });
-                    sel.appendChild(fragment);
-                    if(selected.length > 0) {
-                        sel.style.minHeight = '94px';
-                    } else {
-                        sel.style.minHeight = '0';
-                    }
-                }
-
                 function sync(){
                     document.getElementById('tm-res').value = JSON.stringify(selected.map(function(m){ return { id: m.id, title: m.title || m.name, poster_path: m.poster_path }; }));
+                }
+
+                function updateVisibility(){
+                    var has = selected.length > 0;
+                    sel.classList.toggle('active', has);
+                    res.classList.toggle('hidden', has);
+                }
+
+                function updateResultStyles(){
+                    var cards = res.querySelectorAll('.tm-result-item');
+                    cards.forEach(function(card){
+                        var id = parseInt(card.dataset.id);
+                        var isSel = selected.some(function(s){ return s.id === id; });
+                        card.style.borderColor = isSel ? 'var(--text-primary)' : 'var(--border-light)';
+                        card.style.opacity = isSel ? '0.5' : '1';
+                        card.style.cursor = isSel ? 'default' : 'pointer';
+                    });
+                }
+
+                function addItem(m){
+                    if(selected.some(function(s){ return s.id === m.id; })) return;
+                    if(selected.length >= 20) return;
+                    selected.push(m);
+
+                    var w = document.createElement('div');
+                    w.className = 'tm-selected-item';
+                    w.style.cssText = 'position:relative;flex-shrink:0;padding:8px 10px 0 0;';
+                    var img = document.createElement('img');
+                    img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
+                    img.style.cssText = 'width:60px;height:88px;object-fit:cover;border-radius:12px;display:block;border:2px solid var(--text-primary);';
+                    var x = document.createElement('div');
+                    x.classList.add('c-set');
+                    x.style.cssText = 'position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--text-primary);border-radius:6.67px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
+                    x.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>';
+                    x.onclick = function(e){
+                        e.stopPropagation();
+                        removeItem(m.id);
+                    };
+                    w.appendChild(img);
+                    w.appendChild(x);
+                    sel.appendChild(w);
+                    elMap.set(m.id, w);
+
+                    w.style.animation = 'none';
+                    void w.offsetHeight;
+                    w.style.animation = '';
+
+                    sync();
+                    updateVisibility();
+                    updateResultStyles();
+                }
+
+                function removeItem(id){
+                    var idx = selected.findIndex(function(s){ return s.id === id; });
+                    if(idx === -1) return;
+                    var el = elMap.get(id);
+                    if(el){
+                        el.className = 'tm-selected-item-removing';
+                        el.style.animation = 'none';
+                        void el.offsetHeight;
+                        el.style.animation = '';
+                        setTimeout(function(){
+                            if(el.parentNode) el.parentNode.removeChild(el);
+                            elMap.delete(id);
+                        }, 300);
+                    }
+                    selected.splice(idx, 1);
+                    sync();
+                    updateVisibility();
+                    updateResultStyles();
                 }
 
                 function renderResults(q){
@@ -7707,59 +7735,32 @@
                                     res.style.minHeight = '60px';
                                     return;
                                 }
-                                var oldCards = res.querySelectorAll('.tm-result-item');
-                                var oldCount = oldCards.length;
-                                var newFragment = document.createDocumentFragment();
-                                var wrapper = document.createElement('div');
-                                wrapper.style.cssText = 'display:contents;';
+                                res.innerHTML = '';
+                                var fragment = document.createDocumentFragment();
                                 valid.forEach(function(m, index){
-                                    var alreadySelected = selected.some(function(s){ return s.id === m.id; });
+                                    var already = selected.some(function(s){ return s.id === m.id; });
                                     var card = document.createElement('div');
                                     card.className = 'tm-result-item';
-                                    card.style.cssText = 'cursor:pointer;border-radius:23px;overflow:hidden;border:2px solid ' + (alreadySelected ? 'var(--text-primary)' : 'var(--border-light)') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (alreadySelected ? '0.5' : '1') + ';animation-delay:' + (Math.min(index, 8) * 45) + 'ms;';
+                                    card.dataset.id = m.id;
+                                    card.style.cssText = 'cursor:' + (already ? 'default' : 'pointer') + ';border-radius:23px;overflow:hidden;border:2px solid ' + (already ? 'var(--text-primary)' : 'var(--border-light)') + ';transition:border-color 0.15s,opacity 0.15s;opacity:' + (already ? '0.5' : '1') + ';animation-delay:' + (Math.min(index, 8) * 45) + 'ms;';
                                     var img = document.createElement('img');
                                     img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
                                     img.style.cssText = 'width:100%;aspect-ratio:2/3;object-fit:cover;display:block;';
                                     card.appendChild(img);
                                     card.onclick = function(){
-                                        if(selected.some(function(s){ return s.id === m.id; })) return;
-                                        if(selected.length >= 20) return;
-                                        selected.push(m);
-                                        sync();
-                                        render();
-                                        renderResults(inp.value);
+                                        addItem(m);
                                     };
-                                    wrapper.appendChild(card);
+                                    fragment.appendChild(card);
                                 });
-                                newFragment.appendChild(wrapper);
-                                if(oldCount > 0 && valid.length > 0) {
-                                    var oldItems = res.querySelectorAll('.tm-result-item');
-                                    oldItems.forEach(function(el, idx){
-                                        el.className = 'tm-result-item-removing';
-                                        el.style.animationDelay = (Math.min(idx, 8) * 30) + 'ms';
-                                    });
-                                    setTimeout(function(){
-                                        res.innerHTML = '';
-                                        res.appendChild(newFragment);
-                                        res.style.minHeight = 'auto';
-                                        var cards = res.querySelectorAll('.tm-result-item');
-                                        cards.forEach(function(c){
-                                            c.style.animation = 'none';
-                                            void c.offsetHeight;
-                                            c.style.animation = '';
-                                        });
-                                    }, 280);
-                                } else {
-                                    res.innerHTML = '';
-                                    res.appendChild(newFragment);
-                                    res.style.minHeight = 'auto';
-                                    var cards = res.querySelectorAll('.tm-result-item');
-                                    cards.forEach(function(c){
-                                        c.style.animation = 'none';
-                                        void c.offsetHeight;
-                                        c.style.animation = '';
-                                    });
-                                }
+                                res.appendChild(fragment);
+                                res.style.minHeight = 'auto';
+                                var cards = res.querySelectorAll('.tm-result-item');
+                                cards.forEach(function(c){
+                                    c.style.animation = 'none';
+                                    void c.offsetHeight;
+                                    c.style.animation = '';
+                                });
+                                updateResultStyles();
                             })
                             .catch(function(){
                                 res.classList.remove('tm-results-loading');
@@ -7769,37 +7770,47 @@
                     }, 380);
                 }
 
-                inp.addEventListener('input', function(){ 
-                    renderResults(this.value); 
-                });
-
-                var origRender = render;
-                render = function(){
-                    origRender();
-                };
-
-                render();
-
-                var origRenderResults = renderResults;
-                renderResults = function(q){
-                    origRenderResults(q);
-                };
-
-                var observer = new MutationObserver(function(){
-                    var val = document.getElementById('tm-res').value;
-                    try {
-                        var parsed = JSON.parse(val);
-                        if(Array.isArray(parsed) && parsed.length !== selected.length) {
-                            selected = parsed.map(function(item){ return { id:item.id, title:item.title, poster_path:item.poster_path }; });
-                            render();
+                var initialVal = document.getElementById('tm-res').value;
+                if(initialVal){
+                    try{
+                        var parsed = JSON.parse(initialVal);
+                        if(Array.isArray(parsed)){
+                            parsed.forEach(function(item){
+                                var m = { id: item.id, title: item.title, poster_path: item.poster_path };
+                                if(!selected.some(function(s){ return s.id === m.id; })){
+                                    selected.push(m);
+                                    var w = document.createElement('div');
+                                    w.className = 'tm-selected-item';
+                                    w.style.cssText = 'position:relative;flex-shrink:0;padding:8px 10px 0 0;';
+                                    var img = document.createElement('img');
+                                    img.src = 'https://image.tmdb.org/t/p/w200' + m.poster_path;
+                                    img.style.cssText = 'width:60px;height:88px;object-fit:cover;border-radius:12px;display:block;border:2px solid var(--text-primary);';
+                                    var x = document.createElement('div');
+                                    x.classList.add('c-set');
+                                    x.style.cssText = 'position:absolute;top:5px;right:5px;width:18px;height:18px;background:var(--text-primary);border-radius:6.67px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--bg-primary);font-weight:900;line-height:1;';
+                                    x.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m479.24-404.74-71.13 70.54q-17.5 16.2-37.64 16.58-20.14.38-37.8-16.58-16.95-17.35-16.95-38.01 0-20.66 16.95-38.09l71.31-69.73-71.31-70.34q-16.95-17.5-16.95-38.14t16.79-38.06q17.18-16.95 37.59-16.95 20.41 0 37.68 16.95l71.46 70.55 71.65-70.55q17.5-16.19 37.88-16.57 20.38-.38 37.8 16.57 15.71 16.15 15.71 37.29 0 21.15-15.71 38.58L555.26-480l71.31 69.61q16.95 17.66 16.95 38.05 0 20.39-16.95 37.97-16.39 15.89-37.15 15.51-20.77-.38-38.2-15.34l-71.98-70.54Z"/></svg>';
+                                    x.onclick = function(e){
+                                        e.stopPropagation();
+                                        removeItem(m.id);
+                                    };
+                                    w.appendChild(img);
+                                    w.appendChild(x);
+                                    sel.appendChild(w);
+                                    elMap.set(m.id, w);
+                                }
+                            });
+                            sync();
+                            updateVisibility();
                         }
                     } catch(e){}
-                });
-                var tmRes = document.getElementById('tm-res');
-                if(tmRes) observer.observe(tmRes, { attributes:true, attributeFilter:['value'] });
+                }
+
+                inp.addEventListener('input', function(){ renderResults(this.value); });
+
+                updateVisibility();
 
                 window.__tmMorphCleanup = function(){
-                    observer.disconnect();
+                    clearTimeout(timer);
                 };
             })();
             </script>
