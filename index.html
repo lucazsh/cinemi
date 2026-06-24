@@ -1125,7 +1125,7 @@
             position: relative;
             display: inline-block;
             overflow: hidden;
-            border-radius: 25px; /*15px;*/
+            border-radius: 25px;
             width: 100%;
             max-width: 460px;
             aspect-ratio: 2/2.5;
@@ -1135,6 +1135,25 @@
             cursor: pointer;
             background-color: #101114;
             z-index: 1;
+        }
+
+        .f-mov::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 85%;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(0, 0, 0, 0.3) 25%,
+                rgba(0, 0, 0, 0.6) 50%,
+                rgba(0, 0, 0, 0.85) 75%,
+                rgba(0, 0, 0, 0.95) 100%
+            );
+            z-index: 1;
+            pointer-events: none;
         }
 
         #fmov-ambient-a,
@@ -1178,18 +1197,6 @@
             mask-composite: intersect;*/
         }
 
-        .f-mov::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 80%;
-            background: linear-gradient(180deg, transparent 0%, #18191e 100%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
         .fmov-over {
             position: absolute;
             left: 0;
@@ -1199,8 +1206,6 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.0) 100%);
-            z-index: 2;
             color: #fff;
             box-sizing: border-box;
         }
