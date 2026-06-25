@@ -6716,10 +6716,73 @@
         .question.enter-from-left {
             opacity: 0;
         }
+        .pers-opt { 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            background: var(--iconbox-bg); 
+            border: 2px solid transparent; 
+            cursor: pointer; font-weight: 600; 
+            font-size: 14px; 
+            transition: all 0.15s; 
+            color: var(--text-primary); 
+        }
+        .pers-opt.active { 
+            border-color: var(--text-primary); 
+            background: var(--button-bg); 
+            color: var(--button-text); 
+        }
+        .pers-opt:active { 
+            transform: scale(0.95); 
+        }
+
+        #language-list .lang-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: transparent;
+            color: var(--text-primary);
+            position: relative;
+            user-select: none;
+        }
+        #language-list .lang-item:active {
+            transform: scale(0.96);
+        }
+        #language-list .lang-item.selected {
+            background: var(--button-bg) !important;
+            color: var(--button-text) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        #language-list .lang-item.selected .lang-name,
+        #language-list .lang-item.selected .lang-emoji,
+        #language-list .lang-item.selected .lang-check {
+            color: var(--button-text) !important;
+            fill: var(--button-text) !important;
+        }
+        #language-list .lang-item .lang-emoji {
+            font-size: 28px;
+            line-height: 1;
+        }
+        #language-list .lang-item .lang-name {
+            font-weight: 600;
+            font-size: 16px;
+            flex: 1;
+        }
+        #language-list .lang-item .lang-check {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #language-list .lang-item.selected .lang-check {
+            opacity: 1;
+            transform: scale(1);
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
-
 <body>
     <div id="pwa-install-overlay" style="display:none">
         <img src="/icons/icon-192.png" class="pwa-icon" alt="Cinemi">
@@ -8623,6 +8686,115 @@
                 <button id="apply-provider-btn" onclick="applyProvider()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply</button>
             </div>
         </div>
+        <div id="personality-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 11; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closePersonalitySettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">Personality</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Personality type</label>
+                    <div id="personality-type-options" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Teamwork (1 = Not at all, 5 = Love it)</label>
+                    <div id="teamwork-options" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Hanging out with friends</label>
+                    <div id="friends-options" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Adrenaline</label>
+                    <div id="adrenaline-options" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Favorite movie origin</label>
+                    <div id="origin-options" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                </div>
+                <button id="apply-personality-btn" onclick="applyPersonality()" style="width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply changes</button>
+            </div>
+        </div>
+        <div id="ai-memory-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 12; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closeAIMemorySettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">AI Memory</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">System instructions</label>
+                    <p style="font-size: 12px; color: var(--text-subtle); margin-bottom: 8px;">Customize how the AI responds to you.</p>
+                    <textarea id="ai-system-instructions" rows="4" placeholder="E.g. Always recommend horror movies, be sarcastic, etc." style="width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid var(--border-dark-alpha-2); background: var(--iconbox-bg); color: var(--text-primary); font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">AI Memories</label>
+                    <p style="font-size: 12px; color: var(--text-subtle); margin-bottom: 8px;">Things the AI remembers about you (empty for now).</p>
+                    <div id="ai-memories-list" style="background: var(--iconbox-bg); border-radius: 14px; padding: 20px; text-align: center; color: var(--text-subtle); font-size: 14px; border: 1.5px dashed var(--border-dark-alpha-2);">
+                        No memories yet.
+                    </div>
+                </div>
+                <button id="apply-ai-memory-btn" onclick="saveAIMemory()" style="width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Save instructions</button>
+            </div>
+        </div>
+        <div id="theme-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 13; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closeThemeSettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">Theme</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Choose your preferred appearance.</p>
+                <div style="display: flex; gap: 12px;">
+                    <div onclick="setTheme('light')" id="theme-opt-light" style="flex:1; padding: 24px; border-radius: 16px; background: var(--iconbox-bg); border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.15s;">
+                        <span style="font-size: 32px;"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M335-335q-60-60-60-145t60-145q60-60 145-60t145 60q60 60 60 145t-60 145q-60 60-145 60t-145-60ZM80-412q-28 0-48-20t-20-48q0-28 20-48t48-20h80q28 0 48 20t20 48q0 28-20 48t-48 20H80Zm720 0q-28 0-48-20t-20-48q0-28 20-48t48-20h80q28 0 48 20t20 48q0 28-20 48t-48 20h-80ZM432-752q-20-20-20-48v-80q0-28 20-48t48-20q28 0 48 20t20 48v80q0 28-20 48t-48 20q-28 0-48-20Zm0 720q-20-20-20-48v-80q0-28 20-48t48-20q28 0 48 20t20 48v80q0 28-20 48t-48 20q-28 0-48-20ZM207-658l-43-42q-21-19-20.5-47t20.5-49q19-21 47-21t48 21l43 43q20 19 19.5 46.5T302-659q-19 21-47 21.5T207-658Zm494 494-43-43q-20-19-20-46.5t20-47.5q19-21 47-20.5t48 20.5l43 41q21 19 20.5 47T796-164q-19 21-47 21t-48-21Zm-42-494q-21-19-20.5-47t20.5-48l41-43q19-21 47-20.5t49 20.5q21 19 21 47t-21 48l-43 43q-19 20-46.5 19.5T659-658ZM164-164q-21-19-21-47t21-48l43-43q19-20 46.5-20t47.5 20q21 19 20.5 47T301-207l-41 43q-19 21-47 20.5T164-164Z"/></svg></span>
+                        <div style="margin-top: 8px; font-weight: 700;">Light</div>
+                    </div>
+                    <div onclick="setTheme('dark')" id="theme-opt-dark" style="flex:1; padding: 24px; border-radius: 16px; background: var(--iconbox-bg); border: 2px solid transparent; cursor: pointer; text-align: center; transition: all 0.15s;">
+                        <span style="font-size: 32px;"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M481-100q-164 0-272.5-108T100-480q0-115 59-213.5T341-837q29-10 53-9t40 13q17 11 25.5 31.5T466-752q2 16 1 28.5t-1 22.5q0 99 70 168t170 69q12 0 25 .5t26 2.5q29-2 48.5 6t29.5 24q11 16 11.5 38t-9.5 51q-44 109-140 175.5T481-100Z"/></svg></span>
+                        <div style="margin-top: 8px; font-weight: 700;">Dark</div>
+                    </div>
+                </div>
+                <button onclick="closeThemeSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply</button>
+            </div>
+        </div>
+        <div id="notifications-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 14; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closeNotificationsSettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">Notifications</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Manage your notification preferences.</p>
+                <div id="notifications-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                <button onclick="saveNotificationSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Save</button>
+            </div>
+        </div>
+        <div id="language-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 15; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closeLanguageSettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">Language</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Select your preferred language.</p>
+                <div style="background: var(--settings); border-radius: 30px; overflow: hidden;">
+                    <div id="language-list" style="display: flex; flex-direction: column; gap: 2px; padding: 6px;"></div>
+                </div>
+                <button onclick="closeLanguageSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Apply</button>
+            </div>
+        </div>
         <div class="drag-pill"></div>
         <div class="st" style="margin-top: 20px;">
             <div class="p-user" style="margin-bottom: 34px; margin-top: 40px">
@@ -8643,16 +8815,31 @@
                         <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#666666"><path d="m440-375 167-108q25-15.86 25-43.93T607-571L440-679q-25-17-52.5-2.07Q360-666.13 360-635v216q0 31.13 27.5 46.07Q415-358 440-375ZM172-157q-57.12 0-96.56-39.44Q36-235.88 36-293v-457q0-57.13 39.44-96.56Q114.88-886 172-886h616q57.13 0 96.56 39.44Q924-807.13 924-750v457q0 57.12-39.44 96.56Q845.13-157 788-157H669v15q0 29-20.2 48.5T601-74H359q-27.6 0-47.8-19.5Q291-113 291-142v-15H172Z"/></svg>
                         Streaming services
                     </span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><defs><mask id="face-cutout-react-fab"><rect x="0" y="-960" width="960" height="960" fill="white" /><circle cx="840" cy="-800" r="160" fill="black" /><path d="M480-260q58 0 107-28t79-76q6-12-1-24t-21-12H316q-14 0-21 12t-1 24q30 48 79.5 76T480-260Z" fill="black" /><path d="M340-520q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm280 0q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Z" fill="black" /></mask></defs><rect x="80" y="-880" width="800" height="800" rx="240" mask="url(#face-cutout-react-fab)" /><path d="M800-760h-40q-17 0-28.5-11.5T720-800q0-17 11.5-28.5T760-840h40v-40q0-17 11.5-28.5T840-920q17 0 28.5 11.5T880-880v40h40q17 0 28.5 11.5T960-800q0 17-11.5 28.5T920-760h-40v40q0 17-11.5 28.5T840-680q-17 0-28.5-11.5T800-720v-40Z"/></svg>Personality</span>
-                    <span class="sp-wrap end" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>AI Memory</span>
+                    <span class="sp-wrap" id="not-t" onclick="openPersonalitySettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><defs><mask id="face-cutout-react-fab"><rect x="0" y="-960" width="960" height="960" fill="white" /><circle cx="840" cy="-800" r="160" fill="black" /><path d="M480-260q58 0 107-28t79-76q6-12-1-24t-21-12H316q-14 0-21 12t-1 24q30 48 79.5 76T480-260Z" fill="black" /><path d="M340-520q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm280 0q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Z" fill="black" /></mask></defs><rect x="80" y="-880" width="800" height="800" rx="240" mask="url(#face-cutout-react-fab)" /><path d="M800-760h-40q-17 0-28.5-11.5T720-800q0-17 11.5-28.5T760-840h40v-40q0-17 11.5-28.5T840-920q17 0 28.5 11.5T880-880v40h40q17 0 28.5 11.5T960-800q0 17-11.5 28.5T920-760h-40v40q0 17-11.5 28.5T840-680q-17 0-28.5-11.5T800-720v-40Z"/></svg>
+                        Personality
+                    </span>
+                    <span class="sp-wrap end" id="not-t" onclick="openAIMemorySettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>
+                        AI Memory
+                    </span>
                 </div>
             </div>
             <div class="st-app">
                 <span class="sub-s">APP SETTINGS</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80ZM260-440q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120-160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm200 0q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120 160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Z"/></svg>Theme</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#e3e3e3"><path d="M210-74q-57.12 0-96.56-39.44Q74-152.88 74-210v-540q0-57.13 39.44-96.56Q152.88-886 210-886h540q57.13 0 96.56 39.44Q886-807.13 886-750v540q0 57.12-39.44 96.56Q807.13-74 750-74H210Zm270.5-257q30.5 0 57-13t42.5-37q9.23-13.6 23.43-21.8Q617.64-411 635-411h115v-339H210v339h115q17.36 0 31.57 8.2 14.2 8.2 23.43 21.8 17.32 24.9 43.66 37.45Q450-331 480.5-331Z"/></svg>Notifications</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M307-69q-81-35-142-96T69-307q-35-81-35-173t35-173q35-81 96-142t142-96q81-35 173-35t173 35q81 35 142 96t96 142q35 81 35 173t-35 173q-35 81-96 142T653-69q-81 35-173 35T307-69Zm171-102q21-33 39.5-72t30.5-80H411q12 41 29 80t38 72Zm-103-17q-19-30-30.5-64.5T324-323H214q26 46 67.5 82.5T375-188Zm207 0q52-16 94.5-52.5T745-323H635q-9 36-21.5 70.5T582-188ZM179-404h129q-3-19-4.5-37.5T302-480q0-21 1.5-39t4.5-37H179q-4 18-6.5 36.5T170-480q0 20 2.5 39t6.5 37Zm213 0h175q3-19 3.5-37.5t.5-38.5q0-21-.5-39t-3.5-37H392q-3 19-4.5 37t-1.5 39q0 20 1.5 38.5T392-404Zm259 0h128q4-18 6.5-37t2.5-39q0-21-2.5-39.5T779-556H651q2 19 3 37t1 39q0 20-1 38.5t-3 37.5Zm-16-234h110q-26-46-68.5-82T582-772q19 30 31.5 64t21.5 70Zm-224 0h137q-10-40-28.5-78.5T478-791q-21 36-38 74.5T411-638Zm-197 0h110q9-36 20.5-70t30.5-64q-52 16-93.5 52T214-638Z"/></svg>Language</span>
+                    <span class="sp-wrap" onclick="openThemeSettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80ZM260-440q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120-160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm200 0q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120 160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Z"/></svg>
+                        Theme
+                    </span>
+                    <span class="sp-wrap" id="not-t" onclick="openNotificationsSettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#666666"><path d="M210-74q-57.12 0-96.56-39.44Q74-152.88 74-210v-540q0-57.13 39.44-96.56Q152.88-886 210-886h540q57.13 0 96.56 39.44Q886-807.13 886-750v540q0 57.12-39.44 96.56Q807.13-74 750-74H210Zm270.5-257q30.5 0 57-13t42.5-37q9.23-13.6 23.43-21.8Q617.64-411 635-411h115v-339H210v339h115q17.36 0 31.57 8.2 14.2 8.2 23.43 21.8 17.32 24.9 43.66 37.45Q450-331 480.5-331Z"/></svg>
+                        Notifications
+                    </span>
+                    <span class="sp-wrap" id="not-t" onclick="openLanguageSettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="M307-69q-81-35-142-96T69-307q-35-81-35-173t35-173q35-81 96-142t142-96q81-35 173-35t173 35q81 35 142 96t96 142q35 81 35 173t-35 173q-35 81-96 142T653-69q-81 35-173 35T307-69Zm171-102q21-33 39.5-72t30.5-80H411q12 41 29 80t38 72Zm-103-17q-19-30-30.5-64.5T324-323H214q26 46 67.5 82.5T375-188Zm207 0q52-16 94.5-52.5T745-323H635q-9 36-21.5 70.5T582-188ZM179-404h129q-3-19-4.5-37.5T302-480q0-21 1.5-39t4.5-37H179q-4 18-6.5 36.5T170-480q0 20 2.5 39t6.5 37Zm213 0h175q3-19 3.5-37.5t.5-38.5q0-21-.5-39t-3.5-37H392q-3 19-4.5 37t-1.5 39q0 20 1.5 38.5T392-404Zm259 0h128q4-18 6.5-37t2.5-39q0-21-2.5-39.5T779-556H651q2 19 3 37t1 39q0 20-1 38.5t-3 37.5Zm-16-234h110q-26-46-68.5-82T582-772q19 30 31.5 64t21.5 70Zm-224 0h137q-10-40-28.5-78.5T478-791q-21 36-38 74.5T411-638Zm-197 0h110q9-36 20.5-70t30.5-64q-52 16-93.5 52T214-638Z"/></svg>
+                        Language
+                    </span>
                     <span class="sp-wrap end" id="not-t" data-action="reset-localstorage"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M140-209q-27.45 0-46.73-20Q74-249 74-277.82q0-28.81 18.77-47.5Q111.55-344 140-344h472q28.45 0 47.72 19.43Q679-305.14 679-276.32q0 28.81-18.78 48.07Q641.45-209 612-209H140Zm104-215q-27.35 0-47.18-19.5Q177-463 177-491.75q0-28.74 19.32-48Q215.65-559 244-559h472q27.35 0 47.17 20Q783-519 783-490.25q0 28.74-19.33 47.5Q744.35-424 716-424H244Zm104-215q-28.45 0-47.73-19.5Q281-678 281-706.82q0-28.81 18.77-47.5Q318.55-773 348-773h472q27.45 0 46.72 19.43Q886-734.14 886-705.32q0 28.81-18.78 47.57Q848.45-639 820-639H348Z"/></svg>Clear app data</span>
                 </div>
             </div>
@@ -8710,6 +8897,212 @@
                 if (!provider) return;
                 localStorage.setItem('cinemi_streaming_provider', provider);
                 closeStreamingSettings();
+            }
+            function openPersonalitySettings() {
+                document.getElementById('personality-subsettings').style.transform = 'translateX(0)';
+                loadPersonalityData();
+            }
+            function closePersonalitySettings() {
+                document.getElementById('personality-subsettings').style.transform = 'translateX(100%)';
+            }
+
+            function makePersOptions(containerId, values, currentVal, key) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                values.forEach(v => {
+                    const btn = document.createElement('div');
+                    btn.className = 'pers-opt' + (v === currentVal ? ' active' : '');
+                    btn.textContent = v;
+                    btn.dataset.value = v;
+                    btn.onclick = function() {
+                        container.querySelectorAll('.pers-opt').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                    };
+                    container.appendChild(btn);
+                });
+            }
+
+            function loadPersonalityData() {
+                const quiz = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
+                const pers = quiz.personality || 'Ambivert';
+                const team = quiz.teamwork || '3';
+                const friends = quiz.friends || '3';
+                const adren = quiz.adrenaline || '3';
+                const origin = quiz.movieOrigin || 'American/British';
+
+                makePersOptions('personality-type-options', ['Introvert', 'Ambivert', 'Extrovert'], pers);
+                makePersOptions('teamwork-options', ['1','2','3','4','5'], String(team));
+                makePersOptions('friends-options', ['1','2','3','4','5'], String(friends));
+                makePersOptions('adrenaline-options', ['1','2','3','4','5'], String(adren));
+                makePersOptions('origin-options', ['American/British', 'Romanian', 'Spanish/Italian', 'Asian', 'Other'], origin);
+            }
+
+            function applyPersonality() {
+                const getSelected = (containerId) => {
+                    const active = document.querySelector(`#${containerId} .pers-opt.active`);
+                    return active ? active.dataset.value : null;
+                };
+                const personality = getSelected('personality-type-options');
+                const teamwork = getSelected('teamwork-options');
+                const friends = getSelected('friends-options');
+                const adrenaline = getSelected('adrenaline-options');
+                const origin = getSelected('origin-options');
+
+                if (!personality || !teamwork || !friends || !adrenaline || !origin) {
+                    alert('Please select all options.');
+                    return;
+                }
+
+                const quiz = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
+                quiz.personality = personality;
+                quiz.teamwork = teamwork;
+                quiz.friends = friends;
+                quiz.adrenaline = adrenaline;
+                quiz.movieOrigin = origin;
+                localStorage.setItem('cinemi_userQuizProfile', JSON.stringify(quiz));
+
+                closePersonalitySettings();
+                alert('Personality updated!');
+            }
+            function openAIMemorySettings() {
+                document.getElementById('ai-memory-subsettings').style.transform = 'translateX(0)';
+                loadAIMemoryData();
+            }
+            function closeAIMemorySettings() {
+                document.getElementById('ai-memory-subsettings').style.transform = 'translateX(100%)';
+            }
+
+            function loadAIMemoryData() {
+                const saved = localStorage.getItem('cinemi_ai_system_instructions') || '';
+                document.getElementById('ai-system-instructions').value = saved;
+            }
+
+            function saveAIMemory() {
+                const instructions = document.getElementById('ai-system-instructions').value.trim();
+                localStorage.setItem('cinemi_ai_system_instructions', instructions);
+                closeAIMemorySettings();
+            }
+            function openThemeSettings() {
+                document.getElementById('theme-subsettings').style.transform = 'translateX(0)';
+                const current = localStorage.getItem('cinemi_theme_preference') || 'dark';
+                document.getElementById('theme-opt-light').style.borderColor = current === 'light' ? 'var(--text-primary)' : 'transparent';
+                document.getElementById('theme-opt-dark').style.borderColor = current === 'dark' ? 'var(--text-primary)' : 'transparent';
+            }
+            function closeThemeSettings() {
+                document.getElementById('theme-subsettings').style.transform = 'translateX(100%)';
+            }
+            function setTheme(theme) {
+                localStorage.setItem('cinemi_theme_preference', theme);
+                document.documentElement.classList.toggle('light-mode', theme === 'light');
+                document.getElementById('theme-opt-light').style.borderColor = theme === 'light' ? 'var(--text-primary)' : 'transparent';
+                document.getElementById('theme-opt-dark').style.borderColor = theme === 'dark' ? 'var(--text-primary)' : 'transparent';
+            }
+            (function loadTheme() {
+                const theme = localStorage.getItem('cinemi_theme_preference') || 'dark';
+                document.documentElement.classList.toggle('light-mode', theme === 'light');
+            })();
+            const NOTIF_DEFAULTS = {
+                push: true,
+                email: true,
+                likes: true,
+                followers: true,
+                comments: true
+            };
+
+            function openNotificationsSettings() {
+                document.getElementById('notifications-subsettings').style.transform = 'translateX(0)';
+                loadNotificationSettings();
+            }
+            function closeNotificationsSettings() {
+                document.getElementById('notifications-subsettings').style.transform = 'translateX(100%)';
+            }
+
+            function loadNotificationSettings() {
+                const saved = JSON.parse(localStorage.getItem('cinemi_notification_preferences') || 'null');
+                const prefs = saved || NOTIF_DEFAULTS;
+                const list = document.getElementById('notifications-list');
+                list.innerHTML = '';
+                const items = [
+                    { key: 'push', label: 'Push notifications' },
+                    { key: 'email', label: 'Email notifications' },
+                    { key: 'likes', label: 'Post likes' },
+                    { key: 'followers', label: 'New followers' },
+                    { key: 'comments', label: 'Comments on posts' }
+                ];
+                items.forEach(item => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--iconbox-bg); border-radius:14px;';
+                    row.innerHTML = `
+                        <span style="font-weight:600;">${item.label}</span>
+                        <label class="toggle-wrap">
+                            <input type="checkbox" ${prefs[item.key] !== false ? 'checked' : ''} data-key="${item.key}">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    `;
+                    list.appendChild(row);
+                });
+            }
+
+            function saveNotificationSettings() {
+                const prefs = {};
+                document.querySelectorAll('#notifications-list input[type="checkbox"]').forEach(cb => {
+                    prefs[cb.dataset.key] = cb.checked;
+                });
+                localStorage.setItem('cinemi_notification_preferences', JSON.stringify(prefs));
+                closeNotificationsSettings();
+            }
+            const LANGUAGES = [
+                { code: 'en', emoji: '🇺🇸', name: 'English' },
+                { code: 'ro', emoji: '🇷🇴', name: 'Romanian' },
+                { code: 'es', emoji: '🇪🇸', name: 'Spanish' },
+                { code: 'fr', emoji: '🇫🇷', name: 'French' },
+                { code: 'de', emoji: '🇩🇪', name: 'German' },
+                { code: 'it', emoji: '🇮🇹', name: 'Italian' },
+                { code: 'pt', emoji: '🇵🇹', name: 'Portuguese' },
+                { code: 'nl', emoji: '🇳🇱', name: 'Dutch' },
+                { code: 'pl', emoji: '🇵🇱', name: 'Polish' },
+                { code: 'sv', emoji: '🇸🇪', name: 'Swedish' },
+                { code: 'no', emoji: '🇳🇴', name: 'Norwegian' },
+                { code: 'da', emoji: '🇩🇰', name: 'Danish' },
+                { code: 'fi', emoji: '🇫🇮', name: 'Finnish' },
+                { code: 'el', emoji: '🇬🇷', name: 'Greek' },
+                { code: 'tr', emoji: '🇹🇷', name: 'Turkish' },
+                { code: 'he', emoji: '🇮🇱', name: 'Hebrew' },
+                { code: 'ar', emoji: '🇸🇦', name: 'Arabic' },
+                { code: 'hi', emoji: '🇮🇳', name: 'Hindi' },
+                { code: 'th', emoji: '🇹🇭', name: 'Thai' },
+                { code: 'vi', emoji: '🇻🇳', name: 'Vietnamese' },
+                { code: 'id', emoji: '🇮🇩', name: 'Indonesian' },
+                { code: 'ko', emoji: '🇰🇷', name: 'Korean' }
+            ];
+
+            function openLanguageSettings() {
+                document.getElementById('language-subsettings').style.transform = 'translateX(0)';
+                loadLanguageList();
+            }
+            function closeLanguageSettings() {
+                document.getElementById('language-subsettings').style.transform = 'translateX(100%)';
+            }
+
+            function loadLanguageList() {
+                const current = localStorage.getItem('cinemi_language_preference') || 'en';
+                const list = document.getElementById('language-list');
+                list.innerHTML = '';
+                LANGUAGES.forEach(lang => {
+                    const item = document.createElement('div');
+                    item.className = 'lang-item' + (current === lang.code ? ' selected' : '');
+                    item.innerHTML = `
+                        <span class="lang-emoji">${lang.emoji}</span>
+                        <span class="lang-name">${lang.name}</span>
+                        <svg class="lang-check" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                    `;
+                    item.onclick = function() {
+                        document.querySelectorAll('#language-list .lang-item').forEach(el => el.classList.remove('selected'));
+                        this.classList.add('selected');
+                        localStorage.setItem('cinemi_language_preference', lang.code);
+                    };
+                    list.appendChild(item);
+                });
             }
     </script>
     <div id="replies" class="view">
