@@ -1471,103 +1471,52 @@ function saveCrmReact() {
 }
 
 const _SC_PRESETS = [
-    { grad: 'linear-gradient(145deg, #0d0d1a 0%, #302b63 50%, #0d0d1a 100%)', qrFg: '#302b63' },
-    { grad: 'linear-gradient(145deg, #1a0000 0%, #c0392b 50%, #1a0000 100%)', qrFg: '#c0392b' },
-    { grad: 'linear-gradient(145deg, #000428 0%, #004e92 50%, #000428 100%)', qrFg: '#004e92' },
-    { grad: 'linear-gradient(145deg, #1a0010 0%, #8e0057 50%, #1a0010 100%)', qrFg: '#8e0057' },
-    { grad: 'linear-gradient(145deg, #0a1a0a 0%, #1e7e34 50%, #0a1a0a 100%)', qrFg: '#1e7e34' },
-    { grad: 'linear-gradient(145deg, #1a1000 0%, #7d5200 50%, #1a1000 100%)', qrFg: '#7d5200' },
+    { name: 'Charcoal', color: '#2c2c2c', qrFg: '#2c2c2c' },
+    { name: 'Crimson', color: '#5c1a1a', qrFg: '#5c1a1a' },
+    { name: 'Ocean', color: '#1a3a5c', qrFg: '#1a3a5c' },
+    { name: 'Forest', color: '#1a3a1a', qrFg: '#1a3a1a' },
+    { name: 'Royal', color: '#3a1a5c', qrFg: '#3a1a5c' },
+    { name: 'Sunset', color: '#5c3a1a', qrFg: '#5c3a1a' },
 ];
 
-const _SC_STICKER_POOL = [
-  '🎬','🎥','🍿','🎞️','🎭','📽️','🎦','🎟️',
-  '⭐','🌟','✨','💫','🔥','❤️','💔','😍',
-  '😢','😱','😂','😎','😡','😮',
-  '🏆','🎖️','👏','🎯'
-];
+const _SC_STICKER_POOL = ['🎬','🎥','🍿','🎞️','🎭','📽️','🎟️','💬','❤️','👥','✨','🔥'];
 
-let _scCurrentPreset = 0;
-let _scCustomColor = null;
-let _scStickers = [];
-
-function _scRandBetween(a, b) { return a + Math.random() * (b - a); }
-
-function _generateStickers(count) {
+function _generateStickers() {
     const card = document.getElementById('share-card');
     if (!card) return;
-
     card.querySelectorAll('.sc-sticker').forEach(el => el.remove());
-
     const pool = [..._SC_STICKER_POOL].sort(() => Math.random() - 0.5);
-    const chosen = pool.slice(0, count);
-    _scStickers = [];
-
+    const chosen = pool.slice(0, 4);
     const zones = [
-        { xMin: 3,  xMax: 22, yMin: 5,  yMax: 35 },
-        { xMin: 78, xMax: 90, yMin: 5,  yMax: 35 },
-        { xMin: 3,  xMax: 22, yMin: 62, yMax: 88 },
-        { xMin: 78, xMax: 96, yMin: 62, yMax: 88 },
+        { xMin: 12, xMax: 22, yMin: 15, yMax: 35 },
+        { xMin: 78, xMax: 92, yMin: 15, yMax: 35 },
+        { xMin: 12, xMax: 22, yMin: 55, yMax: 75 },
+        { xMin: 78, xMax: 92, yMin: 55, yMax: 75 },
     ];
-
-    const placed = [];
-    const minDist = 20;
-    const maxAttempts = 30;
-
-    function isFarEnough(x, y) {
-        for (const p of placed) {
-            const dx = x - p.x;
-            const dy = y - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < minDist) return false;
-        }
-        return true;
-    }
-
     chosen.forEach((emoji, i) => {
         const zone = zones[i % zones.length];
-
-        let x = 0;
-        let y = 0;
-        let attempts = 0;
-
-        do {
-            x = _scRandBetween(zone.xMin, zone.xMax);
-            y = _scRandBetween(zone.yMin, zone.yMax);
-            attempts++;
-        } while (!isFarEnough(x, y) && attempts < maxAttempts);
-
-        placed.push({ x, y });
-
-        const rot = _scRandBetween(-18, 18);
-        const scale = _scRandBetween(0.68, 0.82);
-        const delay = i * 45;
-
+        const x = zone.xMin + Math.random() * (zone.xMax - zone.xMin);
+        const y = zone.yMin + Math.random() * (zone.yMax - zone.yMin);
+        const rot = -22 + Math.random() * 44;
+        const scale = 0.9 + Math.random() * 0.3;
         const el = document.createElement('span');
         el.className = 'sc-sticker';
         el.textContent = emoji;
         el.style.left = x + '%';
         el.style.top = y + '%';
-        el.style.setProperty('--sc-rot', `rotate(${rot}deg)`);
-        el.style.setProperty('--sc-scale', scale);
-        el.style.transform = `rotate(${rot}deg) scale(${scale})`;
-        el.style.opacity = '0';
-        el.style.animationDelay = delay + 'ms';
-
+        el.style.transform = `translate(-50%, -50%) rotate(${rot.toFixed(1)}deg) scale(${scale.toFixed(2)})`;
         card.appendChild(el);
-        _scStickers.push({ el, rot, scale });
-
-        setTimeout(() => {
-            el.classList.add('animate');
-            el.style.opacity = '1';
-        }, delay);
     });
 }
+
+let _scCurrentPreset = 0
+let _scCustomColor = null;
+let _scCurrentPage = 0;
 
 function _applyPresetToCard(preset) {
     const card = document.getElementById('share-card');
     if (!card) return;
-    card.style.background = preset.grad;
-
+    card.style.background = `linear-gradient(to bottom, ${preset.color} 0%, color-mix(in srgb, ${preset.color} 55%, var(--card)) 35%, var(--card) 80%)`;
     const qrWrap = document.getElementById('sc-qr-wrap');
     if (qrWrap) {
         qrWrap.innerHTML = '';
@@ -1576,9 +1525,9 @@ function _applyPresetToCard(preset) {
         if (typeof QRCode !== 'undefined') {
             new QRCode(qrWrap, {
                 text: url,
-                width: 100,
-                height: 100,
-                colorDark: preset.qrFg,
+                width: 110,
+                height: 110,
+                colorDark: 'black',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
             });
@@ -1586,66 +1535,178 @@ function _applyPresetToCard(preset) {
     }
 }
 
-function setSharePreset(idx, btn) {
-    _scCurrentPreset = idx;
-    _scCustomColor = null;
-    document.querySelectorAll('.sc-preset-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    _applyPresetToCard(_SC_PRESETS[idx]);
-}
+function _renderColorGrid() {
+    const grid = document.getElementById('sc-color-grid');
+    if (!grid) return;
 
-function setShareCustomColor(hex) {
-    _scCustomColor = hex;
-    const r = parseInt(hex.slice(1,3),16);
-    const g = parseInt(hex.slice(3,5),16);
-    const b = parseInt(hex.slice(5,7),16);
-    const dark = `rgba(${Math.round(r*0.15)},${Math.round(g*0.15)},${Math.round(b*0.15)},1)`;
-    const mid = hex;
-    const customPreset = {
-        grad: `linear-gradient(145deg, ${dark} 0%, ${mid} 50%, ${dark} 100%)`,
-        qrFg: hex
+    grid.innerHTML = '';
+
+    if (_scCurrentPreset < 0 && !_scCustomColor) {
+        _scCurrentPreset = 0;
+        _applyPresetToCard(_SC_PRESETS[0]);
+    }
+
+    _SC_PRESETS.forEach((preset, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'sc-color-btn' + (i === _scCurrentPreset && !_scCustomColor ? ' active' : '');
+        btn.style.background = preset.color;
+        btn.onclick = () => {
+            _scCurrentPreset = i;
+            _scCustomColor = null;
+            _applyPresetToCard(preset);
+            grid.querySelectorAll('.sc-color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        };
+        grid.appendChild(btn);
+    });
+
+    const customBtn = document.createElement('div');
+    customBtn.className = 'sc-color-btn sc-preset-custom' + (_scCustomColor ? ' active' : '');
+    customBtn.style.cursor = 'pointer';
+    customBtn.onclick = () => {
+        openColorPicker({
+            title: 'Choose Background',
+            initialColor: _scCustomColor || '#2c2c2c',
+            onConfirm: (hex) => {
+                _scCustomColor = hex;
+                _applyPresetToCard({ color: hex, qrFg: hex });
+                grid.querySelectorAll('.sc-color-btn').forEach(b => b.classList.remove('active'));
+                customBtn.classList.add('active');
+            }
+        });
     };
-    document.querySelectorAll('.sc-preset-btn').forEach(b => b.classList.remove('active'));
-    _applyPresetToCard(customPreset);
+    grid.appendChild(customBtn);
 }
 
-function shuffleShareStickers() {
-    _generateStickers(6);
+function _initShareSwipe() {
+    const shell = document.getElementById('sc-shell');
+    const customPanel = document.getElementById('sc-custom-panel');
+    const dots = document.querySelectorAll('.sc-dot');
+    const topArea = document.querySelector('.sc-top-area');
+    if (!shell || shell.dataset.swipeBound) return;
+    shell.dataset.swipeBound = '1';
+
+    let startX = 0;
+    let startY = 0;
+    let active = false;
+    let gesture = null;
+
+    const setPage = (page) => {
+        _scCurrentPage = page;
+        dots.forEach((d, i) => d.classList.toggle('active', i === page));
+    };
+
+    shell.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+        active = true;
+        gesture = null;
+
+        if (topArea && e.target.closest('.sc-top-area')) {
+            gesture = 'vertical';
+            shell.style.transition = 'none';
+            return;
+        }
+
+        gesture = 'horizontal';
+        customPanel.style.transition = 'none';
+    }, { passive: true });
+
+    shell.addEventListener('touchmove', (e) => {
+        if (!active) return;
+
+        const t = e.touches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+
+        if (!gesture) {
+            if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+                gesture = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
+                if (gesture === 'horizontal') customPanel.style.transition = 'none';
+                if (gesture === 'vertical') shell.style.transition = 'none';
+            } else {
+                return;
+            }
+        }
+
+        if (gesture === 'vertical') {
+            e.preventDefault();
+            const pull = Math.max(0, dy);
+            shell.style.transform = `translateY(${pull}px)`;
+            return;
+        }
+
+        if (gesture !== 'horizontal') return;
+
+        e.preventDefault();
+
+        if (_scCurrentPage === 0) {
+            const clamped = Math.min(0, dx);
+            customPanel.style.transform = `translateX(${100 + (clamped / shell.clientWidth) * 100}%)`;
+        } else {
+            const clamped = Math.max(0, dx);
+            customPanel.style.transform = `translateX(${(clamped / shell.clientWidth) * 100}%)`;
+        }
+    }, { passive: false });
+
+    shell.addEventListener('touchend', (e) => {
+        if (!active) return;
+        active = false;
+
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = e.changedTouches[0].clientY - startY;
+        const threshold = 70;
+
+        if (gesture === 'vertical') {
+            shell.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+
+            if (dy > 120) {
+                closeShareCard();
+            } else {
+                shell.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    shell.style.transition = '';
+                }, 280);
+            }
+
+            return;
+        }
+
+        customPanel.style.transition = 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)';
+
+        if (_scCurrentPage === 0 && dx < -threshold) {
+            setPage(1);
+            customPanel.classList.add('visible');
+            customPanel.style.transform = '';
+        } else if (_scCurrentPage === 1 && dx > threshold) {
+            setPage(0);
+            customPanel.classList.remove('visible');
+            customPanel.style.transform = '';
+        } else {
+            customPanel.style.transform = '';
+        }
+    });
 }
 
-function openShareCard() {
-    const overlay = document.getElementById('share-card-overlay');
-    if (!overlay) return;
-
-    const username = (document.getElementById('addUsername')?.textContent || '').trim();
-    const pfpSrc = document.getElementById('profileImg')?.src || '';
-
-    document.getElementById('sc-tag').textContent = '@' + username;
-
-    const scPfp = document.getElementById('sc-pfp');
-    scPfp.src = pfpSrc;
-
-    _scCurrentPreset = 0;
-    _scCustomColor = null;
-    document.querySelectorAll('.sc-preset-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-
-    _applyPresetToCard(_SC_PRESETS[0]);
-    _generateStickers(6);
-
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+function closeCustomPanel() {
+    _scCurrentPage = 0;
+    const customPanel = document.getElementById('sc-custom-panel');
+    customPanel.style.transition = 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)';
+    customPanel.classList.remove('visible');
+    customPanel.style.transform = '';
+    document.querySelectorAll('.sc-dot').forEach((d, i) => d.classList.toggle('active', i === 0));
 }
 
 async function _buildShareBlob() {
     const card = document.getElementById('share-card');
-    const canvas = await html2canvas(card, {
+    const img = await snapdom.toPng(card, {
         scale: 3,
-        useCORS: true,
-        allowTaint: false,
         backgroundColor: null,
-        logging: false,
+        embedFonts: true,
     });
-    return new Promise(res => canvas.toBlob(res, 'image/png', 1));
+    const res = await fetch(img.src);
+    return await res.blob();
 }
 
 async function shareToInstagram() {
@@ -1655,11 +1716,7 @@ async function shareToInstagram() {
     try {
         const blob = await _buildShareBlob();
         const file = new File([blob], `cinemi-${username}.png`, { type: 'image/png' });
-        const isAndroid = /android/i.test(navigator.userAgent);
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        if ((isAndroid || isIOS) && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: 'My Cinemi Profile' });
-        } else if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({ files: [file], title: 'My Cinemi Profile' });
         } else {
             const url = URL.createObjectURL(blob);
@@ -1677,7 +1734,7 @@ async function shareMore() {
     const username = (document.getElementById('addUsername')?.textContent || 'user').trim();
     const appUrl = window.location.origin;
     const text = `Join me on Cinemi 🎬\nDiscover and share movies with friends!\n${appUrl}`;
-    const btn = document.querySelector('.sc-more-btn');
+    const btn = document.querySelector('.sc-save-btn:last-child');
     if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
     try {
         const blob = await _buildShareBlob();
@@ -1698,9 +1755,80 @@ async function shareMore() {
     if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 }
 
-function closeShareCard() {
+function openShareCard() {
     const overlay = document.getElementById('share-card-overlay');
     if (!overlay) return;
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
+    const username = (document.getElementById('addUsername')?.textContent || '').trim();
+    document.getElementById('sc-tag').textContent = '@' + username;
+    const avatar = document.getElementById('sc-avatar');
+    const profileImg = document.getElementById('profileImg');
+    if (avatar && profileImg) avatar.src = profileImg.src;
+    _scCurrentPreset = -1;
+    _scCustomColor = null;
+    _scCurrentPage = 0;
+    document.getElementById('sc-custom-panel').classList.remove('visible');
+    document.getElementById('sc-custom-panel').style.transform = '';
+    document.querySelectorAll('.sc-dot').forEach((d, i) => d.classList.toggle('active', i === 0));
+    const card = document.getElementById('share-card');
+    if (card) card.style.background = '';
+    _generateStickers();
+    _renderColorGrid();
+    _initShareSwipe();
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
 }
+
+function closeShareCard() {
+    const overlay = document.getElementById('share-card-overlay');
+    const shell = document.getElementById('sc-shell');
+    if (!overlay || !shell) return;
+
+    shell.style.transition = 'transform 0.28s cubic-bezier(0.55, 0, 1, 0.8)';
+    shell.style.transform = 'translateY(110%)';
+
+    setTimeout(() => {
+        overlay.classList.remove('open');
+        shell.style.transition = '';
+        shell.style.transform = '';
+        document.body.style.overflow = '';
+    }, 280);
+}
+
+(function () {
+    const shell = document.getElementById('sc-shell');
+    const pill = document.getElementById('sc-drag-pill');
+    if (!shell || !pill) return;
+
+    let startY = 0;
+    let active = false;
+
+    pill.style.touchAction = 'none';
+
+    pill.addEventListener('touchstart', e => {
+        e.stopPropagation();
+        startY = e.touches[0].clientY;
+        active = true;
+        shell.style.transition = 'none';
+    }, { passive: true });
+
+    pill.addEventListener('touchmove', e => {
+        if (!active) return;
+        e.preventDefault();
+        const dy = Math.max(0, e.touches[0].clientY - startY);
+        shell.style.transform = `translateY(${dy}px)`;
+    }, { passive: false });
+
+    pill.addEventListener('touchend', e => {
+        if (!active) return;
+        active = false;
+
+        const dy = e.changedTouches[0].clientY - startY;
+
+        if (dy > 120) {
+            closeShareCard();
+        } else {
+            shell.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+            shell.style.transform = 'translateY(0)';
+        }
+    });
+})();
