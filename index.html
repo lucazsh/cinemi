@@ -8609,6 +8609,20 @@
         <span>React</span>
     </div>
     <div id="settings">
+        <div id="streaming-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 10; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <button onclick="closeStreamingSettings()" style="padding: 6px; background: var(--iconbox-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-primary)" style="padding-right: 2px;"><path d="m423-480 278 277q22 23 22 55t-23 55q-22 22-54 22t-55-22L299-384q-20-21-30-45.5t-10-51q0-26.5 10-51t30-44.5l292-292q23-22 55-22.5t55 22.5q22 22 22 55t-22 55L423-480Z"/></svg>
+                </button>
+                <span style="font-size: 18px; font-weight: 700; flex: 1; text-align: center;">Streaming services</span>
+                <div style="width: 40px;"></div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Select your preferred streaming provider</p>
+                <div id="provider-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                <button id="apply-provider-btn" onclick="applyProvider()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply</button>
+            </div>
+        </div>
         <div class="drag-pill"></div>
         <div class="st" style="margin-top: 20px;">
             <div class="p-user" style="margin-bottom: 34px; margin-top: 40px">
@@ -8625,7 +8639,10 @@
             <div class="st-pre">
                 <span class="sub-s">PREFERENCES</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#666666"><path d="m440-375 167-108q25-15.86 25-43.93T607-571L440-679q-25-17-52.5-2.07Q360-666.13 360-635v216q0 31.13 27.5 46.07Q415-358 440-375ZM172-157q-57.12 0-96.56-39.44Q36-235.88 36-293v-457q0-57.13 39.44-96.56Q114.88-886 172-886h616q57.13 0 96.56 39.44Q924-807.13 924-750v457q0 57.12-39.44 96.56Q845.13-157 788-157H669v15q0 29-20.2 48.5T601-74H359q-27.6 0-47.8-19.5Q291-113 291-142v-15H172Z"/></svg>Streaming services</span>
+                    <span class="sp-wrap" onclick="openStreamingSettings()" style="cursor:pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#666666"><path d="m440-375 167-108q25-15.86 25-43.93T607-571L440-679q-25-17-52.5-2.07Q360-666.13 360-635v216q0 31.13 27.5 46.07Q415-358 440-375ZM172-157q-57.12 0-96.56-39.44Q36-235.88 36-293v-457q0-57.13 39.44-96.56Q114.88-886 172-886h616q57.13 0 96.56 39.44Q924-807.13 924-750v457q0 57.12-39.44 96.56Q845.13-157 788-157H669v15q0 29-20.2 48.5T601-74H359q-27.6 0-47.8-19.5Q291-113 291-142v-15H172Z"/></svg>
+                        Streaming services
+                    </span>
                     <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><defs><mask id="face-cutout-react-fab"><rect x="0" y="-960" width="960" height="960" fill="white" /><circle cx="840" cy="-800" r="160" fill="black" /><path d="M480-260q58 0 107-28t79-76q6-12-1-24t-21-12H316q-14 0-21 12t-1 24q30 48 79.5 76T480-260Z" fill="black" /><path d="M340-520q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm280 0q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Z" fill="black" /></mask></defs><rect x="80" y="-880" width="800" height="800" rx="240" mask="url(#face-cutout-react-fab)" /><path d="M800-760h-40q-17 0-28.5-11.5T720-800q0-17 11.5-28.5T760-840h40v-40q0-17 11.5-28.5T840-920q17 0 28.5 11.5T880-880v40h40q17 0 28.5 11.5T960-800q0 17-11.5 28.5T920-760h-40v40q0 17-11.5 28.5T840-680q-17 0-28.5-11.5T800-720v-40Z"/></svg>Personality</span>
                     <span class="sp-wrap end" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M434.5-485.71q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71Zm240 0q30.5-30.71 30.5-74.5t-30.71-74.29q-30.71-30.5-74.5-30.5t-74.29 30.71q-30.5 30.71-30.5 74.5t30.71 74.29q30.71 30.5 74.5 30.5t74.29-30.71ZM377-95v-192h45v192h-45Zm160 0v-192h46v192h-46Zm-306 0q-57 0-96.5-39.5T95-231v-369q0-110 77.5-187.5T360-865h240q110 0 187.5 77.5T865-600v369q0 57-39.5 96.5T729-95h-30v-182q0-57-39.5-96.5T563-413H393q-57 0-94.5 39.5T261-277v182h-30Z"/></svg>AI Memory</span>
                 </div>
@@ -8642,8 +8659,7 @@
             <div class="st-acc">
                 <span class="sub-s">ACCOUNT</span>
                 <div class="wrap">
-                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M589-453q45-45 45-109.5t-45-109Q544-716 480-716t-109 44.5q-45 44.5-45 109T371-453q45 45 109 45t109-45ZM212-76q-57 0-96.5-39.5T76-212v-536q0-57 39.5-96.5T212-884h536q57 0 96.5 39.5T884-748v536q0 57-39.5 96.5T748-76H212Zm0-136h536v-72q-55-49-120-74t-148-25q-83 0-148 26t-120 75v70Z"/></svg>Profile</span>
-                    <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M445.44-346h69.16q16.4 0 26.4-12.25t8-27.75l-17-96q19-13 30.5-33.5T574-560q0-39.29-27.3-66.64Q519.41-654 480.2-654q-39.2 0-66.7 27.36Q386-599.29 386-560q0 24 11.5 44.5T428-482l-17 96q-2 15.5 8.02 27.75T445.44-346Zm13.64 305q-11.04-2-22.08-5-146-47-234.5-183.5T114-516v-182q0-42.62 24.5-77.31Q163-810 203-825l230-86q22-9 47-9t47 9l230 86q40 15 64.5 49.69T846-698v182q0 150-88.5 286.5T523-46q-11.04 3-22.08 5T480-39q-9.88 0-20.92-2Z"/></svg>Security</span>
+                    <span class="sp-wrap"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M445.44-346h69.16q16.4 0 26.4-12.25t8-27.75l-17-96q19-13 30.5-33.5T574-560q0-39.29-27.3-66.64Q519.41-654 480.2-654q-39.2 0-66.7 27.36Q386-599.29 386-560q0 24 11.5 44.5T428-482l-17 96q-2 15.5 8.02 27.75T445.44-346Zm13.64 305q-11.04-2-22.08-5-146-47-234.5-183.5T114-516v-182q0-42.62 24.5-77.31Q163-810 203-825l230-86q22-9 47-9t47 9l230 86q40 15 64.5 49.69T846-698v182q0 150-88.5 286.5T523-46q-11.04 3-22.08 5T480-39q-9.88 0-20.92-2Z"/></svg>Security</span>
                     <span class="sp-wrap" id="not-t"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M170-41q-57.4 0-96.7-39.3Q34-119.6 34-177v-379q0-57.4 39.3-96.7Q112.6-692 170-692h620q57.4 0 96.7 39.3Q926-613.4 926-556v379q0 57.4-39.3 96.7Q847.4-41 790-41H170Zm283-198 149-99q15-9.93 15-27.96Q617-384 602-394L453-494q-17-11-35-1.5T400-465v198q0 20.39 18 30.2 18 9.8 35-2.2ZM198-725q-18.6 0-31.8-13.08t-13.2-31.5q0-18.42 13.2-31.92T198-815h564q18.6 0 31.8 13.28t13.2 32Q807-751 793.8-738T762-725H198Zm121-123q-18.6 0-31.8-13.08t-13.2-31.5q0-18.42 13.2-31.92T319-938h322q18.6 0 31.8 13.28t13.2 32Q686-874 672.8-861T641-848H319Z"/></svg>Subscription</span>
                     <span class="sp-wrap end" id="not-t" data-action="logout" role="button" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M210-74q-57 0-96.5-39.5T74-210v-540q0-57 39.5-96.5T210-886h210q28 0 48 19.5t20 48q0 28.5-20 48.5t-48 20H210v540h210q28 0 48 20t20 48.5q0 28.5-20 48T420-74H210Zm417-338H418q-29 0-48.5-20T350-480.5q0-28.5 19.5-48T418-548h209l-51-51q-20-20-20-48.5t20-47.5q20-21 47.5-20.5T671-695l168 168q19 20 19 47t-19 47L672-265q-20 20-48 20t-48-20q-20-20-20-48t20-48l51-51Z"/></svg>Log out</span>
                 </div>
@@ -8658,6 +8674,44 @@
             </div>
         </div>
     </div>
+    <script>
+            function openStreamingSettings() {
+                const panel = document.getElementById('streaming-subsettings');
+                panel.style.transform = 'translateX(0)';
+                loadProviderOptions();
+            }
+            function closeStreamingSettings() {
+                document.getElementById('streaming-subsettings').style.transform = 'translateX(100%)';
+            }
+            function loadProviderOptions() {
+                const list = document.getElementById('provider-list');
+                const quiz = JSON.parse(localStorage.getItem('cinemi_userQuizProfile') || '{}');
+                const platforms = quiz.streamingPlatforms || [];
+                const unique = [...new Set(platforms)];
+                if (!unique.length) { list.innerHTML = '<div style="color: var(--text-subtle);">No providers found in your quiz.</div>'; return; }
+                list.innerHTML = '';
+                unique.forEach(p => {
+                    const label = p.replace(/_/g, ' ').toUpperCase();
+                    const div = document.createElement('div');
+                    div.style.cssText = 'display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--iconbox-bg); border-radius:14px; cursor:pointer; transition: background 0.15s; border:2px solid transparent;';
+                    div.innerHTML = `<span style="flex:1; font-weight:600;">${label}</span>`;
+                    div.dataset.provider = p;
+                    div.onclick = function() {
+                        document.querySelectorAll('#provider-list > div').forEach(el => el.style.borderColor = 'transparent');
+                        this.style.borderColor = 'var(--text-primary)';
+                        document.getElementById('apply-provider-btn').dataset.selected = p;
+                    };
+                    list.appendChild(div);
+                });
+            }
+            function applyProvider() {
+                const btn = document.getElementById('apply-provider-btn');
+                const provider = btn.dataset.selected;
+                if (!provider) return;
+                localStorage.setItem('cinemi_streaming_provider', provider);
+                closeStreamingSettings();
+            }
+    </script>
     <div id="replies" class="view">
         <div class="drag-pill"></div>
         <div class="tp">
