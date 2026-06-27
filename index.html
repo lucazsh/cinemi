@@ -12321,7 +12321,7 @@
                     g.appendChild(b);
                 });
             }
-            const p = document.getElementById(n + '-panel'); if(p) p.classList.add('open');
+            if (typeof _oldOpenPanel === 'function') _oldOpenPanel(n);
         };
 
         document.getElementById('sp-fab').onclick = startEditSpace;
