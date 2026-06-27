@@ -48,6 +48,7 @@ async function checkAuthStatus() {
         const data = await res.json();
 
         if (data.ok && data.user) {
+            window.currentUser = data.user;
             localStorage.setItem('isAuthenticated', 'true');
             if (loginScreen) loginScreen.style.display = 'none';
 
