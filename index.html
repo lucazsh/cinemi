@@ -1311,7 +1311,7 @@
             position: relative;
         }
 
-        .sp-wrap::after{
+        .sp-wrap::after {
             content: "";
             position: absolute;
             left: 63px;
@@ -1320,6 +1320,10 @@
             height: 1px;
             background: #414143;
             opacity: 0.67;
+        }
+
+        #notifications-subsettings .sp-wrap:nth-child(-n+4)::after {
+            left: 20px;
         }
 
         .sp-wrap svg {
@@ -6844,15 +6848,17 @@
             border-radius: 45px 45px 0 0; 
         }
         .help-article { 
-            background: var(--iconbox-bg); 
-            border-radius: 14px; 
-            padding: 14px 16px; 
+            background: var(--settings);
+            border: 1px solid rgba(255, 255, 255, 0.022);
+            border-radius: 20px; 
+            padding: 14.67px 16px; 
             cursor: default; 
             transition: background 0.15s; 
         }
         .help-article.hidden { 
             display: none; 
         }
+
         textarea {
             outline: none;
             -webkit-appearance: none;
@@ -8760,8 +8766,17 @@
                 <div style="width: 40px;"></div>
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
-                <div style="margin-bottom: 20px;">
-                    <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Display Name</label>
+                <div class="st-pre" style="margin-top: 20px;">
+                    <span class="sub-s" style="padding-left: 2px;">Display Name</span>
+                    <input id="edit-profile-name" type="text" placeholder="Your display name" style="margin-top:6px; width:100%; padding:12px; border-radius:14px; border:1.5px solid var(--border-dark-alpha-2); background:var(--iconbox-bg); color:var(--text-primary); font-size:15px; box-sizing:border-box; outline:none;">
+                </div>
+                <div class="st-pre" style="margin-top: 14px; margin-bottom: 20px;">
+                    <span class="sub-s" style="padding-left: 2px;">Username</span>
+                    <input id="edit-profile-username" type="text" placeholder="Your username" style="margin-top:6px; width:100%; padding:12px; border-radius:14px; border:1.5px solid var(--border-dark-alpha-2); background:var(--iconbox-bg); color:var(--text-primary); font-size:15px; box-sizing:border-box; outline:none;">
+                </div>
+                <button onclick="saveEditProfile()" style="width:100%; padding:14px; border-radius:14px; background:var(--button-bg); color:var(--button-text); font-weight:700; font-size:15px; cursor:pointer;">Save changes</button>
+                <!--<div style="margin-bottom: 20px;">
+                    <label>Display Name</label>
                     <input id="edit-profile-name" type="text" placeholder="Your display name" style="width:100%; padding:12px; border-radius:14px; border:1.5px solid var(--border-dark-alpha-2); background:var(--iconbox-bg); color:var(--text-primary); font-size:15px; box-sizing:border-box; outline:none;">
                 </div>
                 <div style="margin-bottom: 24px;">
@@ -8769,7 +8784,7 @@
                     <input id="edit-profile-username" type="text" placeholder="Your username" style="width:100%; padding:12px; border-radius:14px; border:1.5px solid var(--border-dark-alpha-2); background:var(--iconbox-bg); color:var(--text-primary); font-size:15px; box-sizing:border-box; outline:none;">
                     <div style="font-size:12px; color:var(--text-subtle); margin-top:6px;">This will be your unique identifier.</div>
                 </div>
-                <button onclick="saveEditProfile()" style="width:100%; padding:14px; border-radius:14px; background:var(--button-bg); color:var(--button-text); font-weight:700; font-size:15px; cursor:pointer;">Save changes</button>
+                <button onclick="saveEditProfile()" style="width:100%; padding:14px; border-radius:14px; background:var(--button-bg); color:var(--button-text); font-weight:700; font-size:15px; cursor:pointer;">Save changes</button>-->
             </div>
         </div>
         <style>
@@ -9022,33 +9037,122 @@
                     if (label) label.textContent = saved;
                 });
                 </script>
+                <style>
+                    .custom-slider::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 14px;
+                        height: 14px;
+                        border-radius: 4px;
+                        background: #ffffff;
+                        cursor: pointer;
+                        box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+                        transition: transform 0.1s ease;
+                    }
+                    .custom-slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.15);
+                    }
+                    .custom-slider::-moz-range-thumb {
+                        width: 14px;
+                        height: 14px;
+                        border: none;
+                        border-radius: 4px;
+                        background: #ffffff;
+                        cursor: pointer;
+                        box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+                        transition: transform 0.1s ease;
+                    }
+                </style>
                 <div class="st-pre" style="margin-top: 20px;">
                     <span class="sub-s">TEAM PLAYER</span>
-                    <div class="wrap" style="border-radius: 20px;">
-                        <span class="sp-wrap end" style="cursor:pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M19.59-104.91V-281.5q0-40.34 28.61-68.46 28.61-28.13 67.97-28.13h132.44q16.48 0 29.84 6.76 13.35 6.76 22.12 20.29 31.23 44.47 78.09 68.71 46.86 24.24 101.35 24.24 54.23 0 101.71-24.24t78.95-68.71q8.53-13.53 21.93-20.29t28.79-6.76h132.68q40.33 0 68.46 28.13 28.12 28.12 28.12 68.46v176.59H627.48v-80.55q-34.24 16.76-71.36 26.26t-76.09 9.5q-37.95 0-75.11-9.38t-72.16-26.14v80.31H19.59ZM479.97-320q-32.49 0-61.63-15.76t-48.67-41.52q-21.19-30.44-52.03-46.2-30.84-15.76-66.75-16.52 33.2-32.48 101.43-53.58 68.24-21.09 127.68-21.09 60.44 0 128.8 21.09 68.35 21.1 101.31 53.58-36.68.76-67.13 16.4-30.46 15.64-51.41 46.32-18.77 26.52-48.43 41.9Q513.48-320 479.97-320ZM160-461.91q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79 38.74 38.78 38.74 94.69 0 55.16-38.79 94.32T160-461.91Zm640 0q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79 38.74 38.78 38.74 94.69 0 55.16-38.79 94.32T800-461.91ZM480-598.5q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79t38.74 94.69q0 55.16-38.79 94.32T480-598.5Z"/></svg>
-
+                    <div class="wrap" style="border-radius: 20px; display: flex; align-items: center; padding: 18px 20px; box-sizing: border-box; height: 72px; gap: 16px;">
+                        <span class="sp-wrap end" style="cursor:pointer; display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" style="margin-right:2px;" width="24px" fill="#e3e3e3"><path d="M19.59-104.91V-281.5q0-40.34 28.61-68.46 28.61-28.13 67.97-28.13h132.44q16.48 0 29.84 6.76 13.35 6.76 22.12 20.29 31.23 44.47 78.09 68.71 46.86 24.24 101.35 24.24 54.23 0 101.71-24.24t78.95-68.71q8.53-13.53 21.93-20.29t28.79-6.76h132.68q40.33 0 68.46 28.13 28.12 28.12 28.12 68.46v176.59H627.48v-80.55q-34.24 16.76-71.36 26.26t-76.09 9.5q-37.95 0-75.11-9.38t-72.16-26.14v80.31H19.59ZM479.97-320q-32.49 0-61.63-15.76t-48.67-41.52q-21.19-30.44-52.03-46.2-30.84-15.76-66.75-16.52 33.2-32.48 101.43-53.58 68.24-21.09 127.68-21.09 60.44 0 128.8 21.09 68.35 21.1 101.31 53.58-36.68.76-67.13 16.4-30.46 15.64-51.41 46.32-18.77 26.52-48.43 41.9Q513.48-320 479.97-320ZM160-461.91q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79 38.74 38.78 38.74 94.69 0 55.16-38.79 94.32T160-461.91Zm640 0q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79 38.74 38.78 38.74 94.69 0 55.16-38.79 94.32T800-461.91ZM480-598.5q-55.16 0-94.32-39.18t-39.16-94.37q0-55.93 39.18-94.67t94.37-38.74q55.93 0 94.67 38.79t38.74 94.69q0 55.16-38.79 94.32T480-598.5Z"/></svg>
                         </span>
+                        <div class="slider-wrapper" style="flex-grow: 1; display: flex; align-items: center; gap: 14px;">
+                            <div style="position: relative; display: flex; align-items: center; flex-grow: 1; height: 20px;">
+                                <div class="track-ticks" style="position: absolute; left: 6px; right: 6px; display: flex; justify-content: space-between; pointer-events: none; z-index: 1;">
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                </div>
+                                <input type="range" min="1" max="5" value="3" class="custom-slider" oninput="updateSliderUI(this)" style="-webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #565559; outline: none; margin: 0; cursor: pointer; position: relative; z-index: 2;">
+                            </div>
+                            <div class="value-display" style="font-size: 1rem; font-weight: 600; color: #CCCCCC; min-width: 12px; text-align: right; user-select: none;">3</div>
+                        </div>
                     </div>
                 </div>
                 <div class="st-pre" style="margin-top: 20px;">
                     <span class="sub-s">SOCIALIZING</span>
-                    <div class="wrap" style="border-radius: 20px;">
-                        <span class="sp-wrap end" style="cursor:pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m807.74-354.24-83.85-84.09q45.76-41.76 73.52-99.76 27.76-58 27.76-124 0-65.76-27.4-123.28-27.4-57.52-72.68-99.28l83.84-83.85q61.81 57.76 99.47 137.07 37.67 79.3 37.67 169.34 0 90.52-38.03 170.43-38.02 79.9-100.3 137.42ZM678.3-487.63l-83.6-84.33q19.28-16.28 31.06-39.06 11.78-22.78 11.78-50.59 0-26.04-11.9-49.47-11.9-23.42-30.71-39.94l84.09-84.09q36.57 32.81 57.87 77.49 21.31 44.69 21.31 96.01 0 51.57-21.67 96.37-21.66 44.8-58.23 77.61Zm-320.1 12.8q-78.16 0-132.59-54.43-54.44-54.44-54.44-132.47t54.44-132.47q54.43-54.43 132.47-54.43 78.03 0 132.46 54.43 54.44 54.44 54.44 132.47t-54.2 132.47q-54.19 54.43-132.58 54.43ZM13.93-97.74v-133.22q0-40.11 21.3-73.8 21.29-33.7 54.05-50.22 53.52-26.76 121.46-45.62 67.93-18.86 147.46-18.86 79.52 0 147.45 18.62 67.94 18.62 121.46 45.38 32.52 16.53 53.93 50.46 21.42 33.93 21.42 74.04v133.22H13.93Z"/></svg>
-
+                    <div class="wrap" style="border-radius: 20px; display: flex; align-items: center; padding: 18px 20px; box-sizing: border-box; height: 72px; gap: 16px;">
+                        <span class="sp-wrap end" style="cursor:pointer; display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" style="margin-right:2px;" width="24px" fill="#e3e3e3"><path d="m807.74-354.24-83.85-84.09q45.76-41.76 73.52-99.76 27.76-58 27.76-124 0-65.76-27.4-123.28-27.4-57.52-72.68-99.28l83.84-83.85q61.81 57.76 99.47 137.07 37.67 79.3 37.67 169.34 0 90.52-38.03 170.43-38.02 79.9-100.3 137.42ZM678.3-487.63l-83.6-84.33q19.28-16.28 31.06-39.06 11.78-22.78 11.78-50.59 0-26.04-11.9-49.47-11.9-23.42-30.71-39.94l84.09-84.09q36.57 32.81 57.87 77.49 21.31 44.69 21.31 96.01 0 51.57-21.67 96.37-21.66 44.8-58.23 77.61Zm-320.1 12.8q-78.16 0-132.59-54.43-54.44-54.44-54.44-132.47t54.44-132.47q54.43-54.43 132.47-54.43 78.03 0 132.46 54.43 54.44 54.44 54.44 132.47t-54.2 132.47q-54.19 54.43-132.58 54.43ZM13.93-97.74v-133.22q0-40.11 21.3-73.8 21.29-33.7 54.05-50.22 53.52-26.76 121.46-45.62 67.93-18.86 147.46-18.86 79.52 0 147.45 18.62 67.94 18.62 121.46 45.38 32.52 16.53 53.93 50.46 21.42 33.93 21.42 74.04v133.22H13.93Z"/></svg>
                         </span>
+                        <div class="slider-wrapper" style="flex-grow: 1; display: flex; align-items: center; gap: 14px;">
+                            <div style="position: relative; display: flex; align-items: center; flex-grow: 1; height: 20px;">
+                                <div class="track-ticks" style="position: absolute; left: 6px; right: 6px; display: flex; justify-content: space-between; pointer-events: none; z-index: 1;">
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                </div>
+                                <input type="range" min="1" max="5" value="4" class="custom-slider" oninput="updateSliderUI(this)" style="-webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #565559; outline: none; margin: 0; cursor: pointer; position: relative; z-index: 2;">
+                            </div>
+                            <div class="value-display" style="font-size: 1rem; font-weight: 600; color: #CCCCCC; min-width: 12px; text-align: right; user-select: none;">4</div>
+                        </div>
                     </div>
                 </div>
                 <div class="st-pre" style="margin-top: 20px;">
                     <span class="sub-s">THRILL SEEKING</span>
-                    <div class="wrap" style="border-radius: 20px;">
-                        <span class="sp-wrap end" style="cursor:pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480.03-267.85q-37.99 0-65.08-27.06-27.1-27.07-27.1-65.06 0-38.75 27.06-65.46 27.07-26.72 65.06-26.72 38.75 0 65.46 26.68 26.72 26.69 26.72 65.44 0 37.99-26.68 65.08-26.69 27.1-65.44 27.1ZM345.33 14.67V-133.8q-83-33.24-121.5-109.58t-38.5-171.29h109.34q0 101 47.19 150.5 47.18 49.5 138.14 49.5 90.96 0 138.14-49.5 47.19-49.5 47.19-150.5h109.34q0 94.95-38.5 171.79-38.5 76.84-121.5 109.08V14.67H345.33Zm-160-464.3-72.39-151.24q-9.42 4-16.3 7.52-6.88 3.52-16.64 3.52-23.15 0-39.87-15.83-16.72-15.84-16.72-40.75v-146.46q0-77.43 133.96-130.58 133.96-53.14 323.01-53.14 189.05 0 322.63 53.14 133.58 53.15 133.58 130.58v146.46q0 24.91-16.72 40.75-16.72 15.83-39.87 15.83-9.49 0-16.39-3.52-6.89-3.52-16.65-7.52l-72.29 151.24H665.33l-58.96-221.96q-30.46-4.24-61.75-6.24-31.28-2-64.62-2t-64.62 2q-31.29 2-61.75 6.24l-58.96 221.96H185.33Zm48.15-82.94 34.72-123.78q-17.24 4.76-41.36 12t-40.6 12.48l47.24 99.3Zm493.04 0 47.24-99.3q-15.72-5.24-40.22-12.48t-41.74-12l34.72 123.78Z"/></svg>
-
+                    <div class="wrap" style="border-radius: 20px; display: flex; align-items: center; padding: 18px 20px; box-sizing: border-box; height: 72px; gap: 16px;">
+                        <span class="sp-wrap end" style="cursor:pointer; display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" style="margin-right:2px;" width="24px" fill="#e3e3e3"><path d="M480.03-267.85q-37.99 0-65.08-27.06-27.1-27.07-27.1-65.06 0-38.75 27.06-65.46 27.07-26.72 65.06-26.72 38.75 0 65.46 26.68 26.72 26.69 26.72 65.44 0 37.99-26.68 65.08-26.69 27.1-65.44 27.1ZM345.33 14.67V-133.8q-83-33.24-121.5-109.58t-38.5-171.29h109.34q0 101 47.19 150.5 47.18 49.5 138.14 49.5 90.96 0 138.14-49.5 47.19-49.5 47.19-150.5h109.34q0 94.95-38.5 171.79-38.5 76.84-121.5 109.08V14.67H345.33Zm-160-464.3-72.39-151.24q-9.42 4-16.3 7.52-6.88 3.52-16.64 3.52-23.15 0-39.87-15.83-16.72-15.84-16.72-40.75v-146.46q0-77.43 133.96-130.58 133.96-53.14 323.01-53.14 189.05 0 322.63 53.14 133.58 53.15 133.58 130.58v146.46q0 24.91-16.72 40.75-16.72 15.83-39.87 15.83-9.49 0-16.39-3.52-6.89-3.52-16.65-7.52l-72.29 151.24H665.33l-58.96-221.96q-30.46-4.24-61.75-6.24-31.28-2-64.62-2t-64.62 2q-31.29 2-61.75 6.24l-58.96 221.96H185.33Zm48.15-82.94 34.72-123.78q-17.24 4.76-41.36 12t-40.6 12.48l47.24 99.3Zm493.04 0 47.24-99.3q-15.72-5.24-40.22-12.48t-41.74-12l34.72 123.78Z"/></svg>
                         </span>
+                        <div class="slider-wrapper" style="flex-grow: 1; display: flex; align-items: center; gap: 14px;">
+                            <div style="position: relative; display: flex; align-items: center; flex-grow: 1; height: 20px;">
+                                <div class="track-ticks" style="position: absolute; left: 6px; right: 6px; display: flex; justify-content: space-between; pointer-events: none; z-index: 1;">
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                    <span class="tick" style="width: 4px; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; transition: all 0.15s ease;"></span>
+                                </div>
+                                <input type="range" min="1" max="5" value="2" class="custom-slider" oninput="updateSliderUI(this)" style="-webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #565559; outline: none; margin: 0; cursor: pointer; position: relative; z-index: 2;">
+                            </div>
+                            <div class="value-display" style="font-size: 1rem; font-weight: 600; color: #CCCCCC; min-width: 12px; text-align: right; user-select: none;">2</div>
+                        </div>
                     </div>
                 </div>
+                <script>
+                    function updateSliderUI(slider) {
+                        const wrapper = slider.closest('.slider-wrapper');
+                        const ticks = wrapper.querySelectorAll('.tick');
+                        const display = wrapper.querySelector('.value-display');
+                        const val = parseInt(slider.value);
+                        display.textContent = val;
+                        ticks.forEach((tick, index) => {
+                            if (index < val) {
+                                tick.style.backgroundColor = '#202023';
+                                tick.style.opacity = '0.5';
+                            } else {
+                                tick.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                                tick.style.opacity = '1';
+                            }
+                        });
+                        const min = parseInt(slider.min) || 1;
+                        const max = parseInt(slider.max) || 5;
+                        const percentage = ((val - min) / (max - min)) * 100;
+                        
+                        slider.style.background = `linear-gradient(to right, #ffffff 0%, #ffffff ${percentage}%, #565559 ${percentage}%, #565559 100%)`;
+                    }
+
+                    window.addEventListener('DOMContentLoaded', () => {
+                        document.querySelectorAll('.custom-slider').forEach(slider => updateSliderUI(slider));
+                    });
+                </script>
             <!--
                 <div style="margin-bottom: 20px;">
                     <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px;">Personality type</label>
@@ -9157,9 +9261,52 @@
                 <div style="width: 40px;"></div>
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+                <div class="st-pre" style="margin-top: 20px;">
+                    <span class="sub-s">PREFERENCES</span>
+                    <div class="wrap">
+                        <span class="sp-wrap" style="cursor:pointer;">
+                            Push notifications
+                            <label class="toggle-wrap" style="margin-left: auto; margin-right: 6px;">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            Post likes
+                            <label class="toggle-wrap" style="margin-left: auto; margin-right: 6px;">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            New followers
+                            <label class="toggle-wrap" style="margin-left: auto; margin-right: 6px;">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </span>
+                        <span class="sp-wrap end" id="not-t" style="cursor:pointer;">
+                            Comments on posts
+                            <label class="toggle-wrap" style="margin-left: auto; margin-right: 6px;">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+                <div class="st-pre" style="margin-top: 25px;">
+                    <span class="sub-s">WON'T WORK?</span>
+                    <div class="wrap" style="border-radius: 20px;">
+                        <span class="sp-wrap end" style="cursor:pointer;">
+                            Re-enable notification permissions
+                            <svg style="margin-left: auto; margin-right: 6px;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M181.24-164.65q-23.67 0-40.13-16.46t-16.46-40.01q0-23.55 16.46-40.13 16.46-16.58 40.13-16.58h20.54v-273.39q0-92.91 55.48-167.2 55.48-74.3 145.39-99.54v-19.28q0-32.43 22.46-54.89T480-914.59q32.43 0 54.89 22.46t22.46 54.89v19.28q89.91 25 145.89 98.8 55.98 73.79 55.98 167.94v273.39h20.54q23.44 0 40.01 16.58 16.58 16.58 16.58 40.13 0 23.55-16.58 40.01-16.57 16.46-40.01 16.46H181.24Zm299 132.95q-38.72 0-65.96-27.23-27.24-27.24-27.24-65.72H573.2q0 38.48-27.24 65.72-27.24 27.23-65.72 27.23Z"/></svg>
+                        </span>
+                    </div>
+                </div>
+                <!--
                 <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Manage your notification preferences.</p>
                 <div id="notifications-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-                <button onclick="saveNotificationSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Save</button>
+                <button onclick="saveNotificationSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Save</button>-->
             </div>
         </div>
         <div id="language-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 15; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
@@ -9171,11 +9318,106 @@
                 <div style="width: 40px;"></div>
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
-                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Select your preferred language.</p>
+                <div class="st-pre" style="margin-top: 20px;">
+                    <span class="sub-s">OPTIONS</span>
+                    <div class="wrap">
+                        <span class="sp-wrap" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇺🇸</span> English
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇷🇴</span> Romanian
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇪🇸</span> Spanish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇫🇷</span> French
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇩🇪</span> German
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇮🇹</span> Italian
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇵🇹</span> Portuguese
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇳🇱</span> Dutch
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇵🇱</span> Polish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇸🇪</span> Swedish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇳🇴</span> Norwegian
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇩🇰</span> Danish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇫🇮</span> Finnish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇬🇷</span> Greek
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇹🇷</span> Turkish
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇮🇱</span> Hebrew
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇸🇦</span> Arabic
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇮🇳</span> Hindi
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇹🇭</span> Thai
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇻🇳</span> Vietnamese
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇮🇩</span> Indonesian
+                        </span>
+                        <span class="sp-wrap end" id="not-t" style="cursor:pointer;">
+                            <span style="margin-right: 15px; font-size: 24px;">🇰🇷</span> Korean
+                        </span>
+                    </div>
+                </div>
+                <!--            const LANGUAGES = [
+                { code: 'en', emoji: '🇺🇸', name: 'English' },
+                { code: 'ro', emoji: '🇷🇴', name: 'Romanian' },
+                { code: 'es', emoji: '🇪🇸', name: 'Spanish' },
+                { code: 'fr', emoji: '🇫🇷', name: 'French' },
+                { code: 'de', emoji: '🇩🇪', name: 'German' },
+                { code: 'it', emoji: '🇮🇹', name: 'Italian' },
+                { code: 'pt', emoji: '🇵🇹', name: 'Portuguese' },
+                { code: 'nl', emoji: '🇳🇱', name: 'Dutch' },
+                { code: 'pl', emoji: '🇵🇱', name: 'Polish' },
+                { code: 'sv', emoji: '🇸🇪', name: 'Swedish' },
+                { code: 'no', emoji: '🇳🇴', name: 'Norwegian' },
+                { code: 'da', emoji: '🇩🇰', name: 'Danish' },
+                { code: 'fi', emoji: '🇫🇮', name: 'Finnish' },
+                { code: 'el', emoji: '🇬🇷', name: 'Greek' },
+                { code: 'tr', emoji: '🇹🇷', name: 'Turkish' },
+                { code: 'he', emoji: '🇮🇱', name: 'Hebrew' },
+                { code: 'ar', emoji: '🇸🇦', name: 'Arabic' },
+                { code: 'hi', emoji: '🇮🇳', name: 'Hindi' },
+                { code: 'th', emoji: '🇹🇭', name: 'Thai' },
+                { code: 'vi', emoji: '🇻🇳', name: 'Vietnamese' },
+                { code: 'id', emoji: '🇮🇩', name: 'Indonesian' },
+                { code: 'ko', emoji: '🇰🇷', name: 'Korean' }
+            ];-->
+                <!--<p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Select your preferred language.</p>
                 <div style="background: var(--settings); border-radius: 30px; overflow: hidden;">
                     <div id="language-list" style="display: flex; flex-direction: column; gap: 2px; padding: 6px;"></div>
                 </div>
-                <button onclick="closeLanguageSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Apply</button>
+                <button onclick="closeLanguageSettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Apply</button>-->
             </div>
         </div>
         <div id="clear-data-popup">
@@ -9197,7 +9439,30 @@
                 <div style="width: 40px;"></div>
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
-                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Manage your privacy and security settings.</p>
+                <div class="st-pre" style="margin-top: 20px;">
+                    <span class="sub-s">PROTECT YOUR ACCOUNT</span>
+                    <div class="wrap">
+                        <span class="sp-wrap" style="cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M258.2-126.17q-104.69 0-179.64-71.58Q3.61-269.33 3.61-373.76q0-86.2 48.62-155.51 48.62-69.32 130.57-91.84 34-95.48 115.36-154.1 81.36-58.62 181.84-58.62 114.15 0 199.09 72.78 84.93 72.77 107.26 182.16 4 17.88-7.72 32.14-11.72 14.25-29.67 16.73-70.57 14.95-116.37 70.86-45.81 55.9-45.81 128.7v147.7q0 23.43-16.45 40.01-16.46 16.58-40.13 16.58h-272Zm452.87 0q-18.53 0-31.41-12.88-12.88-12.88-12.88-31.41v-120q0-17 11.62-29.76 11.62-12.76 28.38-14.52v-35.72q0-34.76 24.76-59.52 24.76-24.76 59.53-24.76 34.76 0 59.52 24.76 24.76 24.76 24.76 59.52v35.72q17 1.76 28.5 14.52t11.5 29.76v120q0 18.53-12.76 31.41-12.76 12.88-31.52 12.88h-160Zm44.28-208.57h71.43v-35.72q0-14.47-10.62-25.09t-24.98-10.62q-14.35 0-25.09 10.62t-10.74 25.09v35.72Z"/></svg>
+                            Encrypted messages
+                            <label class="toggle-wrap" style="margin-left: auto; margin-right: 6px;">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </span>
+                        <span class="sp-wrap" id="not-t" style="cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M239.35-35.04q-47.63 0-80.4-32.78-32.78-32.77-32.78-80.4v-401.06q0-47.87 32.78-80.52 32.77-32.66 80.4-32.66h13.13v-73.06q0-96 66.38-163t161.14-67q94.76 0 161.14 67 66.38 67 66.38 163v73.06h13.13q47.63 0 80.4 32.66 32.78 32.65 32.78 80.52v401.06q0 47.63-32.78 80.4-32.77 32.78-80.4 32.78h-481.3Zm305.72-246.88q26.78-26.91 26.78-65.19 0-38.04-26.78-64.94-26.79-26.91-65.07-26.91-38.28 0-65.07 26.91-26.78 26.9-26.78 64.94 0 38.28 26.78 65.19 26.79 26.9 65.07 26.9 38.28 0 65.07-26.9ZM365.65-662.46h228.7v-73.06q0-48.21-33.23-82.52-33.23-34.31-81.12-34.31-47.89 0-81.12 34.31-33.23 34.31-33.23 82.52v73.06Z"/></svg>
+                            App lock
+                            <svg xmlns="http://www.w3.org/2000/svg" style="margin-left: auto; margin-right: 6px;" height="18px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M561.02-480.76 271.85-770.17q-19.2-18.96-19.2-46.4 0-27.43 18.96-46.63 19.19-18.95 46.75-18.95 27.55 0 46.51 18.95l302.65 302.42q16.96 16.95 24.94 37.65 7.97 20.7 7.97 42.25t-7.97 42.25q-7.98 20.7-24.94 37.89L364.87-98.33q-18.96 18.96-46.39 18.84-27.44-.12-46.63-19.08-18.96-18.95-18.96-46.51 0-27.55 18.96-46.51l289.17-289.17Z"/></svg>
+                        </span>
+                        <span class="sp-wrap end" id="not-t" style="cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M157.83-124.65q-47.11 0-80.15-33.03-33.03-33.04-33.03-80.15v-484.34q0-47.11 33.03-80.15 33.04-33.03 80.15-33.03h644.34q47.87 0 80.53 32.65 32.65 32.66 32.65 80.53v21.71q-17.48-11.24-37.96-16.97-20.48-5.74-42.96-5.74h-199q-66.23 0-113.71 46.85-47.48 46.86-47.72 113.34v9.94H294.59q-19.2 0-34.16 11.71-14.95 11.72-20.19 29.92l-21.52 75.08q-23.24 28-36.62 63.12-13.38 35.12-13.38 74.36t13.38 74.36q13.38 35.12 36.62 63.36l10.24 36.48h-71.13Zm477.84 0q-32.71 0-57.19-24.48Q554-173.61 554-206.33v-355.93q0-33.96 24.48-57.44 24.48-23.47 57.19-23.47h199q33.72 0 57.2 23.47 23.48 23.48 23.48 57.44v355.93q0 32.72-23.48 57.2-23.48 24.48-57.2 24.48h-199Zm-335.43-41.63-9.52-34.85q-19.76-18.24-30.88-43.36-11.12-25.12-11.12-54.24t11.12-54.36q11.12-25.24 30.88-43.24l9.52-35.08q5.24-18.2 20.31-29.92 15.08-11.71 34.28-11.71H411q19.2 0 34.15 11.71 14.96 11.72 20.44 29.92l9.28 35.08q20 18 31.12 43.24 11.12 25.24 11.12 54.36t-11.12 54.24q-11.12 25.12-31.12 43.36l-9.28 34.85q-5.48 18.43-20.44 30.03-14.95 11.6-34.15 11.6h-56.17q-19.2 0-34.28-11.6-15.07-11.6-20.31-30.03Zm82.67-86.76q20.52 0 33.17-13.14 12.64-13.15 12.64-32.55t-13.64-32.66q-13.65-13.26-32.17-13.26-18.52 0-32.16 13.14-13.64 13.14-13.64 32.78t13.02 32.66q13.02 13.03 32.78 13.03Zm351.76-159.83q17.24 0 29.1-11.86 11.86-11.86 11.86-29.1 0-17.24-11.86-29.09-11.86-11.86-29.1-11.86-17.24 0-29.09 11.86-11.86 11.85-11.86 29.09 0 17.24 11.86 29.1 11.85 11.86 29.09 11.86Z"/></svg>
+                            Active sessions
+                            <svg xmlns="http://www.w3.org/2000/svg" style="margin-left: auto; margin-right: 6px;" height="18px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M561.02-480.76 271.85-770.17q-19.2-18.96-19.2-46.4 0-27.43 18.96-46.63 19.19-18.95 46.75-18.95 27.55 0 46.51 18.95l302.65 302.42q16.96 16.95 24.94 37.65 7.97 20.7 7.97 42.25t-7.97 42.25q-7.98 20.7-24.94 37.89L364.87-98.33q-18.96 18.96-46.39 18.84-27.44-.12-46.63-19.08-18.96-18.95-18.96-46.51 0-27.55 18.96-46.51l289.17-289.17Z"/></svg>
+                        </span>
+                    </div>
+                </div>
+                <!--<p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Manage your privacy and security settings.</p>
                 <div style="background: var(--settings); border-radius: 16px; overflow: hidden;">
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:transparent;">
                         <div>
@@ -9210,7 +9475,7 @@
                         </label>
                     </div>
                 </div>
-                <button onclick="closeSecuritySettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply</button>
+                <button onclick="closeSecuritySettings()" style="margin-top: 24px; width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Apply</button>-->
             </div>
         </div>
         <div id="subscription-subsettings" style="position: absolute; inset: 0; background: var(--card); z-index: 17; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; border-radius: 45px 45px 0 0;">
@@ -9225,13 +9490,13 @@
                 <div id="subscription-status" style="background: var(--settings); border-radius: 30px; padding: 20px 18px; margin-bottom: 20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                         <span style="font-weight: 600; color: var(--text-primary);">Current plan</span>
-                        <span id="subscription-plan-badge" style="padding: 4px 14px; border-radius: 100px; font-size: 13px; font-weight: 700; background: #34c75920; color: #34c759;">Free</span>
+                        <span id="subscription-plan-badge" style="padding: 4px 14px; border-radius: 100px; font-size: 13px; font-weight: 700; background: var(--text-primary); color: var(--bg-primary);">Free</span>
                     </div>
                     <div style="font-size: 13px; color: var(--text-secondary);">
                         <span id="subscription-plan-desc">Basic features included. Upgrade for more.</span>
                     </div>
                 </div>
-                <div id="subscription-actions" style="display: flex; flex-direction: column; gap: 10px;">
+                <div id="subscription-actions" style="display: flex; flex-direction: column; gap: 10px; padding: 0px 5px;">
                     <button id="subscription-upgrade-btn" onclick="upgradeSubscription()" style="width: 100%; padding: 14px; border-radius: 14px; background: var(--button-bg); color: var(--button-text); font-weight: 700; font-size: 15px; cursor: pointer;">Upgrade to Premium</button>
                     <button id="subscription-cancel-btn" onclick="cancelSubscription()" style="display: none; width: 100%; padding: 14px; border-radius: 14px; background: transparent; color: #ff3b30; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid #ff3b30;">Cancel subscription</button>
                 </div>
@@ -9267,12 +9532,11 @@
                 <div style="width: 40px;"></div>
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
-                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Find answers to common questions.</p>
                 <div style="display:flex; align-items:center; gap:10px; background:var(--iconbox-bg); border:1.5px solid var(--border-dark-alpha-2); border-radius:14px; padding:10px 14px; margin-bottom:20px;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="var(--text-subtle)"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
-                    <input id="help-search-input" placeholder="Search for help..." style="flex:1; background:none; border:none; outline:none; font-size:15px; color:var(--text-primary);">
+                    <input id="help-search-input" placeholder="Search for help..." style="flex:1; background:none; border:none; outline:none; font-size:15px; color:var(--text-primary); border-radius: 22px;">
                 </div>
-                <div id="help-articles-list" style="display:flex; flex-direction:column; gap:10px;">
+                <div id="help-articles-list" style="display:flex; flex-direction:column; gap:11px;">
                     <div class="help-article" data-keywords="movie finder search">
                         <div style="font-weight:700; color:var(--text-primary);">How to find movies?</div>
                         <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Use the search bar or Swipify to discover films.</div>
@@ -9285,9 +9549,117 @@
                         <div style="font-weight:700; color:var(--text-primary);">How to add friends?</div>
                         <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Search for a user and tap "Add friend".</div>
                     </div>
+                    <div class="help-article" data-keywords="swipify swipe discover">
+                        <div style="font-weight:700; color:var(--text-primary);">What is Swipify?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Swipify lets you swipe through movies to discover new films based on your taste.</div>
+                    </div>
+                    <div class="help-article" data-keywords="post create write">
+                        <div style="font-weight:700; color:var(--text-primary);">How to create a post?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Tap the "New post" button, write your take, and optionally tag a film.</div>
+                    </div>
+                    <div class="help-article" data-keywords="spoiler mark hide">
+                        <div style="font-weight:700; color:var(--text-primary);">How to mark spoilers?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">While writing a post, select words and tap "Mark Spoilers" to hide them.</div>
+                    </div>
+                    <div class="help-article" data-keywords="collection saved watched watchlist">
+                        <div style="font-weight:700; color:var(--text-primary);">How do I manage my collection?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to your Profile to see Saved, Watched, and Watch List films.</div>
+                    </div>
+                    <div class="help-article" data-keywords="watchlist watch list save later">
+                        <div style="font-weight:700; color:var(--text-primary);">How to add a movie to my Watch List?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Open a movie and tap "Add to list" to save it for later.</div>
+                    </div>
+                    <div class="help-article" data-keywords="ai movi recommendations mood">
+                        <div style="font-weight:700; color:var(--text-primary);">How does the AI recommendation work?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Movi uses your personality and taste to suggest films. Chat with it anytime from the home screen.</div>
+                    </div>
+                    <div class="help-article" data-keywords="theme dark light appearance">
+                        <div style="font-weight:700; color:var(--text-primary);">How to change the app theme?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Theme" and choose Light or Dark mode.</div>
+                    </div>
+                    <div class="help-article" data-keywords="streaming platform netflix disney hbo">
+                        <div style="font-weight:700; color:var(--text-primary);">How to set my streaming services?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Streaming services" and pick the platforms you use.</div>
+                    </div>
+                    <div class="help-article" data-keywords="personality quiz type introvert extrovert">
+                        <div style="font-weight:700; color:var(--text-primary);">How to update my personality type?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Personality" to change your type and social preferences.</div>
+                    </div>
+                    <div class="help-article" data-keywords="customize ai instructions memories">
+                        <div style="font-weight:700; color:var(--text-primary);">How to customize the AI?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Customize AI" to add custom instructions or manage saved memories.</div>
+                    </div>
+                    <div class="help-article" data-keywords="message chat dm friend">
+                        <div style="font-weight:700; color:var(--text-primary);">How to message someone?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Messages, then tap "New Chat", and select a friend to start chatting.</div>
+                    </div>
+                    <div class="help-article" data-keywords="encryption security private messages">
+                        <div style="font-weight:700; color:var(--text-primary);">Are my messages private?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Yes. Go to Settings, then "Security" to enable end-to-end encryption for all chats.</div>
+                    </div>
+                    <div class="help-article" data-keywords="status set visible profile">
+                        <div style="font-weight:700; color:var(--text-primary);">How to set a status?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Tap your profile picture and choose "Set status". It shows on your profile for a limited time.</div>
+                    </div>
+                    <div class="help-article" data-keywords="reaction custom emoji post">
+                        <div style="font-weight:700; color:var(--text-primary);">How to add a custom reaction?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Long-press a post and tap "Custom Reaction" to set your own emoji or text.</div>
+                    </div>
+                    <div class="help-article" data-keywords="report user block abuse">
+                        <div style="font-weight:700; color:var(--text-primary);">How to report a user?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to their profile, tap the menu, and select "Report user" with a reason.</div>
+                    </div>
+                    <div class="help-article" data-keywords="space sections layout customize profile">
+                        <div style="font-weight:700; color:var(--text-primary);">How to customize my Space layout?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">In Edit Space, hold and drag sections to reorder them, or tap "Add Section" for new ones.</div>
+                    </div>
+                    <div class="help-article" data-keywords="quote edit profile space text">
+                        <div style="font-weight:700; color:var(--text-primary);">How to add a quote to my profile?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">In Edit Space, tap "Edit Quote" to set a quote text, source, and color.</div>
+                    </div>
+                    <div class="help-article" data-keywords="subscription premium upgrade plan">
+                        <div style="font-weight:700; color:var(--text-primary);">How to upgrade to Premium?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Subscription" and tap "Upgrade to Premium".</div>
+                    </div>
+                    <div class="help-article" data-keywords="notifications push alerts">
+                        <div style="font-weight:700; color:var(--text-primary);">How to manage notifications?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Notifications" to manage your alert preferences.</div>
+                    </div>
+                    <div class="help-article" data-keywords="language change translate">
+                        <div style="font-weight:700; color:var(--text-primary);">How to change the app language?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Language" and select your preferred language.</div>
+                    </div>
+                    <div class="help-article" data-keywords="clear data reset cache delete">
+                        <div style="font-weight:700; color:var(--text-primary);">How to clear my app data?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Clear app data". This removes preferences, quiz results, and saved content.</div>
+                    </div>
+                    <div class="help-article" data-keywords="install pwa home screen app">
+                        <div style="font-weight:700; color:var(--text-primary);">How to install Cinemi on my phone?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">On iOS tap Share → Add to Home Screen. On Android tap the Chrome menu → Add to Home screen.</div>
+                    </div>
+                    <div class="help-article" data-keywords="log out sign out account">
+                        <div style="font-weight:700; color:var(--text-primary);">How to log out?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Log out" and confirm. You can always log back in anytime.</div>
+                    </div>
+                    <div class="help-article" data-keywords="bug report issue problem">
+                        <div style="font-weight:700; color:var(--text-primary);">How to report a bug?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Go to Settings, then "Report a bug", describe the issue, and tap Submit.</div>
+                    </div>
+                    <div class="help-article" data-keywords="party mode trailer watch together">
+                        <div style="font-weight:700; color:var(--text-primary);">What is Party Mode?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Party Mode lets you watch trailers together with friends inside the app.</div>
+                    </div>
+                    <div class="help-article" data-keywords="share profile instagram export">
+                        <div style="font-weight:700; color:var(--text-primary);">How to share my profile?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">Tap Share on your profile to post it to Instagram or copy the link.</div>
+                    </div>
+                    <div class="help-article" data-keywords="posters layout grid scroll large">
+                        <div style="font-weight:700; color:var(--text-primary);">How to change my posters layout?</div>
+                        <div style="font-size:13px; color:var(--text-subtle); margin-top:2px;">In Edit Space, go to Posters Layout and choose between Scroll, Grid, or Large view.</div>
+                    </div>
                 </div>
                 <div id="help-no-results" style="display:none; text-align:center; color:var(--text-subtle); padding:20px 0;">No results found.</div>
-                <button onclick="closeHelpCenterSettings()" style="margin-top:24px; width:100%; padding:14px; border-radius:14px; background:var(--button-bg); color:var(--button-text); font-weight:700; font-size:15px; cursor:pointer;">Done</button>
+                <!--<button onclick="closeHelpCenterSettings()" style="margin-top:24px; width:100%; padding:14px; border-radius:14px; background:var(--button-bg); color:var(--button-text); font-weight:700; font-size:15px; cursor:pointer;">Done</button>-->
             </div>
         </div>
         <div class="drag-pill"></div>
@@ -9718,15 +10090,15 @@
 
                 if (isPremium) {
                     badge.textContent = 'Premium';
-                    badge.style.background = '#ffd70020';
-                    badge.style.color = '#ffd700';
+                    badge.style.background = '#FFFFFF';
+                    badge.style.color = '#000000';
                     desc.textContent = 'You have full access to all premium features.';
                     upgradeBtn.style.display = 'none';
                     cancelBtn.style.display = 'block';
                 } else {
                     badge.textContent = 'Free';
-                    badge.style.background = '#34c75920';
-                    badge.style.color = '#34c759';
+                    badge.style.background = '#656469';
+                    badge.style.color = '#FFFFFF';
                     desc.textContent = 'Basic features included. Upgrade for more.';
                     upgradeBtn.style.display = 'block';
                     cancelBtn.style.display = 'none';
