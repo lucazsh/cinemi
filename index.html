@@ -2690,7 +2690,7 @@
             position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
+            /* backdrop-filter: blur(8px); */
             transition: opacity 0.28s;
         }
 
@@ -6865,6 +6865,178 @@
             appearance: none;
             -webkit-tap-highlight-color: transparent;
         }
+        body.editing-space #profile {
+            position: fixed;
+            inset: 0;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding-bottom: 0;
+            border: 6px solid white;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.4);
+            border-radius: 60px;
+        }
+        @keyframes spaceWiggle {
+            0% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+            100% { transform: rotate(-1deg); }
+        }
+        .wiggle-active {
+            animation: spaceWiggle 0.25s infinite ease-in-out !important;
+        }
+        .sp-section { position: relative; }
+        .btn-del {
+            position: absolute; top: -10px; left: -5px; width: 26px; height: 26px;
+            background: #ff3b30; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; z-index: 100; cursor: pointer;
+        }
+        .btn-edit-sec {
+            position: absolute; top: -10px; right: -5px; width: 26px; height: 26px;
+            background: #3d3d40; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
+        }
+        #edit-bar-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(24, 24, 26, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 380px;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(200px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 1000;
+            height: 65px;
+            overflow: visible;
+        }
+
+        #edit-bar-bottom.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .eb-left,
+        .eb-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .eb-left {
+            justify-content: flex-start;
+        }
+
+        .eb-right {
+            justify-content: flex-end;
+        }
+
+        .eb-center {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eb-tool-btn {
+            width: 64px;
+            height: 44px;
+            border-radius: 14px;
+            background: #272727;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.15s;
+        }
+
+        .eb-tool-btn:active {
+            transform: scale(0.92);
+        }
+
+        .eb-plus-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 22px;
+            background: #ffffff;
+            color: #000;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            transform: translateY(-12px);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .eb-plus-btn svg {
+            fill: black;
+        }
+
+        .eb-plus-btn:active {
+            transform: translateY(-16px) scale(0.92);
+        }
+
+        .eb-done {
+            background: rgba(0, 0, 0, 0.318);
+            color: rgb(255, 255, 255);
+            width: 64px;
+            height: 44px;
+            border-radius: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        .eb-done:active {
+            transform: scale(0.94);
+            opacity: 0.8;
+        }
+        body.editing-space #sp-fab {
+            display: none !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+            transform: translateX(-50%) translateY(80px) !important;
+        }
+
+        #edit-bar-bottom {
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity 0.7s ease,
+                        scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform, opacity;
+        }
+
+        #edit-bar-bottom.active {
+            transform: translateX(-50%) translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        #edit-bar-bottom.exiting {
+            transform: translateX(-50%) translateY(140px) scale(0.92);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #profile {
+            transition: border 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-radius 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 0px solid transparent;
+            box-shadow: none;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+
+        body.editing-space #profile {
+            border: 6px solid white;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.4);
+            border-radius: 60px;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -8606,99 +8778,6 @@
         </div>
     </div>
 
-    <div id="spaceedit-panel" class="panel">
-        <div class="backdrop"></div>
-        <div class="sheet">
-            <p class="edit-sheet-title">Edit Space</p>
-            <div class="edit-block">
-                <span class="edit-block-label">Title Color</span>
-                <div class="color-swatches" id="color-swatches"></div>
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Profile Background</span>
-                <div class="layout-options" id="profile-bg-options">
-                    <div class="layout-opt" data-bg="auto" onclick="setProfileBgMode('auto',this)">
-                        <div class="layout-icon">
-                            <span style="width:100%;height:100%;background:linear-gradient(to bottom,rgba(200,80,80,0.5),transparent);border-radius:4px;"></span>
-                        </div>
-                        <span class="layout-opt-label">Auto</span>
-                    </div>
-                    <div class="layout-opt active" data-bg="static" onclick="setProfileBgMode('static',this)">
-                        <div class="layout-icon">
-                            <span style="width:100%;height:100%;background:linear-gradient(to bottom,rgba(31,31,31,0.8),transparent);border-radius:4px;"></span>
-                        </div>
-                        <span class="layout-opt-label">Static</span>
-                    </div>
-                </div>
-            </div>
-            <div class="edit-block">
-                <div class="per-section-toggle-row">
-                    <div>
-                        <div class="per-section-toggle-label">Individual title colors</div>
-                        <div class="per-section-sublabel">Set a different color per section</div>
-                    </div>
-                    <label class="toggle-wrap">
-                        <input type="checkbox" id="per-section-toggle" onchange="togglePerSection(this.checked)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                <div class="per-section-colors" id="per-section-colors"></div>
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Posters Layout</span>
-                <div class="layout-options">
-                    <div class="layout-opt active" data-layout="scroll" onclick="setLayout('scroll',this)">
-                        <div class="layout-icon"><span style="height:100%"></span><span style="height:80%"></span><span
-                                style="height:90%"></span></div>
-                        <span class="layout-opt-label">Scroll</span>
-                    </div>
-                    <div class="layout-opt" data-layout="grid" onclick="setLayout('grid',this)">
-                        <div class="layout-icon" style="flex-wrap:wrap;height:28px;width:36px;gap:2px;">
-                            <span style="width:44%;height:44%;border-radius:2px;flex:none;"></span>
-                            <span style="width:44%;height:44%;border-radius:2px;flex:none;"></span>
-                            <span style="width:44%;height:44%;border-radius:2px;flex:none;"></span>
-                            <span style="width:44%;height:44%;border-radius:2px;flex:none;"></span>
-                        </div>
-                        <span class="layout-opt-label">Grid</span>
-                    </div>
-                    <div class="layout-opt" data-layout="large" onclick="setLayout('large',this)">
-                        <div class="layout-icon"><span style="height:100%;flex:2;border-radius:4px;"></span></div>
-                        <span class="layout-opt-label">Large</span>
-                    </div>
-                </div>
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Sections (hold and drag to reorder)</span>
-                <div class="section-rows" id="edit-section-rows"></div>
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Add Section</span>
-                <div class="add-section-grid" id="add-section-grid"></div>
-            </div>
-            <button class="btn-close" onclick="saveAndCloseSpace()">Done</button>
-        </div>
-    </div>
-
-    <div id="quoteedit-panel" class="panel">
-        <div class="backdrop"></div>
-        <div class="sheet">
-            <p class="edit-sheet-title">Edit Quote</p>
-            <div class="edit-block">
-                <span class="edit-block-label">Quote Text</span>
-                <textarea class="quote-edit-textarea" id="quote-text-input" rows="3"
-                    placeholder="Enter quote..."></textarea>
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Source</span>
-                <input class="quote-edit-input" type="text" id="quote-source-input" placeholder="— Film, Year">
-            </div>
-            <div class="edit-block">
-                <span class="edit-block-label">Quote Text Color</span>
-                <div class="color-swatches" id="quote-color-swatches"></div>
-            </div>
-            <button class="btn-close" onclick="saveAndCloseQuote()">Done</button>
-        </div>
-    </div>
     <div id="colorpicker-panel" class="panel" style="z-index: 10000;">
         <div class="backdrop" style="background: rgba(0, 0, 0, 0.5);backdrop-filter: blur(0px);"></div>
         <div class="sheet" style="padding-bottom: calc(32px + env(safe-area-inset-bottom));">
@@ -11782,12 +11861,15 @@
         ];
 
         const ADDABLE = [
-            { id: "recentlywatched", label: "Recently Watched", desc: "Last seen" },
-            { id: "watchlistprev", label: "Watchlist", desc: "Up next" },
-            { id: "topdir", label: "Top Director", desc: "Your fave" },
-            { id: "mood", label: "Mood Board", desc: "Vibes" },
-            { id: "review", label: "Latest Review", desc: "Your take" },
-            { id: "friendact", label: "Friend Activity", desc: "What they watch" },
+            { id: "favs", label: "My Favs", desc: "Your favorite movies", core: true },
+            { id: "genres", label: "My Genres", desc: "Your top genres", core: true },
+            { id: "quote", label: "Quote", desc: "Your favorite quote", core: true },
+            { id: "recentlywatched", label: "Recently Watched", desc: "Last seen", core: false },
+            { id: "watchlistprev", label: "Watchlist", desc: "Up next", core: false },
+            { id: "topdir", label: "Top Director", desc: "Your fave", core: false },
+            { id: "mood", label: "Mood Board", desc: "Vibes", core: false },
+            { id: "review", label: "Latest Review", desc: "Your take", core: false },
+            { id: "friendact", label: "Friend Activity", desc: "What they watch", core: false },
         ];
 
         let state = {
@@ -11806,29 +11888,444 @@
                 { id: "quote", label: "Quote", visible: true, core: true, titleColor: "auto", customColor: "#ff3b30", titleAlign: "left" },
             ]
         };
+
         window._mv = { favs: [], watchlist: [], 'genre-878': [], 'genre-18': [], 'genre-53': [] };
         window._spaceImgCache = {};
+        let scEditMode = false;
+        let scDragIdx = null;
 
         function getColor(c, custom) {
-            if (c === "auto") return "var(--title-color)";
+            if (c === "auto") return "var(--text-primary)";
             if (c === "custom") return custom;
             return c;
         }
-        function renderSpace(fromEdit) {
-            const container = document.getElementById("space-sections-container");
+
+        function getSectionHTML(sec, titleColor, config) {
+            const align = sec.titleAlign || "left";
+            const originMap = { left: "top left", center: "top center", right: "top right" };
+            const titleHTML = `<div class="sp-title-wrap" style="text-align:${align}"><span class="sp-title" style="color:${titleColor};transform-origin:${originMap[align]}">${sec.label}</span></div>`;
+
+            if (sec.id === "favs") {
+                if (config.layout === "grid") return titleHTML + `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 10px;" class="space-favs-row"></div>`;
+                if (config.layout === 'large') return titleHTML + `<div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:10px;" class="space-favs-row"></div>`;
+                return titleHTML + `<div class="sp-mov-row space-favs-row"></div>`;
+            }
+            if (sec.id === "genres") {
+                return titleHTML + `<div class="sp-genres-list">
+                    <div class="sp-genre-row"><span class="sp-genre-name scifi">Sci-Fi</span><div class="sp-mov-row space-genre-878"></div></div>
+                    <div class="sp-genre-row"><span class="sp-genre-name drama">Drama</span><div class="sp-mov-row space-genre-18"></div></div>
+                    <div class="sp-genre-row"><span class="sp-genre-name thriller">Thriller</span><div class="sp-mov-row space-genre-53"></div></div>
+                </div>`;
+            }
+            if (sec.id === "watchlistprev") {
+                return titleHTML + `<div class="sp-mov-row space-watchlist-row"></div>`;
+            }
+            if (sec.id === "quote") {
+                const qColor = getColor(config.quoteTextColor, config.quoteCustomColor);
+                return titleHTML + `<div class="sp-quote-wrap">
+                    <p class="sp-quote-text" style="color:${qColor}">"${config.quoteText}"</p>
+                    <span class="sp-quote-source">&mdash; ${config.quoteSource}</span>
+                </div>`;
+            }
+            const meta = ADDABLE.find(s => s.id === sec.id);
+            return titleHTML + `<div style="margin:0 15px;background:var(--bg-secondary);border-radius:20px;padding:20px;border:1px solid var(--border-dark-alpha-2);display:flex;align-items:center;gap:12px;">
+                <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">${meta ? meta.desc : "Empty Section"}</span>
+            </div>`;
+        }
+
+        const dragStyles = document.createElement('style');
+        dragStyles.textContent = `
+            .sp-section { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s ease; touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; }
+            .sp-section.wiggle-active { touch-action: none; }
+            .sp-section.drag-placeholder { opacity: 0.2; transform: scale(0.95); border: 2px dashed #888; }
+            .sp-clone { position: fixed !important; top: 0 !important; left: 0 !important; z-index: 999999 !important; pointer-events: none !important; opacity: 0.95; box-shadow: 0 25px 50px rgba(0,0,0,0.4); margin: 0 !important; will-change: transform; }
+            body.is-dragging { touch-action: none !important; overflow: hidden !important; overscroll-behavior: none !important; }
+            @keyframes sp-land {
+                0%   { opacity: 0; transform: scale(0.88); }
+                55%  { opacity: 1; transform: scale(1.06); }
+                80%  { transform: scale(0.97); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(dragStyles);
+
+        function renderSpace(config = state, containerId = "space-sections-container", isEditable = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
             container.innerHTML = "";
-            document.documentElement.style.setProperty("--title-color", getColor(state.titleColor, state.customColor));
-            state.sections.forEach(sec => {
-                if (!sec.visible) return;
+
+            if (!config.perSectionEnabled) {
+                document.documentElement.style.setProperty("--title-color", getColor(config.titleColor, config.customColor));
+            }
+
+            config.sections.forEach((sec, idx) => {
+                if (!sec.visible && !scEditMode) return;
                 const el = document.createElement("div");
                 el.className = "sp-section";
-                el.dataset.id = sec.id;
-                const titleC = state.perSectionEnabled ? getColor(sec.titleColor, sec.customColor) : "var(--title-color)";
-                el.innerHTML = getSectionHTML(sec, titleC);
+                el.dataset.secId = sec.id;
+
+                if (isEditable && scEditMode) {
+                    el.classList.add('wiggle-active');
+
+                    const del = document.createElement('div');
+                    del.className = 'btn-del'; del.innerHTML = '−';
+                    del.onclick = (e) => {
+                        e.stopPropagation();
+                        config.sections.splice(idx, 1);
+                        renderSpace(config, containerId, true);
+                    };
+                    el.appendChild(del);
+
+                    if (['favs', 'watchlistprev', 'quote'].includes(sec.id)) {
+                        const ed = document.createElement('div');
+                        ed.className = 'btn-edit-sec';
+                        ed.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#e3e3e3"><path d="M141.24-84.65q-23.67 0-40.13-16.46t-16.46-40.13v-112.35q0-22.4 8.53-43.25 8.52-20.85 24.62-37.01l519.91-519.9q11.4-11.64 25.85-16.62 14.45-4.98 29.42-4.98 14.89 0 28.5 4.6t25.56 16.08l107.87 107.39q11.72 11.71 16.2 25.79 4.48 14.07 4.48 29.26 0 14.97-4.98 29.05-4.98 14.07-16.7 25.55L334.33-117.8q-16.16 16.1-37.01 24.62-20.85 8.53-43.25 8.53H141.24ZM692.7-635.7l57-56.52-57.24-56.48-57 56 57.24 57Z"/></svg>`;
+                        ed.onclick = (e) => { e.stopPropagation(); openScConfig(idx); };
+                        el.appendChild(ed);
+                    }
+
+                    let lpTimer;
+                    let dragging = false;
+                    let startY = 0, currentY = 0, lastY = 0;
+                    let initialRect = null;
+                    let cloneEl = null;
+                    let siblingCache = [];
+                    let activePointerId = null;
+                    let rafId = null;
+                    let scrollAccum = 0;
+                    let scrollRafId = null;
+
+                    const scrollBox = document.getElementById('profile') || document.documentElement;
+                    const isWindowScroll = scrollBox === document.documentElement || scrollBox === document.body;
+
+                    const doScroll = (amount) => {
+                        if (isWindowScroll) window.scrollBy(0, amount);
+                        else scrollBox.scrollTop += amount;
+                    };
+
+                    const checkIntersections = () => {
+                        const scrollY = isWindowScroll ? window.scrollY : scrollBox.scrollTop;
+                        const dragMid = initialRect.top + (currentY - startY) + scrollY + (initialRect.height / 2);
+                        siblingCache.forEach((sib, i) => {
+                            if (sib.el === el) return;
+                            if (idx < i && dragMid > sib.absoluteMid) {
+                                sib.el.style.transform = `translateY(${-initialRect.height - 16}px)`;
+                            } else if (idx > i && dragMid < sib.absoluteMid) {
+                                sib.el.style.transform = `translateY(${initialRect.height + 16}px)`;
+                            } else {
+                                sib.el.style.transform = '';
+                            }
+                        });
+                    };
+
+                    const dragTick = () => {
+                        if (!dragging) return;
+                        cloneEl.style.transform = `translate(${initialRect.left}px, ${initialRect.top + (currentY - startY)}px) scale(1.05)`;
+                        const triggerZone = 150;
+                        const maxSpeed = 14;
+                        if (currentY < triggerZone) {
+                            doScroll(-Math.round(maxSpeed * (1 - currentY / triggerZone)));
+                        } else if (currentY > window.innerHeight - triggerZone) {
+                            doScroll(Math.round(maxSpeed * ((currentY - (window.innerHeight - triggerZone)) / triggerZone)));
+                        }
+                        checkIntersections();
+                        rafId = requestAnimationFrame(dragTick);
+                    };
+
+                    const scrollFlush = () => {
+                        doScroll(scrollAccum);
+                        scrollAccum = 0;
+                        scrollRafId = null;
+                    };
+
+                    const preventNativeAction = (e) => e.preventDefault();
+
+                    el.addEventListener('pointerdown', (e) => {
+                        if (!scEditMode || e.target.closest('.btn-del') || e.target.closest('.btn-edit-sec')) return;
+                        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+                        e.preventDefault();
+                        startY = e.clientY;
+                        currentY = e.clientY;
+                        lastY = e.clientY;
+                        scrollAccum = 0;
+                        activePointerId = e.pointerId;
+
+                        lpTimer = setTimeout(() => {
+                            if (activePointerId === null) return;
+                            if (scrollRafId) { cancelAnimationFrame(scrollRafId); scrollRafId = null; }
+                            scrollAccum = 0;
+                            dragging = true;
+                            if (navigator.vibrate) navigator.vibrate(40);
+
+                            initialRect = el.getBoundingClientRect();
+                            window.addEventListener('contextmenu', preventNativeAction);
+                            document.body.classList.add('is-dragging');
+
+                            cloneEl = el.cloneNode(true);
+                            cloneEl.className = 'sp-section sp-clone';
+                            cloneEl.style.transition = 'none';
+                            cloneEl.style.width = `${initialRect.width}px`;
+                            cloneEl.style.height = `${initialRect.height}px`;
+                            cloneEl.style.transform = `translate(${initialRect.left}px, ${initialRect.top}px) scale(1.05)`;
+                            document.body.appendChild(cloneEl);
+
+                            el.classList.add('drag-placeholder');
+                            el.classList.remove('wiggle-active');
+
+                            const scrollY = isWindowScroll ? window.scrollY : scrollBox.scrollTop;
+                            siblingCache = Array.from(container.children).map(sib => {
+                                const rect = sib.getBoundingClientRect();
+                                return { el: sib, absoluteMid: rect.top + scrollY + (rect.height / 2) };
+                            });
+
+                            try { el.setPointerCapture(activePointerId); } catch (_) {}
+                            rafId = requestAnimationFrame(dragTick);
+                        }, 350);
+                    }, { passive: false });
+
+                    el.addEventListener('pointermove', (e) => {
+                        if (!dragging) {
+                            const dy = lastY - e.clientY;
+                            lastY = e.clientY;
+                            if (Math.abs(e.clientY - startY) > 10) clearTimeout(lpTimer);
+                            scrollAccum += dy;
+                            if (!scrollRafId) scrollRafId = requestAnimationFrame(scrollFlush);
+                            return;
+                        }
+                        currentY = e.clientY;
+                    });
+
+                    const finishDrag = (e) => {
+                        clearTimeout(lpTimer);
+                        activePointerId = null;
+                        if (scrollRafId) { cancelAnimationFrame(scrollRafId); scrollRafId = null; scrollAccum = 0; }
+                        if (!dragging) return;
+                        dragging = false;
+                        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+                        window.removeEventListener('contextmenu', preventNativeAction);
+                        document.body.classList.remove('is-dragging');
+                        try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+
+                        const scrollY = isWindowScroll ? window.scrollY : scrollBox.scrollTop;
+                        const dragMid = initialRect.top + (currentY - startY) + scrollY + (initialRect.height / 2);
+
+                        let newIdx = 0;
+                        siblingCache.forEach((sib, i) => {
+                            if (sib.el === el) return;
+                            if (dragMid > sib.absoluteMid) newIdx = i + 1;
+                        });
+                        if (newIdx > idx) newIdx--;
+
+                        const prePositions = new Map();
+                        Array.from(container.children).forEach(child => {
+                            if (child.dataset.secId) prePositions.set(child.dataset.secId, child.getBoundingClientRect());
+                        });
+
+                        const item = config.sections.splice(idx, 1)[0];
+                        config.sections.splice(newIdx, 0, item);
+                        renderSpace(config, containerId, true);
+
+                        let landedEl = null;
+                        Array.from(container.children).forEach(child => {
+                            if (child.dataset.secId === item.id) landedEl = child;
+                        });
+                        if (landedEl) {
+                            landedEl.style.opacity = '0';
+                            landedEl.style.transition = 'none';
+                        }
+
+                        Array.from(container.children).forEach(child => {
+                            if (child === landedEl || !child.dataset.secId) return;
+                            const pre = prePositions.get(child.dataset.secId);
+                            if (!pre) return;
+                            const post = child.getBoundingClientRect();
+                            const dy = pre.top - post.top;
+                            if (Math.abs(dy) < 1) return;
+                            child.style.transition = 'none';
+                            child.style.transform = `translateY(${dy}px)`;
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    child.style.transition = 'transform 0.45s cubic-bezier(0.2,0.8,0.2,1)';
+                                    child.style.transform = '';
+                                    child.addEventListener('transitionend', () => {
+                                        child.style.transition = '';
+                                        child.style.transform = '';
+                                    }, { once: true });
+                                });
+                            });
+                        });
+
+                        const ANIM_MS = 400;
+                        if (cloneEl && landedEl) {
+                            const landedRect = landedEl.getBoundingClientRect();
+                            requestAnimationFrame(() => {
+                                cloneEl.style.transition = `transform ${ANIM_MS}ms cubic-bezier(0.34,1.2,0.64,1), box-shadow ${ANIM_MS}ms ease, opacity 0.2s ease 0.2s`;
+                                cloneEl.style.transform = `translate(${landedRect.left}px, ${landedRect.top}px) scale(1)`;
+                                cloneEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                cloneEl.style.opacity = '0';
+                            });
+
+                            setTimeout(() => {
+                                if (cloneEl?.parentNode) cloneEl.parentNode.removeChild(cloneEl);
+                                if (landedEl) {
+                                    landedEl.style.transition = 'none';
+                                    landedEl.style.animation = 'sp-land 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards';
+                                    setTimeout(() => {
+                                        if (landedEl) {
+                                            landedEl.style.animation = '';
+                                            landedEl.style.opacity = '1';
+                                            landedEl.style.transform = '';
+                                        }
+                                    }, 450);
+                                }
+                            }, ANIM_MS);
+                        } else if (cloneEl?.parentNode) {
+                            cloneEl.parentNode.removeChild(cloneEl);
+                        }
+                    };
+
+                    el.addEventListener('pointerup', finishDrag);
+                    el.addEventListener('pointercancel', finishDrag);
+                }
+
+                const titleC = config.perSectionEnabled ? getColor(sec.titleColor, sec.customColor) : getColor(config.titleColor, config.customColor);
+                const wrap = document.createElement('div');
+                wrap.innerHTML = getSectionHTML(sec, titleC, config);
+                el.appendChild(wrap);
                 container.appendChild(el);
             });
-            _restoreMv(!!fromEdit);
+            _restoreMv(false, container);
         }
+
+        async function saveSpaceToServer() {
+            try {
+                await fetchWithAuth(`${baseUrl}/api/space-config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state)
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function startEditSpace() {
+            scEditMode = true;
+            document.body.classList.add('editing-space');
+            document.getElementById('sp-fab').classList.add('hidden');
+            document.getElementById('edit-bar-bottom').classList.add('active');
+            document.querySelector('.navh').classList.add('hide');
+            renderSpace(state, "space-sections-container", true);
+        }
+
+        function exitEditSpace() {
+            const bar = document.getElementById('edit-bar-bottom');
+            const navh = document.querySelector('.navh');
+            const fab = document.getElementById('sp-fab');
+            bar.classList.remove('active');
+            bar.classList.add('exiting');
+            navh.classList.add('hide');
+            fab.classList.add('hidden');
+            setTimeout(() => {
+                scEditMode = false;
+                document.body.classList.remove('editing-space');
+                bar.classList.remove('exiting');
+                saveSpaceToServer();
+                renderSpace(state, "space-sections-container", false);
+                navh.classList.remove('hide');
+                fab.classList.remove('hidden');
+            }, 300);
+        }
+
+        function openScConfig(idx) {
+            const sec = state.sections[idx];
+            const body = document.getElementById('sc-config-body');
+            body.innerHTML = '';
+            if (sec.id === 'favs' || sec.id === 'watchlistprev') {
+                body.innerHTML = `<span class="edit-block-label">Layout</span><div class="layout-options">
+                    <div class="layout-opt ${state.layout==='scroll'?'active':''}" onclick="state.layout='scroll';renderSpace(state,'space-sections-container',true);closePanel('sp-config')">Scroll</div>
+                    <div class="layout-opt ${state.layout==='grid'?'active':''}" onclick="state.layout='grid';renderSpace(state,'space-sections-container',true);closePanel('sp-config')">Grid</div>
+                    <div class="layout-opt ${state.layout==='large'?'active':''}" onclick="state.layout='large';renderSpace(state,'space-sections-container',true);closePanel('sp-config')">Large</div></div>`;
+            } else if (sec.id === 'quote') {
+                body.innerHTML = `<textarea class="quote-edit-textarea" id="q-txt-in">${state.quoteText}</textarea>
+                    <input class="quote-edit-input" id="q-src-in" value="${state.quoteSource}">
+                    <div class="color-swatches" id="q-clr-sw" style="margin-top:15px"></div>`;
+                setTimeout(() => {
+                    makeSwatches("q-clr-sw", state.quoteTextColor, state.quoteCustomColor, (v, c) => { 
+                        state.quoteTextColor=v; if(c) state.quoteCustomColor=c; 
+                        renderSpace(state,'space-sections-container',true); 
+                    });
+                    document.getElementById('q-txt-in').oninput = (e) => { state.quoteText = e.target.value; renderSpace(state,'space-sections-container',true); };
+                    document.getElementById('q-src-in').oninput = (e) => { state.quoteSource = e.target.value; renderSpace(state,'space-sections-container',true); };
+                }, 50);
+            }
+            openPanel('sp-config');
+        }
+
+        function scToggleUni(isUni) {
+            state.perSectionEnabled = !isUni;
+            document.getElementById('sc-uni-box').style.display = isUni ? 'block' : 'none';
+            document.getElementById('sc-indiv-box').style.display = isUni ? 'none' : 'block';
+            if (isUni) {
+                makeSwatches("sc-uni-swatches", state.titleColor, state.customColor, (v, c) => { 
+                    state.titleColor=v; if(c) state.customColor=c; renderSpace(state,'space-sections-container',true); 
+                });
+            } else {
+                const list = document.getElementById('sc-indiv-list'); list.innerHTML = '';
+                state.sections.forEach((s, i) => {
+                    const d = document.createElement('div'); d.className = 'per-section-color-row';
+                    d.innerHTML = `<span class="per-section-color-label">${s.label}</span><div class="color-swatches" id="isw-${i}"></div>`;
+                    list.appendChild(d);
+                    makeSwatches(`isw-${i}`, s.titleColor, s.customColor, (v, c) => { 
+                        state.sections[i].titleColor=v; if(c) state.sections[i].customColor=c; renderSpace(state,'space-sections-container',true); 
+                    });
+                });
+            }
+        }
+
+        async function loadUserSpace(username, containerId = "space-sections-container") {
+            try {
+                const res = await fetch(`${baseUrl}/api/space-config/${username}`, { headers: ngrokHeaders });
+                const data = await res.json();
+                if (data.config) {
+                    if (containerId === "space-sections-container") state = data.config;
+                    renderSpace(data.config, containerId, containerId === "space-sections-container");
+                } else { renderSpace(state, containerId, containerId === "space-sections-container"); }
+            } catch (e) { renderSpace(state, containerId, containerId === "space-sections-container"); }
+        }
+
+        const _oldOpenPanel = window.openPanel;
+        window.openPanel = function(n) {
+            if (n === 'spaceedit') { startEditSpace(); return; }
+            if (n === 'sp-colors') scToggleUni(!state.perSectionEnabled);
+            if (n === 'sp-add-sec') {
+                const g = document.getElementById('sc-add-grid'); g.innerHTML = '';
+                const curIds = state.sections.map(s => s.id);
+                ADDABLE.forEach(a => {
+                    if (curIds.includes(a.id)) return;
+                    const b = document.createElement('div'); b.className = 'add-section-btn';
+                    b.innerHTML = `<div class="add-label">${a.label}</div><div class="add-sublabel">${a.desc}</div>`;
+                    b.onclick = () => { 
+                        state.sections.push({ 
+                            id: a.id, 
+                            label: a.label, 
+                            visible: true, 
+                            core: a.core || false,
+                            titleColor: "auto", 
+                            customColor: "#ff3b30", 
+                            titleAlign: "left" 
+                        }); 
+                        renderSpace(state,'space-sections-container',true); 
+                        closePanel('sp-add-sec'); 
+                    };
+                    g.appendChild(b);
+                });
+            }
+            const p = document.getElementById(n + '-panel'); if(p) p.classList.add('open');
+        };
+
+        document.getElementById('sp-fab').onclick = startEditSpace;
+        renderSpace();
 
         function _restoreMv(animated) {
             const IMG = 'https://image.tmdb.org/t/p/w300';
@@ -11927,16 +12424,6 @@
     </div>`;
         }
 
-        function renderEditPanel() {
-            renderColorSwatches();
-            renderPerSectionColors();
-            renderSectionRows();
-            renderAddGrid();
-            document.getElementById("per-section-toggle").checked = state.perSectionEnabled;
-            document.querySelectorAll('#profile-bg-options .layout-opt').forEach(o => {
-                o.classList.toggle('active', o.dataset.bg === state.profileBgMode);
-            });
-        }
 
         function makeSwatches(containerId, currentVal, currentCustom, onChange) {
             const wrap = document.getElementById(containerId);
@@ -12369,7 +12856,6 @@
             });
         });
 
-        renderSpace();
         applyProfileGradient();
         let cpHue = 0, cpSat = 1, cpVal = 1;
         let cpOnConfirm = null, cpOnCancel = null;
@@ -13155,5 +13641,201 @@
         };
     })();
     </script>
+    <div id="edit-bar-bottom">
+        <div class="eb-left">
+            <div class="eb-tool-btn" onclick="openPanel('sp-colors')">
+            <div style="width:22px; height:22px; border-radius:50%; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);"></div>
+            </div>
+        </div>
+        <div class="eb-center">
+            <div class="eb-tool-btn eb-plus-btn" onclick="openPanel('sp-add-sec')">
+            <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="currentColor">
+                <path d="M439.99-101.11q-16.58-16.46-16.58-40.13v-281.17H141.24q-23.67 0-40.13-16.46t-16.46-40.01q0-23.55 16.46-40.13 16.46-16.58 40.13-16.58h281.17v-283.17q0-23.67 16.46-40.13t40.01-16.46q23.55 0 40.13 16.46 16.58 16.46 16.58 40.13v282.17h283.17q23.67 0 40.13 16.58T875.35-480q0 23.43-16.46 40.01t-40.13 16.58H536.59v282.17q0 23.67-16.58 40.13T480-84.65q-23.43 0-40.01-16.46Z"/>
+            </svg>
+            </div>
+        </div>
+        <div class="eb-right">
+            <button class="eb-done" onclick="exitEditSpace()">Done</button>
+        </div>
+    </div>
+    <script>
+            function setupColorPanels() {
+            const panelSelectors = ['#sp-colors-panel', '#sp-add-sec-panel', '#sp-config-panel', '#report-panel, .report-panel'];
+
+            panelSelectors.forEach(selector => {
+                const panel = document.querySelector(selector);
+                if (!panel) return;
+
+                const sheet = panel.querySelector('.sheet');
+                const backdrop = panel.querySelector('.backdrop');
+                if (!sheet || !backdrop) return;
+
+                const state = {
+                    dragging: false,
+                    closing: false,
+                    startY: 0,
+                    lastY: 0,
+                    ignoreBackdropUntil: 0
+                };
+
+                sheet.style.touchAction = 'none';
+
+                function resetSheet() {
+                    sheet.style.transition = '';
+                    sheet.style.transform = '';
+                    sheet.style.opacity = '';
+                    sheet.style.willChange = '';
+                }
+
+                function closeManual(animate) {
+                    if (state.closing) return;
+                    state.closing = true;
+                    state.dragging = false;
+                    state.ignoreBackdropUntil = performance.now() + 500;
+
+                    if (!animate) {
+                        panel.classList.remove('open', 'closing-panel');
+                        resetSheet();
+                        state.closing = false;
+                        return;
+                    }
+
+                    sheet.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease';
+                    sheet.style.transform = 'translateY(110%)';
+
+                    setTimeout(() => {
+                        panel.classList.remove('open', 'closing-panel');
+                        resetSheet();
+                        state.closing = false;
+                    }, 280);
+                }
+
+                function onBackdropClose(e) {
+                    if (state.dragging || state.closing) return;
+                    if (performance.now() < state.ignoreBackdropUntil) return;
+                    e.stopPropagation();
+                    closeManual(true);
+                }
+
+                backdrop.addEventListener('click', onBackdropClose);
+                backdrop.addEventListener('touchstart', onBackdropClose, { passive: true });
+
+                function startDrag(clientY) {
+                    const rect = sheet.getBoundingClientRect();
+                    if (clientY - rect.top > 60) return false;
+
+                    state.dragging = true;
+                    state.startY = clientY;
+                    state.lastY = clientY;
+
+                    sheet.style.transition = 'none';
+                    sheet.style.willChange = 'transform, opacity';
+
+                    return true;
+                }
+
+                function moveDrag(clientY, e) {
+                    if (!state.dragging || state.closing) return;
+
+                    const dy = Math.max(0, clientY - state.startY);
+                    state.lastY = clientY;
+
+                    if (dy > 0) {
+                        if (e && e.cancelable) e.preventDefault();
+                        sheet.style.transform = `translateY(${dy}px)`;
+                    }
+                }
+
+                function endDrag(clientY) {
+                    if (!state.dragging || state.closing) return;
+
+                    state.dragging = false;
+
+                    const dy = Math.max(0, clientY - state.startY);
+
+                    if (dy > 80) {
+                        closeManual(true);
+                    } else {
+                        sheet.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+                        sheet.style.transform = 'translateY(0)';
+
+                        setTimeout(() => {
+                            resetSheet();
+                        }, 320);
+                    }
+                }
+
+                sheet.addEventListener('touchstart', e => {
+                    if (state.closing) return;
+                    const t = e.touches && e.touches[0];
+                    if (!t) return;
+                    startDrag(t.clientY);
+                }, { passive: true });
+
+                sheet.addEventListener('touchmove', e => {
+                    if (state.closing) return;
+                    const t = e.touches && e.touches[0];
+                    if (!t) return;
+                    moveDrag(t.clientY, e);
+                }, { passive: false });
+
+                sheet.addEventListener('touchend', e => {
+                    if (state.closing) return;
+                    const t = e.changedTouches && e.changedTouches[0];
+                    if (!t) return;
+                    endDrag(t.clientY);
+                    e.stopPropagation();
+                });
+
+                sheet.addEventListener('touchcancel', () => {
+                    if (!state.dragging || state.closing) return;
+                    state.dragging = false;
+                    sheet.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease';
+                    sheet.style.transform = 'translateY(0)';
+                    sheet.style.opacity = '1';
+                    setTimeout(() => {
+                        resetSheet();
+                    }, 320);
+                });
+
+                sheet.addEventListener('mousedown', e => {
+                    if (state.closing) return;
+                    startDrag(e.clientY);
+                });
+
+                document.addEventListener('mousemove', e => {
+                    if (!state.dragging || state.closing) return;
+                    moveDrag(e.clientY, e);
+                });
+
+                document.addEventListener('mouseup', e => {
+                    if (!state.dragging || state.closing) return;
+                    endDrag(e.clientY);
+                });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupColorPanels);
+        } else {
+            setupColorPanels();
+        }
+    </script>
+    <div id="sp-colors-panel" class="panel"><div class="backdrop"></div><div class="sheet">
+        <div class="drag-pill"></div><p class="edit-sheet-title">Colors</p>
+        <div class="per-section-toggle-row"><span class="per-section-toggle-label">Universal Color</span><label class="toggle-wrap"><input type="checkbox" id="sc-uni-toggle" checked onchange="scToggleUni(this.checked)"><span class="toggle-slider"></span></label></div>
+        <div id="sc-uni-box" class="edit-block"><div class="color-swatches" id="sc-uni-swatches"></div></div>
+        <div id="sc-indiv-box" style="display:none; max-height:40vh; overflow-y:auto;"><div id="sc-indiv-list"></div></div>
+    </div></div>
+
+    <div id="sp-add-sec-panel" class="panel"><div class="backdrop"></div><div class="sheet">
+        <div class="drag-pill"></div><p class="edit-sheet-title">Add Section</p>
+        <div class="add-section-grid" id="sc-add-grid"></div>
+    </div></div>
+
+    <div id="sp-config-panel" class="panel"><div class="backdrop"></div><div class="sheet">
+        <div class="drag-pill"></div><p class="edit-sheet-title">Section Settings</p>
+        <div id="sc-config-body"></div><button class="btn-close" onclick="closePanel('sp-config')">Save</button></div>
+    </div>
 </body>
 </html>
