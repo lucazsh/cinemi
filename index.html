@@ -9243,7 +9243,7 @@
                 <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">You will be signed out of your account. You can always log back in.</div>
                 <div style="display: flex; gap: 12px;">
                     <button onclick="closeLogoutPopup()" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--iconbox-bg); color: var(--text-primary); font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Cancel</button>
-                    <button onclick="logoutYes()" style="flex: 1; padding: 12px; border-radius: 14px; background: #ff3b30; color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Log out</button>
+                    <button data-action="logout" role="button" tabindex="0" style="flex: 1; padding: 12px; border-radius: 14px; background: #ff3b30; color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s;">Log out</button>
                 </div>
             </div>
         </div>
@@ -9804,14 +9804,6 @@
                 }, 350);
             }
 
-            function logoutYes() {
-                localStorage.removeItem('isAuthenticated');
-                localStorage.removeItem('guestMode');
-                localStorage.removeItem('user');
-                closeLogoutPopup();
-                location.reload();
-            }
-
             function openBugReportPopup() {
                 const popup = document.getElementById('bug-report-popup');
                 const box = popup.querySelector('.popup-box');
@@ -9900,57 +9892,18 @@
             });
 
             function openEditProfileSettings() {
-                if (!currentUser) {
-                    return;
-                }
-                document.getElementById('edit-profile-name').value = currentUser.displayName || '';
-                document.getElementById('edit-profile-username').value = currentUser.username || '';
+                document.getElementById('edit-profile-name').value = 'username';
+                document.getElementById('edit-profile-username').value = 'user_tag';
                 document.getElementById('editprofile-subsettings').style.transform = 'translateX(0)';
             }
-
+            function saveEditProfile() {
+                closeEditProfileSettings();
+            }
             function closeEditProfileSettings() {
                 document.getElementById('editprofile-subsettings').style.transform = 'translateX(100%)';
             }
-
-            async function saveEditProfile() {
-                const name = document.getElementById('edit-profile-name').value.trim();
-                const username = document.getElementById('edit-profile-username').value.trim();
-                if (!name) { alert('Please enter a display name.'); return; }
-                if (!username) { alert('Please enter a username.'); return; }
-                if (username.length < 3) { alert('Username must be at least 3 characters.'); return; }
-
-                try {
-                    const res = await fetchWithAuth(`${baseUrl}/api/user/profile`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ displayName: name, username })
-                    });
-
-                    if (!res.ok) {
-                        const err = await res.json();
-                        alert(err.error || 'Failed to update profile.');
-                        return;
-                    }
-
-                    const data = await res.json();
-                    currentUser = data.user;
-                    document.querySelectorAll('.p-name').forEach(el => el.textContent = currentUser.displayName);
-                    document.querySelectorAll('.p-tag').forEach(el => el.textContent = '@' + currentUser.username);
-                    const addUsername = document.getElementById('addUsername');
-                    if (addUsername) addUsername.textContent = currentUser.displayName;
-
-                    closeEditProfileSettings();
-                    alert('Profile updated!');
-                } catch (err) {
-                    alert('Network error. Please try again.');
-                    console.error(err);
-                }
-            }
-
             function loadProfile() {
-                if (!currentUser) return;
-                document.querySelectorAll('.p-name').forEach(el => el.textContent = currentUser.displayName || currentUser.username);
-                document.querySelectorAll('.p-tag').forEach(el => el.textContent = '@' + currentUser.username);
+                /* nothing yet */
             }
 
     </script>
