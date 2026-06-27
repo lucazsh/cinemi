@@ -12165,29 +12165,40 @@
                         });
 
                         const ANIM_MS = 400;
-                        if (cloneEl && landedEl) {
+if (cloneEl && landedEl) {
                             const landedRect = landedEl.getBoundingClientRect();
+                            const dx = initialRect.left - landedRect.left;
+                            const dy2 = (initialRect.top + (currentY - startY)) - landedRect.top;
+
+                            landedEl.classList.remove('wiggle-active');
+                            landedEl.style.transition = 'none';
+                            landedEl.style.opacity = '1';
+                            landedEl.style.transform = `translate(${dx}px, ${dy2}px) scale(1.05)`;
+                            landedEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                            landedEl.style.zIndex = '5';
+
                             requestAnimationFrame(() => {
-                                cloneEl.style.transition = `transform ${ANIM_MS}ms cubic-bezier(0.34,1.2,0.64,1), box-shadow ${ANIM_MS}ms ease, opacity 0.2s ease 0.2s`;
-                                cloneEl.style.transform = `translate(${landedRect.left}px, ${landedRect.top}px) scale(1)`;
-                                cloneEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                                cloneEl.style.opacity = '0';
+                                void landedEl.offsetHeight;
+                                requestAnimationFrame(() => {
+                                    landedEl.style.transition = `transform ${ANIM_MS}ms cubic-bezier(0.22,1,0.36,1), box-shadow ${ANIM_MS}ms ease`;
+                                    landedEl.style.transform = 'translate(0px, 0px) scale(1)';
+                                    landedEl.style.boxShadow = '0 0px 0px rgba(0,0,0,0)';
+                                });
                             });
 
+                            cloneEl.style.transition = 'opacity 0.15s ease';
+                            cloneEl.style.opacity = '0';
                             setTimeout(() => {
                                 if (cloneEl?.parentNode) cloneEl.parentNode.removeChild(cloneEl);
-                                if (landedEl) {
-                                    landedEl.style.transition = 'none';
-                                    landedEl.style.animation = 'sp-land 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards';
-                                    setTimeout(() => {
-                                        if (landedEl) {
-                                            landedEl.style.animation = '';
-                                            landedEl.style.opacity = '1';
-                                            landedEl.style.transform = '';
-                                        }
-                                    }, 450);
-                                }
-                            }, ANIM_MS);
+                            }, 150);
+
+                            landedEl.addEventListener('transitionend', () => {
+                                landedEl.style.transition = '';
+                                landedEl.style.transform = '';
+                                landedEl.style.boxShadow = '';
+                                landedEl.style.zIndex = '';
+                                if (scEditMode) landedEl.classList.add('wiggle-active');
+                            }, { once: true });
                         } else if (cloneEl?.parentNode) {
                             cloneEl.parentNode.removeChild(cloneEl);
                         }
