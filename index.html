@@ -82,6 +82,20 @@
             margin-top: 20px;
         }
 
+        #profile img,
+        .sp-section img {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+
+        .sp-section.wiggle-active img,
+        .sp-section.wiggle-active * {
+            pointer-events: none;
+        }
+
         :root {
             --bg-primary: #f9faff;
             --user-p-btn: #f2f2f2;
