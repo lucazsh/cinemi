@@ -7061,7 +7061,7 @@
         }
 
         .search-section {
-            margin-bottom: 24px;
+            margin-bottom: 40px;
             padding: 0px 2px;
         }
 
@@ -7073,27 +7073,28 @@
         }
 
         .search-section-title {
-            margin: 0;
-            font-size: 16px;
+            font-size: 16.67px;
             font-weight: 700;
-            color: var(--text-primary);
+            margin-bottom: 20px;
+            color: #ffffffbe;
         }
 
         .search-clear-btn {
             border: 0;
-            background: var(--nav-active-bg);
-            color: var(--text-subtle);
-            font-size: 12px;
+            background: transparent;
+            color: #737373;
+            font-size: 0.875rem;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 8px;
+            padding: 0;
             cursor: pointer;
+            transition: color 0.2s ease;
         }
 
         .recent-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 20px;
+            padding: 0px 6px;
         }
 
         .recent-item {
@@ -7111,8 +7112,8 @@
         }
 
         .recent-pill {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: var(--iconbox-bg);
             border-radius: 10px;
             display: flex;
@@ -7179,6 +7180,7 @@
             padding: 0.82rem 1.08rem;
             font-size: 0.82rem;
             font-weight: 700;
+            line-height: 1;
             color: var(--text-primary);
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
@@ -8721,15 +8723,15 @@
 
         <div id="finder-initial" class="finder-initial-content">
             <div class="search-section" id="recent-searches-container" style="display:none; margin-bottom: 24px; margin-top: 12px;">
-                <div class="search-section-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="search-section-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2 class="search-section-title" style="margin:0; font-size:16px; font-weight:700;">Recent</h2>
-                    <button class="search-clear-btn" onclick="clearRecentSearches()" style="border:0; background:rgba(128,128,128,0.15); color:var(--text-subtle);  padding:5.67px 10px; border-radius:8px; font-size:12px; font-weight:600;">Clear</button>
+                    <button class="search-clear-btn" onclick="clearRecentSearches()">Clear</button>
                 </div>
                 <div class="recent-list" id="recent-searches-list" style="display:flex; flex-direction:column; gap:12px;"></div>
             </div>
                 
             <div class="search-section">
-                <h2 class="search-section-title" style="margin-bottom: 12px; font-size:16px; font-weight:700; margin-top: 17px;">Browse all</h2>
+                <h2 class="search-section-title" style="margin-bottom: 20px; font-size: 18px; font-weight:700; margin-top: 17px;">Browse all</h2>
                 <div class="genre-scroller">
                     <div class="genre-stack">
                         <div class="genre-row">
@@ -8769,7 +8771,7 @@
                 </div>
             </div>
             <div class="search-section">
-                <h2 class="search-section-title" style="margin-bottom: 12px; font-size:16px; font-weight:700;">Explore</h2>
+                <h2 class="search-section-title">Explore</h2>
                 <div class="explore-list" id="explore-list"></div>
             </div>
         </div>
