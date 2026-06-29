@@ -437,7 +437,7 @@ If no 'Context movies' are provided, switch to conversational mode: speak natura
         _icon.style.transition = 'transform 0.12s ease';
         _icon.style.transform = 'scale(0)';
         setTimeout(() => {
-          _icon.innerHTML = '<path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/>';
+          _icon.innerHTML = '<path d="M412-584 259-432q-20 20-48.5 20.5T162-432q-20-20-20-48.5t21-48.5l268-269q10-9 22.5-14.5t26-5.5q13.5 0 26 5.5T528-798l270 271q21 20 21 48t-21 48q-20 21-48.5 21T701-431L548-584v402q0 29-20 48.5T479.5-114q-28.5 0-48-19.5T412-182v-402Z"/>';
           _icon.style.transform = 'scale(1)';
         }, 130);
       }
