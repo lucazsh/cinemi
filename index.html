@@ -45,6 +45,7 @@
     }
     </script>
     <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" href="/icons/icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1568,6 +1569,10 @@
             fill: white;
         }
 
+        .c-ai::placeholder {
+            color: #525252;
+        }
+
         .a-chat {
             display: flex;
             flex-direction: column;
@@ -1583,10 +1588,11 @@
             align-self: flex-end;
             background-color: var(--ichat-c);
             max-width: calc(100% - 70px);
-            color: var(--text-secondary);
+            color: var(--text-primary);
             padding: 10px 15px;
-            border: 1px solid rgba(128, 128, 128, 0.8);
-            border-radius: 15px;
+            border: 1.4px dashed rgba(128, 128, 128, 0.8);
+            /* border: 1px solid rgba(128, 128, 128, 0.8); */
+            border-radius: 16px;
             word-wrap: break-word;
         }
 
@@ -7271,6 +7277,51 @@
             padding-left: 20px;
             padding-right: 10px;
         }
+
+        @keyframes slideOut {
+            to { 
+                opacity: 0; 
+                transform: translateY(-20px); 
+                visibility: hidden; 
+            }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .hide-suggestions { 
+            animation: slideOut 0.4s forwards; 
+        }
+
+        .show-chat { 
+            display: flex !important; 
+            animation: fadeIn 0.5s forwards; 
+        }
+
+        .genre-card:hover {
+            border-radius: 35px !important;
+        }
+
+        .suggestion-pill span {
+            color: #a3a3a3;
+            transition: color 0.3s ease;
+        }
+
+        .suggestion-pill:hover span {
+            color: var(--text-primary);
+        }
+
+        .suggestion-pill svg {
+            fill: #a3a3a3;
+        }
     </style>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -10696,44 +10747,72 @@
                 </svg></button>
         </div>
     </div>
-    <div id="ai-chat" class="view">
-        <div class="nt">
-            <span class="logo">
-                Movi <span style="color:grey; font-size: 20px;">v1</span>
+    <div id="ai-chat" class="view" style="display: flex; flex-direction: column; background-color: #131313; margin: 0 auto; font-family: 'Plus Jakarta Sans', sans-serif; color: #e5e5e5; overflow: hidden;">
+        <div class="nt" style="display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+            <span class="logo" style="font-size: 1.5rem; font-weight: 900; letter-spacing: -0.025em; color: #ffffff; display: flex; align-items: baseline;">
+                Movi <span style="font-size: 11px; font-weight: 800; color: #737373; margin-left: 0.375rem; background-color: rgb(32, 32, 32); padding: 0.125rem 0.5rem; border-radius: 8px; border: 2px solid rgba(131, 131, 131, 0.086);">v2</span>
             </span>
-            <button onclick="showView('finder')"
-                style="background-color: #18191ef0; padding: 3px 5.5px; border-radius: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="#FFFFFF">
-                    <path
-                        d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
-                </svg>
+            <button onclick="showView('finder')" style="background-color: #272727b3; padding: 4px 6.5px; border-radius: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M375.57-295.85q-119.65 0-202.79-83.14-83.13-83.15-83.13-202.82 0-119.67 83.15-202.77 83.15-83.09 202.81-83.09 119.67 0 202.77 83.13 83.1 83.13 83.1 202.78 0 45.48-12.26 85.76-12.26 40.28-35.31 71.57l217.05 217.28q15.95 16.19 15.95 39.5t-16.19 39.52q-16.15 15.96-39.49 15.96-23.34 0-39.53-15.96L536-344.17q-29.87 22.04-72.53 35.18-42.67 13.14-87.9 13.14Zm-.1-113.17q72.99 0 122.91-49.83 49.92-49.82 49.92-122.81 0-72.99-49.92-122.92-49.92-49.92-122.91-49.92t-122.82 49.92q-49.82 49.93-49.82 122.92 0 72.99 49.82 122.81 49.83 49.83 122.82 49.83Z"></path></svg>
             </button>
         </div>
-        <div class="a-chat">
-            <div class="user-message">
-                Hello! I’m looking for a movie.
+        <div id="suggestions-container" class="main-content" style="flex: 1; padding: 3px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; margin-top: -80px;">
+            <div class="content-group" style="margin-bottom: 2.5rem;">
+                <h2 class="section-title" style="font-size: 1.25rem; font-weight: 900; color: #f5f5f5; letter-spacing: -0.025em; text-align: center; margin-bottom: 1.5rem;">What are we watching tonight?</h2>
+                <div class="genre-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.875rem;">
+                    <button class="genre-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background-color: #202020; border: 2px dashed rgba(66, 66, 66, 0.5); border-radius: 1.5rem; gap: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                        <div style="width: 3rem; height: 3rem; background-color: #131313; border: 1px solid rgba(38, 38, 38, 0.6); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #a3a3a3;">
+                            <svg fill="#e3e3e3" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2A10 10 0 002 12v9a1 1 0 001.24.97l2.58-.65a2 2 0 011.12.06l2.12.71a2 2 0 001.26 0l2.12-.71a2 2 0 011.12-.06l2.58.65A1 1 0 0022 21v-9A10 10 0 0012 2zm-3 9a1.5 1.5 0 111.5-1.5A1.5 1.5 0 019 11zm6 0a1.5 1.5 0 111.5-1.5A1.5 1.5 0 0115 11z"></path></svg>
+                        </div>
+                        <span style="font-size: 14.4px; font-weight: 900; color: #a3a3a3;">Horror</span>
+                    </button>
+                    <button class="genre-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background-color: #202020; border: 2px dashed rgba(66, 66, 66, 0.5); border-radius: 1.5rem; gap: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                        <div style="width: 3rem; height: 3rem; background-color: #131313; border: 1px solid rgba(38, 38, 38, 0.6); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #a3a3a3;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M499-533q18-18 18-43t-18-43q-18-18-43-18t-43 18q-18 18-18 43t18 43q18 18 43 18t43-18ZM875-4q-54 0-142-38.5T549-145q-17 4-33 6.5t-35 2.5q-142 0-243-101.5T137-481q0-19 1.5-35t5.5-33Q80-645 40.5-734T1-879q0-38 18-57t53-19q33 0 87.5 16T262-901q23 12 30.5 33.5t-3.5 44Q278-801 256-793t-45-3q-21-11-42.5-20.5T126-835q16 40 35 79t41 77q46-65 119.5-105.5T481-825q142 0 243 101t101 243q0 86-39 160T680-201q37 21 75 38.5t78 35.5q-10-22-19-43t-20-41q-11-23-3.5-44.5t30-32.5q22.5-11 44.5-3.5t34 30.5q20 48 36.5 103T952-73q0 29-18 49T875-4ZM587-373q14-14 14-35t-14-35q-14-14-35-14t-35 14q-14 14-14 35t14 35q14 14 35 14t35-14Zm35-121q15-15 15-34t-15-34q-15-15-34-15t-34 15q-15 15-15 34t15 34q15 15 34 15t34-15Z"></path></svg>
+                        </div>
+                        <span style="font-size: 14.4px; font-weight: 900; color: #a3a3a3;">Sci-Fi</span>
+                    </button>
+                    <button class="genre-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background-color: #202020; border: 2px dashed rgba(66, 66, 66, 0.5); border-radius: 1.5rem; gap: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                        <div style="width: 3rem; height: 3rem; background-color: #131313; border: 1px solid rgba(38, 38, 38, 0.6); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #a3a3a3;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M281-23q-117 0-199.5-81.71T-1-304v-202q0-54.7 37.15-91.35Q73.3-634 127-634h309q53.7 0 90.85 36.65Q564-560.7 564-506v202q0 117.58-82.5 199.29T281-23Zm-72.14-354q21.68 0 35.41-13.26Q258-403.51 258-424.81q0-20.14-13.54-34.67Q230.92-474 209.21-474q-20.56 0-34.88 14.11Q160-445.77 160-425.21q0 21.29 14.09 34.75T208.86-377Zm180.21-13.26Q403-403.51 403-424.81q0-20.14-13.54-34.67Q375.92-474 355.21-474q-21.56 0-35.88 14.11Q305-445.77 305-425.21q0 21.29 14.29 34.75T354.36-377q20.78 0 34.71-13.26ZM960-810v202q0 118-82 200t-200 82q4.45 0 7.16 1t5.84 5q-29-1-50-20t-21-46.94V-498q0-75-45.85-130.5-45.86-55.5-119.1-55.5-25.81 0-42.43-18.92Q396-721.85 396-748v-62q0-53.7 36.65-90.85Q469.3-938 524-938h308q53.7 0 90.85 37.15Q960-863.7 960-810ZM604.79-680q21.56 0 35.89-14.11Q655-708.23 655-728.79q0-21.28-14.11-34.75Q626.77-777 605.21-777q-20.71 0-34.46 13.24Q557-750.53 557-729.26q0 20.26 13.54 34.76 13.54 14.5 34.25 14.5Zm146 0q20.56 0 34.89-14.11Q800-708.23 800-728.79q0-21.28-14.11-34.75Q771.77-777 751.21-777q-21.71 0-35.46 13.24Q702-750.53 702-729.26q0 20.26 13.54 34.76 13.54 14.5 35.25 14.5Zm-109.65 76.5Q622-597 603-582q-14 13-3.5 30.5T636-534h92q24 0 34-17.5t-3-30.5q-19-14-37.46-21-18.47-7-39.87-7t-40.53 6.5ZM327.22-237.57Q348.44-245.13 364-261q12-13 0-29t-35-16h-91q-24.5 0-37.25 16t-.75 29q15.56 16.87 37.48 23.93Q259.4-230 282.7-230q23.3 0 44.52-7.57Z"></path></svg>
+                        </div>
+                        <span style="font-size: 14.4px; font-weight: 900; color: #a3a3a3;">Drama</span>
+                    </button>
+                    <button class="genre-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background-color: #202020; border: 2px dashed rgba(66, 66, 66, 0.5); border-radius: 1.5rem; gap: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                        <div style="width: 3rem; height: 3rem; background-color: #131313; border: 1px solid rgba(38, 38, 38, 0.6); border-radius: 1rem; display: flex; align-items: center; justify-content: center; color: #a3a3a3;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M348-312h-96q-39 0-56-33.5t3-65.5l336-518q11-19 31-24.5t38.5 1.5q18.5 7 30.5 24.5t9 38.5l-34 289h115q40 0 57 36t-7 67L412-37q-12 16-31.5 20.5t-38.5-4q-19-8.5-28.5-26T308-84l40-228Z"></path></svg>
+                        </div>
+                        <span style="font-size: 14.4px; font-weight: 900; color: #a3a3a3;">Action</span>
+                    </button>
+                </div>
             </div>
-            <div class="ai-message">
-                Hello there! Here's some based on you taste:
+            <div class="content-group">
+                <span class="suggestions-label" style="font-size: 13px; font-weight: 600; color: #737373d1; display: block; padding-left: 0.25rem; margin-bottom: 0.875rem;">Try these:</span>
+                <div class="suggestions-list" style="display: flex; flex-direction: column; gap: 0.625rem;">
+                    <button class="suggestion-pill" style="width: 100%; text-align: left; padding: 1rem; background-color: rgba(23, 23, 23, 0.2); border: 1px solid rgba(38, 38, 38, 0.4); border-radius: 1rem; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;">
+                        <span>"Psychological thrillers with unpredictable twists"</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="#e3e3e3"><path d="M499-480 234-746q-22-21-22.5-52.5T232-852q22-21 54-21t53 21l284 282q19 19 27.5 41.5t8.5 48q0 25.5-8.5 48T623-390L340-108q-21 21-53 21t-54-21q-21-21-21-53t21-53l266-266Z"/></svg>
+                    </button>
+                    <button class="suggestion-pill" style="width: 100%; text-align: left; padding: 1rem; background-color: rgba(23, 23, 23, 0.2); border: 1px solid rgba(38, 38, 38, 0.4); border-radius: 1rem; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;">
+                        <span>"Completely underrated '90s sci-fi movies"</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="#e3e3e3"><path d="M499-480 234-746q-22-21-22.5-52.5T232-852q22-21 54-21t53 21l284 282q19 19 27.5 41.5t8.5 48q0 25.5-8.5 48T623-390L340-108q-21 21-53 21t-54-21q-21-21-21-53t21-53l266-266Z"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="i-chat">
-            <input type="text" inputmode="text" enterkeyhint="done" placeholder="Ask anything about movies..."></input>
-            <button id="context-btn" title="Add movie context"
-                style="background-color: rgb(39, 39, 39); min-height: 40px; padding: 4px 7px; border-radius: 10px; margin-right: 4px;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="#000000">
-                    <path
-                        d="M838-65 720-183v89h-80v-226h226v80h-90l118 118-56 57ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 20-2 40t-6 40h-82q5-20 7.5-40t2.5-40q0-20-2.5-40t-7.5-40H654q3 20 4.5 40t1.5 40q0 20-1.5 40t-4.5 40h-80q3-20 4.5-40t1.5-40q0-20-1.5-40t-4.5-40H386q-3 20-4.5 40t-1.5 40q0 20 1.5 40t4.5 40h134v80H404q12 43 31 82.5t45 75.5q20 0 40-2.5t40-4.5v82q-20 2-40 4.5T480-80ZM170-400h136q-3-20-4.5-40t-1.5-40q0-20 1.5-40t4.5-40H170q-5 20-7.5 40t-2.5 40q0 20 2.5 40t7.5 40Zm34-240h118q9-37 22.5-72.5T376-782q-55 18-99 54.5T204-640Zm172 462q-18-34-31.5-69.5T322-320H204q29 51 73 87.5t99 54.5Zm28-462h152q-12-43-31-82.5T480-798q-26 36-45 75.5T404-640Zm234 0h118q-29-51-73-87.5T584-782q18 34 31.5 69.5T638-640Z" />
-                </svg>
+        <div class="a-chat" style="display: none; flex: 1; margin-bottom: 25px; flex-direction: column; gap: 1rem; overflow-y: auto; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+            <div class="user-message" style="align-self: flex-end; background: #262626; padding: 0.8rem 1rem; border-radius: 1.2rem 1.2rem 0.2rem 1.2rem; font-size: 0.9rem; max-width: 80%; border: 1px solid rgba(255,255,255,0.05);">Hello! I’m looking for a movie.</div>
+            <div class="ai-message" style="align-self: flex-start; background: rgba(23,23,23,0.4); padding: 0.8rem 1rem; border-radius: 1.2rem 1.2rem 1.2rem 0.2rem; font-size: 0.9rem; max-width: 80%; color: #a3a3a3; border: 1px solid rgba(255,255,255,0.05);">Hello there! Here's some based on your taste:</div>
+        </div>
+        <div class="i-chat" style="display: flex; align-items: center; gap: 0.5rem; background: #131313; flex-shrink: 0;">
+            <input type="text" class="c-ai" placeholder="Ask anything about movies..." style="flex: 1; background-color: rgba(23, 23, 23, 0.4); border: 1px solid rgba(38, 38, 40, 0.6); border-radius: 1rem; padding: 0.875rem 1rem; font-size: 0.875rem; font-weight: 700; color: #d4d4d4; outline: none;">
+            
+            <button id="context-btn" style="width: 44px; height: 44px; background-color: rgba(23, 23, 23, 0.4); border: 1px solid rgba(38, 38, 40, 0.6);  border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M45-480.46Q45-570 79-649q34-79 94-139t139.31-94q79.31-34 168.69-34 133 0 237.5 70T876-665q11 26 0 51t-36.94 34.45Q816-571 792.5-582.5 769-594 758-617q-25-50-66-88.5T600-764v21q0 29.7-21.65 50.35Q556.7-672 527-672h-94v48q0 19.4-13.8 33.2Q405.4-577 385-577h-48v95h-26q27.3 0 45.65 18.35Q375-445.3 375-418v30h-38L180-545q-2.62 16-4.81 31-2.19 15-2.19 32 0 106 62.5 188T393-185q24 8 35 30t4 44.5Q424-85 401-70t-50.24 7.12Q218-103 131.5-218T45-480.46ZM773.2-120.7 694-199q-19 10-38.4 14.5T615-180q-79 0-134-55t-55-134q0-79 55-133.5T615-557q79 0 133.5 54.45T803-369.17q0 21.17-4.5 41.17T784-289l80.2 79.2q20.8 19.8 20.3 44.3Q884-141 864-121q-20 21-45 21t-45.8-20.7ZM657-326.27q18-18.28 18-42.5Q675-393 657.23-411q-17.78-18-42-18-24.23 0-42.73 17.77-18.5 17.78-18.5 42 0 24.23 18.27 42.73 18.28 18.5 42.5 18.5Q639-308 657-326.27Z"/></svg>
             </button>
-            <button id="send-btn"
-                style="background-color: #18191efe; min-height: 40px; padding: 4px 7px; border-radius: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="#FFFFFF">
-                    <path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z" />
-                </svg>
+
+            <button id="send-btn" onclick="const s=document.getElementById('suggestions-container'); s.classList.add('hide-suggestions'); setTimeout(()=>{s.style.display='none'; document.querySelector('.a-chat').classList.add('show-chat')}, 400)" style="width: 44px; height: 44px; background-color: #262626; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M412-584 259-432q-20 20-48.5 20.5T162-432q-20-20-20-48.5t21-48.5l268-269q10-9 22.5-14.5t26-5.5q13.5 0 26 5.5T528-798l270 271q21 20 21 48t-21 48q-20 21-48.5 21T701-431L548-584v402q0 29-20 48.5T479.5-114q-28.5 0-48-19.5T412-182v-402Z"/></svg>
             </button>
         </div>
     </div>
