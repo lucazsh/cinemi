@@ -45,19 +45,18 @@
         var suggestions = document.getElementById('suggestions-container');
         suggestions.classList.add('hide-suggestions');
         setTimeout(function() {
-          suggestions.style.display = 'none';
-          var chatContainer = document.querySelector('.a-chat');
-          if (chatContainer) chatContainer.classList.add('show-chat');
-          var input = document.querySelector('.c-ai');
-          if (input) {
-            input.value = text;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-          }
-          var sendBtn = document.getElementById('send-btn');
-          if (sendBtn) sendBtn.click();
-          input.value = 'Ask anything about movies...';
+            suggestions.style.display = 'none';
+            var chatContainer = document.querySelector('.a-chat');
+            if (chatContainer) chatContainer.classList.add('show-chat');
+            var input = document.querySelector('.c-ai');
+            if (input) {
+              input.value = text;
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            var sendBtn = document.getElementById('send-btn');
+            if (sendBtn) sendBtn.click();
         }, 400);
-      });
+        });
     });
   }
 
@@ -356,90 +355,93 @@ If no 'Context movies' are provided, switch to conversational mode: speak natura
   }
 
   async function sendMessage() {
-      if (!wllama || isLoading) return;
-      if (isGenerating) {
-          if (abortController) {
-              abortController.abort();
-              abortController = null;
-          }
-          return;
-      }
-      const inp = getInput();
-      if (!inp) return;
-      const text = inp.value.trim();
-      if (!text) return;
-      inp.value = '';
-      isGenerating = true;
-      window._isGenerating = true;
-      setInputEnabled(false);
+    const _icon = document.getElementById('send-btn-icon');
+    if (isGenerating) {
+      if (abortController) { abortController.abort(); abortController = null; }
+      return;
+    }
+    if (!wllama || isLoading) return;
+    const inp = getInput();
+    if (!inp) return;
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+    isGenerating = true;
+    window._isGenerating = true;
+    setInputEnabled(false);
+    if (_icon) {
+      _icon.style.transition = 'transform 0.12s ease';
+      _icon.style.transform = 'scale(0)';
+      setTimeout(() => {
+        _icon.innerHTML = '<path d="M198-334v-292q0-58.4 38.8-97.2Q275.6-762 334-762h292q58.4 0 97.2 38.8Q762-684.4 762-626v292q0 58.4-38.8 97.2Q684.4-198 626-198H334q-58.4 0-97.2-38.8Q198-275.6 198-334Z"/>';
+        _icon.style.transform = 'scale(1)';
+      }, 130);
+    }
 
-      history.push({ role: 'user', content: text });
-      addUserMsg(text);
+    history.push({ role: 'user', content: text });
+    addUserMsg(text);
 
-      const c = getAChat();
-      if (!c) { isGenerating = false; window._isGenerating = false; setInputEnabled(true); return; }
-      const aiEl = document.createElement('div');
-      aiEl.className = 'ai-message';
-      c.appendChild(aiEl);
-      c.scrollTop = c.scrollHeight;
+    const c = getAChat();
+    if (!c) { isGenerating = false; window._isGenerating = false; setInputEnabled(true); return; }
+    const aiEl = document.createElement('div');
+    aiEl.className = 'ai-message';
+    c.appendChild(aiEl);
+    c.scrollTop = c.scrollHeight;
 
-      if (!document.getElementById('llm-blink')) {
-          const s = document.createElement('style');
-          s.id = 'llm-blink';
-          s.textContent = `
-              @keyframes llmBlink {
-                  0%, 100% {
-                      opacity: 1;
-                      transform: scale(1);
-                  }
-                  50% {
-                      opacity: 0.2;
-                      transform: scale(2);
-                  }
-              }
-          `;
-          document.head.appendChild(s);
-      }
+    if (!document.getElementById('llm-blink')) {
+      const s = document.createElement('style');
+      s.id = 'llm-blink';
+      s.textContent = `@keyframes llmBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.2;transform:scale(2);}}`;
+      document.head.appendChild(s);
+    }
 
-      const cursor = document.createElement('span');
-      cursor.style.cssText = 'display:inline-block;width:10px;height:10px;background:currentColor;margin-left:4px;vertical-align:middle;border-radius:3px;animation: llmBlink 1.2s infinite ease-in-out;transform-origin:center;will-change:opacity,transform;';
-      aiEl.appendChild(cursor);
+    const cursor = document.createElement('span');
+    cursor.style.cssText = 'display:inline-block;width:10px;height:10px;background:currentColor;margin-left:4px;vertical-align:middle;border-radius:3px;animation:llmBlink 1.2s infinite ease-in-out;transform-origin:center;will-change:opacity,transform;';
+    aiEl.appendChild(cursor);
 
-      let output = '';
-      try {
-          const prompt = await buildPrompt(history);
-          abortController = new AbortController();
-          await wllama.createCompletion(prompt, {
-              nPredict: 512,
-              sampling: { temp: 0.7, top_k: 40, top_p: 0.9 },
-              stop: ['<|im_end|>', '<|im_start|>'],
-              signal: abortController.signal,
-              onNewToken(_tok, _piece, current) {
-                  output = current;
-                  aiEl.textContent = current;
-                  aiEl.appendChild(cursor);
-                  if (c) c.scrollTop = c.scrollHeight;
-              }
-          });
-          cursor.remove();
-          aiEl.textContent = output || '...';
-          history.push({ role: 'assistant', content: output });
-      } catch (err) {
-          cursor.remove();
-          if (err.name === 'AbortError') {
-              aiEl.textContent = output || 'Generation stopped.';
-              history.push({ role: 'assistant', content: output || 'Generation stopped.' });
-          } else {
-              aiEl.textContent = 'Error: ' + (err?.message ?? 'Generation failed');
-              history.pop();
-          }
-      } finally {
-          abortController = null;
-          isGenerating = false;
-          window._isGenerating = false;
-          setInputEnabled(!!wllama);
+    let output = '';
+    try {
+      const prompt = await buildPrompt(history);
+      abortController = new AbortController();
+      await wllama.createCompletion(prompt, {
+        nPredict: 512,
+        sampling: { temp: 0.7, top_k: 40, top_p: 0.9 },
+        stop: ['<|im_end|>', '<|im_start|>'],
+        signal: abortController.signal,
+        onNewToken(_tok, _piece, current) {
+          output = current;
+          aiEl.textContent = current;
+          aiEl.appendChild(cursor);
           if (c) c.scrollTop = c.scrollHeight;
+        }
+      });
+      cursor.remove();
+      aiEl.textContent = output || '...';
+      history.push({ role: 'assistant', content: output });
+    } catch (err) {
+      cursor.remove();
+      if (err.name === 'AbortError') {
+        aiEl.textContent = output || 'Generation stopped.';
+        history.push({ role: 'assistant', content: output || 'Generation stopped.' });
+      } else {
+        aiEl.textContent = 'Error: ' + (err?.message ?? 'Generation failed');
+        history.pop();
       }
+    } finally {
+      abortController = null;
+      isGenerating = false;
+      window._isGenerating = false;
+      setInputEnabled(!!wllama);
+      if (c) c.scrollTop = c.scrollHeight;
+      if (_icon) {
+        _icon.style.transition = 'transform 0.12s ease';
+        _icon.style.transform = 'scale(0)';
+        setTimeout(() => {
+          _icon.innerHTML = '<path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/>';
+          _icon.style.transform = 'scale(1)';
+        }, 130);
+      }
+    }
   }
 
   async function setup() {
