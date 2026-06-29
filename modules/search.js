@@ -148,10 +148,6 @@ async function renderExploreMovies() {
             return `
                 <div class="explore-card" data-id="${item.id}">
                     <img src="${escapeHtml(poster)}" class="explore-poster" alt="${escapeHtml(title)}">
-                    <div class="explore-info">
-                        <p class="explore-title">${escapeHtml(title)}</p>
-                        <p class="explore-meta">${releaseDate ? escapeHtml(releaseDate.split('-')[0]) : 'N/A'} · ${mediaType}</p>
-                    </div>
                 </div>
             `;
         }).join('');
