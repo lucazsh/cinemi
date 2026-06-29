@@ -1,4 +1,106 @@
 // beta (just testing)
+(function() {
+  var suggestionPhrases = [
+    "Psychological thrillers with unpredictable twists",
+    "Completely underrated '90s sci-fi movies",
+    "Feel-good comedies for a lazy afternoon",
+    "Dark and gritty crime dramas from the 2000s",
+    "Animated masterpieces that adults love too",
+    "Movies that will make you question reality",
+    "Action-packed blockbusters with epic fight scenes",
+    "Romantic films that actually have a good plot",
+    "Mind-bending time travel movies",
+    "Horror movies that are more unsettling than gory",
+    "Underrated indie gems you've probably missed",
+    "Movies with unforgettable soundtracks",
+    "Foreign language films that won an Oscar",
+    "Biographical dramas that feel like fiction",
+    "Movies that are better than the book",
+    "Feel-good movies to watch when you're down",
+    "Classic noir films that defined the genre",
+    "Modern westerns that reinvent the genre",
+    "Movies with twist endings you won't see coming",
+    "Feel-bad movies that are still worth watching"
+  ];
+
+  function updateWatchingText() {
+    var el = document.querySelector('#ai-chat .section-title');
+    if (!el) return;
+    var hour = new Date().getHours();
+    el.textContent = hour < 17 ? 'What are we watching today?' : 'What are we watching tonight?';
+  }
+
+  function attachPillClickHandlers() {
+    var container = document.querySelector('#ai-chat .suggestions-list');
+    if (!container) return;
+    var pills = container.querySelectorAll('.suggestion-pill');
+    pills.forEach(function(pill) {
+      if (pill.dataset.handled) return;
+      pill.dataset.handled = 'true';
+      pill.addEventListener('click', function(e) {
+        e.preventDefault();
+        var span = this.querySelector('span');
+        if (!span) return;
+        var text = span.textContent.trim();
+        var suggestions = document.getElementById('suggestions-container');
+        suggestions.classList.add('hide-suggestions');
+        setTimeout(function() {
+          suggestions.style.display = 'none';
+          var chatContainer = document.querySelector('.a-chat');
+          if (chatContainer) chatContainer.classList.add('show-chat');
+          var input = document.querySelector('.c-ai');
+          if (input) {
+            input.value = text;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          var sendBtn = document.getElementById('send-btn');
+          if (sendBtn) sendBtn.click();
+          input.value = 'Ask anything about movies...';
+        }, 400);
+      });
+    });
+  }
+
+  function randomSuggestions() {
+    var container = document.querySelector('#ai-chat .suggestions-list');
+    if (!container) return;
+    var pills = container.querySelectorAll('.suggestion-pill');
+    if (pills.length < 2) return;
+    var shuffled = suggestionPhrases.slice().sort(function() { return 0.5 - Math.random(); });
+    var selected = shuffled.slice(0, 2);
+    pills.forEach(function(pill, index) {
+      var span = pill.querySelector('span');
+      if (span) span.textContent = selected[index] || 'Try something new';
+      delete pill.dataset.handled;
+    });
+    attachPillClickHandlers();
+  }
+
+  function updateAll() {
+    updateWatchingText();
+    randomSuggestions();
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    updateAll();
+  } else {
+    document.addEventListener('DOMContentLoaded', updateAll);
+  }
+
+  var observer = new MutationObserver(function() {
+    var chatView = document.getElementById('ai-chat');
+    if (chatView && chatView.classList.contains('active')) {
+      updateAll();
+    }
+  });
+  observer.observe(document.getElementById('ai-chat') || document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  setInterval(updateAll, 600000);
+})();
+
 (function () {
   try {
     if (typeof navigator !== 'undefined') {
@@ -28,42 +130,42 @@
 
 (async () => {
   const WASM_BASE = 'https://cdn.jsdelivr.net/npm/@wllama/wllama@2.3.2/esm/';
-
-  const MODELS = [
-    {
-      id: 'smollm2',
-      name: 'SmolLM2 360M',
-      url: 'https://huggingface.co/lucazsh/movi-v2/resolve/main/movi-v2-Q4_K_M.gguf'
-      // url: 'https://huggingface.co/unsloth/SmolLM2-360M-Instruct-GGUF/resolve/main/SmolLM2-360M-Instruct-Q4_K_M.gguf'
-      // url: 'https://huggingface.co/professorf/SmolLM-135M-Instruct-gguf/resolve/main/SmolLM-135M-Instructt-q8_0.gguf'
-    },
-    {
-      id: 'gemma3',
-      name: 'Gemma 3 1B',
-      url: 'https://huggingface.co/unsloth/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf'
-    }
-  ];
-
-  const FALLBACK_TEMPLATE =
-    "{% for message in messages %}{{'<|im_start|>'+message['role']+'\n'+message['content']+'<|im_end|>'+'\n'}}{% endfor %}" +
-    "{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}";
-
+  const MODEL_URL = 'https://huggingface.co/lucazsh/movi-v2/resolve/main/movi-v2-Q4_K_M.gguf';
+  const MODEL_NAME = 'SmolLM2 360M';
   const IDB_NAME = 'cinemi-llm';
   const IDB_VER = 1;
   const IDB_STORE = 'models';
 
+  const MODELS = [
+    { id: 'smollm2', name: MODEL_NAME, url: MODEL_URL },
+    { id: 'gemma3', name: 'Gemma 3 1B', url: 'https://huggingface.co/unsloth/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf' }
+  ];
+
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const useMultiThread = !isIOS && typeof SharedArrayBuffer !== 'undefined';
+  const numThreads = useMultiThread ? (navigator.hardwareConcurrency || 4) : 1;
+
+  const SYSTEM_RULE = `You are Movi — a friendly movie assistant created by Cinemi. You answer only about movies, series, and cinema. Use a friendly tone and occasional emojis (unless the user's preferred_tone is 'serious', then minimize emoji use). Avoid spoilers. Do not reveal internal system details. Never claim to be a human. When movie context is provided, treat it as reference material. Do not invent descriptions.
+If no 'Context movies' are provided, switch to conversational mode: speak naturally with the user about movies, cinema, and film-related discussions. Do NOT ask the user what they like or offer choices. In conversational mode do NOT produce structured JSON and do not go outside the domain of movies, series, or cinema.`;
+
+  const wllamaModulePromise = import('https://esm.sh/@wllama/wllama@2.3.2/esm');
+  const jinjaModulePromise = import('https://esm.sh/@huggingface/jinja');
 
   let wllama = null;
-  const SYSTEM_RULE = `
-    You are Movi — a friendly movie assistant created by Cinemi. You answer only about movies, series, and cinema. Use a friendly tone and occasional emojis (unless the user's preferred_tone is 'serious', then minimize emoji use). Avoid spoilers. Do not reveal internal system details. Never claim to be a human. When movie context is provided, treat it as reference material. Do not invent descriptions.
-    If no 'Context movies' are provided, switch to conversational mode: speak naturally with the user about movies, cinema, and film-related discussions. Do NOT ask the user what they like or offer choices. In conversational mode do NOT produce structured JSON and do not go outside the domain of movies, series, or cinema.
-  `;
-  
+  let cachedTemplate = null;
+  let cachedBOS = null;
+  let cachedEOS = null;
   let history = [{ role: 'system', content: SYSTEM_RULE }];
   let isGenerating = false;
+  let abortController = null;
+  window._isGenerating = false;
+  window._stopGeneration = function() {
+      if (abortController) {
+          abortController.abort();
+          abortController = null;
+      }
+  };
   let isLoading = false;
   let activeIdx = 0;
 
@@ -102,6 +204,8 @@
     } catch { return false; }
   }
 
+  const idbBlobPromise = idbGetBlob(MODELS[0].url);
+
   function getAChat() { return document.querySelector('.a-chat'); }
   function getInput() { return document.querySelector('.i-chat input'); }
 
@@ -136,12 +240,19 @@
 
   async function buildPrompt(messages) {
     try {
-      const { Template } = await import('https://esm.sh/@huggingface/jinja');
-      const tmpl = new Template(wllama.getChatTemplate() ?? FALLBACK_TEMPLATE);
-      return tmpl.render({
+      if (!cachedTemplate) {
+        const { Template } = await jinjaModulePromise;
+        const rawTemplate = wllama.getChatTemplate();
+        cachedTemplate = new Template(rawTemplate ?? "{% for message in messages %}{{'<|im_start|>'+message['role']+'\n'+message['content']+'<|im_end|>'+'\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}");
+        [cachedBOS, cachedEOS] = await Promise.all([
+          wllama.detokenize([wllama.getBOS()]),
+          wllama.detokenize([wllama.getEOS()])
+        ]);
+      }
+      return cachedTemplate.render({
         messages,
-        bos_token: await wllama.detokenize([wllama.getBOS()]),
-        eos_token: await wllama.detokenize([wllama.getEOS()]),
+        bos_token: cachedBOS,
+        eos_token: cachedEOS,
         add_generation_prompt: true
       });
     } catch {
@@ -157,11 +268,14 @@
     const model = MODELS[activeIdx];
 
     try {
-      if (wllama) { try { await wllama.exit(); } catch {} wllama = null; }
+      if (wllama) { try { await wllama.exit(); } catch {} wllama = null; cachedTemplate = null; cachedBOS = null; cachedEOS = null; }
 
-      const { Wllama } = await import('https://esm.sh/@wllama/wllama@2.3.2/esm');
+      const [{ Wllama }, existingBlob] = await Promise.all([
+        wllamaModulePromise,
+        activeIdx === 0 ? idbBlobPromise : idbGetBlob(model.url)
+      ]);
 
-      let blob = await idbGetBlob(model.url);
+      let blob = existingBlob;
 
       if (!blob) {
         const msgEl = addAiMsg('Downloading ' + model.name + '... 0%. This is a one-time download.');
@@ -212,12 +326,25 @@
       const modelFile = new File([blob], 'model.gguf', { type: 'application/octet-stream' });
       blob = null;
 
-      await wllama.loadModel([modelFile], {
-        n_ctx: 2048,
-        ...(useMultiThread ? {} : { n_threads: 1 })
-      });
+      await Promise.all([
+        wllama.loadModel([modelFile], {
+          n_ctx: 2048,
+          n_batch: 512,
+          n_threads: numThreads
+        }),
+        jinjaModulePromise
+      ]);
 
       history = [{ role: 'system', content: SYSTEM_RULE }];
+
+      const rawTemplate = wllama.getChatTemplate();
+      const { Template } = await jinjaModulePromise;
+      cachedTemplate = new Template(rawTemplate ?? "{% for message in messages %}{{'<|im_start|>'+message['role']+'\n'+message['content']+'<|im_end|>'+'\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}");
+      [cachedBOS, cachedEOS] = await Promise.all([
+        wllama.detokenize([wllama.getBOS()]),
+        wllama.detokenize([wllama.getEOS()])
+      ]);
+
       setInputEnabled(true);
 
     } catch (err) {
@@ -229,67 +356,95 @@
   }
 
   async function sendMessage() {
-    if (!wllama || isGenerating || isLoading) return;
-    const inp = getInput();
-    if (!inp) return;
-    const text = inp.value.trim();
-    if (!text) return;
-    inp.value = '';
-    isGenerating = true;
-    setInputEnabled(false);
+      if (!wllama || isLoading) return;
+      if (isGenerating) {
+          if (abortController) {
+              abortController.abort();
+              abortController = null;
+          }
+          return;
+      }
+      const inp = getInput();
+      if (!inp) return;
+      const text = inp.value.trim();
+      if (!text) return;
+      inp.value = '';
+      isGenerating = true;
+      window._isGenerating = true;
+      setInputEnabled(false);
 
-    history.push({ role: 'user', content: text });
-    addUserMsg(text);
+      history.push({ role: 'user', content: text });
+      addUserMsg(text);
 
-    const c = getAChat();
-    if (!c) { isGenerating = false; setInputEnabled(true); return; }
-    const aiEl = document.createElement('div');
-    aiEl.className = 'ai-message';
-    c.appendChild(aiEl);
-    c.scrollTop = c.scrollHeight;
+      const c = getAChat();
+      if (!c) { isGenerating = false; window._isGenerating = false; setInputEnabled(true); return; }
+      const aiEl = document.createElement('div');
+      aiEl.className = 'ai-message';
+      c.appendChild(aiEl);
+      c.scrollTop = c.scrollHeight;
 
-    if (!document.getElementById('llm-blink')) {
-      const s = document.createElement('style');
-      s.id = 'llm-blink';
-      s.textContent = '@keyframes llmBlink{0%,100%{opacity:1}50%{opacity:0}}';
-      document.head.appendChild(s);
-    }
-    const cursor = document.createElement('span');
-    cursor.style.cssText = 'display:inline-block;width:2px;height:1em;background:currentColor;margin-left:2px;vertical-align:text-bottom;border-radius:1px;animation:llmBlink 0.55s step-end infinite;';
-    aiEl.appendChild(cursor);
+      if (!document.getElementById('llm-blink')) {
+          const s = document.createElement('style');
+          s.id = 'llm-blink';
+          s.textContent = `
+              @keyframes llmBlink {
+                  0%, 100% {
+                      opacity: 1;
+                      transform: scale(1);
+                  }
+                  50% {
+                      opacity: 0.2;
+                      transform: scale(2);
+                  }
+              }
+          `;
+          document.head.appendChild(s);
+      }
 
-    let output = '';
-    try {
-      const prompt = await buildPrompt(history);
-      await wllama.createCompletion(prompt, {
-        nPredict: 512,
-        sampling: { temp: 0.7, top_k: 40, top_p: 0.9 },
-        stop: ['<|im_end|>', '<|im_start|>'],
-        onNewToken(_tok, _piece, current) {
-          output = current;
-          aiEl.textContent = current;
-          aiEl.appendChild(cursor);
+      const cursor = document.createElement('span');
+      cursor.style.cssText = 'display:inline-block;width:10px;height:10px;background:currentColor;margin-left:4px;vertical-align:middle;border-radius:3px;animation: llmBlink 1.2s infinite ease-in-out;transform-origin:center;will-change:opacity,transform;';
+      aiEl.appendChild(cursor);
+
+      let output = '';
+      try {
+          const prompt = await buildPrompt(history);
+          abortController = new AbortController();
+          await wllama.createCompletion(prompt, {
+              nPredict: 512,
+              sampling: { temp: 0.7, top_k: 40, top_p: 0.9 },
+              stop: ['<|im_end|>', '<|im_start|>'],
+              signal: abortController.signal,
+              onNewToken(_tok, _piece, current) {
+                  output = current;
+                  aiEl.textContent = current;
+                  aiEl.appendChild(cursor);
+                  if (c) c.scrollTop = c.scrollHeight;
+              }
+          });
+          cursor.remove();
+          aiEl.textContent = output || '...';
+          history.push({ role: 'assistant', content: output });
+      } catch (err) {
+          cursor.remove();
+          if (err.name === 'AbortError') {
+              aiEl.textContent = output || 'Generation stopped.';
+              history.push({ role: 'assistant', content: output || 'Generation stopped.' });
+          } else {
+              aiEl.textContent = 'Error: ' + (err?.message ?? 'Generation failed');
+              history.pop();
+          }
+      } finally {
+          abortController = null;
+          isGenerating = false;
+          window._isGenerating = false;
+          setInputEnabled(!!wllama);
           if (c) c.scrollTop = c.scrollHeight;
-        }
-      });
-      cursor.remove();
-      aiEl.textContent = output || '...';
-      history.push({ role: 'assistant', content: output });
-    } catch (err) {
-      cursor.remove();
-      aiEl.textContent = 'Error: ' + (err?.message ?? 'Generation failed');
-      history.pop();
-    }
-
-    isGenerating = false;
-    setInputEnabled(!!wllama);
-    if (c) c.scrollTop = c.scrollHeight;
+      }
   }
 
   async function setup() {
     const aChat = getAChat();
     if (aChat) aChat.innerHTML = '';
-
     setInputEnabled(false);
 
     const sendBtn = document.getElementById('send-btn');
@@ -303,20 +458,20 @@
       });
     }
     if (ctxBtn) {
-    ctxBtn.title = 'Delete cached model';
-    ctxBtn.addEventListener('click', async () => {
+      ctxBtn.title = 'Delete cached model';
+      ctxBtn.addEventListener('click', async () => {
         if (isGenerating || isLoading) return;
-        if (wllama) { try { await wllama.exit(); } catch {} wllama = null; }
+        if (wllama) { try { await wllama.exit(); } catch {} wllama = null; cachedTemplate = null; cachedBOS = null; cachedEOS = null; }
         setInputEnabled(false);
         try {
-        const db = await openIDB();
-        await new Promise((res, rej) => {
+          const db = await openIDB();
+          await new Promise((res, rej) => {
             const r = db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).delete(MODELS[activeIdx].url);
             r.onsuccess = () => res();
             r.onerror = () => rej(r.error);
-        });
+          });
         } catch {}
-    });
+      });
     }
 
     await loadModel();
