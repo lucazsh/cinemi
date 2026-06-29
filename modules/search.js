@@ -4,6 +4,7 @@ const RECENT_KEY = 'cinemi_recent_searches';
 document.addEventListener('DOMContentLoaded', () => {
     initMovieSearch();
     renderRecentSearches();
+    renderExploreMovies();
 });
 
 function initMovieSearch() {
@@ -132,6 +133,36 @@ async function fetchUsers(query, container) {
     } catch (error) {
         console.error('User search error:', error);
         container.innerHTML = '<div style="padding:20px;">Error loading users.</div>';
+    }
+}
+
+async function renderExploreMovies() {
+    const container = document.getElementById('explore-list');
+    if (!container) return;
+    try {
+        const res = await fetch(`${baseUrl}/api/tmdb/trending`, { headers: ngrokHeaders });
+        const data = await res.json();
+        const items = (data.results || []).filter(item => item.poster_path).slice(0, 10);
+        container.innerHTML = items.map(item => {
+            const poster = `${IMG_W500}${item.poster_path}`;
+            const title = item.title || item.name || 'Untitled';
+            const releaseDate = item.release_date || item.first_air_date || '';
+            const mediaType = item.media_type === 'tv' || item.name ? 'TV' : 'Movie';
+            return `
+                <div class="explore-card" data-id="${item.id}">
+                    <img src="${escapeHtml(poster)}" class="explore-poster" alt="${escapeHtml(title)}">
+                    <div class="explore-info">
+                        <p class="explore-title">${escapeHtml(title)}</p>
+                        <p class="explore-meta">${releaseDate ? escapeHtml(releaseDate.split('-')[0]) : 'N/A'} · ${mediaType}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        container.querySelectorAll('.explore-card').forEach((card, idx) => {
+            card.onclick = () => showDetails(items[idx]);
+        });
+    } catch (error) {
+        console.error('Explore fetch error:', error);
     }
 }
 
