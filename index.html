@@ -11092,17 +11092,14 @@
 
     <div id="chat-window"
         style="position:fixed;inset:0;background:var(--bg-primary);z-index:1300;opacity:0;pointer-events:none;transition:opacity .25s ease;display:flex;flex-direction:column;box-sizing:border-box;">
-        <div class="nt">
-            <button id="chat-win-back">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                    fill="var(--text-primary)">
-                    <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
-                </svg>
+        <div class="nt" style="justify-content: initial; gap:12px; display:flex;align-items:center">
+            <button id="chat-win-back" style="margin-left: 3px; margin-top: 3px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m213-480 278 277q22 23 22.5 55T491-94q-22 22-54.5 22T381-94L90-384q-20-21-30-45.5t-10-51q0-26.5 10-51T90-576l291-292q23-22 55.5-22t54.5 22q22 22 22 55t-22 55L213-480Z"></path></svg>
             </button>
             <div style="display:flex;align-items:center;gap:10px;">
                 <img id="chat-win-avatar" src="https://i.imgflip.com/1ickup.jpg"
-                    style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                <span id="chat-win-name" style="font-weight:700;font-size:16px;color:var(--text-primary);"></span>
+                    style="width:36px;height:36px;border-radius:12px;object-fit:cover;">
+                <span id="chat-win-name" style="font-weight:700;font-size:16.4px;color:var(--text-primary);"></span>
             </div>
             <div style="width:36px;"></div>
         </div>
