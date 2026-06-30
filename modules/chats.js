@@ -307,7 +307,7 @@
     currentConvId = convId;
     lastMsgTs = 0;
     renderedIds.clear();
-    chatWinName.textContent = '@' + otherUser;
+    chatWinName.textContent = /* '@' + */ otherUser;
     chatWinAvatar.src = otherPhoto || 'https://i.imgflip.com/1ickup.jpg';
     chatWinMessages.innerHTML = '<div style="padding:20px;color:var(--text-subtle);text-align:center;">Loading...</div>';
     showEl(chatWindow);
