@@ -80,7 +80,6 @@ async function nextQuestion() {
 
         const movieGenres = Array.from(questions[7].querySelectorAll('input:checked')).map(c => c.value);
         const streamingPlatforms = Array.from(questions[8].querySelectorAll('input:checked')).map(c => c.value);
-
         const favoriteMovies = Array.isArray(answer) ? answer : [];
 
         const quizAnswers = {
@@ -105,10 +104,13 @@ async function nextQuestion() {
             });
 
             for (const movie of favoriteMovies) {
-                await fetchWithAuth(`${baseUrl}/api/favorites/add`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ movieId: String(movie.id) })
+                await addToFavorites({
+                    id: movie.id,
+                    title: movie.title || movie.name,
+                    poster_path: movie.poster_path,
+                    media_type: 'movie',
+                    overview: '',
+                    vote_average: 0
                 });
             }
 
