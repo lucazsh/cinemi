@@ -52,6 +52,15 @@ async function nextQuestion() {
         const checked = currentQuestion.querySelectorAll('input[type="checkbox"]:checked');
         if (checked.length === 0) { alert('Please select at least one platform'); return; }
         answer = Array.from(checked).map(c => c.value);
+    } else if (current === 9) {
+        const tmRes = document.getElementById('tm-res');
+        let movies = [];
+        try { movies = JSON.parse(tmRes.value); } catch (_) {}
+        if (!movies || movies.length < 3) {
+            alert('Please select at least 3 movies');
+            return;
+        }
+        answer = movies;
     } else {
         const selected = currentQuestion.querySelector('input[type="radio"]:checked');
         if (selected) answer = selected.value || selected.id;
@@ -71,6 +80,8 @@ async function nextQuestion() {
 
         const movieGenres = Array.from(questions[7].querySelectorAll('input:checked')).map(c => c.value);
         const streamingPlatforms = Array.from(questions[8].querySelectorAll('input:checked')).map(c => c.value);
+
+        const favoriteMovies = Array.isArray(answer) ? answer : [];
 
         const quizAnswers = {
             age: document.getElementById('b-res').value,
@@ -92,8 +103,18 @@ async function nextQuestion() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(quizAnswers)
             });
+
+            for (const movie of favoriteMovies) {
+                await fetchWithAuth(`${baseUrl}/api/favorites/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ movieId: String(movie.id) })
+                });
+            }
+
             localStorage.setItem('quizCompleted', 'true');
-            localStorage.setItem('cinemi_userQuizProfile', JSON.stringify(quizAnswers));
+            const profile = { ...quizAnswers, favoriteMovies };
+            localStorage.setItem('cinemi_userQuizProfile', JSON.stringify(profile));
         } catch (err) {
             console.error('Quiz submit error:', err);
         }
