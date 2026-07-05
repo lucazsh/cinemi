@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://particularly-bath-cir-oasis.trycloudflare.com';
+const SERVER_URL = 'https://wagner-apache-ala-running.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
