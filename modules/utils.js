@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://wagon-strength-initiatives-keyboard.trycloudflare.com';
+const SERVER_URL = 'https://private-replies-pregnant-theft.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
