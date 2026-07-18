@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://private-replies-pregnant-theft.trycloudflare.com';
+const SERVER_URL = 'https://alan-already-harbor-motivated.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
