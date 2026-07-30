@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://washington-modified-paxil-lovely.trycloudflare.com';
+const SERVER_URL = 'https://spent-tips-properties-anything.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
