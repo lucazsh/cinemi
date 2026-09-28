@@ -1,4 +1,4 @@
-const SERVER_URL = 'https://meetings-kenneth-oem-patio.trycloudflare.com';
+const SERVER_URL = 'https://glass-everyone-stands-shepherd.trycloudflare.com';
 const baseUrl = SERVER_URL ? SERVER_URL.replace(/\/$/, '') : '';
 const ngrokHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
